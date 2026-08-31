@@ -21,6 +21,12 @@
       note: '美股收盘后每个交易日一次'
     },
     {
+      id: 'developers', name: '房企股价回撤', url: '/developers/data/status.json', page: '/developers/',
+      // developers.yml: '30 9 * * 1-5'
+      cron: { weekdaysOnly: true, times: [[9, 30]] },
+      note: '港股与 A 股收盘后每个交易日一次'
+    },
+    {
       id: 'housing', name: '全国房价指数', url: '/housing/data/status.json', page: '/housing/',
       // housing.yml: '20 3 18,20,24 * *'
       cron: { monthDays: [18, 20, 24], times: [[3, 20]] },
@@ -235,7 +241,7 @@
           dot.className = 'zb-dot warn';
           return;
         }
-        var STALE = { housing: 40 * 86400000, drawdown: 4 * 86400000, options: 26 * 3600000 };
+        var STALE = { developers: 4 * 86400000, housing: 40 * 86400000, drawdown: 4 * 86400000, options: 26 * 3600000 };
         var staleAfter = function (s) { return STALE[s.id] || 26 * 3600000; };
         // On a page that owns a dataset the headline is about that dataset; on
         // the rest, picking one arbitrarily would be noise, so summarise instead.
