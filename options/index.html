@@ -116,6 +116,7 @@
 
   <div id="app" hidden>
     <p class="hint" id="asof">—</p>
+    <p class="hint" id="next">—</p>
 
     <div class="chips" id="groups"></div>
     <div class="toolbar">
@@ -272,6 +273,41 @@
     document.getElementById('sort').addEventListener('change', renderList);
     renderList();
     select(sorted()[0].symbol);
+    countdown();
+    setInterval(countdown, 1000);
+  }
+
+  // Mirrors the workflow's cron: weekdays at 14:00, 17:00, 19:00 and 19:55 UTC.
+  // Keep this in sync with .github/workflows/options.yml by hand — the page has
+  // no way to read the schedule, so a cron change here is a silent drift.
+  var CRON_UTC = [[14, 0], [17, 0], [19, 0], [19, 55]];
+
+  function nextRun(from) {
+    for (var d = 0; d < 8; d++) {
+      var day = new Date(from.getTime() + d * 86400000);
+      var dow = day.getUTCDay();
+      if (dow === 0 || dow === 6) continue;
+      for (var i = 0; i < CRON_UTC.length; i++) {
+        var t = Date.UTC(day.getUTCFullYear(), day.getUTCMonth(), day.getUTCDate(), CRON_UTC[i][0], CRON_UTC[i][1]);
+        if (t > from.getTime()) return new Date(t);
+      }
+    }
+    return null;
+  }
+
+  function countdown() {
+    var el = document.getElementById('next');
+    var next = nextRun(new Date());
+    if (!next) { el.textContent = ''; return; }
+    var left = next - Date.now();
+    var h = Math.floor(left / 3600000), m = Math.floor(left % 3600000 / 60000), s = Math.floor(left % 60000 / 1000);
+    var pad = function (n) { return String(n).padStart(2, '0'); };
+    var age = Math.floor((Date.now() - data.t) / 3600000);
+    el.textContent =
+      '下次同步 ' + next.toLocaleString('zh-CN', { hour12: false, month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+      + '，还有 ' + h + ':' + pad(m) + ':' + pad(s)
+      + ' · 当前数据已存放 ' + (age < 1 ? '不到 1' : age) + ' 小时'
+      + ' · GitHub 排队时会晚 10–30 分钟甚至跳过，这是计划时间不是保证。';
   }
 
   function sorted() {

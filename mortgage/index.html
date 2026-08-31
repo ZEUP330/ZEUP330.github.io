@@ -74,6 +74,16 @@
   footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--line);
     font-size: 13px; color: var(--ink-3); }
   .scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 1rem; }
+  .topbar .back { margin: 0; }
+  .omi { font-size: 13px; padding: 5px 12px; border-radius: 999px; flex: none; }
+  .omi-out { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; background: var(--card);
+    border: 1px solid var(--line); border-radius: 12px; padding: .7rem .9rem; margin: 0 0 1.25rem; }
+  .omi-out .lot { font-size: 22px; font-weight: 500; letter-spacing: .04em; flex: none; }
+  .omi-out .omi-text { font-size: 13px; color: var(--ink-2); flex: 1 1 12rem; min-width: 0; }
+  .omi-again { font-size: 12px; padding: 4px 10px; border-radius: 999px; flex: none; }
+  .lot.great { color: #e34948; } .lot.good { color: #eda100; }
+  .lot.mid { color: var(--accent); } .lot.bad { color: var(--ink-3); }
   @media (max-width: 640px) {
     body { padding: 1.5rem .9rem 3rem; -webkit-text-size-adjust: 100%; }
     h1 { font-size: 21px; }
@@ -93,7 +103,15 @@
 </head>
 <body>
 <main>
-  <p class="back"><a href="../">← 首页</a></p>
+  <div class="topbar">
+    <p class="back"><a href="../">← 首页</a></p>
+    <button id="omikuji" type="button" class="omi">🎋 抽一签</button>
+  </div>
+  <div class="omi-out" id="omi-out" hidden>
+    <span class="lot" id="omi-lot">—</span>
+    <span class="omi-text" id="omi-text"></span>
+    <button class="omi-again" id="omi-again" type="button">再抽</button>
+  </div>
   <h1>房贷年限 × 月供</h1>
   <p class="lede">等额本息下，月供不会随年限一直降。它有个下限：<strong id="lede-floor">4,167</strong> 元 —— 等于本金 × 月利率，也就是每月纯利息。贷到那一步，本金一分没还。</p>
 
@@ -474,6 +492,38 @@
     [wrap3d, zpick, hint3d].forEach(function (el) { el.hidden = !is3d; });
     if (is3d) loadGL().then(render3d, function () { hint3d.textContent = '3D 组件加载失败，检查网络后刷新页面。'; });
   });
+
+  // Weights follow a real omikuji box rather than a uniform draw: 大吉 is
+  // supposed to feel lucky, 大凶 is supposed to be rare enough to be a story.
+  var LOTS = [
+    { n: '大吉', w: 12, c: 'great', s: ['提前还款的钱正好凑够整数。', '看房时售楼处的沙盘朝向刚好是你喜欢的那面。', '利率在你签约当月往下走了一档。'] },
+    { n: '中吉', w: 20, c: 'good', s: ['中介说的"最后一套"这次是真的。', '算完月供发现比预想的少两位数。', '看房那天不下雨。'] },
+    { n: '小吉', w: 20, c: 'good', s: ['公积金余额比你记得的多一点。', '楼上装修在你搬进去之前就结束了。', '还款日恰好在发薪日之后。'] },
+    { n: '吉',   w: 22, c: 'mid',  s: ['一切如常，房价也如常。', '不好不坏，就像 30 年和 31 年的月供差别。', '平稳，像贴着渐近线走的那一段。'] },
+    { n: '末吉', w: 14, c: 'mid',  s: ['好事在后头，跟你的本金一样后头才开始还。', '前期都是利息，耐心点。', '慢是慢了些，方向没错。'] },
+    { n: '凶',   w: 10, c: 'bad',  s: ['别在今天签任何三十年的字。', '你算的那个月供，再算一遍。', '想清楚"能贷 40 年"和"该贷 40 年"不是一回事。'] },
+    { n: '大凶', w: 2,  c: 'bad',  s: ['把这一签当成提醒：利息是会累积的。', '今日宜看图，不宜下单。', '连抽两次也不会变好，这就是概率。'] }
+  ];
+
+  var TOTAL = LOTS.reduce(function (t, l) { return t + l.w; }, 0);
+  var out = document.getElementById('omi-out');
+  var lotEl = document.getElementById('omi-lot');
+  var textEl = document.getElementById('omi-text');
+
+  function draw() {
+    var r = Math.random() * TOTAL, acc = 0, lot = LOTS[LOTS.length - 1];
+    for (var i = 0; i < LOTS.length; i++) {
+      acc += LOTS[i].w;
+      if (r < acc) { lot = LOTS[i]; break; }
+    }
+    lotEl.textContent = lot.n;
+    lotEl.className = 'lot ' + lot.c;
+    textEl.textContent = lot.s[Math.floor(Math.random() * lot.s.length)] + '（图一乐，跟利率没有任何关系）';
+    out.hidden = false;
+  }
+
+  document.getElementById('omikuji').addEventListener('click', draw);
+  document.getElementById('omi-again').addEventListener('click', draw);
 
   window.addEventListener('resize', function () { if (gl) gl.resize(); });
   zsel.addEventListener('change', function () { if (is3d && gl) render3d(); });
