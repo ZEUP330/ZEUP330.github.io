@@ -175,7 +175,10 @@
   // cumulative price releases. The slider is re-ranged when the mode flips
   // rather than trying to force one axis onto both.
   function sliderMax() { return (isPrice() ? hpr.records.length : hp.months.length) - 1; }
-  function periodLabel(i) { return isPrice() ? hpr.records[i].label : hp.months[i]; }
+  function periodLabel(i) {
+    var j = Math.min(Math.max(0, i), sliderMax());
+    return isPrice() ? hpr.records[j].label : hp.months[j];
+  }
 
   // echarts@4 ships one GeoJSON per province under map/json/province/<pinyin>.
   // 山西 is `shanxi` and 陕西 is `shanxi1` - an easy pair to swap by accident.
@@ -263,7 +266,8 @@
   // colour scale and tooltip never change, so only the series data is pushed
   // per frame.
   function drawMap() {
-    var i = +slider.value, key = typeSel.value;
+    // Clamp: a stale index from the other mode must never reach the data.
+    var i = Math.min(Math.max(0, +slider.value), sliderMax()), key = typeSel.value;
     document.getElementById('map-month-out').textContent = periodLabel(i);
     if (isPrice()) { drawPriceMap(i); return; }
     if (level) { drawProvinceMap(i, key); return; }
@@ -286,7 +290,7 @@
         formatter: function (p) {
           if (p.value == null || isNaN(p.value)) return p.name + '<br>不在 70 城样本内';
           // Read the slider live: this closure outlives the frame it was built in.
-          return p.name + '<br>' + hp.months[+slider.value] + ' 同比 '
+          return p.name + '<br>' + hp.months[Math.min(+slider.value, hp.months.length - 1)] + ' 同比 '
             + (p.value > 0 ? '+' : '') + p.value.toFixed(1) + '%<br>样本 ' + p.data.n + ' 城';
         }
       },
@@ -322,7 +326,13 @@
     var zoomBtn = document.getElementById('map-zoom');
     zoomBtn.hidden = !!level || !!MUNICIPALITY[name] || !PROVINCE_PY[name];
     zoomBtn.textContent = '放大到 ' + name;
-    var key = typeSel.value, i = +slider.value, series = p[key];
+    // No province series exists in price mode, so bail rather than reading
+    // p['price'] and calling .filter on undefined.
+    if (isPrice()) return;
+    var key = typeSel.value;
+    var i = Math.min(Math.max(0, +slider.value), sliderMax());
+    var series = p[key];
+    if (!series) return;
     var seen = series.filter(function (v) { return v != null; });
     document.getElementById('prov-title').textContent = name + ' · ' + hp.months[i];
     document.getElementById('prov-yoy').textContent = pctTxt(series[i]);
@@ -535,15 +545,24 @@
     });
   }
 
-  function backToChina() {
+  // State reset only. Kept separate from rendering because the mode switch has
+  // to re-range the slider before anything draws - doing it the other way round
+  // rendered a month index against the 32-period price axis, threw on the
+  // missing record, and aborted the rest of the handler, leaving the toolbar
+  // and slider half-switched.
+  function resetToChina() {
     level = null;
     mapChart.__level = null;
-    document.getElementById('map-back').hidden = true;
-    document.getElementById('map-zoom').hidden = !curProv || !!MUNICIPALITY[curProv];
-    document.getElementById('map-zoom').textContent = curProv ? '放大到 ' + curProv : '放大';
-    document.getElementById('map-level').textContent = '全国 · 双击省份放大到市级';
     mapChart.clear();
     mapChart.__ready = false;
+    document.getElementById('map-back').hidden = true;
+    document.getElementById('map-zoom').hidden = isPrice() || !curProv || !!MUNICIPALITY[curProv];
+    document.getElementById('map-zoom').textContent = curProv ? '放大到 ' + curProv : '放大';
+    document.getElementById('map-level').textContent = '全国 · 双击省份放大到市级';
+  }
+
+  function backToChina() {
+    resetToChina();
     drawMap();
   }
 
@@ -572,7 +591,7 @@
       tooltip: {
         formatter: function (p) {
           if (p.value == null || isNaN(p.value)) return p.name + '<br>不在 70 城样本内';
-          return p.name + '<br>' + hp.months[+slider.value] + ' 同比 '
+          return p.name + '<br>' + hp.months[Math.min(+slider.value, hp.months.length - 1)] + ' 同比 '
             + (p.value > 0 ? '+' : '') + p.value.toFixed(1) + '%';
         }
       },
@@ -610,21 +629,17 @@
   slider.addEventListener('input', function () { drawMap(); if (!isPrice() && curProv) showProvince(curProv); });
   typeSel.addEventListener('change', function () {
     stopPlay();
-    // Price mode is national+region only, so a province drill-down has nothing
-    // to show; back out of it before the slider is re-ranged.
-    if (isPrice() && level) backToChina();
+    // Re-range the slider first: the index axis has 247 monthly points and the
+    // price axis 32 releases, so keeping the old value would index off the end.
     var frac = +slider.value / Math.max(1, +slider.max);
     slider.max = String(sliderMax());
-    slider.value = String(Math.round(frac * sliderMax()));
-    ['prov-detail', 'map-zoom', 'map-back'].forEach(function (id) {
-      if (isPrice()) document.getElementById(id).hidden = true;
-    });
+    slider.value = String(Math.min(sliderMax(), Math.max(0, Math.round(frac * sliderMax()))));
+    // Price mode is national + region only, so a province drill-down has
+    // nothing to show.
+    resetToChina();
+    if (isPrice()) document.getElementById('prov-detail').hidden = true;
     document.getElementById('price-block').hidden = !isPrice();
     document.getElementById('map-note').hidden = isPrice();
-    mapChart.clear();
-    mapChart.__ready = false;
-    mapChart.__level = null;
-    if (!isPrice()) document.getElementById('map-level').textContent = '全国 · 双击省份放大到市级';
     drawMap();
     if (!isPrice() && curProv) showProvince(curProv);
   });
