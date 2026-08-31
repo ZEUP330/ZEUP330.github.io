@@ -45,10 +45,28 @@
   .stage .who.mix { color: var(--accent); border: 1px solid currentColor; }
   .stage .who.human { color: var(--human); border: 1px solid currentColor; }
   .stage .d { grid-column: 2 / -1; font-size: 13.5px; color: var(--ink-3); margin: 0; }
+  figure { margin: 1.75rem 0; }
+  /* viewBox is 360 wide on purpose: capped near phone width so the type inside
+     never scales down to the 6px it hit when this was drawn at 720. */
+  figure svg { width: 100%; max-width: 430px; height: auto; display: block; margin: 0 auto; }
+  figcaption { font-size: 12.5px; color: var(--ink-3); margin-top: .7rem; line-height: 1.7; }
+  .bars { display: grid; gap: 10px; margin: 1.25rem 0 .5rem; }
+  .bar { display: grid; grid-template-columns: 5.5em 1fr; gap: 10px; align-items: center; }
+  .bar .lbl { font-size: 13.5px; color: var(--ink-2); }
+  .bar .track { display: flex; align-items: stretch; height: 26px; gap: 3px; }
+  .bar .gen { background: var(--ai); border-radius: 4px 0 0 4px; min-width: 26px;
+    display: flex; align-items: center; justify-content: center; color: #fff; font-size: 11px; }
+  .bar .dig { background: var(--accent); opacity: .85; border-radius: 0 4px 4px 0;
+    display: flex; align-items: center; padding-left: 8px; color: #fff; font-size: 11.5px; }
+  .barkey { display: flex; gap: 16px; font-size: 12px; color: var(--ink-3); margin: 0 0 1.25rem; }
+  .barkey i { display: inline-block; width: 11px; height: 11px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
   table { width: 100%; border-collapse: collapse; font-size: 14px; margin: 1.25rem 0; }
   th, td { padding: 9px 8px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
   th { color: var(--ink-3); font-weight: 400; font-size: 12.5px; }
-  td:first-child { white-space: nowrap; color: var(--ink); }
+  td:first-child { color: var(--ink); }
+  /* The stage column is two characters wide; without this it wraps to one
+     character per line on a phone. */
+  td:nth-child(2), th:nth-child(2) { white-space: nowrap; width: 3.5em; }
   .scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
   ul.src { padding-left: 1.1rem; margin: 0; }
   ul.src li { color: var(--ink-3); font-size: 14px; margin-bottom: .6rem; }
@@ -113,7 +131,97 @@
 
   <p>陶用了一个更难听但更准的词：<strong>证明消化不良</strong>。并且补了一句要紧的：这些淤积在 AI 之前就有——文献膨胀、重大证明越来越长、审稿系统早已不堪重负——AI 只是把它们统统放大。</p>
 
+  <figure>
+    <svg viewBox="0 0 360 250" role="img" aria-label="对比示意图：五个环节的处理能力不变，上游涌入的量大幅增加，超出部分堆积在验证及其之后的环节。">
+      <title>产能没变，来量变了</title>
+      <g font-family="-apple-system, sans-serif" font-size="11.5">
+        <text x="0" y="12" fill="var(--ink-2)" font-size="12">过去：来量 ≈ 各环节产能</text>
+        <line x1="0" y1="30" x2="360" y2="30" stroke="var(--ai)" stroke-dasharray="4 3"/>
+        <text x="256" y="26" fill="var(--ai)">来量</text>
+        <g fill="var(--accent)" opacity=".75">
+          <rect x="0"   y="34" width="64" height="42" rx="3"/>
+          <rect x="74"  y="34" width="64" height="42" rx="3"/>
+          <rect x="148" y="34" width="64" height="42" rx="3"/>
+          <rect x="222" y="34" width="64" height="42" rx="3"/>
+          <rect x="296" y="34" width="64" height="42" rx="3"/>
+        </g>
+        <g fill="var(--ink-3)" text-anchor="middle" font-size="11.5">
+          <text x="32" y="90">生成</text><text x="106" y="90">验证</text><text x="180" y="90">表述</text>
+          <text x="254" y="90">发表</text><text x="328" y="90">规范化</text>
+        </g>
+
+        <text x="0" y="130" fill="var(--ink-2)" font-size="12">现在：来量翻了很多倍，产能一寸没变</text>
+        <g fill="var(--danger, #e34948)" opacity=".16">
+          <rect x="74"  y="148" width="64" height="52" rx="3"/>
+          <rect x="148" y="148" width="64" height="52" rx="3"/>
+          <rect x="222" y="148" width="64" height="52" rx="3"/>
+          <rect x="296" y="148" width="64" height="52" rx="3"/>
+        </g>
+        <line x1="0" y1="148" x2="360" y2="148" stroke="var(--ai)" stroke-width="2"/>
+        <text x="256" y="144" fill="var(--ai)">来量</text>
+        <g fill="var(--accent)" opacity=".75">
+          <rect x="0"   y="200" width="64" height="42" rx="3"/>
+          <rect x="74"  y="200" width="64" height="42" rx="3"/>
+          <rect x="148" y="200" width="64" height="42" rx="3"/>
+          <rect x="222" y="200" width="64" height="42" rx="3"/>
+          <rect x="296" y="200" width="64" height="42" rx="3"/>
+        </g>
+        <text x="106" y="178" fill="#e34948" font-size="11.5" text-anchor="middle">↑ 堆积</text>
+        <text x="180" y="178" fill="#e34948" font-size="11.5" text-anchor="middle">↑ 堆积</text>
+        <text x="254" y="178" fill="#e34948" font-size="11.5" text-anchor="middle">↑ 堆积</text>
+        <text x="328" y="178" fill="#e34948" font-size="11.5" text-anchor="middle">↑ 堆积</text>
+      </g>
+    </svg>
+    <figcaption>示意图，非实测数据。蓝色柱是各环节的处理能力，橙线是涌入的量，红色是超出部分。要点是：<b>只有第一段的产能被 AI 放大了</b>，后面四段还是原来那些人、那些时间，于是堆积必然出现在下游。</figcaption>
+  </figure>
+
   <p>所以「AI 让数学变容易了」这个说法是错位的。它让<em>生成</em>变容易了，而稀缺整体搬去了下游。我们大多数机构——期刊、优先权惯例、招聘与晋升标准、奖项、乃至「研究纲领」这个概念本身——都是在稀缺假设下设计的，在过剩状态下表现失常并不奇怪。</p>
+
+  <figure>
+    <svg viewBox="0 0 360 210" role="img" aria-label="对比示意图：过去数学的各个目标彼此正相关，推进一个会带动其余；被过度优化后，这些目标彼此发散。">
+      <title>目标从彼此对齐到彼此发散</title>
+      <g font-family="-apple-system, sans-serif" font-size="11.5">
+        <defs>
+          <marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="#898781"/>
+          </marker>
+        </defs>
+        <text x="0" y="12" fill="var(--ink-2)" font-size="12">过去：推进一个，其余跟着走</text>
+        <circle cx="34" cy="58" r="21" fill="var(--card)" stroke="var(--line)"/>
+        <text x="34" y="61" fill="var(--ink-3)" text-anchor="middle" font-size="11">知识</text>
+        <g stroke="#898781" marker-end="url(#a2)">
+          <line x1="58" y1="52" x2="122" y2="40"/>
+          <line x1="58" y1="58" x2="122" y2="58"/>
+          <line x1="58" y1="64" x2="122" y2="76"/>
+        </g>
+        <g fill="var(--ink-2)" font-size="11.5">
+          <text x="130" y="44">解题</text>
+          <text x="130" y="62">建理论</text>
+          <text x="130" y="80">训练下一代</text>
+        </g>
+        <rect x="124" y="30" width="122" height="58" rx="4" fill="none" stroke="var(--human)" stroke-dasharray="3 3"/>
+        <text x="252" y="63" fill="var(--human)" font-size="11">同向</text>
+
+        <text x="0" y="112" fill="var(--ink-2)" font-size="12">过度优化单一指标后：彼此发散</text>
+        <circle cx="180" cy="165" r="21" fill="var(--card)" stroke="var(--line)"/>
+        <text x="180" y="168" fill="var(--ink-3)" text-anchor="middle" font-size="11">知识</text>
+        <g stroke="#898781" marker-end="url(#a2)">
+          <line x1="166" y1="149" x2="96" y2="130"/>
+          <line x1="194" y1="149" x2="264" y2="130"/>
+          <line x1="160" y1="165" x2="70" y2="165"/>
+          <line x1="200" y1="165" x2="290" y2="165"/>
+          <line x1="170" y1="184" x2="130" y2="200"/>
+          <line x1="190" y1="184" x2="230" y2="200"/>
+        </g>
+        <g fill="var(--ink-2)" text-anchor="middle">
+          <text x="80" y="126">解题数</text><text x="280" y="126">刷榜</text>
+          <text x="34" y="168">建理论</text><text x="322" y="168">应用</text>
+          <text x="112" y="208">训练下一代</text><text x="248" y="208">建共同体</text>
+        </g>
+      </g>
+    </svg>
+    <figcaption>依据论文第 5 节图 1、图 2 重画（原图为英文，且明确说明这是极度简化的示意）。历史上这些目标高度正相关，所以可以拿其中一两个当其余的代理指标；一旦某个代理被当成冲刺目标去过度优化，它们就开始彼此分离——这正是 Goodhart 定律在这行的形态。</figcaption>
+  </figure>
 
   <h2>为什么下游更值钱</h2>
 
@@ -170,6 +278,23 @@
     </tbody>
   </table>
   </div>
+
+  <p>换个能核对的量法。每个页面都只被「创建」过一次，之后的每一次提交都是回头改它——改口径、改表述、修状态机、补上说不清楚的地方。这个数字不需要相信我，<code>git log</code> 里能数出来：</p>
+
+  <div class="bars">
+    <div class="bar"><span class="lbl">期权筛选器</span>
+      <span class="track"><span class="gen" style="flex:1">1</span><span class="dig" style="flex:9">之后 9 次回头改</span></span></div>
+    <div class="bar"><span class="lbl">房贷月供</span>
+      <span class="track"><span class="gen" style="flex:1">1</span><span class="dig" style="flex:8">之后 8 次</span></span></div>
+    <div class="bar"><span class="lbl">长沙行程</span>
+      <span class="track"><span class="gen" style="flex:1">1</span><span class="dig" style="flex:7">之后 7 次</span></span></div>
+    <div class="bar"><span class="lbl">房价地图</span>
+      <span class="track"><span class="gen" style="flex:1">1</span><span class="dig" style="flex:6">之后 6 次</span></span></div>
+  </div>
+  <p class="barkey"><span><i style="background:var(--ai)"></i>创建（生成）</span><span><i style="background:var(--accent)"></i>之后的修改（消化）</span></p>
+  <p style="font-size:12.5px;color:var(--ink-3);margin:-.6rem 0 1.5rem">口径：<code>git log --no-merges -- &lt;目录&gt;/</code>，排除自动数据提交。一次提交若同时动了多个目录，各计一次。这四页是有历史的页面；今天刚建的几页还没来得及积累修改，这本身也符合这条链——修改都发生在后面。</p>
+
+  <p>需要说清楚的是，这些后续提交并非全是「修 bug」，其中也有加功能。但把它们逐条读下来会发现一个规律：<strong>加功能的那些，大多也是因为原版说不清楚</strong>——加「年化 ÷ IV30」排序是因为裸年化在暗示推荐，把房价拆成独立页是因为它挂在房贷后面像个脚注，加固定色阶是因为自适应色阶在骗人。</p>
 
   <p>这张表里没有一行是「写代码」。全是验证、表述、以及决定什么不能展示。<strong>生成是分钟级的，消化占掉了几乎全部的时间</strong>——而且是这几天里唯一真正需要判断力的部分。</p>
 
