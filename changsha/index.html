@@ -68,12 +68,27 @@
   details.how ul { margin: .6rem 0; padding-left: 1.2rem; color: var(--ink-2); }
   details.how li { margin-bottom: .25rem; }
 
+  details.sec { border-top: 1px solid var(--line); padding: 0; margin: 0; }
+  details.sec > summary { font-size: 18px; font-weight: 500; color: var(--ink);
+    padding: 1rem 0; cursor: pointer; list-style: none; display: flex;
+    align-items: center; justify-content: space-between; gap: 12px; }
+  details.sec > summary::-webkit-details-marker { display: none; }
+  details.sec > summary::after { content: '＋'; color: var(--ink-3); font-size: 15px; font-weight: 400; }
+  details.sec[open] > summary::after { content: '－'; }
+  details.sec > summary:hover { color: var(--accent); }
+  details.sec[open] > summary { padding-bottom: .5rem; }
+  details.sec > *:last-child { margin-bottom: 1.5rem; }
+  details.sec h3:first-of-type { margin-top: .5rem; }
+  .overview a { cursor: pointer; }
+  .overview a rect { transition: stroke .15s; }
+  .overview a:hover rect { stroke: var(--accent); }
+
   .toc { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 2rem; }
   .toc a { font-size: 13px; color: var(--ink-2); text-decoration: none;
     border: 1px solid var(--line); border-radius: 999px; padding: 3px 11px; }
   .toc a:hover { border-color: var(--accent); color: var(--accent); text-decoration: none; }
   /* The shared status bar is sticky, so anchor jumps would land under it. */
-  h2[id] { scroll-margin-top: 4rem; }
+  h2[id], details.sec[id] { scroll-margin-top: 4rem; }
 
   .alert { background: var(--card); border: 1px solid var(--line); border-left: 3px solid var(--danger);
     border-radius: 0 8px 8px 0; padding: .8rem 1rem; margin: 0 0 1rem; font-size: 14px; color: var(--ink-2); }
@@ -131,6 +146,7 @@
     .card { padding: .9rem 1rem; }
     .toc { gap: 5px; }
     .toc a { font-size: 12px; padding: 3px 9px; }
+    details.sec > summary { font-size: 16px; padding: .8rem 0; }
   }
 </style>
 <link rel="stylesheet" href="/assets/statusbar.css">
@@ -236,6 +252,12 @@
       <dt>别指望</dt><dd>橘子洲周末焰火，早就停办了</dd>
     </dl>
   </section>
+
+  <div class="toolbar" id="sec-ctl" hidden>
+    <button id="expand-all" type="button">展开全部</button>
+    <button id="collapse-all" type="button">收起全部</button>
+    <span class="hint" style="margin:0" id="open-count"></span>
+  </div>
 
   <nav class="toc" aria-label="页面目录">
     <a href="#sec-time">时间预算</a>
@@ -571,6 +593,39 @@
   <div class="alert warn">
     <strong>第三次来最容易犯的错：为了「不虚此行」硬凑景点。</strong>你已经知道长沙长什么样了，再补三个四星景点不会让这趟更值。真正的升级是把钱和时间从门票挪到住处和吃上 —— 上面选酒店那节就是这个逻辑。
   </div>
+
+  <h2 id="sec-more">还有哪里好玩</h2>
+  <p>都是前两次大概率漏掉的。共同点：不是传统景点，所以人少，而且大多免费。按离你住处的远近排。</p>
+
+  <div class="scroll">
+    <table>
+      <thead><tr><th>去处</th><th>是什么</th><th class="n">耗时</th><th>门票 / 预约</th></tr></thead>
+      <tbody>
+        <tr><td><b>白果园 · 化龙池</b></td><td>修复过的老街巷，程潜公馆在里面。开放式街区，晚上安静，跟太平街是两个世界</td><td class="n">1h</td><td>免费，不用约</td></tr>
+        <tr><td><b>西园北里</b></td><td>潮宗街旁的老街，独立咖啡和小店密度高，本地人多过游客</td><td class="n">1–2h</td><td>免费，不用约</td></tr>
+        <tr><td><b>长沙简牍博物馆</b></td><td>国内第一座简牍专题馆，三国孙吴纪年简十万余枚。两层，一小时逛完。对面就是天心阁、旁边白沙古井，能串成半天</td><td class="n">1h</td><td>免费，<b>需实名预约</b>，提前 3 天，每天 16:30 放票</td></tr>
+        <tr><td><b>天心阁 · 白沙古井</b></td><td>老长沙的城墙和井。跟简牍馆在同一片，顺路</td><td class="n">1h</td><td>天心阁小额门票，古井免费</td></tr>
+        <tr><td><b>滨江文化园</b></td><td>长沙博物馆 + 图书馆 + 音乐厅 + 规划馆挤在一个江边片区。博物馆免费，且不用像省博那样抢约</td><td class="n">2h</td><td>免费</td></tr>
+        <tr><td><b>后湖艺术区</b></td><td>大学城边的旧村改造，工作室和咖啡馆。去岳麓山那天顺路，人极少</td><td class="n">2h</td><td>免费</td></tr>
+        <tr><td><b>洋湖湿地公园</b></td><td>大片湿地，能走能骑。和两座美术馆同一片，凑一个下午</td><td class="n">2h</td><td>免费</td></tr>
+        <tr><td><b>渔人码头 / 四方坪夜市</b></td><td>本地夜生活，不是给游客准备的。想看长沙人怎么过周末就来这儿</td><td class="n">2h</td><td>免费</td></tr>
+        <tr><td><b>红星水产市场</b></td><td>买了海鲜找旁边店加工。第三次来才轮得到这种玩法</td><td class="n">2h</td><td>免费，吃另算</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>要出城才去的</h3>
+  <p>下面两个都在望城区，没有地铁直达，来回加游玩至少半天。<b>你只有周六一整天，去了等于放弃市区</b>，除非专门想去。</p>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>去处</th><th>门票</th><th>交通</th><th>值不值</th></tr></thead>
+      <tbody>
+        <tr><td>铜官窑古镇</td><td>成人 168 元 / 夜场 100 元</td><td>无地铁，自驾或打车</td><td>综合文旅项目，博物馆和演艺打包卖。冲演出去还行，冲「古镇」会失望</td></tr>
+        <tr><td>靖港古镇</td><td>55–65 元</td><td>无地铁，自驾或公交</td><td>比铜官窑安静，但也整修过。半天起步</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="hint">这两处票价来自 2023–2024 年的公开资料，可能已调整，去之前查景区公众号。相比之下市区那一列基本免费，这也是我不推荐出城的理由之一。</p>
 
   <h2 id="sec-pool">景点池：按耗时和体力挑</h2>
   <p>这张图是给还没去过的人排的，但对你也有用 —— 反过来看：把你去过的那些划掉，剩下的就是这趟的候选。左下角那片人少、省力、能坐，是松弛版的弹药库，也基本就是上面「大概率还没去」那一行。</p>
@@ -922,6 +977,59 @@
     { id: 'juzi', t: '约橘子洲入园（免费）', w: '周日上午场', due: '出发前', modes: ['packed'] },
     { id: 'queue', t: '存好费大厨／炊烟的小程序', w: '到市区先取号，边逛边等', due: '出发前', soft: 1, modes: ['packed'] }
   ];
+
+  // Fold every top-level section into a <details>. Done in JS on purpose: with
+  // scripting off the page still renders as plain prose with every section
+  // visible, which is the right fallback for a page you might open on hotel
+  // wifi. The h2's id moves onto the <details> so existing anchors keep working.
+  (function collapseSections() {
+    var OPEN_BY_DEFAULT = ['sec-plan'];
+    var main = document.querySelector('main');
+    var heads = [].slice.call(main.querySelectorAll(':scope > h2[id]'));
+    if (!heads.length) return;
+
+    heads.forEach(function (h) {
+      var det = document.createElement('details');
+      det.className = 'sec';
+      det.id = h.id;
+      det.open = OPEN_BY_DEFAULT.indexOf(h.id) > -1;
+      var sum = document.createElement('summary');
+      sum.textContent = h.textContent;
+      det.appendChild(sum);
+
+      var move = [], n = h.nextSibling;
+      while (n && !(n.nodeType === 1 && n.tagName === 'H2')) { move.push(n); n = n.nextSibling; }
+      h.parentNode.insertBefore(det, h);
+      move.forEach(function (x) { det.appendChild(x); });
+      h.parentNode.removeChild(h);
+    });
+
+    var all = [].slice.call(main.querySelectorAll('details.sec'));
+    var count = document.getElementById('open-count');
+    var sync = function () {
+      var n = all.filter(function (d) { return d.open; }).length;
+      count.textContent = n + ' / ' + all.length + ' 个章节展开';
+    };
+    all.forEach(function (d) { d.addEventListener('toggle', sync); });
+
+    document.getElementById('sec-ctl').hidden = false;
+    document.getElementById('expand-all').addEventListener('click', function () {
+      all.forEach(function (d) { d.open = true; });
+    });
+    document.getElementById('collapse-all').addEventListener('click', function () {
+      all.forEach(function (d) { d.open = false; });
+    });
+
+    // A link into a collapsed section would otherwise scroll to a closed box.
+    var openTarget = function () {
+      if (!location.hash) return;
+      var t = document.getElementById(location.hash.slice(1));
+      if (t && t.tagName === 'DETAILS') { t.open = true; t.scrollIntoView(); }
+    };
+    window.addEventListener('hashchange', openTarget);
+    openTarget();
+    sync();
+  })();
 
   // Ratings, review counts and "from" prices read off Trip.com listing pages on
   // 2026-08-31. Numbers are copied verbatim; nothing here is estimated. Prices
