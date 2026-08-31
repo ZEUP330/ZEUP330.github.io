@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>三大指数回撤：现在离高点有多远</title>
+<meta name="description" content="标普 500、道琼斯、纳斯达克的历史回撤水下图，-10% / -20% / -30% 关注线，以及每次跌破之后实际发生了什么。每日更新。">
+<style>
+  :root {
+    --bg: #fcfcfb; --card: #ffffff; --ink: #0b0b0b; --ink-2: #52514e; --ink-3: #898781;
+    --line: #e1e0d9; --accent: #2a78d6; --warn: #eda100; --danger: #e34948; --ok: #1baf7a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #1a1a19; --card: #222221; --ink: #f0efec; --ink-2: #c3c2b7; --ink-3: #898781;
+            --line: #2c2c2a; --accent: #3987e5; --warn: #fac775; --danger: #e66767; --ok: #199e70; }
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  body {
+    margin: 0; padding: 2rem 1.25rem 4rem; background: var(--bg); color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    line-height: 1.7; -webkit-font-smoothing: antialiased; -webkit-text-size-adjust: 100%;
+  }
+  main { max-width: 820px; margin: 0 auto; }
+  h1 { font-size: 26px; font-weight: 500; margin: 0 0 .5rem; letter-spacing: -.01em; }
+  h2 { font-size: 18px; font-weight: 500; margin: 2.5rem 0 .75rem; }
+  h3 { font-size: 15px; font-weight: 500; margin: 1.5rem 0 .5rem; }
+  p { color: var(--ink-2); margin: 0 0 1rem; }
+  .back { font-size: 14px; margin: 0 0 1rem; }
+  .back a { color: var(--ink-3); text-decoration: none; }
+  .back a:hover { color: var(--accent); }
+  .hint { font-size: 12px; color: var(--ink-3); margin: 0 0 1rem; }
+  a { color: var(--accent); }
+  .note { background: var(--card); border: 1px solid var(--line); border-left: 3px solid var(--warn);
+    border-radius: 0 8px 8px 0; padding: .8rem 1rem; font-size: 13px; color: var(--ink-2); margin: 0 0 1.25rem; }
+
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; margin: 1.5rem 0; }
+  .c { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: .9rem 1.05rem; }
+  .c .n { font-size: 14px; color: var(--ink-3); }
+  .c .dd { font-size: 30px; font-weight: 500; font-variant-numeric: tabular-nums; margin: 2px 0 .3rem; }
+  .c .sub { font-size: 12px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+  .bar { height: 6px; border-radius: 3px; background: var(--line); margin: .55rem 0 .4rem; position: relative; overflow: hidden; }
+  .bar i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 3px; background: var(--accent); }
+  .bar i.warn { background: var(--warn); } .bar i.deep { background: var(--danger); }
+
+  .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 0 0 .75rem; }
+  select, button { font: inherit; font-size: 14px; color: var(--ink); background: var(--card);
+    border: 1px solid var(--line); border-radius: 8px; padding: 7px 12px; cursor: pointer; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { font: inherit; font-size: 13px; color: var(--ink-2); background: var(--card);
+    border: 1px solid var(--line); border-radius: 999px; padding: 5px 13px; cursor: pointer; }
+  .chip[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
+  .legend { display: flex; flex-wrap: wrap; gap: 16px; font-size: 12px; color: var(--ink-2); margin-bottom: 8px; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .sw { width: 16px; height: 2px; background: var(--accent); }
+  .sw.dash { background: none; border-top: 2px dashed var(--ink-3); }
+  .chart { position: relative; height: 320px; }
+
+  .scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+  th, td { padding: 7px 6px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap; }
+  th { color: var(--ink-3); font-weight: 400; font-size: 12px; }
+  th:first-child, td:first-child { text-align: left; }
+  .up { color: var(--ok); } .down { color: var(--danger); }
+  .pager { display: flex; align-items: center; justify-content: center; gap: 12px; margin: .75rem 0 1rem; }
+  .pager button { font-size: 13px; padding: 5px 12px; }
+  .pager button:disabled { opacity: .4; cursor: default; }
+  .pageinfo { font-size: 13px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+  footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--line);
+    font-size: 13px; color: var(--ink-3); }
+  .placeholder { background: var(--card); border: 1px dashed var(--line); border-radius: 12px;
+    padding: 2rem 1.25rem; text-align: center; color: var(--ink-3); font-size: 14px; }
+
+  @media (max-width: 640px) {
+    body { padding: 1.5rem .9rem 3rem; }
+    h1 { font-size: 21px; }
+    h2 { font-size: 17px; margin: 2rem 0 .6rem; }
+    .cards { grid-template-columns: 1fr; }
+    .c .dd { font-size: 26px; }
+    .chart { height: 260px; }
+    th, td { padding: 6px 4px; font-size: 12px; }
+    .hide-sm { display: none; }
+  }
+</style>
+<link rel="stylesheet" href="/assets/statusbar.css">
+<script src="/assets/statusbar.js" defer></script>
+</head>
+<body>
+<main>
+  <p class="back"><a href="../">← 首页</a></p>
+  <h1>三大指数回撤</h1>
+  <p>回撤 = 收盘价距<b>历史最高收盘</b>还差多少。每个交易日收盘后更新。标普和纳指的日线可回溯到 1970 年，道指到 1992 年。</p>
+
+  <div class="note">
+    页面上的 −10% / −20% / −30% 是你设定的<b>关注线</b>，不是买入信号，我也不会把它们标成买入建议 —— 我不是持牌投资顾问，也没法知道你的仓位、期限和承受能力。下面给的是这些线在历史上被跌破后<b>实际发生了什么</b>，包括中位回报、为正的比例，以及跌破之后<b>还继续跌了多少</b>。结论自己下。
+  </div>
+
+  <div id="empty" class="placeholder" hidden>还没有数据。等 <code>drawdown</code> 工作流跑完后刷新。</div>
+
+  <div id="app" hidden>
+    <div class="cards" id="cards"></div>
+    <p class="hint" id="asof">—</p>
+
+    <h2>水下图</h2>
+    <div class="toolbar">
+      <div class="chips" id="range">
+        <button class="chip" data-r="weekly" type="button" aria-pressed="true">全历史（周）</button>
+        <button class="chip" data-r="recent" type="button" aria-pressed="false">近两年（日）</button>
+      </div>
+    </div>
+    <div class="legend" id="legend"></div>
+    <div class="chart"><canvas id="uw" role="img" aria-label="水下图：三大指数距历史最高收盘的回撤幅度随时间变化，标注 -10%、-20%、-30% 三条参考线。">三大指数回撤水下图。</canvas></div>
+    <p class="hint">线贴着 0 走 = 在创新高附近；掉得越深离高点越远。回到 0 才算收复前高。</p>
+
+    <h2>跌破关注线之后</h2>
+    <div class="toolbar">
+      <label>指数 <select id="ix-a"></select></label>
+    </div>
+    <div class="scroll">
+      <table>
+        <thead><tr>
+          <th>关注线</th><th>历史次数</th><th>此后 1 年中位</th><th>1 年为正</th>
+          <th>3 年中位</th><th class="hide-sm">5 年中位</th><th>触线后还跌了</th>
+        </tr></thead>
+        <tbody id="after-body"></tbody>
+      </table>
+    </div>
+    <p class="hint" id="after-note"></p>
+
+    <h2>历次回撤（≥10%）</h2>
+    <div class="toolbar">
+      <label>指数 <select id="ix-b"></select></label>
+      <label>排序
+        <select id="ep-sort">
+          <option value="recent">最近优先</option>
+          <option value="deep">最深优先</option>
+          <option value="long">最久优先</option>
+        </select>
+      </label>
+    </div>
+    <div class="scroll">
+      <table>
+        <thead><tr>
+          <th>从</th><th>最低点</th><th>深度</th><th>跌了多久</th><th>收复用时</th><th class="hide-sm">收复于</th>
+        </tr></thead>
+        <tbody id="ep-body"></tbody>
+      </table>
+    </div>
+    <div class="pager">
+      <button id="ep-prev" type="button">← 上一页</button>
+      <span class="pageinfo" id="ep-info">—</span>
+      <button id="ep-next" type="button">下一页 →</button>
+    </div>
+  </div>
+
+  <h2>这些数字的局限</h2>
+  <p><b>样本极小。</b>标普跌破 30% 在半个多世纪里只有 5 次，道指 3 次。5 个样本的「中位数」和「胜率」统计意义很弱，看看可以，别当概率用。</p>
+  <p><b>中位数藏起了过程。</b>跌破 −30% 之后一年中位是正的，但那一年里可能先再跌 20% 再涨回来。「触线后还跌了」那一列就是给这个的：它是从第一次触线到本轮最低点又跌掉的幅度。2008 年标普跌破 30% 之后又跌了将近 27%。</p>
+  <p><b>更深不等于更好。</b>标普跌破 30% 之后 1 年中位 <span id="quirk">—</span>，反而低于跌破 20% 的。深跌往往意味着危机还在展开，反弹来得更晚。</p>
+  <p><b>指数不是你的持仓。</b>指数会换成分股、剔除退市公司，个股没有这个待遇。同样跌 30%，指数能回来，单一股票未必。</p>
+
+  <h2>数据与口径</h2>
+  <ul>
+    <li>日线收盘价来自 Yahoo Finance 的公开 chart 接口，取全量日频；节假日与缺失价格跳过</li>
+    <li>回撤按<b>收盘价</b>算，不用盘中最高最低，所以比新闻里常见的「盘中最大跌幅」浅一些</li>
+    <li>一轮回撤从创新高那天起算，到再次创新高为止；仍在水下的那轮没有收复用时</li>
+    <li>「此后 N 年」从<b>第一次</b>跌破该线当天算起，不是从最低点算起 —— 最低点只有事后才知道</li>
+    <li><a href="./data/drawdown.json" rel="noopener">drawdown.json</a> — 原始派生数据</li>
+  </ul>
+
+  <footer>指数历史表现不预示未来。本页是公开数据的机械计算与可视化，不构成任何投资建议。</footer>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+(function () {
+  var GRAY = '#8a8a8a';
+  var COLORS = { spx: '#2a78d6', dji: '#eb6834', ixic: '#1baf7a' };
+  var data = null, chart = null, range = 'weekly', epPage = 0, PER = 5;
+
+  var pct = function (v, d) { return v == null ? '—' : (v * 100).toFixed(d == null ? 1 : d) + '%'; };
+  var signed = function (v) { return v == null ? '—' : (v >= 0 ? '+' : '') + (v * 100).toFixed(1) + '%'; };
+
+  fetch('./data/drawdown.json', { cache: 'no-cache' })
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .catch(function () { return null; })
+    .then(function (d) {
+      data = d;
+      if (!data || !data.indices || !Object.keys(data.indices).length) {
+        document.getElementById('empty').hidden = false;
+        return;
+      }
+      document.getElementById('app').hidden = false;
+      boot();
+    });
+
+  function boot() {
+    var list = Object.values(data.indices);
+    document.getElementById('asof').textContent =
+      '收盘数据截至 ' + list[0].cur.date + ' · 抓取于 ' + new Date(data.t).toLocaleString('zh-CN', { hour12: false });
+
+    document.getElementById('cards').innerHTML = list.map(function (v) {
+      var d = Math.abs(v.cur.dd);
+      // Fill the bar against the deepest marked level so the three cards compare.
+      var w = Math.min(100, d / 0.30 * 100);
+      var cls = d >= 0.30 ? ' deep' : (d >= 0.10 ? ' warn' : '');
+      var to10 = 0.10 - d, to30 = 0.30 - d;
+      return '<div class="c"><div class="n">' + v.name + '<span style="color:' + COLORS[v.id] + '"> ●</span></div>'
+        + '<div class="dd">' + pct(v.cur.dd, 2) + '</div>'
+        + '<div class="bar"><i class="' + cls.trim() + '" style="width:' + w.toFixed(1) + '%"></i></div>'
+        + '<div class="sub">' + v.cur.close.toLocaleString('en-US') + ' · 高点 ' + v.cur.peak.toLocaleString('en-US')
+        + '（' + v.cur.peakDate + '，' + v.cur.daysSincePeak + ' 天前）</div>'
+        + '<div class="sub">' + (to10 > 0 ? '离 −10% 还有 ' + pct(to10) : '已跌破 −10%')
+        + ' · ' + (to30 > 0 ? '离 −30% 还有 ' + pct(to30) : '已跌破 −30%') + '</div>'
+        + '<div class="sub">史上最深 ' + pct(v.maxDD, 1) + '（' + v.first + ' 起）</div></div>';
+    }).join('');
+
+    document.getElementById('legend').innerHTML = list.map(function (v) {
+      return '<span><i class="sw" style="background:' + COLORS[v.id] + '"></i>' + v.name + '</span>';
+    }).join('') + '<span><i class="sw dash"></i>−10% / −20% / −30% 关注线</span>';
+
+    [['ix-a', drawAfter], ['ix-b', function () { epPage = 0; drawEpisodes(); }]].forEach(function (pair) {
+      var sel = document.getElementById(pair[0]);
+      list.forEach(function (v) {
+        var o = document.createElement('option');
+        o.value = v.id; o.textContent = v.name;
+        sel.appendChild(o);
+      });
+      sel.addEventListener('change', pair[1]);
+    });
+
+    [].forEach.call(document.querySelectorAll('#range .chip'), function (b) {
+      b.addEventListener('click', function () {
+        range = b.dataset.r;
+        [].forEach.call(document.querySelectorAll('#range .chip'), function (c) {
+          c.setAttribute('aria-pressed', String(c === b));
+        });
+        drawChart();
+      });
+    });
+    document.getElementById('ep-sort').addEventListener('change', function () { epPage = 0; drawEpisodes(); });
+    document.getElementById('ep-prev').addEventListener('click', function () { epPage--; drawEpisodes(); });
+    document.getElementById('ep-next').addEventListener('click', function () { epPage++; drawEpisodes(); });
+
+    var spx = data.indices.spx;
+    if (spx) {
+      document.getElementById('quirk').textContent =
+        signed(spx.after['0.3'].med1) + '（' + spx.after['0.3'].count + ' 次），跌破 20% 之后是 '
+        + signed(spx.after['0.2'].med1) + '（' + spx.after['0.2'].count + ' 次）';
+    }
+
+    drawChart(); drawAfter(); drawEpisodes();
+  }
+
+  // Threshold guides drawn straight on the plot; Chart.js has no annotation
+  // plugin loaded here and three horizontal lines do not justify one.
+  var guides = {
+    id: 'guides',
+    beforeDatasetsDraw: function (c) {
+      var y = c.scales.y, ctx = c.ctx;
+      if (!y) return;
+      ctx.save();
+      ctx.setLineDash([5, 4]);
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = GRAY;
+      ctx.fillStyle = GRAY;
+      ctx.font = '11px -apple-system, sans-serif';
+      ctx.textAlign = 'left';
+      [-10, -20, -30].forEach(function (lv) {
+        if (lv < y.min || lv > y.max) return;
+        var py = y.getPixelForValue(lv);
+        ctx.beginPath();
+        ctx.moveTo(c.scales.x.left, py);
+        ctx.lineTo(c.scales.x.right, py);
+        ctx.stroke();
+        if (c.width >= 420) ctx.fillText(lv + '%', c.scales.x.left + 4, py - 4);
+      });
+      ctx.restore();
+    }
+  };
+
+  function drawChart() {
+    var list = Object.values(data.indices);
+    var sets = list.map(function (v) {
+      var s = v[range];
+      return {
+        label: v.name, borderColor: COLORS[v.id], borderWidth: 1.6, tension: 0,
+        pointRadius: 0, pointHoverRadius: 0, fill: false,
+        // Epoch ms on a linear axis, not a category axis: the three indices have
+        // different trading-day arrays, and a category axis would concatenate
+        // them end to end instead of aligning them on a shared timeline.
+        data: s.d.map(function (day, i) { return { x: Date.parse(day + 'T00:00:00Z'), y: s.v[i] * 100 }; })
+      };
+    });
+    var lows = sets.reduce(function (t, s) { return t.concat(s.data.map(function (p) { return p.y; })); }, []);
+    var min = Math.floor(Math.min.apply(null, lows) / 5) * 5 - 2;
+    // Pin the ends to the data; left to itself Chart.js rounds the linear axis
+    // out to the next tick and leaves years of empty plot on the right.
+    var xs = sets.reduce(function (t, s) { return t.concat([s.data[0].x, s.data[s.data.length - 1].x]); }, []);
+    var xMin = Math.min.apply(null, xs), xMax = Math.max.apply(null, xs);
+    if (chart) {
+      chart.data.datasets = sets;
+      chart.options.scales.y.min = min;
+      chart.options.scales.x.min = xMin;
+      chart.options.scales.x.max = xMax;
+      chart.update();
+      return;
+    }
+    chart = new Chart(document.getElementById('uw'), {
+      type: 'line', data: { datasets: sets }, plugins: [guides],
+      options: {
+        responsive: true, maintainAspectRatio: false, animation: { duration: 200 },
+        interaction: { mode: 'nearest', axis: 'x', intersect: false },
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: {
+            title: function (t) { return new Date(t[0].parsed.x).toISOString().slice(0, 10); },
+            label: function (c) { return c.dataset.label + '：' + c.parsed.y.toFixed(2) + '%'; }
+          } }
+        },
+        scales: {
+          x: { type: 'linear', min: xMin, max: xMax, ticks: { color: GRAY, maxTicksLimit: 9,
+                 callback: function (v) { return new Date(v).getUTCFullYear(); } },
+               grid: { display: false } },
+          y: { max: 2, min: min, title: { display: true, text: '距历史最高收盘（%）', color: GRAY },
+               ticks: { color: GRAY, callback: function (v) { return v + '%'; } },
+               grid: { color: 'rgba(138,138,138,.22)' } }
+        }
+      }
+    });
+  }
+
+  function drawAfter() {
+    var v = data.indices[document.getElementById('ix-a').value];
+    document.getElementById('after-body').innerHTML = data.levels.map(function (L) {
+      var s = v.after[String(L)];
+      if (!s || !s.count) {
+        return '<tr><td>−' + (L * 100) + '%</td><td>0</td><td colspan="5">这个指数在有数据的区间里从没跌到过这里</td></tr>';
+      }
+      var cls = function (x) { return x == null ? '' : (x >= 0 ? ' class="up"' : ' class="down"'); };
+      return '<tr><td>−' + (L * 100) + '%</td><td>' + s.count + ' 次</td>'
+        + '<td' + cls(s.med1) + '>' + signed(s.med1) + '</td><td>' + pct(s.pos1, 0) + '</td>'
+        + '<td' + cls(s.med3) + '>' + signed(s.med3) + '</td>'
+        + '<td class="hide-sm"' + cls(s.med5) + '>' + signed(s.med5) + '</td>'
+        + '<td class="down">' + (s.medExtra == null ? '—' : pct(s.medExtra, 1)) + '</td></tr>';
+    }).join('');
+    document.getElementById('after-note').textContent =
+      v.name + '：自 ' + v.first + ' 起共 ' + v.days.toLocaleString('en-US') + ' 个交易日，'
+      + v.episodes.length + ' 轮 ≥10% 的回撤。「触线后还跌了」是从第一次触线到本轮最低点的额外跌幅（中位数）。';
+  }
+
+  function drawEpisodes() {
+    var v = data.indices[document.getElementById('ix-b').value];
+    var how = document.getElementById('ep-sort').value;
+    var eps = v.episodes.slice().sort(function (a, b) {
+      if (how === 'deep') return a.depth - b.depth;
+      if (how === 'long') return (b.recoverDays || 1e9) - (a.recoverDays || 1e9);
+      return a.from < b.from ? 1 : -1;
+    });
+    var pages = Math.max(1, Math.ceil(eps.length / PER));
+    if (epPage >= pages) epPage = pages - 1;
+    if (epPage < 0) epPage = 0;
+    document.getElementById('ep-body').innerHTML =
+      eps.slice(epPage * PER, epPage * PER + PER).map(function (e) {
+        return '<tr><td>' + e.from + '</td><td>' + e.trough + '</td>'
+          + '<td class="down">' + pct(e.depth, 1) + '</td>'
+          + '<td>' + e.toTroughDays + ' 天</td>'
+          + '<td>' + (e.ongoing ? '仍在水下' : e.recoverDays + ' 天') + '</td>'
+          + '<td class="hide-sm">' + (e.to || '—') + '</td></tr>';
+      }).join('');
+    document.getElementById('ep-info').textContent =
+      (eps.length ? (epPage * PER + 1) + '–' + Math.min(eps.length, (epPage + 1) * PER) : 0)
+      + ' / 共 ' + eps.length + ' 轮 · 第 ' + (epPage + 1) + '/' + pages + ' 页';
+    document.getElementById('ep-prev').disabled = epPage === 0;
+    document.getElementById('ep-next').disabled = epPage >= pages - 1;
+  }
+})();
+</script>
+</body>
+</html>

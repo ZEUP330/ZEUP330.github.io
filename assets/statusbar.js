@@ -15,6 +15,12 @@
       note: '美股交易时段每天 4 次'
     },
     {
+      id: 'drawdown', name: '三大指数回撤', url: '/drawdown/data/status.json', page: '/drawdown/',
+      // drawdown.yml: '30 21 * * 1-5'
+      cron: { weekdaysOnly: true, times: [[21, 30]] },
+      note: '美股收盘后每个交易日一次'
+    },
+    {
       id: 'housing', name: '全国房价指数', url: '/housing/data/status.json', page: '/housing/',
       // housing.yml: '20 3 18,20,24 * *'
       cron: { monthDays: [18, 20, 24], times: [[3, 20]] },
@@ -229,7 +235,8 @@
           dot.className = 'zb-dot warn';
           return;
         }
-        var staleAfter = function (s) { return s.id === 'housing' ? 40 * 86400000 : 26 * 3600000; };
+        var STALE = { housing: 40 * 86400000, drawdown: 4 * 86400000, options: 26 * 3600000 };
+        var staleAfter = function (s) { return STALE[s.id] || 26 * 3600000; };
         // On a page that owns a dataset the headline is about that dataset; on
         // the rest, picking one arbitrarily would be noise, so summarise instead.
         var mine = live.filter(function (s) { return here.indexOf(s.page) === 0; })[0];
