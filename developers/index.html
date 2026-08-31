@@ -59,6 +59,11 @@
   .tag.halt { color: var(--danger); }
 
   /* Own height, not .chart's: that rule is declared later and would win. */
+  ol.refs { padding-left: 1.3rem; margin: 0 0 1rem; }
+  ol.refs li { font-size: 13px; color: var(--ink-2); margin-bottom: .55rem; }
+  ol.refs .ev { color: var(--ink); }
+  ol.refs a { word-break: break-all; }
+  td.lead { color: var(--soe); } td.lag { color: var(--private); } td.none { color: var(--ink-3); }
   .citymap { position: relative; height: 460px; }
   @media (max-width: 640px) { .citymap { height: 340px; } }
   .fold { border-top: 1px solid var(--line); margin: 2.5rem 0 1rem; }
@@ -163,7 +168,7 @@
         <tbody id="dates"></tbody>
       </table>
     </div>
-    <p class="hint">跌破 −90% 的日期，就是这份数据里能给出的、最接近「暴雷点」的客观时间戳：不依赖任何人对「暴雷」的定义，只看市场把这家公司定到了什么价。</p>
+    <p class="hint">跌破 −90% 的日期不依赖任何人对「暴雷」的定义，只看市场把这家公司定到了什么价。但它<b>不等于违约</b> —— 我逐家核对过公告，方向上股价通常先到，可万科跌破了却至今没违约。见下面的<a href="#" onclick="document.querySelector('#verdict').scrollIntoView({block:'center'});return false;">核对结果</a>。</p>
   </div>
 
   <div id="cityblock" hidden>
@@ -182,6 +187,27 @@
     </details>
     <p class="hint" id="city-note"></p>
   </div>
+
+  <h2>核对：市场定价 vs 真实事件</h2>
+  <p>上面的日期全部来自股价。为了检验它是不是在编故事，我按公司逐个查了公开公告与财经报道，把<b>真实的信用事件日期</b>拉出来对照。结论有一条是推翻原本说法的。</p>
+
+  <div class="alert-note" id="verdict"></div>
+
+  <div class="scroll">
+    <table>
+      <thead><tr>
+        <th>公司</th><th>市场 −90%</th><th>真实事件</th><th class="hide-sm">性质</th><th>差</th>
+      </tr></thead>
+      <tbody id="verify"></tbody>
+    </table>
+  </div>
+  <p class="hint">「差」为正表示股价先到，负表示公告先到。核对于 2026-08-31，覆盖 22 家中的 12 家 —— 其余 10 家没有查到足够权威的单一时点事件，留白而不是猜。</p>
+
+  <details class="fold">
+    <summary><h2>附录：逐条参考来源</h2><span class="cnt" id="ref-count"></span></summary>
+    <ol class="refs" id="refs"></ol>
+    <p class="hint">来源为公司公告、上市公司受托管理报告与财经媒体报道。评级机构对「违约」的认定（惠誉 RD、标普 SD）与公司自己公告的口径可能差几天，表中取较早的公开时点并在条目里注明。</p>
+  </details>
 
   <h2>为什么没有地图</h2>
   <p>你要的是「房企在各城市的项目点 + 暴雷点 + 区县均价分布」。我按权威来源逐个查过，卡在这几处：</p>
@@ -244,14 +270,21 @@
     // never reads exactly 0 there. Deriving it put Evergrande's anchor in 2015
     // against a 2017 peak, and dated Xuhui's -50% crossing three years before
     // the peak it is supposed to be measured from.
-    var v = f.path.v, d = f.path.d, peak = f.peakDate;
-    var a = null, b = null;
-    for (var j = 0; j < v.length; j++) {
-      if (peak && d[j] < peak) continue;
-      if (a == null && v[j] <= -0.5) a = d[j];
-      if (b == null && v[j] <= -0.9) b = d[j];
+    var v = f.path.v, d = f.path.d, peak = f.peakDate, cr = f.cross || {};
+    // Monthly scan as the fallback only. cross[] is daily and therefore the
+    // precise crossing, but its value is the first one ever - which for some
+    // firms predates the peak we measure from. Take the daily date when it is
+    // already after the peak, otherwise re-find it in the monthly path, which
+    // downsamples and can miss a mid-month crossing by several months.
+    function pick(level, key) {
+      if (cr[key] && (!peak || cr[key] >= peak)) return cr[key];
+      for (var j = 0; j < v.length; j++) {
+        if (peak && d[j] < peak) continue;
+        if (v[j] <= level) return d[j];
+      }
+      return null;
     }
-    return { a: ms(a), b: ms(b), peak: peak };
+    return { a: ms(pick(-0.5, '0.5')), b: ms(pick(-0.9, '0.9')), peak: peak };
   }
 
   function drawTimeline() {
@@ -349,6 +382,7 @@
 
     drawTimeline();
     drawSmalls();
+    drawVerify();
     document.getElementById('firms-count').textContent = data.firms.length + ' 家';
 
     var priv = data.byOwn.filter(function (b) { return b.own === 'private'; })[0];
@@ -519,6 +553,102 @@
     };
     s1.onerror = function () { host.textContent = '地图组件加载失败'; };
     document.head.appendChild(s1);
+  }
+
+  // Hand-verified against company announcements and financial press, not
+  // scraped: there is no machine-readable default register (see 为什么没有地图).
+  // Each entry carries the source it came from so a reader can check it.
+  // `ev` is the earliest public credit event; `kind` distinguishes an actual
+  // default from an extension or a court filing, which are not the same thing.
+  var EVENTS = [
+    { sym: '3333.HK', ev: '2021-12-17', kind: '违约认定',
+      what: '标普将中国恒大下调至「选择性违约」，惠誉于 12 月初列为「限制性违约」。2024-01-29 香港高院颁令清盘，2025-08-25 停牌逾 18 个月后被强制退市。',
+      src: [['新浪财经：一纸清盘令，中国恒大走向何方', 'https://news.sina.com.cn/o/2024-01-30/doc-inafffna0905547.shtml'],
+            ['维基百科：恒大债务危机', 'https://zh.wikipedia.org/zh-hans/%E6%81%86%E5%A4%A7%E5%82%B5%E5%8B%99%E5%8D%B1%E6%A9%9F']] },
+    { sym: '1638.HK', ev: '2021-12-07', kind: '实质违约',
+      what: '4 亿美元 6.5% 优先票据到期未付本息 4.129 亿美元，12-20 公告确认；此前 12-03 公告展期征求失败。惠誉将其长期外币评级下调至 RD。',
+      src: [['新浪财经：佳兆业 4 亿美元债违约', 'https://finance.sina.com.cn/stock/relnews/cn/2021-12-14/doc-ikyakumx4139463.shtml'],
+            ['21 世纪经济报道：若干美元票据及利息应付未付', 'https://m.21jingji.com/article/20211220/herald/7072855e8fd3d3c51a1603ed1285c131_zaker.html']] },
+    { sym: '1918.HK', ev: '2022-05-12', kind: '实质违约',
+      what: '公告无法按期支付 4 笔美元债利息（合计约 1 亿美元），宽限期届满未付，构成正式违约。',
+      src: [['新浪财经：融创公开违约', 'https://finance.sina.com.cn/stock/hkstock/ggscyd/2022-05-13/doc-imcwipii9522000.shtml']] },
+    { sym: '0813.HK', ev: '2022-07-03', kind: '实质违约',
+      what: '10 亿美元 4.75% 优先票据到期未偿本息约 10.24 亿美元，触发全部约 117 亿美元境外债交叉违约。',
+      src: [['新浪财经：10 亿美元债违约，世茂集团道歉', 'https://finance.sina.com.cn/chanjing/gsnews/2022-07-04/doc-imizmscu9973412.shtml']] },
+    { sym: '2777.HK', ev: '2022-07-11', kind: '展期（非违约）',
+      what: '10 只美元票据合计 49.43 亿美元整体展期方案获持有人会议通过，展期 3–4 年，属同意征求而非违约。同期境内「16 富力 04」展期后首笔本息未能如期兑付。',
+      src: [['新浪财经：10 只美元债持有人同意豁免其违约及展期', 'https://finance.sina.com.cn/roll/2022-07-11/doc-imizmscv1060193.shtml']] },
+    { sym: '0884.HK', ev: '2022-11-01', kind: '暂停付息',
+      what: '公告暂停支付境外融资安排项下所有应付本金和利息，逾期本息约 4.14 亿美元，境外债总额约 68.5 亿美元。10-14 已有可转债票息未付被认定构成违约。',
+      src: [['新浪财经：旭辉宣布重组境外债务', 'https://finance.sina.com.cn/stock/s/2022-11-01/doc-imqmmthc2896238.shtml']] },
+    { sym: '2007.HK', ev: '2023-10-25', kind: '违约认定',
+      what: '5 亿美元 6.15% 票据 1540 万美元利息在 30 天宽限期内未付，受托人花旗通知持有人构成违约事件，为碧桂园首次美元债违约。10-10 已公告预期无法履行全部境外偿付义务。',
+      src: [['财新：1540 万美元境外债息到期未付', 'https://companies.caixin.com/2023-10-18/102118107.html'],
+            ['自由亚洲电台：碧桂园美元债券首度被认定违约', 'https://www.rfa.org/mandarin/Xinwen/4-10252023135031.html']] },
+    { sym: '3377.HK', ev: '2023-08-14', kind: '违约事件（后获豁免）',
+      what: '2024 年到期票据 2094 万美元利息在 8-13 宽限期最后一日未付，8-14 公告违约并停牌。随后取得足够同意票达成违约豁免，故是否构成实质违约存在两种口径；2024-06 被提起清盘呈请。',
+      src: [['新浪财经：远洋集团宣告违约', 'https://finance.sina.cn/cj/2023-08-15/detail-imzhhehc5260694.d.html']] },
+    { sym: '3383.HK', ev: '2024-05-14', kind: '实质违约',
+      what: '未能如期支付一笔 4.83 亿美元债利息，宣布债务违约。此前 2022 年曾按期兑付 2 亿美元票据与 15 亿元私募债，是当时少数未在公开市场违约的民营房企。',
+      src: [['界面新闻：因未能如期支付利息，雅居乐宣布债务违约', 'https://www.jiemian.com/article/11170469.html'],
+            ['界面新闻：按期偿还 2 亿美元债（2022 年对照）', 'https://m.jiemian.com/article/7903896.html']] },
+    { sym: '000656.SZ', ev: '2024-04-22', kind: '破产重整受理',
+      what: '重庆五中院裁定受理重整申请，为近年 A 股首家进入重整程序的大型全国化房企；4-24 复牌起被实施退市风险警示。2025-05-11 法院裁定批准重整计划。',
+      src: [['界面新闻：金科股份正式开启破产重整', 'https://www.jiemian.com/article/11085774.html'],
+            ['中国日报网：批准！金科正式进入重整计划执行环节', 'https://cn.chinadaily.com.cn/a/202505/12/WS6821a451a310205377032af0.html']] },
+    { sym: '2202.HK', ev: null, kind: '未发生违约',
+      what: '2024 年多只境内债按期足额付息，3 月全额存入 6.47 亿美元中票本息；至 2025 年底转入展期谈判（「22 万科 MTN004」展期议案未获通过，宽限期延至 2026-01-28），但截至核对日未发生公开市场违约。',
+      src: [['万科：债券受托管理事务报告（PDF）', 'https://www.vanke.com/upload/file/2025-07-04/461bd98d-3b96-4701-8915-c8e2aa7fbd29.pdf'],
+            ['新浪财经：首付 4 成后，万科终获一份债务展期方案通过', 'https://finance.sina.com.cn/roll/2026-01-21/doc-inhhztvx5460552.shtml']] },
+    { sym: '0960.HK', ev: null, kind: '未发生违约',
+      what: '持续提前偿债：2023 年提前还清 153 亿港元银团贷款，2025-01 提前兑付「22 龙湖 01」「20 龙湖 02」合计 39.775 亿元。股价最大回撤 −88%，从未跌破 −90%。',
+      src: [['新浪财经：龙湖完成 2025 年首次偿债，提前兑付近 40 亿元', 'https://finance.sina.com.cn/jjxw/2025-01-14/doc-ineewwwi8998737.shtml']] }
+  ];
+
+  function drawVerify() {
+    var byS = {};
+    data.firms.forEach(function (f) { byS[f.sym] = f; });
+    var rows = [], leads = [], lags = 0, noEvent = 0;
+
+    EVENTS.forEach(function (e) {
+      var f = byS[e.sym];
+      if (!f) return;
+      var mkt = f.span && f.span.b;
+      var evMs = e.ev ? Date.parse(e.ev + 'T00:00:00Z') : null;
+      var diff = (mkt && evMs) ? Math.round((evMs - mkt) / 86400000 / 30.44) : null;
+      if (diff != null) { if (diff >= 0) leads.push(diff); else lags++; }
+      if (!e.ev) noEvent++;
+      var cls = diff == null ? 'none' : (diff >= 0 ? 'lead' : 'lag');
+      var txt = e.ev == null
+        ? (mkt ? '至今无对应事件' : '一致')
+        : (diff == null ? '未跌破 −90%' : (diff >= 0 ? '股价早 ' + diff + ' 个月' : '公告早 ' + (-diff) + ' 个月'));
+      rows.push('<tr><td>' + f.name + '</td>'
+        + '<td>' + (mkt ? ymd(mkt) : '未跌破') + '</td>'
+        + '<td>' + (e.ev || '—') + '</td>'
+        + '<td class="hide-sm">' + e.kind + '</td>'
+        + '<td class="' + cls + '">' + txt + '</td></tr>');
+    });
+    document.getElementById('verify').innerHTML = rows.join('');
+
+    leads.sort(function (a, b) { return a - b; });
+    var med = leads.length ? leads[Math.floor(leads.length / 2)] : null;
+    document.getElementById('verdict').innerHTML =
+      '<strong>对照下来，「跌破 −90% 就是暴雷时间戳」这个说法要收回一半。</strong>'
+      + '方向上它站得住：核对的 ' + (leads.length + lags) + ' 家里有 ' + leads.length
+      + ' 家是股价先到，中位领先 ' + med + ' 个月 —— 碧桂园早 13 个月、雅居乐早 19 个月，市场在公告出来前就把价格打到了地板。'
+      + '但它不能反过来用：<b>万科跌破了 −90%，至今没有发生公开市场违约</b>；富力那次是 49 亿美元整体<b>展期</b>，不是违约。'
+      + '唯一反向的是佳兆业，公告早于股价 3 个月 —— 它在违约前后长期停牌，价格根本没有机会反应。'
+      + '所以 −90% 是一个<b>早期预警</b>，不是违约事实的等价物。';
+
+    document.getElementById('ref-count').textContent = EVENTS.length + ' 家 · '
+      + EVENTS.reduce(function (n, e) { return n + e.src.length; }, 0) + ' 条来源';
+    document.getElementById('refs').innerHTML = EVENTS.map(function (e) {
+      var f = byS[e.sym];
+      return '<li><span class="ev">' + (f ? f.name : e.sym) + '（' + e.sym + '）· '
+        + (e.ev || '无违约事件') + ' · ' + e.kind + '</span><br>' + e.what + '<br>'
+        + e.src.map(function (x) { return '<a href="' + x[1] + '" rel="noopener">' + x[0] + '</a>'; }).join(' · ')
+        + '</li>';
+    }).join('');
   }
 
   var reflow;
