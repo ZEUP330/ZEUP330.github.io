@@ -1,0 +1,58 @@
+name: catchup
+
+on:
+  schedule:
+    # World Bank national accounts are annual and revised a few times a year, so
+    # a monthly check is plenty; the commit step no-ops when nothing moved.
+    - cron: '40 4 5 * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: catchup
+  cancel-in-progress: false
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build catch-up series
+        run: node scripts/fetch-catchup.mjs
+
+      - name: Write status sidecar
+        run: |
+          node -e "
+            const fs = require('node:fs');
+            const d = JSON.parse(fs.readFileSync('catchup/data/catchup.json', 'utf8'));
+            fs.writeFileSync('catchup/data/status.json', JSON.stringify({ t: d.t, latest: d.updated }));
+          "
+
+      - name: Commit snapshot
+        run: |
+          set -euo pipefail
+          git config user.name 'ZEUP330'
+          git config user.email '37589028+ZEUP330@users.noreply.github.com'
+          git add catchup/data
+          if git diff --cached --quiet; then
+            echo 'no change'
+            exit 0
+          fi
+          # Same squash rule as the other data workflows: amend onto the previous
+          # snapshot commit, and only when HEAD is itself one.
+          if git log -1 --pretty=%s | grep -q '^data: catchup$'; then
+            git commit --amend --no-edit --date=now
+            git push --force-with-lease origin HEAD:main
+          else
+            git commit -m 'data: catchup'
+            git push origin HEAD:main
+          fi

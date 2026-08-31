@@ -31,6 +31,12 @@
       // housing.yml: '20 3 18,20,24 * *'
       cron: { monthDays: [18, 20, 24], times: [[3, 20]] },
       note: '统计局月度发布后取，每月 3 次'
+    },
+    {
+      id: 'catchup', name: '被追赶的经济体', url: '/catchup/data/status.json', page: '/catchup/',
+      // catchup.yml: '40 4 5 * *'
+      cron: { monthDays: [5], times: [[4, 40]] },
+      note: '世界银行年度数据，每月核一次'
     }
   ];
 

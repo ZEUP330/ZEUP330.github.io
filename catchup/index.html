@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>被追赶的经济体：辜朝明的两个拐点，用数据看</title>
+<meta name="description" content="辜朝明《被追赶的经济体》的三阶段框架，配世界银行数据：谁在追谁、什么时候被超过，以及「储蓄照旧、投资无处可去」这个特征是否真的出现。">
+<style>
+  :root {
+    --bg: #fcfcfb; --card: #ffffff; --ink: #0b0b0b; --ink-2: #52514e; --ink-3: #898781;
+    --line: #e1e0d9; --accent: #2a78d6; --warn: #eda100;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #1a1a19; --card: #222221; --ink: #f0efec; --ink-2: #c3c2b7; --ink-3: #898781;
+            --line: #2c2c2a; --accent: #3987e5; --warn: #fac775; }
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  body {
+    margin: 0; padding: 2rem 1.25rem 4rem; background: var(--bg); color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    line-height: 1.7; -webkit-font-smoothing: antialiased; -webkit-text-size-adjust: 100%;
+  }
+  main { max-width: 800px; margin: 0 auto; }
+  h1 { font-size: 26px; font-weight: 500; margin: 0 0 .5rem; letter-spacing: -.01em; }
+  h2 { font-size: 18px; font-weight: 500; margin: 2.75rem 0 .75rem; }
+  h3 { font-size: 15px; font-weight: 500; margin: 1.5rem 0 .5rem; }
+  p { color: var(--ink-2); margin: 0 0 1rem; }
+  .back { font-size: 14px; margin: 0 0 1rem; }
+  .back a { color: var(--ink-3); text-decoration: none; }
+  .back a:hover { color: var(--accent); }
+  a { color: var(--accent); }
+  .hint { font-size: 12px; color: var(--ink-3); margin: 0 0 1rem; }
+  .note { background: var(--card); border: 1px solid var(--line); border-left: 3px solid var(--warn);
+    border-radius: 0 8px 8px 0; padding: .8rem 1rem; margin: 0 0 1.25rem; font-size: 13px; color: var(--ink-2); }
+  .note strong { color: var(--ink); }
+
+  figure { margin: 1.25rem 0; }
+  figure svg { width: 100%; height: auto; display: block; }
+  figcaption { font-size: 12px; color: var(--ink-3); margin-top: .5rem; }
+
+  select, button { font: inherit; font-size: 14px; color: var(--ink); background: var(--card);
+    border: 1px solid var(--line); border-radius: 8px; padding: 7px 12px; cursor: pointer; }
+  select:hover, button:hover { border-color: var(--ink-3); }
+  .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 0 0 .75rem; }
+  .toolbar label { font-size: 13px; color: var(--ink-3); display: inline-flex; align-items: center; gap: 6px; }
+
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin: 1rem 0; }
+  .stat { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: .7rem .9rem; }
+  .stat .k { font-size: 12px; color: var(--ink-3); }
+  .stat .v { font-size: 21px; font-weight: 500; font-variant-numeric: tabular-nums; margin-top: 2px; }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 16px; font-size: 12px; color: var(--ink-2); margin-bottom: 8px; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .swatch { width: 16px; height: 2px; background: var(--accent); }
+  .chart { position: relative; height: 300px; }
+
+  .scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { padding: 7px 6px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+  th { color: var(--ink-3); font-weight: 400; font-size: 12px; }
+  td.n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  ul.links { padding-left: 1.1rem; margin: 0; }
+  ul.links li { color: var(--ink-3); font-size: 14px; margin-bottom: .5rem; }
+  footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--line);
+    font-size: 13px; color: var(--ink-3); }
+
+  @media (max-width: 640px) {
+    body { padding: 1.5rem .9rem 3rem; }
+    h1 { font-size: 21px; }
+    h2 { font-size: 17px; margin: 2rem 0 .6rem; }
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .stat .v { font-size: 18px; }
+    .chart { height: 250px; }
+    th, td { padding: 6px 4px; font-size: 12px; }
+  }
+</style>
+<link rel="stylesheet" href="/assets/statusbar.css">
+<script src="/assets/statusbar.js" defer></script>
+</head>
+<body>
+<main>
+  <p class="back"><a href="../">← 首页</a></p>
+  <h1>被追赶的经济体</h1>
+  <p>辜朝明（Richard Koo）在《被追赶的经济体》里把工业化分成三段，中间隔着两个拐点。这一页不复述书，而是把他那套说法里<b>能被数据检验的部分</b>拿出来跑一遍：谁在追谁、什么时候被超过，以及「被追赶」的那个特征是否真的出现了。</p>
+
+  <h2>三个阶段，两个拐点</h2>
+  <figure>
+    <svg viewBox="0 0 760 210" role="img" aria-label="三阶段示意图：刘易斯拐点之前是劳动力无限供给的城镇化阶段，之后进入工资上涨的黄金时代，再被后发国家追上后进入被追赶阶段。">
+      <title>辜朝明的三阶段与两个拐点</title>
+      <g font-family="-apple-system, sans-serif" font-size="12">
+        <rect x="0" y="40" width="240" height="58" rx="6" fill="var(--card)" stroke="var(--line)"/>
+        <rect x="260" y="40" width="240" height="58" rx="6" fill="var(--card)" stroke="var(--line)"/>
+        <rect x="520" y="40" width="240" height="58" rx="6" fill="var(--card)" stroke="var(--line)"/>
+
+        <text x="120" y="64" text-anchor="middle" fill="var(--ink)">① 城镇化阶段</text>
+        <text x="120" y="84" text-anchor="middle" fill="var(--ink-3)" font-size="11">劳动力无限供给，工资被压住</text>
+        <text x="380" y="64" text-anchor="middle" fill="var(--ink)">② 黄金时代</text>
+        <text x="380" y="84" text-anchor="middle" fill="var(--ink-3)" font-size="11">工资涨，企业借钱在国内扩产</text>
+        <text x="640" y="64" text-anchor="middle" fill="var(--ink)">③ 被追赶阶段</text>
+        <text x="640" y="84" text-anchor="middle" fill="var(--ink-3)" font-size="11">国内回报不如海外，投资外流</text>
+
+        <line x1="250" y1="30" x2="250" y2="112" stroke="var(--accent)" stroke-dasharray="4 3"/>
+        <line x1="510" y1="30" x2="510" y2="112" stroke="var(--warn)" stroke-dasharray="4 3"/>
+        <text x="250" y="22" text-anchor="middle" fill="var(--accent)" font-size="11">刘易斯拐点</text>
+        <text x="510" y="22" text-anchor="middle" fill="var(--warn)" font-size="11">被追赶拐点</text>
+
+        <text x="0" y="136" fill="var(--ink-3)" font-size="11">货币政策</text>
+        <text x="120" y="136" text-anchor="middle" fill="var(--ink-2)" font-size="11">一般</text>
+        <text x="380" y="136" text-anchor="middle" fill="var(--ink-2)" font-size="11">很有效</text>
+        <text x="640" y="136" text-anchor="middle" fill="var(--ink-2)" font-size="11">逐步失效</text>
+        <text x="0" y="158" fill="var(--ink-3)" font-size="11">财政政策</text>
+        <text x="120" y="158" text-anchor="middle" fill="var(--ink-2)" font-size="11">有效</text>
+        <text x="380" y="158" text-anchor="middle" fill="var(--ink-2)" font-size="11">会挤出私人投资</text>
+        <text x="640" y="158" text-anchor="middle" fill="var(--ink-2)" font-size="11">更有效，不挤出</text>
+        <text x="0" y="180" fill="var(--ink-3)" font-size="11">借款人</text>
+        <text x="120" y="180" text-anchor="middle" fill="var(--ink-2)" font-size="11">企业在借</text>
+        <text x="380" y="180" text-anchor="middle" fill="var(--ink-2)" font-size="11">企业抢着借</text>
+        <text x="640" y="180" text-anchor="middle" fill="var(--ink-2)" font-size="11">没人愿意借</text>
+        <text x="0" y="202" fill="var(--ink-3)" font-size="11">辜朝明的核心主张：第三阶段还按第二阶段的教科书开药方，就会过度依赖货币政策、少用财政政策。</text>
+      </g>
+    </svg>
+    <figcaption>按辜朝明《被追赶的经济体》整理。他把三段的划分依据落在「有没有人愿意借钱」上，而不是增长率高低。</figcaption>
+  </figure>
+
+  <h2>谁在追谁</h2>
+  <div class="toolbar">
+    <label>对照
+      <select id="pair"></select>
+    </label>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="k">当前比值</div><div class="v" id="s-ratio">—</div></div>
+    <div class="stat"><div class="k">超越年份</div><div class="v" id="s-cross">—</div></div>
+    <div class="stat"><div class="k">40 年前比值</div><div class="v" id="s-then">—</div></div>
+    <div class="stat"><div class="k">口径</div><div class="v" id="s-metric">—</div></div>
+  </div>
+  <div class="legend" id="ratio-legend"></div>
+  <div class="chart"><canvas id="ratio-chart" role="img" aria-label="追赶者占被追赶者的比值随时间变化，100% 是持平线。">追赶者与被追赶者的体量比值。</canvas></div>
+  <p class="hint" id="ratio-note"></p>
+
+  <div class="note">
+    <strong>名义美元比较会被汇率放大。</strong>这里用现价美元 GDP，所以本币汇率一动，比值就跟着动 —— 印度 2022 年超过英国之后又掉回 100% 以下，主要不是印度变慢，是英镑与卢比的相对变化。看长期趋势可以，拿单年排名较真没意义。
+  </div>
+
+  <h2>被追赶的指纹：钱存下来了，但投不出去</h2>
+  <p>辜朝明说第三阶段最要命的不是增长慢，而是<b>企业不再借钱</b> —— 国内找不到值得投的项目，钱要么出海，要么堆着。这件事有个直接的观察口径：一国的<b>总储蓄减去国内资本形成</b>。这个差额为正且持续扩大，就意味着国内投资吸不掉本国储蓄。</p>
+  <div class="toolbar">
+    <label>指标
+      <select id="metric">
+        <option value="gap">储蓄 − 投资（占 GDP %）</option>
+        <option value="fdiOut">对外直接投资净流出（占 GDP %）</option>
+        <option value="invest">国内资本形成（占 GDP %）</option>
+        <option value="savings">总储蓄（占 GDP %）</option>
+      </select>
+    </label>
+  </div>
+  <div class="legend" id="ind-legend"></div>
+  <div class="chart"><canvas id="ind-chart" role="img" aria-label="主要经济体的储蓄与投资缺口等指标随时间变化。">主要经济体的储蓄投资缺口。</canvas></div>
+  <p class="hint" id="ind-note"></p>
+
+  <h3>这几条线各自在说什么</h3>
+  <p><b>日本</b>的国内资本形成从 1990 年的 37.5% 掉到 2010 年的 23.6%，储蓄却没跟着掉，缺口长期为正。这是辜朝明用来定义第三阶段的那组数字本身。</p>
+  <p><b>德国</b>更极端：缺口 2000 年还是 −1.8%，2015 年摆到 +8.1%，是把巨额储蓄净输出到国外的典型。</p>
+  <p><b>美国</b>方向相反，缺口一直是负的（2024 年 −4.9%），也就是投掉的比存下的多，靠吸收别国储蓄补上。同样被追赶，美国的表现和日德不是一回事 —— 这也是辜朝明拿里根时期减税与放松管制当正面例子的原因。</p>
+  <p><b>中国</b>的资本形成仍在 40% 以上，缺口只有个位数。按这套框架，它的位置和日德那种「钱投不出去」的状态并不相同；辜朝明本人也把中国放在第二阶段，但他 2023 年之后对中国是否已出现资产负债表衰退的判断引发过争论。</p>
+
+  <h2>这套框架被质疑什么</h2>
+  <p><b>有循环论证的嫌疑。</b>「为什么经济长期停滞？因为进入了缺乏投资机会的被追赶阶段。」批评者指出，这等于把要解释的现象换个名字当成了原因，答案写在谜面上。</p>
+  <p><b>可能只是东亚经验。</b>日、韩、中都吃过后发红利，红利耗尽、增速回落，未必需要「被追赶」这个新概念来解释。用它去套非东亚经济体是否成立，书里没有充分检验。</p>
+  <p><b>阶段边界不可观测。</b>刘易斯拐点还有劳动力市场数据可以争论，「被追赶拐点」并没有一个公认的判定标准 —— 上面那些曲线能显示储蓄投资缺口在扩大，但缺口扩大到多少算「进入第三阶段」，是判断不是测量。这一页只画数据，不替谁下结论。</p>
+
+  <h2>数据来源</h2>
+  <ul class="links">
+    <li><a href="https://data.worldbank.org/" rel="noopener">World Bank Open Data</a> — GDP（现价美元）、人均 GDP（2015 年不变价）、总储蓄、资本形成、对外直接投资净流出，均为各国官方上报口径</li>
+    <li><a href="./data/catchup.json" rel="noopener">catchup.json</a> — 本页用的派生数据</li>
+    <li>框架出处：辜朝明《被追赶的经济体》（原书 <em>The Other Half of Macroeconomics and the Fate of Globalization</em> 的修订版），概念首见于《大衰退年代》</li>
+  </ul>
+
+  <footer>数据为世界银行公开统计，框架为辜朝明本人的理论主张且在学界存在争议。本页只做数据呈现，不构成对任何经济体前景的判断，也不构成投资建议。</footer>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+(function () {
+  var GRAY = '#8a8a8a';
+  var PALETTE = { JPN: '#e34948', DEU: '#eda100', USA: '#2a78d6', KOR: '#1baf7a', CHN: '#4a3aa7', GBR: '#898781', IND: '#eb6834' };
+  var METRIC_LABEL = { gdp: '名义 GDP（现价美元）', pcap: '人均 GDP（2015 年不变价）' };
+  var IND_LABEL = {
+    gap: '储蓄 − 投资（占 GDP %）', fdiOut: '对外直接投资净流出（占 GDP %）',
+    invest: '国内资本形成（占 GDP %）', savings: '总储蓄（占 GDP %）'
+  };
+  var IND_NOTE = {
+    gap: '为正表示这个国家存下来的钱多于它在国内投掉的钱，差额只能流向海外或被政府赤字吸收 —— 辜朝明说的「借款人消失」就体现在这里。',
+    fdiOut: '企业把钱投到境外的规模。第三阶段的说法是：不是不投资，是不在本国投资。',
+    invest: '国内资本形成占 GDP 的比重。持续下滑意味着国内的投资机会在减少。',
+    savings: '总储蓄占 GDP。这条线通常很稳 —— 会变的是投资那一边，不是储蓄。'
+  };
+
+  var data = null, ratioChart = null, indChart = null;
+  var pairSel = document.getElementById('pair');
+  var metricSel = document.getElementById('metric');
+
+  fetch('./data/catchup.json', { cache: 'no-cache' })
+    .then(function (r) { if (!r.ok) throw new Error('catchup.json ' + r.status); return r.json(); })
+    .then(function (d) { data = d; boot(); })
+    .catch(function (err) {
+      document.getElementById('ratio-note').textContent = '数据加载失败：' + err.message;
+    });
+
+  function boot() {
+    data.pairs.forEach(function (p, i) {
+      var o = document.createElement('option');
+      o.value = i;
+      o.textContent = p.chaserName + ' 追 ' + p.leaderName + (p.metric === 'pcap' ? '（人均）' : '');
+      pairSel.appendChild(o);
+    });
+    pairSel.addEventListener('change', drawRatio);
+    metricSel.addEventListener('change', drawInd);
+    drawRatio();
+    drawInd();
+  }
+
+  var lastOf = function (a) { for (var i = a.length - 1; i >= 0; i--) if (a[i] != null) return { v: a[i], i: i }; return null; };
+
+  function drawRatio() {
+    var p = data.pairs[+pairSel.value];
+    var last = lastOf(p.ratio);
+    var thenIdx = Math.max(0, (last ? last.i : 0) - 40);
+    var then = p.ratio[thenIdx];
+
+    document.getElementById('s-ratio').textContent = last ? last.v.toFixed(1) + '%' : '—';
+    document.getElementById('s-cross').textContent = p.crossed || '尚未';
+    document.getElementById('s-then').textContent = then == null ? '—' : then.toFixed(1) + '%';
+    document.getElementById('s-metric').textContent = p.metric === 'pcap' ? '人均' : '总量';
+    document.getElementById('ratio-note').textContent =
+      (p.crossed
+        ? p.chaserName + ' 在 ' + p.crossed + ' 年首次超过 ' + p.leaderName + '。'
+        : p.chaserName + ' 尚未超过 ' + p.leaderName + '。')
+      + '纵轴是' + p.chaserName + '相当于' + p.leaderName + '的百分比，100% 就是持平。口径：'
+      + METRIC_LABEL[p.metric] + '，世界银行数据更新于 ' + data.updated + '。';
+
+    var sets = [
+      { label: p.chaserName + ' / ' + p.leaderName, borderColor: PALETTE[p.chaser], borderWidth: 2,
+        tension: .2, pointRadius: 0, spanGaps: true,
+        data: data.years.map(function (y, i) { return { x: y, y: p.ratio[i] }; }) },
+      { label: '持平线', borderColor: GRAY, borderWidth: 1.5, borderDash: [5, 3], pointRadius: 0,
+        data: data.years.map(function (y) { return { x: y, y: 100 }; }) }
+    ];
+    document.getElementById('ratio-legend').innerHTML = sets.map(function (s) {
+      return '<span><i class="swatch" style="' + (s.borderDash ? 'background:none;border-top:2px dashed ' + s.borderColor : 'background:' + s.borderColor) + '"></i>' + s.label + '</span>';
+    }).join('');
+
+    if (!ratioChart) {
+      ratioChart = line('ratio-chart', sets, '追赶者 / 被追赶者（%）');
+    } else {
+      ratioChart.data.datasets = sets;
+      ratioChart.update();
+    }
+  }
+
+  function drawInd() {
+    var key = metricSel.value;
+    var sets = Object.values(data.countries).map(function (c) {
+      return { label: c.name, borderColor: PALETTE[c.iso], borderWidth: 1.8, tension: .2,
+        pointRadius: 0, spanGaps: true,
+        data: data.years.map(function (y, i) { return { x: y, y: c[key][i] }; }) };
+    });
+    if (key === 'gap') {
+      sets.push({ label: '零线', borderColor: GRAY, borderWidth: 1.5, borderDash: [5, 3], pointRadius: 0,
+        data: data.years.map(function (y) { return { x: y, y: 0 }; }) });
+    }
+    document.getElementById('ind-legend').innerHTML = sets.map(function (s) {
+      return '<span><i class="swatch" style="' + (s.borderDash ? 'background:none;border-top:2px dashed ' + s.borderColor : 'background:' + s.borderColor) + '"></i>' + s.label + '</span>';
+    }).join('');
+    document.getElementById('ind-note').textContent = IND_NOTE[key];
+
+    if (!indChart) {
+      indChart = line('ind-chart', sets, IND_LABEL[key]);
+    } else {
+      indChart.data.datasets = sets;
+      indChart.options.scales.y.title.text = IND_LABEL[key];
+      indChart.update();
+    }
+  }
+
+  function line(id, sets, yLabel) {
+    return new Chart(document.getElementById(id), {
+      type: 'line', data: { datasets: sets },
+      options: {
+        responsive: true, maintainAspectRatio: false, animation: { duration: 200 },
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              title: function (t) { return t[0].parsed.x + ' 年'; },
+              label: function (c) { return c.dataset.label + '：' + (c.parsed.y == null ? '—' : c.parsed.y.toFixed(1)); }
+            }
+          }
+        },
+        scales: {
+          x: { type: 'linear', ticks: { color: GRAY, maxTicksLimit: 9, callback: function (v) { return Math.round(v); } },
+               grid: { display: false } },
+          y: { title: { display: true, text: yLabel, color: GRAY },
+               ticks: { color: GRAY }, grid: { color: 'rgba(138,138,138,.22)' } }
+        }
+      }
+    });
+  }
+})();
+</script>
+</body>
+</html>
