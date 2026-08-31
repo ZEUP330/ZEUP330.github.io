@@ -1,0 +1,53 @@
+name: options snapshot
+
+on:
+  schedule:
+    # Every 4 hours. GitHub queues cron jobs and can run them 10-30 min late or
+    # skip them entirely under load, so treat the timestamps in history.json as
+    # the truth rather than assuming an even 4h spacing.
+    - cron: '7 */4 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: options-snapshot
+  cancel-in-progress: false
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Fetch Deribit option chain
+        run: node scripts/fetch-options.mjs
+
+      - name: Commit snapshot
+        run: |
+          set -euo pipefail
+          git config user.name 'ZEUP330'
+          git config user.email '37589028+ZEUP330@users.noreply.github.com'
+          git add options/data
+          if git diff --cached --quiet; then
+            echo 'no change'
+            exit 0
+          fi
+          # Squash onto the previous snapshot commit instead of stacking a new
+          # one every 4 hours, otherwise the repo grows by a full JSON blob per
+          # run forever. Only amend when HEAD is itself a snapshot commit, so a
+          # hand-written commit is never rewritten.
+          if git log -1 --pretty=%s | grep -q '^data: options snapshot$'; then
+            git commit --amend --no-edit --date=now
+            git push --force-with-lease origin HEAD:main
+          else
+            git commit -m 'data: options snapshot'
+            git push origin HEAD:main
+          fi
