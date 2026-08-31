@@ -169,12 +169,23 @@
 
   // null = national view; otherwise the Chinese name of the province drilled into.
   var level = null, geoCache = {};
-  var hpr = null, provRegion = {}, priceChart = null;
+  var hpr = null, provRegion = {}, priceChart = null, priceRange = null;
   var isPrice = function () { return typeSel.value === 'price'; };
   // The two views run on different clocks: 247 monthly index points versus 32
   // cumulative price releases. The slider is re-ranged when the mode flips
   // rather than trying to force one axis onto both.
   function sliderMax() { return (isPrice() ? hpr.records.length : hp.months.length) - 1; }
+  // One key for all three views. Whenever it is unchanged the frame is a pure
+  // data update; only a change of geometry or colour scale rebuilds the option.
+  // The two index calibers share a key on purpose - same map, same scale, so
+  // switching them is a data swap rather than a rebuild.
+  function renderKey() { return level ? 'prov:' + level : (isPrice() ? 'price' : 'index'); }
+  function pushData(data) {
+    var k = renderKey();
+    if (mapChart.__key === k) { mapChart.setOption({ series: [{ data: data }] }); return true; }
+    mapChart.__key = k;
+    return false;
+  }
   function periodLabel(i) {
     var j = Math.min(Math.max(0, i), sliderMax());
     return isPrice() ? hpr.records[j].label : hp.months[j];
@@ -274,11 +285,7 @@
     var data = Object.values(hp.provinces).map(function (p) {
       return { name: p.prov, value: p[key][i], n: p.cities.length };
     });
-    if (mapChart.__ready) {
-      mapChart.setOption({ series: [{ data: data }] });
-      return;
-    }
-    mapChart.__ready = true;
+    if (pushData(data)) return;
     // Fixed symmetric scale, NOT fitted to the current month. Auto-fitting made
     // a +/-4% month and a +/-25% month render identically, which defeats the
     // whole point of dragging through time. 15% covers the 95th percentile of
@@ -286,6 +293,8 @@
     var span = 15;
     mapChart.setOption({
       backgroundColor: 'transparent',
+      animation: MAP_ANIM.animation, animationDuration: MAP_ANIM.animationDuration,
+      animationDurationUpdate: MAP_ANIM.animationDurationUpdate, animationEasingUpdate: MAP_ANIM.animationEasingUpdate,
       tooltip: {
         formatter: function (p) {
           if (p.value == null || isNaN(p.value)) return p.name + '<br>不在 70 城样本内';
@@ -414,19 +423,34 @@
   // Sequential ramp, not the diverging one used for rates of change: this is a
   // magnitude with no meaningful zero, so a two-hue scale would invent a
   // midpoint that does not exist.
+  // Colours cross-fade between frames rather than snapping; the geometry itself
+  // never animates, so dragging the slider reads as continuous.
+  var MAP_ANIM = { animation: true, animationDuration: 0, animationDurationUpdate: 260, animationEasingUpdate: 'cubicOut' };
+
   function drawPriceMap(i) {
     var rec = hpr.records[i];
     var data = Object.keys(provRegion).map(function (pv) {
       return { name: pv, value: rec.p[provRegion[pv]], region: provRegion[pv] };
     });
-    var all = ['东部', '中部', '西部', '东北'].map(function (r) { return rec.p[r]; });
+    // Fixed across every period, for the same reason the index scale is fixed:
+    // once frames became data-only the scale would otherwise freeze at whichever
+    // period rendered first, so one colour would mean different prices depending
+    // on where you happened to start.
+    if (priceRange == null) {
+      var vs = hpr.records.flatMap(function (r) {
+        return ['东部', '中部', '西部', '东北'].map(function (k) { return r.p[k]; });
+      }).filter(function (v) { return v != null; });
+      priceRange = [Math.floor(Math.min.apply(null, vs) / 500) * 500,
+                    Math.ceil(Math.max.apply(null, vs) / 500) * 500];
+    }
 
     document.getElementById('map-level').textContent =
       rec.label + ' · 大区口径均价，同一大区内所有省份同色';
 
-    mapChart.__level = null;
-    mapChart.setOption({
+    if (!pushData(data)) mapChart.setOption({
       backgroundColor: 'transparent',
+      animation: MAP_ANIM.animation, animationDuration: MAP_ANIM.animationDuration,
+      animationDurationUpdate: MAP_ANIM.animationDurationUpdate, animationEasingUpdate: MAP_ANIM.animationEasingUpdate,
       tooltip: {
         formatter: function (p) {
           if (p.value == null || isNaN(p.value)) return p.name + '<br>不在统计口径内';
@@ -436,8 +460,7 @@
         }
       },
       visualMap: {
-        min: Math.floor(Math.min.apply(null, all) / 500) * 500,
-        max: Math.ceil(Math.max.apply(null, all) / 500) * 500,
+        min: priceRange[0], max: priceRange[1],
         left: 'left', bottom: 20, calculable: true, precision: 0,
         text: ['贵', '便宜'], textStyle: { color: '#8a8a8a' },
         inRange: { color: ['#e6f1fb', '#85b7eb', '#2a78d6', '#185fa5', '#042c53'] }
@@ -532,10 +555,9 @@
           .then(function (g) { geoCache[py] = g; echarts.registerMap(py, g); return g; });
 
     got.then(function () {
+      // Setting level changes renderKey(), so the next draw rebuilds for the new
+      // geometry on its own and then falls back to data-only frames.
       level = name;
-      // Geometry changes, so the province option has to be built from scratch;
-      // the per-frame data-only path resumes after this first render.
-      mapChart.__level = null;
       document.getElementById('map-back').hidden = false;
       document.getElementById('map-zoom').hidden = true;
       drawMap();
@@ -552,9 +574,6 @@
   // and slider half-switched.
   function resetToChina() {
     level = null;
-    mapChart.__level = null;
-    mapChart.clear();
-    mapChart.__ready = false;
     document.getElementById('map-back').hidden = true;
     document.getElementById('map-zoom').hidden = isPrice() || !curProv || !!MUNICIPALITY[curProv];
     document.getElementById('map-zoom').textContent = curProv ? '放大到 ' + curProv : '放大';
@@ -581,13 +600,11 @@
     document.getElementById('map-level').textContent =
       level + ' · ' + hp.months[i] + ' · ' + feats.length + ' 个地级单位中 ' + covered + ' 个在 70 城样本内';
 
-    if (mapChart.__level === level) {
-      mapChart.setOption({ series: [{ data: data }] });
-      return;
-    }
-    mapChart.__level = level;
+    if (pushData(data)) return;
     mapChart.setOption({
       backgroundColor: 'transparent',
+      animation: MAP_ANIM.animation, animationDuration: MAP_ANIM.animationDuration,
+      animationDurationUpdate: MAP_ANIM.animationDurationUpdate, animationEasingUpdate: MAP_ANIM.animationEasingUpdate,
       tooltip: {
         formatter: function (p) {
           if (p.value == null || isNaN(p.value)) return p.name + '<br>不在 70 城样本内';

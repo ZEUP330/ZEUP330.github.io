@@ -3,7 +3,7 @@
 // project locations or district-level prices, and no official downloadable list of
 // bond defaults - but a listed developer's collapse is written into its own price
 // history, and a halt shows up as the tape simply stopping.
-import { writeFileSync, mkdirSync } from 'node:fs';
+import { writeFileSync, mkdirSync, readFileSync } from 'node:fs';
 
 // Ownership is the axis that actually explains the spread, so it is tagged here
 // rather than inferred. All of these are public facts from company filings.
@@ -118,6 +118,42 @@ out.byOwn = Object.keys(OWN_LABEL).map((k) => {
   const v = out.firms.filter((f) => f.own === k).map((f) => f.dd).sort((a, b) => a - b);
   return { own: k, n: v.length, median: v.length ? r4(v[Math.floor(v.length / 2)]) : null };
 });
+
+// Where the collapse landed, from the other authoritative series already in the
+// repo. The statistics bureau publishes year-on-year percentage change, not
+// price levels, so chain it back into an index: idx[t] = idx[t-12] * (1+yoy/100).
+// The first twelve months are seeded flat at 100, which makes 2006 the base year
+// and leaves that first year's shape unknown - it is far behind every peak here,
+// so it does not touch the drawdowns.
+try {
+  const h = JSON.parse(readFileSync('housing/data/house-index.json', 'utf8'));
+  const months = h.months;
+  const cities = h.cities.map((c) => {
+    const yoy = c.yoy_new;
+    const idx = [];
+    for (let i = 0; i < yoy.length; i++) {
+      if (i < 12) { idx.push(100); continue; }
+      const prev = idx[i - 12];
+      idx.push(yoy[i] == null || prev == null ? null : prev * (1 + yoy[i] / 100));
+    }
+    let peak = -Infinity, peakI = 0;
+    idx.forEach((v, i) => { if (v != null && v > peak) { peak = v; peakI = i; } });
+    const last = idx[idx.length - 1];
+    return {
+      city: c.city, prov: c.prov, adcode: c.adcode,
+      peakMonth: months[peakI], peakIdx: r2(peak),
+      lastIdx: r2(last), dd: r4(last / peak - 1),
+      monthsSincePeak: idx.length - 1 - peakI
+    };
+  }).sort((a, b) => a.dd - b.dd);
+
+  out.cities = cities;
+  out.cityMeta = { months: months.length, from: months[0], to: months[months.length - 1], series: '新建商品住宅' };
+  console.log(`\ncities: ${cities.length} · worst ${cities[0].city} ${(cities[0].dd * 100).toFixed(1)}%`
+    + ` · best ${cities[cities.length - 1].city} ${(cities[cities.length - 1].dd * 100).toFixed(1)}%`);
+} catch (err) {
+  console.log(`\ncity index skipped: ${err.message}`);
+}
 
 mkdirSync('developers/data', { recursive: true });
 writeFileSync('developers/data/developers.json', JSON.stringify(out));

@@ -142,6 +142,87 @@
   <h1>长沙 41 小时</h1>
   <p>周五 23:28 到长沙南，周日 18:00 从长沙南走。默认给的是<b>松弛版</b>：一天只排一件必须做的事，其余时间用来坐着。想赶满可以切到暴走版。</p>
 
+  <figure class="overview">
+    <svg viewBox="0 0 700 430" role="img" aria-label="全页总览图：上方是从周五 23:28 到周日 18:00 的时间轴，标出深夜打车、周六整天和周日 16:30 死线；中间是住哪家、去哪、吃什么、要预约四张卡；下方是下雨和预算两个备用分支。每张卡可点击跳到对应章节。">
+      <title>这一页讲了什么</title>
+      <g font-family="-apple-system, sans-serif" font-size="12">
+        <text x="0" y="14" fill="var(--ink-3)" font-size="11">点任意一块跳到对应章节</text>
+
+        <rect x="0" y="26" width="700" height="52" rx="8" fill="var(--card)" stroke="var(--line)"/>
+        <rect x="4" y="30" width="96" height="44" rx="6" fill="var(--accent)" opacity=".25"/>
+        <rect x="104" y="30" width="356" height="44" rx="6" fill="var(--accent)" opacity=".55"/>
+        <rect x="464" y="30" width="232" height="44" rx="6" fill="var(--accent)" opacity=".35"/>
+        <text x="12" y="48" fill="var(--ink)" font-size="11">周五夜</text>
+        <text x="12" y="66" fill="var(--ink-3)" font-size="10">23:28 落地</text>
+        <text x="116" y="48" fill="var(--ink)">周六 · 唯一完整的一天</text>
+        <text x="116" y="66" fill="var(--ink-3)" font-size="10">重头戏只能放这里</text>
+        <text x="476" y="48" fill="var(--ink)">周日 · 半天</text>
+        <text x="476" y="66" fill="var(--ink-3)" font-size="10">离车站近、随时能撤</text>
+
+        <line x1="102" y1="82" x2="102" y2="98" stroke="var(--danger)" stroke-dasharray="3 3"/>
+        <text x="0" y="96" fill="var(--danger)" font-size="10">地铁已停，打车</text>
+        <line x1="462" y1="82" x2="462" y2="98" stroke="var(--danger)" stroke-dasharray="3 3"/>
+        <text x="470" y="96" fill="var(--danger)" font-size="10">16:30 必须往车站走</text>
+
+        <a href="#sec-list">
+          <rect x="0" y="112" width="167" height="86" rx="10" fill="var(--card)" stroke="var(--accent)"/>
+          <text x="14" y="136" fill="var(--ink)" font-size="13">住哪家</text>
+          <text x="14" y="156" fill="var(--ink-3)" font-size="10">22 家真实评分</text>
+          <text x="14" y="172" fill="var(--ink-3)" font-size="10">标签筛选 + 推荐指数</text>
+          <text x="14" y="188" fill="var(--accent)" font-size="10">沿江 &gt; 潮宗街 &gt; 五一</text>
+        </a>
+        <a href="#sec-again">
+          <rect x="178" y="112" width="167" height="86" rx="10" fill="var(--card)" stroke="var(--line)"/>
+          <text x="192" y="136" fill="var(--ink)" font-size="13">去哪</text>
+          <text x="192" y="156" fill="var(--ink-3)" font-size="10">来过两次的重排</text>
+          <text x="192" y="172" fill="var(--ink-3)" font-size="10">跳过 / 换方式 / 没去过</text>
+          <text x="192" y="188" fill="var(--ok)" font-size="10">别硬凑景点</text>
+        </a>
+        <a href="#sec-food">
+          <rect x="356" y="112" width="167" height="86" rx="10" fill="var(--card)" stroke="var(--line)"/>
+          <text x="370" y="136" fill="var(--ink)" font-size="13">吃什么</text>
+          <text x="370" y="156" fill="var(--ink-3)" font-size="10">按进食节奏排</text>
+          <text x="370" y="172" fill="var(--ink-3)" font-size="10">粉 / 湘菜 / 小吃 / 夜宵</text>
+          <text x="370" y="188" fill="var(--ok)" font-size="10">网红三家别去</text>
+        </a>
+        <a href="#sec-todo">
+          <rect x="533" y="112" width="167" height="86" rx="10" fill="var(--card)" stroke="var(--line)"/>
+          <text x="547" y="136" fill="var(--ink)" font-size="13">要预约</text>
+          <text x="547" y="156" fill="var(--ink-3)" font-size="10">清单跟着节奏变</text>
+          <text x="547" y="172" fill="var(--ink-3)" font-size="10">松弛版只需两项</text>
+          <text x="547" y="188" fill="var(--warn)" font-size="10">博物院要提前 7 天</text>
+        </a>
+
+        <text x="0" y="228" fill="var(--ink-3)" font-size="11">出了状况往这两边拐</text>
+        <a href="#sec-rain">
+          <rect x="0" y="238" width="345" height="66" rx="10" fill="var(--card)" stroke="var(--line)"/>
+          <text x="14" y="262" fill="var(--ink)" font-size="13">下雨</text>
+          <text x="14" y="282" fill="var(--ink-3)" font-size="10">晴走户外 · 小雨走室内 · 暴雨不出地面</text>
+          <text x="14" y="296" fill="var(--ink-3)" font-size="10">住五一广场时暴雨也有得玩</text>
+        </a>
+        <a href="#sec-cost">
+          <rect x="355" y="238" width="345" height="66" rx="10" fill="var(--card)" stroke="var(--line)"/>
+          <text x="369" y="262" fill="var(--ink)" font-size="13">预算</text>
+          <text x="369" y="282" fill="var(--ink-3)" font-size="10">人均约 1050 – 2050 元，不含高铁</text>
+          <text x="369" y="296" fill="var(--ink-3)" font-size="10">松弛版门票那项基本是 0</text>
+        </a>
+
+        <text x="0" y="334" fill="var(--ink-3)" font-size="11">其余章节</text>
+        <a href="#sec-time"><rect x="0" y="344" width="104" height="30" rx="15" fill="var(--card)" stroke="var(--line)"/><text x="52" y="363" fill="var(--ink-2)" font-size="11" text-anchor="middle">时间预算</text></a>
+        <a href="#sec-geo"><rect x="112" y="344" width="104" height="30" rx="15" fill="var(--card)" stroke="var(--line)"/><text x="164" y="363" fill="var(--ink-2)" font-size="11" text-anchor="middle">两岸地理</text></a>
+        <a href="#sec-hotel"><rect x="224" y="344" width="104" height="30" rx="15" fill="var(--card)" stroke="var(--line)"/><text x="276" y="363" fill="var(--ink-2)" font-size="11" text-anchor="middle">选址标准</text></a>
+        <a href="#sec-pool"><rect x="336" y="344" width="104" height="30" rx="15" fill="var(--card)" stroke="var(--line)"/><text x="388" y="363" fill="var(--ink-2)" font-size="11" text-anchor="middle">景点池</text></a>
+        <a href="#sec-walk"><rect x="448" y="344" width="104" height="30" rx="15" fill="var(--card)" stroke="var(--line)"/><text x="500" y="363" fill="var(--ink-2)" font-size="11" text-anchor="middle">步行圈</text></a>
+        <a href="#sec-more"><rect x="560" y="344" width="140" height="30" rx="15" fill="var(--card)" stroke="var(--line)"/><text x="630" y="363" fill="var(--ink-2)" font-size="11" text-anchor="middle">还有哪里好玩</text></a>
+        <a href="#sec-plan"><rect x="0" y="382" width="104" height="30" rx="15" fill="var(--card)" stroke="var(--line)"/><text x="52" y="401" fill="var(--ink-2)" font-size="11" text-anchor="middle">时间表</text></a>
+        <a href="#sec-trap"><rect x="112" y="382" width="104" height="30" rx="15" fill="var(--card)" stroke="var(--line)"/><text x="164" y="401" fill="var(--ink-2)" font-size="11" text-anchor="middle">避坑</text></a>
+        <a href="#sec-pack"><rect x="224" y="382" width="104" height="30" rx="15" fill="var(--card)" stroke="var(--line)"/><text x="276" y="401" fill="var(--ink-2)" font-size="11" text-anchor="middle">带什么</text></a>
+        <a href="#sec-traffic"><rect x="336" y="382" width="104" height="30" rx="15" fill="var(--card)" stroke="var(--line)"/><text x="388" y="401" fill="var(--ink-2)" font-size="11" text-anchor="middle">交通速查</text></a>
+      </g>
+    </svg>
+    <figcaption>整页就这些内容。除了时间表，其他章节默认收起，点标题或点这张图上的块展开。</figcaption>
+  </figure>
+
   <section class="card" aria-labelledby="card-h">
     <h2 id="card-h" class="card-h">出门前截这一张就够</h2>
     <dl class="kv">
@@ -424,7 +505,7 @@
   <p class="hint" id="mode-note"></p>
   <div id="sched"></div>
 
-  <h2>松弛的几条规矩</h2>
+  <h2 id="sec-rules">松弛的几条规矩</h2>
   <figure>
     <svg viewBox="0 0 700 168" role="img" aria-label="松弛版的四条规则：一天一个必去点、排队不超过二十分钟、单程车程不超过三十分钟、留白也是行程。">
       <title>松弛版规则</title>
@@ -746,7 +827,7 @@
     </tbody>
   </table>
 
-  <h2>交通速查</h2>
+  <h2 id="sec-traffic">交通速查</h2>
   <div class="scroll">
     <table>
       <thead><tr><th>路线</th><th>方式</th><th class="n">时间</th><th class="n">费用</th></tr></thead>
@@ -762,7 +843,7 @@
   </div>
   <p class="hint">长沙地铁 23:00 左右发末班车，旺季周五周六可能延长 1 小时，但不要指望。深夜一律网约车。</p>
 
-  <h2>官方入口</h2>
+  <h2 id="sec-src">官方入口</h2>
   <ul>
     <li><a href="https://www.hnmuseum.com/" rel="noopener">湖南博物院</a> — 免费但须实名预约，每晚 20:00 放第 7 天的票</li>
     <li><a href="http://www.lizijianmsg.com/" rel="noopener">李自健美术馆</a> — 免费不免票，公众号领票，9:30–17:30，周一闭馆</li>
