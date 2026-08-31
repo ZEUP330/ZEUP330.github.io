@@ -103,8 +103,8 @@ for (const p of Object.values(provinces)) {
 
 const latest = months[months.length - 1];
 const covered = Object.keys(provinces).length;
-mkdirSync('mortgage/data', { recursive: true });
-writeFileSync('mortgage/data/house-index.json', JSON.stringify({
+mkdirSync('housing/data', { recursive: true });
+writeFileSync('housing/data/house-index.json', JSON.stringify({
   t: Date.now(),
   source: 'NBS 70城房价指数（经 hugohe3/70cityprice 整理）',
   note: '数值为同比/环比涨跌幅（%），非元每平方米均价；官方该系列不发布绝对价格',

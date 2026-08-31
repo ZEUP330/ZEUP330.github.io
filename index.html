@@ -4,21 +4,24 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ZEUP330</title>
-<meta name="description" content="ZEUP330 的主页：可交互的数学小实验与开源项目。">
+<meta name="description" content="ZEUP330 的主页：可交互的数学小实验、数据管线与开源项目。">
 <style>
   :root {
     --bg: #fcfcfb; --card: #ffffff; --ink: #0b0b0b; --ink-2: #52514e; --ink-3: #898781;
     --line: #e1e0d9; --accent: #2a78d6;
+    --great: #c0392b; --good: #b9770e; --mid: #2a78d6; --bad: #6b6b68;
   }
   @media (prefers-color-scheme: dark) {
     :root { --bg: #1a1a19; --card: #222221; --ink: #f0efec; --ink-2: #c3c2b7; --ink-3: #898781;
-            --line: #2c2c2a; --accent: #3987e5; }
+            --line: #2c2c2a; --accent: #3987e5;
+            --great: #e66767; --good: #fac775; --mid: #85b7eb; --bad: #a8a8a2; }
   }
   * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
   body {
-    margin: 0; padding: 4rem 1.25rem 5rem; background: var(--bg); color: var(--ink);
+    margin: 0; padding: 3.5rem 1.25rem 5rem; background: var(--bg); color: var(--ink);
     font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-    line-height: 1.7; -webkit-font-smoothing: antialiased;
+    line-height: 1.7; -webkit-font-smoothing: antialiased; -webkit-text-size-adjust: 100%;
   }
   main { max-width: 680px; margin: 0 auto; }
   h1 { font-size: 30px; font-weight: 500; margin: 0 0 .25rem; letter-spacing: -.02em; }
@@ -31,11 +34,37 @@
   a:hover { text-decoration: underline; }
 
   .feature { display: block; background: var(--card); border: 1px solid var(--line);
-    border-radius: 12px; padding: 1.25rem 1.4rem; color: inherit; }
+    border-radius: 12px; padding: 1.25rem 1.4rem; color: inherit; margin-bottom: 12px; }
   .feature:hover { border-color: var(--ink-3); text-decoration: none; }
   .feature h3 { font-size: 18px; font-weight: 500; margin: 0 0 .35rem; color: var(--ink); }
   .feature p { margin: 0; font-size: 15px; }
   .feature .go { color: var(--accent); font-size: 14px; margin-top: .6rem; display: block; }
+
+  /* おみくじ */
+  .omi { background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    padding: 1.1rem 1.3rem; margin: 1.75rem 0 0; }
+  .omi-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .omi-title { font-size: 14px; color: var(--ink-3); }
+  button { font: inherit; font-size: 14px; color: var(--ink); background: transparent;
+    border: 1px solid var(--line); border-radius: 999px; padding: 6px 16px; cursor: pointer; }
+  button:hover { border-color: var(--ink-3); }
+  button:active { transform: scale(.98); }
+  .omi-slip { margin-top: 1rem; }
+  .omi-head { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap;
+    padding-bottom: .7rem; border-bottom: 1px solid var(--line); }
+  .omi-lot { font-size: 30px; font-weight: 500; letter-spacing: .1em; line-height: 1.2; }
+  .omi-lot.great { color: var(--great); } .omi-lot.good { color: var(--good); }
+  .omi-lot.mid { color: var(--mid); } .omi-lot.bad { color: var(--bad); }
+  .omi-poem { font-size: 14px; color: var(--ink-2); flex: 1 1 14rem; min-width: 0; }
+  dl.omi-items { display: grid; grid-template-columns: 4.5em 1fr; gap: .45rem 14px;
+    margin: .9rem 0 0; font-size: 14px; }
+  dl.omi-items dt { color: var(--ink-3); }
+  dl.omi-items dd { margin: 0; color: var(--ink-2); }
+  .omi-foot { margin-top: .9rem; padding-top: .8rem; border-top: 1px solid var(--line);
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .omi-note { font-size: 12px; color: var(--ink-3); flex: 1 1 12rem; min-width: 0; margin: 0; }
+  .omi-small { font-size: 13px; padding: 4px 12px; }
+  .omi-tied { font-size: 13px; color: var(--ink-3); font-style: normal; }
 
   ul.repos { list-style: none; padding: 0; margin: 0; }
   ul.repos li { padding: .7rem 0; border-bottom: 1px solid var(--line); display: grid;
@@ -44,6 +73,14 @@
   ul.repos .meta { font-size: 13px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
   footer { margin-top: 3.5rem; padding-top: 1.25rem; border-top: 1px solid var(--line);
     font-size: 14px; color: var(--ink-3); }
+
+  @media (max-width: 640px) {
+    body { padding: 2.5rem .9rem 3.5rem; }
+    h1 { font-size: 25px; }
+    .omi { padding: 1rem 1.05rem; }
+    .omi-lot { font-size: 26px; }
+    dl.omi-items { grid-template-columns: 4em 1fr; font-size: 13.5px; }
+  }
 </style>
 </head>
 <body>
@@ -52,20 +89,46 @@
   <p class="handle">“I'm King of the Eaters”</p>
   <p class="lede">这里放一些能自己动起来的小东西：把一个反直觉的结论做成可以拖动的图，比讲道理快。</p>
 
+  <div class="omi">
+    <div class="omi-top">
+      <span class="omi-title">🎋 おみくじ · 今日一签</span>
+      <button id="omi-draw" type="button">抽签</button>
+    </div>
+    <div class="omi-slip" id="omi-slip" hidden>
+      <div class="omi-head">
+        <span class="omi-lot" id="omi-lot">—</span>
+        <span class="omi-poem" id="omi-poem"></span>
+      </div>
+      <dl class="omi-items" id="omi-items"></dl>
+      <div class="omi-foot">
+        <p class="omi-note" id="omi-note"></p>
+        <button class="omi-small" id="omi-tie" type="button" hidden>結ぶ · 系在这里</button>
+        <button class="omi-small" id="omi-again" type="button">再抽</button>
+      </div>
+    </div>
+  </div>
+
   <h2>实验</h2>
+
   <a class="feature" href="./mortgage/">
     <h3>房贷年限 × 月供</h3>
-    <p>等额本息的月供有下限，等于本金 × 月利率 —— 也就是纯利息。年限拉到 1000 年也降不下去。三个滑块随便调，还有 3D 曲面看年限和利率一起变的样子。</p>
+    <p>等额本息的月供有下限，等于本金 × 月利率 —— 也就是纯利息，年限拉到 1000 年也降不下去。三个滑块随便调，图上标着 30 年旧上限和 40 年新上限。</p>
     <span class="go">打开 →</span>
   </a>
 
-  <a class="feature" href="./options/" style="margin-top: 12px;">
+  <a class="feature" href="./housing/">
+    <h3>全国房价走势地图</h3>
+    <p>统计局 70 城指数做成的省级地图，进度条拖 2006 年至今 247 个月，点省份看下面各城市的走势。为什么图上没有「均价多少钱一平」，页面里说明了。</p>
+    <span class="go">打开 →</span>
+  </a>
+
+  <a class="feature" href="./options/">
     <h3>美股期权 Wheel 筛选器</h3>
-    <p>七姐妹、指数与行业 ETF、杠杆 ETF 共 22 个标的。GitHub Actions 在交易时段抓 Cboe 延迟行情，筛出现金担保看跌与备兑看涨的候选，附年化、Delta、缓冲与流动性。纯静态页面，没有后端。</p>
+    <p>七姐妹、指数与行业 ETF、杠杆 ETF 共 22 个标的。GitHub Actions 在交易时段抓 Cboe 延迟行情，筛出现金担保看跌与备兑看涨的候选，附年化、Delta、缓冲与流动性。</p>
     <span class="go">打开 →</span>
   </a>
 
-  <a class="feature" href="./changsha/" style="margin-top: 12px;">
+  <a class="feature" href="./changsha/">
     <h3>长沙 41 小时</h3>
     <p>周五深夜落地、周日傍晚就走的行程。松弛版与暴走版一键切换，配时间预算、两岸地理关系图和住宿选址对比，外加几条会让老攻略翻车的事实。</p>
     <span class="go">打开 →</span>
@@ -87,5 +150,113 @@
     <a href="https://github.com/ZEUP330">GitHub</a> · 全部 22 个仓库在那边
   </footer>
 </main>
+
+<script>
+(function () {
+  // Follows the shape of a real omikuji slip: a fortune level, a short verse,
+  // then per-item guidance. Weights lean the way a shrine box does - 吉 is the
+  // common outcome, 大吉 and 大凶 are both rare - rather than uniform.
+  var LEVELS = [
+    { n: '大吉', w: 9,  c: 'great', tone: 'great', poem: '风顺水顺，但顺风时最容易忘记看路。' },
+    { n: '中吉', w: 17, c: 'good',  tone: 'good',  poem: '云开一线，够看清脚下三步。' },
+    { n: '小吉', w: 18, c: 'good',  tone: 'good',  poem: '小小的好，攒起来也是好。' },
+    { n: '吉',   w: 22, c: 'mid',   tone: 'mid',   poem: '不惊不险，日子照常。' },
+    { n: '末吉', w: 16, c: 'mid',   tone: 'mid',   poem: '好在后头，先把眼下的事做完。' },
+    { n: '凶',   w: 15, c: 'bad',   tone: 'bad',   poem: '逆风。收帆比换船便宜。' },
+    { n: '大凶', w: 3,  c: 'bad',   tone: 'bad',   poem: '今日诸事从简，明日再议。' }
+  ];
+
+  // Guidance is keyed by tone rather than by level, the way printed slips reuse
+  // wording across neighbouring fortunes. Two variants each so a redraw at the
+  // same level still reads differently.
+  var ITEMS = [
+    { k: '願い事', label: '愿望', good: ['开口去问，对方比你以为的更愿意点头。', '差的那一步是行动，不是运气。'],
+      mid: ['能成，但要比预想的多花一个月。', '先把它写下来，模糊的愿望没法实现。'],
+      bad: ['这次先放着。放着不等于放弃。', '换个更小的版本，先拿到它。'] },
+    { k: '仕事', label: '工作', good: ['把手上那件拖了很久的事收尾，会连带解决另外两件。', '适合谈条件，你手里的筹码比你估的多。'],
+      mid: ['稳住节奏，别接第五件并行的事。', '今天适合整理，不适合开新坑。'],
+      bad: ['别在情绪上头时回那封邮件。', '重要的决定往后放一天，你会写出不一样的版本。'] },
+    { k: '金運', label: '财运', good: ['意外的进项，先存一半再说。', '适合把钱挪到该在的地方，比如提前还一点本金。'],
+      mid: ['不赔不赚。把自动扣款清单翻一遍会有惊喜。', '大额支出前先睡一觉。'],
+      bad: ['今天不适合下单，尤其是分期的那种。', '看到「限时」两个字就先关掉页面。'] },
+    { k: '恋愛', label: '恋爱', good: ['主动联系那个人，时机比你想的好。', '把想说的说完整，别只说一半。'],
+      mid: ['照常相处就好，不用刻意制造进展。', '听比说管用。'],
+      bad: ['不要在深夜发长消息。', '这几天少解释，多做事。'] },
+    { k: '健康', label: '健康', good: ['状态不错，适合开始一件需要坚持的事。', '早睡一晚，收益超过任何补品。'],
+      mid: ['老毛病照旧，喝水和走路仍然有用。', '久坐是真正的问题，起来动十分钟。'],
+      bad: ['小病别拖，今天就去看。', '别熬夜，这一签就是提醒。'] },
+    { k: '旅行', label: '出行', good: ['宜远行，路上会遇到值得的事。', '临时起意的那趟车可以坐。'],
+      mid: ['能去，但留出比计划多一小时的余量。', '出门前确认末班车时间。'],
+      bad: ['行程从简，别赶最后一班。', '带伞。带充电宝。'] },
+    { k: '学問', label: '学业', good: ['卡住的地方今天能通，去啃它。', '教会别人一遍，你自己就真的懂了。'],
+      mid: ['进度平平，按计划走就行。', '与其看新教程，不如把旧的做完。'],
+      bad: ['今天记不住东西，改成整理和复盘。', 'basics 没打牢，回头补比硬撑快。'] },
+    { k: '住まい', label: '安居', good: ['看房的好日子，你能看出别人看不出的问题。', '适合谈价，多问一句就是钱。'],
+      mid: ['不急。多看几套，别被第一套锚住。', '把通勤时间乘以两倍再做决定。'],
+      bad: ['今天别签任何三十年的字。', '算清楚月供再谈喜欢，顺序别反。'] }
+  ];
+
+  var TIE_NOTE = '按参拜的习惯，凶签系在神社的绳架上，把坏运留在那儿再走；吉签则带回家。这里也给你一根绳。';
+  var KEEP_NOTE = '按参拜的习惯，吉签带回家，不必系在绳上。签是提醒，不是安排。';
+  var KEY = 'omikuji-day';
+
+  var TOTAL = LEVELS.reduce(function (t, l) { return t + l.w; }, 0);
+  var slip = document.getElementById('omi-slip');
+  var lotEl = document.getElementById('omi-lot');
+  var poemEl = document.getElementById('omi-poem');
+  var itemsEl = document.getElementById('omi-items');
+  var noteEl = document.getElementById('omi-note');
+  var tieBtn = document.getElementById('omi-tie');
+  var againBtn = document.getElementById('omi-again');
+  var drawBtn = document.getElementById('omi-draw');
+
+  var pick = function (a) { return a[Math.floor(Math.random() * a.length)]; };
+  var today = function () { return new Date().toISOString().slice(0, 10); };
+
+  function draw(isRedraw) {
+    var r = Math.random() * TOTAL, acc = 0, lot = LEVELS[LEVELS.length - 1];
+    for (var i = 0; i < LEVELS.length; i++) {
+      acc += LEVELS[i].w;
+      if (r < acc) { lot = LEVELS[i]; break; }
+    }
+    render(lot, isRedraw);
+    try { localStorage.setItem(KEY, JSON.stringify({ d: today(), n: lot.n })); } catch (e) { /* private mode */ }
+  }
+
+  function render(lot, isRedraw) {
+    lotEl.textContent = lot.n;
+    lotEl.className = 'omi-lot ' + lot.c;
+    poemEl.textContent = lot.poem;
+    itemsEl.innerHTML = ITEMS.map(function (it) {
+      return '<dt>' + it.k + '</dt><dd>' + pick(it[lot.tone]) + '<span class="omi-tied"> · ' + it.label + '</span></dd>';
+    }).join('');
+    noteEl.textContent = (lot.tone === 'bad' ? TIE_NOTE : KEEP_NOTE)
+      + (isRedraw ? ' 传统上以第一次抽到的为准。' : '');
+    tieBtn.hidden = lot.tone !== 'bad';
+    tieBtn.textContent = '結ぶ · 系在这里';
+    tieBtn.disabled = false;
+    slip.hidden = false;
+    drawBtn.textContent = '重抽';
+  }
+
+  drawBtn.addEventListener('click', function () { draw(!slip.hidden); });
+  againBtn.addEventListener('click', function () { draw(true); });
+
+  tieBtn.addEventListener('click', function () {
+    this.textContent = '已系上 · 坏运留在这儿了';
+    this.disabled = true;
+    noteEl.textContent = '结绳的动作本身没有魔力，作用是让你把这件事放下、然后去做别的。';
+  });
+
+  // A slip is for the day you drew it; the shrine does not remember, so neither
+  // does this - it only reminds you that you already drew.
+  try {
+    var saved = JSON.parse(localStorage.getItem(KEY) || 'null');
+    if (saved && saved.d === today()) {
+      drawBtn.textContent = '今天抽过 ' + saved.n + '，再抽一次';
+    }
+  } catch (e) { /* ignore */ }
+})();
+</script>
 </body>
 </html>

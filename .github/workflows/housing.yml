@@ -36,7 +36,7 @@ jobs:
           set -euo pipefail
           git config user.name 'ZEUP330'
           git config user.email '37589028+ZEUP330@users.noreply.github.com'
-          git add mortgage/data
+          git add housing/data
           if git diff --cached --quiet; then
             echo 'no change'
             exit 0
