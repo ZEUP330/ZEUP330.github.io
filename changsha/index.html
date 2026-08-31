@@ -3,16 +3,18 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>长沙 41 小时：周五深夜到、周日傍晚走</title>
-<meta name="description" content="按周五 23:28 抵达、周日 18:00 离开的车票时间排的长沙行程：预约清单、时间表、避坑与吃喝。">
+<title>长沙 41 小时：松弛版 / 暴走版</title>
+<meta name="description" content="按周五 23:28 抵达、周日 18:00 离开排的长沙行程：时间预算、地理关系图、住哪、两种节奏的时间表与避坑。">
 <style>
   :root {
     --bg: #fcfcfb; --card: #ffffff; --ink: #0b0b0b; --ink-2: #52514e; --ink-3: #898781;
     --line: #e1e0d9; --accent: #2a78d6; --warn: #eda100; --danger: #e34948; --ok: #1baf7a;
+    --river: #b5d4f4;
   }
   @media (prefers-color-scheme: dark) {
     :root { --bg: #1a1a19; --card: #222221; --ink: #f0efec; --ink-2: #c3c2b7; --ink-3: #898781;
-            --line: #2c2c2a; --accent: #3987e5; --warn: #fac775; --danger: #e66767; --ok: #199e70; }
+            --line: #2c2c2a; --accent: #3987e5; --warn: #fac775; --danger: #e66767; --ok: #199e70;
+            --river: #185fa5; }
   }
   * { box-sizing: border-box; }
   body {
@@ -30,26 +32,32 @@
   .back a:hover { color: var(--accent); }
   .hint { font-size: 12px; color: var(--ink-3); margin: 0 0 1rem; }
   a { color: var(--accent); }
+  figure { margin: 1.25rem 0; }
+  figure svg { width: 100%; height: auto; display: block; }
+  figcaption { font-size: 12px; color: var(--ink-3); margin-top: .5rem; }
 
   .alert { background: var(--card); border: 1px solid var(--line); border-left: 3px solid var(--danger);
     border-radius: 0 8px 8px 0; padding: .8rem 1rem; margin: 0 0 1rem; font-size: 14px; color: var(--ink-2); }
   .alert strong { color: var(--ink); }
   .alert.warn { border-left-color: var(--warn); }
+  .alert.ok { border-left-color: var(--ok); }
 
-  .budget { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin: 1.25rem 0; }
-  .b { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: .7rem .9rem; }
-  .b .k { font-size: 12px; color: var(--ink-3); }
-  .b .v { font-size: 21px; font-weight: 500; font-variant-numeric: tabular-nums; margin-top: 2px; }
+  .modes { display: flex; gap: 8px; margin: 1.25rem 0 .5rem; flex-wrap: wrap; }
+  .mode { font: inherit; font-size: 14px; color: var(--ink-2); background: var(--card);
+    border: 1px solid var(--line); border-radius: 999px; padding: 6px 16px; cursor: pointer; }
+  .mode[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
 
   ul.todo { list-style: none; padding: 0; margin: 0 0 1rem; }
   ul.todo li { background: var(--card); border: 1px solid var(--line); border-radius: 10px;
     padding: .6rem .8rem; margin-bottom: 8px; display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: start; }
-  ul.todo input { width: 18px; height: 18px; margin: 5px 0 0; accent-color: var(--accent); flex: none; }
+  ul.todo input { width: 18px; height: 18px; margin: 5px 0 0; accent-color: var(--accent); }
   ul.todo .task { font-size: 14px; }
   ul.todo .why { font-size: 12px; color: var(--ink-3); display: block; }
   ul.todo li.done .task { text-decoration: line-through; color: var(--ink-3); }
+  ul.todo li.off { opacity: .45; }
   .due { font-size: 11px; color: var(--danger); border: 1px solid currentColor; border-radius: 999px;
     padding: 0 7px; margin-left: 6px; white-space: nowrap; }
+  .due.soft { color: var(--ink-3); }
 
   .day { border-left: 2px solid var(--line); padding-left: 1rem; margin: 0 0 1.5rem; }
   .slot { display: grid; grid-template-columns: 4.5em 1fr; gap: 12px; padding: .55rem 0; border-bottom: 1px solid var(--line); }
@@ -72,11 +80,14 @@
     body { padding: 1.5rem .9rem 3rem; }
     h1 { font-size: 21px; }
     h2 { font-size: 17px; margin: 2rem 0 .6rem; }
-    .budget { grid-template-columns: repeat(2, 1fr); }
-    .b .v { font-size: 18px; }
     .slot { grid-template-columns: 4em 1fr; gap: 10px; }
     .day { padding-left: .8rem; }
     th, td { padding: 6px 4px; font-size: 12px; }
+    /* Squeezing a 700-unit viewBox into 375px puts the 11px labels at ~6px.
+       Keep the diagrams legible and let them scroll sideways instead. */
+    figure { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    figure svg { min-width: 600px; }
+    figcaption::after { content: '（图可左右滑动）'; color: var(--ink-3); }
   }
 </style>
 </head>
@@ -84,65 +95,204 @@
 <main>
   <p class="back"><a href="../">← 首页</a></p>
   <h1>长沙 41 小时</h1>
-  <p>按车票时间排的：<b>周五 9/4 23:28 到长沙南</b>，<b>周日 9/6 18:00 从长沙南走</b>。这不是"长沙三日游"，是两个整块时间加一个深夜落地，行程按这个约束倒推。</p>
+  <p>周五 23:28 到长沙南，周日 18:00 从长沙南走。默认给的是<b>松弛版</b>：一天只排一件必须做的事，其余时间用来坐着。想赶满可以切到暴走版。</p>
 
-  <div class="budget">
-    <div class="b"><div class="k">在长沙总时长</div><div class="v">41 小时</div></div>
-    <div class="b"><div class="k">扣掉睡觉后</div><div class="v">≈ 27 小时</div></div>
-    <div class="b"><div class="k">真正能玩</div><div class="v">≈ 22 小时</div></div>
-    <div class="b"><div class="k">完整白天</div><div class="v">1 天</div></div>
-  </div>
-  <p class="hint">周六是唯一完整的一天，周日下午 16:30 就得往车站走。所以周六排重头戏，周日排离车站近、随时能撤的。</p>
+  <h2>时间到底有多少</h2>
+  <figure>
+    <svg viewBox="0 0 700 200" role="img" aria-label="时间预算条形图：41 小时中约 14 小时睡觉、5 小时通勤，剩约 22 小时可用，其中只有周六是完整白天。">
+      <title>41 小时怎么分</title>
+      <g font-family="-apple-system, sans-serif" font-size="12">
+        <text x="0" y="16" fill="var(--ink-3)">总时长 41 小时（周五 23:28 → 周日 18:00）</text>
+        <rect x="0" y="26" width="700" height="34" rx="4" fill="var(--card)" stroke="var(--line)"/>
+        <rect x="2" y="28" width="235" height="30" rx="3" fill="var(--ink-3)" opacity=".35"/>
+        <rect x="237" y="28" width="86" height="30" rx="3" fill="var(--warn)" opacity=".45"/>
+        <rect x="323" y="28" width="375" height="30" rx="3" fill="var(--accent)" opacity=".55"/>
+        <text x="10" y="48" fill="var(--ink)">睡觉 ~14h</text>
+        <text x="245" y="48" fill="var(--ink)">通勤 ~5h</text>
+        <text x="333" y="48" fill="var(--ink)">真正能玩 ~22h</text>
 
-  <div class="alert">
-    <strong>先办这件事，其他都可以到了再说。</strong>湖南博物院常设展免费但必须实名预约，每晚 20:00 放次日起第 7 天的票，热门时段当晚就抢空。你要去的 9/6 周日票、9/5 周六票现在都已在放票窗口内 —— 今晚就去公众号看还有没有余票，没有的话周末行程要重排。
-  </div>
+        <text x="0" y="94" fill="var(--ink-3)">这 22 小时不是连续的</text>
+        <rect x="0" y="104" width="700" height="34" rx="4" fill="var(--card)" stroke="var(--line)"/>
+        <rect x="2" y="106" width="96" height="30" rx="3" fill="var(--accent)" opacity=".3"/>
+        <rect x="100" y="106" width="360" height="30" rx="3" fill="var(--accent)" opacity=".7"/>
+        <rect x="462" y="106" width="236" height="30" rx="3" fill="var(--accent)" opacity=".45"/>
+        <text x="8" y="126" fill="var(--ink)" font-size="11">周五夜 3h</text>
+        <text x="110" y="126" fill="var(--ink)">周六一整天 12h</text>
+        <text x="470" y="126" fill="var(--ink)">周日半天 7h</text>
 
-  <div class="alert warn">
-    <strong>周五落地打不到地铁。</strong>长沙南地铁 2 号线开往市区（梅溪湖西方向）末班 23:03，你 23:28 才到站，出站时早已停运。直接走网约车通道，到五一广场一带 20 分钟上下、40 元左右。别在站里找地铁口浪费时间。
+        <line x1="462" y1="146" x2="462" y2="166" stroke="var(--danger)" stroke-dasharray="4 3"/>
+        <text x="470" y="164" fill="var(--danger)" font-size="11">周日 16:30 必须往车站走，这条线不能碰</text>
+        <text x="0" y="188" fill="var(--ink-3)" font-size="11">结论：重头戏只能放周六。周日排离车站近、随时能撤的。</text>
+      </g>
+    </svg>
+    <figcaption>睡眠按两晚各 7 小时估，通勤含往返车站、市内换乘与进出站安检。</figcaption>
+  </figure>
+
+  <h2>长沙的地理其实很简单</h2>
+  <figure>
+    <svg viewBox="0 0 700 400" role="img" aria-label="长沙主要景点与湘江的关系示意图：湘江纵贯南北，橘子洲在江心；东岸是五一广场、湖南博物院和长沙南站，西岸是岳麓山、大学城和洋湖艺术区。">
+      <title>湘江两岸与主要目的地</title>
+      <g font-family="-apple-system, sans-serif" font-size="12">
+        <rect x="300" y="0" width="70" height="400" fill="var(--river)" opacity=".35"/>
+        <text x="335" y="392" fill="var(--ink-3)" font-size="11" text-anchor="middle">湘江</text>
+
+        <ellipse cx="335" cy="150" rx="22" ry="52" fill="var(--ok)" opacity=".35" stroke="var(--ok)"/>
+        <text x="335" y="148" fill="var(--ink)" font-size="11" text-anchor="middle">橘子洲</text>
+        <text x="335" y="163" fill="var(--ink-3)" font-size="10" text-anchor="middle">免费·预约</text>
+
+        <text x="150" y="22" fill="var(--ink-3)" text-anchor="middle">西岸 · 河西</text>
+        <text x="530" y="22" fill="var(--ink-3)" text-anchor="middle">东岸 · 市中心</text>
+
+        <g>
+          <rect x="60" y="40" width="180" height="52" rx="8" fill="var(--card)" stroke="var(--line)"/>
+          <text x="72" y="62" fill="var(--ink)">岳麓山 · 岳麓书院</text>
+          <text x="72" y="80" fill="var(--ink-3)" font-size="11">山免费，书院 40 元，两个预约</text>
+        </g>
+        <g>
+          <rect x="60" y="150" width="180" height="52" rx="8" fill="var(--card)" stroke="var(--line)"/>
+          <text x="72" y="172" fill="var(--ink)">后湖 · 大学城</text>
+          <text x="72" y="190" fill="var(--ink-3)" font-size="11">咖啡馆密度高，人少</text>
+        </g>
+        <g>
+          <rect x="60" y="262" width="180" height="66" rx="8" fill="var(--card)" stroke="var(--line)"/>
+          <text x="72" y="284" fill="var(--ink)">洋湖 · 两座美术馆</text>
+          <text x="72" y="301" fill="var(--ink-3)" font-size="11">李自健免费，谢子龙一楼免费</text>
+          <text x="72" y="316" fill="var(--ink-3)" font-size="11">松弛版首选，周一闭馆</text>
+        </g>
+
+        <g>
+          <rect x="430" y="40" width="200" height="52" rx="8" fill="var(--card)" stroke="var(--line)"/>
+          <text x="442" y="62" fill="var(--ink)">湖南博物院</text>
+          <text x="442" y="80" fill="var(--ink-3)" font-size="11">免费但必须抢预约，逛 3 小时</text>
+        </g>
+        <g>
+          <rect x="430" y="150" width="200" height="66" rx="8" fill="var(--accent)" opacity=".12" stroke="var(--accent)"/>
+          <text x="442" y="172" fill="var(--ink)">五一广场 · 黄兴路</text>
+          <text x="442" y="189" fill="var(--ink-3)" font-size="11">住这里。吃喝步行可达</text>
+          <text x="442" y="204" fill="var(--ink-3)" font-size="11">潮宗街 / 太平街都在旁边</text>
+        </g>
+        <g>
+          <rect x="430" y="276" width="200" height="52" rx="8" fill="var(--card)" stroke="var(--line)"/>
+          <text x="442" y="298" fill="var(--ink)">长沙南站</text>
+          <text x="442" y="316" fill="var(--ink-3)" font-size="11">来回都在这里</text>
+        </g>
+
+        <path d="M430 183 L370 165" stroke="var(--accent)" stroke-width="2" fill="none"/>
+        <path d="M300 165 L240 176" stroke="var(--accent)" stroke-width="2" fill="none"/>
+        <text x="258" y="140" fill="var(--accent)" font-size="11">2 号线 30 分</text>
+        <path d="M530 216 L530 276" stroke="var(--accent)" stroke-width="2" fill="none"/>
+        <text x="538" y="250" fill="var(--accent)" font-size="11">2 号线直达 25 分</text>
+        <path d="M470 150 L470 92" stroke="var(--ink-3)" stroke-width="1.5" stroke-dasharray="4 3" fill="none"/>
+        <text x="478" y="124" fill="var(--ink-3)" font-size="11">打车 20 分</text>
+        <path d="M240 300 Q 335 340 430 302" stroke="var(--ink-3)" stroke-width="1.5" stroke-dasharray="4 3" fill="none"/>
+        <text x="335" y="350" fill="var(--ink-3)" font-size="11" text-anchor="middle">3 号线 / 打车 30 分</text>
+      </g>
+    </svg>
+    <figcaption>一切都围着湘江排。住东岸的五一广场，两天里去西岸一次就够，别来回过江。</figcaption>
+  </figure>
+
+  <h2>酒店怎么办</h2>
+  <p>你的约束很特殊：<b>深夜 23:28 落地、周日 16:30 就得走</b>。所以选址只有一个标准 —— 到长沙南地铁直达，且楼下就有吃的。三个候选：</p>
+
+  <figure>
+    <svg viewBox="0 0 700 260" role="img" aria-label="三个住宿区域对比：五一广场综合最优，河西溁湾镇靠近岳麓山但回车站要换乘，长沙南站周边只适合中转。">
+      <title>住哪里</title>
+      <g font-family="-apple-system, sans-serif" font-size="12">
+        <text x="210" y="14" fill="var(--ink-3)" font-size="11" text-anchor="middle">回长沙南</text>
+        <text x="350" y="14" fill="var(--ink-3)" font-size="11" text-anchor="middle">夜宵步行</text>
+        <text x="490" y="14" fill="var(--ink-3)" font-size="11" text-anchor="middle">去岳麓山</text>
+        <text x="620" y="14" fill="var(--ink-3)" font-size="11" text-anchor="middle">周末价位</text>
+
+        <rect x="0" y="26" width="700" height="66" rx="8" fill="var(--accent)" opacity=".1"/>
+        <rect x="0" y="26" width="700" height="66" rx="8" fill="none" stroke="var(--accent)"/>
+        <text x="14" y="50" fill="var(--ink)" font-size="14">五一广场 / 黄兴路</text>
+        <text x="14" y="70" fill="var(--ink-3)" font-size="11">推荐。两天动线都绕这里，深夜打车也最近</text>
+        <text x="14" y="86" fill="var(--ink-3)" font-size="11">代价：周末吵、同样档次贵一两成</text>
+        <text x="210" y="60" fill="var(--ok)" text-anchor="middle">直达 25 分</text>
+        <text x="350" y="60" fill="var(--ok)" text-anchor="middle">出门就是</text>
+        <text x="490" y="60" fill="var(--warn)" text-anchor="middle">30 分</text>
+        <text x="620" y="60" fill="var(--ink-2)" text-anchor="middle">中档 300–600</text>
+
+        <rect x="0" y="102" width="700" height="66" rx="8" fill="var(--card)" stroke="var(--line)"/>
+        <text x="14" y="126" fill="var(--ink)" font-size="14">溁湾镇 / 河西</text>
+        <text x="14" y="146" fill="var(--ink-3)" font-size="11">安静、便宜，出门就是岳麓山</text>
+        <text x="14" y="162" fill="var(--ink-3)" font-size="11">代价：周日回车站要换乘，深夜车费更贵</text>
+        <text x="210" y="136" fill="var(--warn)" text-anchor="middle">换乘 40 分</text>
+        <text x="350" y="136" fill="var(--warn)" text-anchor="middle">一般</text>
+        <text x="490" y="136" fill="var(--ok)" text-anchor="middle">10 分</text>
+        <text x="620" y="136" fill="var(--ink-2)" text-anchor="middle">中档 250–450</text>
+
+        <rect x="0" y="178" width="700" height="66" rx="8" fill="var(--card)" stroke="var(--line)"/>
+        <text x="14" y="202" fill="var(--ink)" font-size="14">长沙南站周边</text>
+        <text x="14" y="222" fill="var(--ink-3)" font-size="11">只有"下车就到"这一个优点</text>
+        <text x="14" y="238" fill="var(--ink-3)" font-size="11">代价：晚上没什么可玩，每天都要往城里跑</text>
+        <text x="210" y="212" fill="var(--ok)" text-anchor="middle">步行</text>
+        <text x="350" y="212" fill="var(--danger)" text-anchor="middle">没有</text>
+        <text x="490" y="212" fill="var(--danger)" text-anchor="middle">45 分</text>
+        <text x="620" y="212" fill="var(--ink-2)" text-anchor="middle">中档 200–400</text>
+      </g>
+    </svg>
+    <figcaption>价位是周末中档连锁的常见区间，仅供比价，实际以你订的时候为准。</figcaption>
+  </figure>
+
+  <div class="alert ok">
+    <strong>选五一广场，别为省一百块住到车站边上。</strong>你只有一个完整白天，住得远等于把本就不多的 22 小时再切掉两三个小时在路上。深夜落地时，从长沙南打车到五一广场约 40 元、20 分钟；住车站边省下的这 40 元，会在周六两趟往返里还回去。
   </div>
+  <p class="hint">订房时留意两点：一是确认前台 24 小时值守，你到店时已过零点；二是周日退房后行李能不能寄存到下午 4 点，不然中午就得拖着箱子。</p>
 
   <h2>出发前要做完的</h2>
   <ul class="todo" id="todo"></ul>
-  <p class="hint">勾选状态存在这台设备的浏览器里，换设备不同步。</p>
+  <p class="hint">清单会跟着上面的节奏切换：松弛版不去博物院，就不用熬夜抢预约。勾选状态存在本机浏览器里。</p>
 
   <h2>时间表</h2>
-
-  <h3>周五 9/4 · 落地</h3>
-  <div class="day">
-    <div class="slot fix"><span class="t">23:28</span><span class="w"><b>抵长沙南</b><em>G6026，虎门 20:15 出发</em></span></div>
-    <div class="slot"><span class="t">23:35</span><span class="w"><b>网约车去酒店</b><em>地铁已停运。住五一广场／黄兴路步行街一带，后面两天都省事</em></span></div>
-    <div class="slot"><span class="t">24:00</span><span class="w"><b>放行李，出门吃夜宵</b><em>长沙的夜宵才刚开始。坡子街、四方坪、冬瓜山都通宵；口味虾、嗦螺、绝味鸭脖</em></span></div>
+  <div class="modes" id="modes">
+    <button class="mode" type="button" data-m="chill" aria-pressed="true">松弛版</button>
+    <button class="mode" type="button" data-m="packed" aria-pressed="false">暴走版</button>
   </div>
+  <p class="hint" id="mode-note"></p>
+  <div id="sched"></div>
 
-  <h3>周六 9/5 · 唯一的整天</h3>
-  <div class="day">
-    <div class="slot fix"><span class="t">09:00</span><span class="w"><b>湖南博物院</b><em>9:00 开馆，16:00 停止入馆。凭预约二维码 + 身份证。马王堆辛追墓、素纱襌衣、T 形帛画是主线，2.5–3 小时</em></span></div>
-    <div class="slot"><span class="t">12:00</span><span class="w"><b>午餐</b><em>博物院在开福区，出来往市区走。费大厨、笨萝卜、炊烟小炒黄牛肉任选，都要等位，先在小程序取号</em></span></div>
-    <div class="slot fix"><span class="t">14:00</span><span class="w"><b>岳麓山 + 岳麓书院</b><em>山免费但要预约，书院 40 元另约（微信公众号，最多提前 3 天）。5–10 月书院 17:30 停止售票、18:00 闭馆 —— 要进书院就别拖到下午晚些</em></span></div>
-    <div class="slot"><span class="t">17:00</span><span class="w"><b>爱晚亭 → 索道或步行下山</b><em>体力允许走下来 40 分钟；索道省腿</em></span></div>
-    <div class="slot"><span class="t">18:30</span><span class="w"><b>过江回市区，晚饭</b><em>湘江边看落日。地铁 4 号线／2 号线换乘</em></span></div>
-    <div class="slot"><span class="t">20:00</span><span class="w"><b>五一广场 · 太平街 · IFS 楼顶</b><em>长沙的夜是主角。KAWS 雕塑在 IFS 顶楼，太平街人挤人但值得走一趟</em></span></div>
-  </div>
-
-  <h3>周日 9/6 · 半天，且必须准时</h3>
-  <div class="day">
-    <div class="slot"><span class="t">09:00</span><span class="w"><b>橘子洲</b><em>免费需预约。地铁 2 号线橘子洲站直达，洲上有观光车。青年毛泽东雕像来回 1.5–2 小时</em></span></div>
-    <div class="slot"><span class="t">11:30</span><span class="w"><b>坡子街午餐 · 火宫殿</b><em>臭豆腐、糖油粑粑、姊妹团子。旅游属性强，图个齐全</em></span></div>
-    <div class="slot"><span class="t">13:30</span><span class="w"><b>超级文和友 或 黄兴路扫货</b><em>文和友主要是拍照，排队看运气；不想排就逛街买手信</em></span></div>
-    <div class="slot fix"><span class="t">16:30</span><span class="w"><b>出发去长沙南</b><em>五一广场地铁 2 号线直达约 25 分钟 + 进站安检。留足 1.5 小时，别卡点</em></span></div>
-    <div class="slot fix"><span class="t">18:00</span><span class="w"><b>G6007 发车</b><em>20:25 到虎门</em></span></div>
-  </div>
+  <h2>松弛的几条规矩</h2>
+  <figure>
+    <svg viewBox="0 0 700 168" role="img" aria-label="松弛版的四条规则：一天一个必去点、排队不超过二十分钟、单程车程不超过三十分钟、留白也是行程。">
+      <title>松弛版规则</title>
+      <g font-family="-apple-system, sans-serif" font-size="12">
+        <g>
+          <rect x="0" y="10" width="166" height="66" rx="10" fill="var(--card)" stroke="var(--line)"/>
+          <text x="83" y="38" fill="var(--accent)" font-size="20" text-anchor="middle">1</text>
+          <text x="83" y="60" fill="var(--ink)" text-anchor="middle">一天只排一个必去</text>
+        </g>
+        <g>
+          <rect x="178" y="10" width="166" height="66" rx="10" fill="var(--card)" stroke="var(--line)"/>
+          <text x="261" y="38" fill="var(--accent)" font-size="20" text-anchor="middle">20′</text>
+          <text x="261" y="60" fill="var(--ink)" text-anchor="middle">队超过这个就换一家</text>
+        </g>
+        <g>
+          <rect x="356" y="10" width="166" height="66" rx="10" fill="var(--card)" stroke="var(--line)"/>
+          <text x="439" y="38" fill="var(--accent)" font-size="20" text-anchor="middle">30′</text>
+          <text x="439" y="60" fill="var(--ink)" text-anchor="middle">单程车程上限</text>
+        </g>
+        <g>
+          <rect x="534" y="10" width="166" height="66" rx="10" fill="var(--card)" stroke="var(--line)"/>
+          <text x="617" y="38" fill="var(--accent)" font-size="20" text-anchor="middle">∅</text>
+          <text x="617" y="60" fill="var(--ink)" text-anchor="middle">留白也是行程</text>
+        </g>
+        <text x="0" y="106" fill="var(--ink-3)" font-size="11">按这四条走，两天大概只去 3 个地方 —— 这是特意的。</text>
+        <text x="0" y="126" fill="var(--ink-3)" font-size="11">41 小时里塞 8 个景点，回去只会记得排队和赶路。</text>
+        <text x="0" y="146" fill="var(--ink-3)" font-size="11">茶颜悦色市区几百家店，永远不用为它排队。</text>
+      </g>
+    </svg>
+  </figure>
 
   <h2>避坑</h2>
   <table>
     <tbody>
       <tr><td><b>橘子洲烟花没有</b></td><td>每周六焰火早就停办了，现在只在元旦、除夕、元宵、国庆这类节日放。9 月 4–6 日没有场次，老攻略里"周六看烟花"是过期信息。</td></tr>
-      <tr><td><b>博物院周一闭馆</b></td><td>你是周六周日，不受影响。但换人抄这份行程时要注意。</td></tr>
-      <tr><td><b>书院和山是两次预约</b></td><td>岳麓山免费预约，岳麓书院单独收费单独约，两个入口。只约了山进不了书院。</td></tr>
-      <tr><td><b>茶颜悦色不用排最长的那家</b></td><td>市区几百家店，五一商圈走两百米就有下一家。排一小时的都是网红打卡点。</td></tr>
-      <tr><td><b>热门餐厅先取号再逛</b></td><td>费大厨、炊烟、笨萝卜周末等两小时是常态。到市区第一件事就是小程序取号，边逛边等。</td></tr>
-      <tr><td><b>口味虾看时令</b></td><td>9 月还在季节里，但价格随行就市，点单前问清是按斤还是按份。</td></tr>
+      <tr><td><b>周五到站赶不上地铁</b></td><td>长沙南 2 号线开往市区（梅溪湖西方向）末班 23:03，你 23:28 才到。出站直接走网约车通道。</td></tr>
+      <tr><td><b>美术馆和博物院都周一闭馆</b></td><td>你是周六周日，不受影响。但湖南博物院必须提前 7 天抢预约，松弛版可以直接跳过它。</td></tr>
+      <tr><td><b>山和书院是两次预约</b></td><td>岳麓山免费预约，岳麓书院单独收费单独约，两个入口。只约了山进不了书院。</td></tr>
+      <tr><td><b>热门餐厅先取号再逛</b></td><td>费大厨、炊烟、笨萝卜周末等两小时是常态。松弛版的解法是干脆不去，找楼下的本地小馆。</td></tr>
+      <tr><td><b>口味虾问清计价</b></td><td>9 月还在季节里，按斤还是按份先问，价格随行就市。</td></tr>
     </tbody>
   </table>
 
@@ -154,61 +304,159 @@
         <tr><td>长沙南 → 五一广场（深夜）</td><td>网约车</td><td class="n">约 20 分</td><td class="n">约 40 元</td></tr>
         <tr><td>长沙南 → 五一广场（白天）</td><td>地铁 2 号线直达</td><td class="n">约 25 分</td><td class="n">4 元</td></tr>
         <tr><td>五一广场 → 湖南博物院</td><td>地铁 1 号线转公交／打车</td><td class="n">约 30 分</td><td class="n">约 20 元</td></tr>
-        <tr><td>市区 → 岳麓山</td><td>地铁 2 号线溁湾镇 / 4 号线湖南大学</td><td class="n">约 30 分</td><td class="n">4 元</td></tr>
-        <tr><td>市区 → 橘子洲</td><td>地铁 2 号线橘子洲站</td><td class="n">约 15 分</td><td class="n">3 元</td></tr>
+        <tr><td>五一广场 → 岳麓山</td><td>地铁 2 号线溁湾镇 / 4 号线湖南大学</td><td class="n">约 30 分</td><td class="n">4 元</td></tr>
+        <tr><td>五一广场 → 橘子洲</td><td>地铁 2 号线橘子洲站</td><td class="n">约 15 分</td><td class="n">3 元</td></tr>
+        <tr><td>五一广场 → 洋湖两馆</td><td>地铁 3 号线洋湖湿地 / 打车</td><td class="n">约 30 分</td><td class="n">4–35 元</td></tr>
       </tbody>
     </table>
   </div>
-  <p class="hint">长沙地铁运营到 23:00 左右发末班车，周五周六旺季可能延长 1 小时，但不要指望。深夜一律网约车。</p>
+  <p class="hint">长沙地铁 23:00 左右发末班车，旺季周五周六可能延长 1 小时，但不要指望。深夜一律网约车。</p>
 
   <h2>官方入口</h2>
   <ul>
-    <li><a href="https://www.hnmuseum.com/" rel="noopener">湖南博物院官网</a> — 预约规则与当日票量以官网／公众号为准</li>
-    <li><a href="https://ylsy.hnu.edu.cn/wbly/cgdn/ylxz.htm" rel="noopener">岳麓书院游览须知</a> — 票价、开放时间、预约方式</li>
+    <li><a href="https://www.hnmuseum.com/" rel="noopener">湖南博物院</a> — 免费但须实名预约，每晚 20:00 放第 7 天的票</li>
+    <li><a href="http://www.lizijianmsg.com/" rel="noopener">李自健美术馆</a> — 免费不免票，公众号领票，9:30–17:30，周一闭馆</li>
+    <li><a href="https://ylsy.hnu.edu.cn/wbly/cgdn/ylxz.htm" rel="noopener">岳麓书院游览须知</a> — 40 元，最多提前 3 天预约</li>
     <li><a href="https://www.hncsmtr.com/webapp/dt/yyskb.jsp" rel="noopener">长沙地铁运营时刻表</a> — 出行前核对当日首末班车</li>
   </ul>
 
-  <footer>信息核对于 2026-08-31，来自各景区官方公告与长沙地铁官网。预约规则、票量和运营时间随时会变，出行前请以官方公众号当日公告为准。</footer>
+  <footer>信息核对于 2026-08-31，来自各场馆官方公告与长沙地铁官网。预约规则、票量、开放时间随时会变，出行前请以官方公众号当日公告为准。</footer>
 </main>
 
 <script>
 (function () {
+  var SCHED = {
+    chill: {
+      note: '两天只去三个地方，其余时间用来坐着。周六去洋湖两座美术馆（免费、人少、室内），周日就在住处附近晃。',
+      days: [
+        { h: '周五 9/4 · 落地就睡', rows: [
+          ['23:28', '抵长沙南', 'G6026，虎门 20:15 出发', 1],
+          ['23:35', '网约车直接回酒店', '地铁已停运。别安排夜宵，明天不设闹钟才是重点', 0],
+          ['00:10', '睡', '这一晚不产出任何行程，是松弛版的前提', 0]
+        ] },
+        { h: '周六 9/5 · 一件正事', rows: [
+          ['10:00', '自然醒', '不设闹钟。醒了再说', 0],
+          ['11:00', '楼下嗦碗粉', '肆姐面粉馆、杨裕兴、甘长顺这类，本地人早午饭', 0],
+          ['12:30', '随便一家茶颜悦色', '市区几百家店，看到就进，不为它走路', 0],
+          ['13:30', '洋湖两座美术馆', '李自健免费领票，谢子龙一楼免费。隔湖相望，湖边草坪能躺', 1],
+          ['16:30', '湖边或咖啡馆坐着', '这段就是空的，不安排', 0],
+          ['18:30', '回城吃晚饭', '不排队的本地小馆。想吃费大厨就提前两小时取号', 0],
+          ['20:30', '湘江边散步', '江风比太平街的人流舒服。太平街想去就走一段，不必挤到底', 0]
+        ] },
+        { h: '周日 9/6 · 半天，别走远', rows: [
+          ['09:30', '起床，慢慢收拾', '行李寄存前台', 0],
+          ['10:30', '早午餐 + 咖啡', '潮宗街、都正街这类老街，咖啡馆密度高、人不多', 0],
+          ['12:30', '就近逛街买手信', '黄兴路步行街。文和友不排队就进，排就走', 0],
+          ['14:30', '找家店坐到走', '这两小时是留给"什么都不做"的', 0],
+          ['16:30', '出发去长沙南', '五一广场 2 号线直达约 25 分 + 安检。留足 1.5 小时', 1],
+          ['18:00', 'G6007 发车', '20:25 到虎门', 1]
+        ] }
+      ]
+    },
+    packed: {
+      note: '把能塞的都塞进去。要抢湖南博物院预约、要爬岳麓山、周日还要赶橘子洲。适合体力好且不介意排队的。',
+      days: [
+        { h: '周五 9/4 · 落地', rows: [
+          ['23:28', '抵长沙南', 'G6026，虎门 20:15 出发', 1],
+          ['23:35', '网约车去酒店', '地铁已停运', 0],
+          ['00:00', '放行李，出门吃夜宵', '坡子街、冬瓜山通宵。口味虾、嗦螺', 0]
+        ] },
+        { h: '周六 9/5 · 唯一的整天', rows: [
+          ['09:00', '湖南博物院', '9:00 开馆，16:00 停止入馆。马王堆是主线，2.5–3 小时', 1],
+          ['12:00', '午餐', '费大厨 / 笨萝卜 / 炊烟，先在小程序取号', 0],
+          ['14:00', '岳麓山 + 岳麓书院', '5–10 月书院 17:30 停售、18:00 闭馆，别拖', 1],
+          ['17:00', '爱晚亭 → 下山', '步行 40 分钟或坐索道', 0],
+          ['18:30', '过江回市区晚饭', '江边看落日', 0],
+          ['20:00', '五一广场 · 太平街 · IFS 楼顶', 'KAWS 雕塑在顶楼', 0]
+        ] },
+        { h: '周日 9/6 · 半天且要准时', rows: [
+          ['09:00', '橘子洲', '免费需预约，2 号线直达。来回 1.5–2 小时', 1],
+          ['11:30', '坡子街午餐 · 火宫殿', '臭豆腐、糖油粑粑、姊妹团子', 0],
+          ['13:30', '超级文和友 或 黄兴路', '文和友主要是拍照，排队看运气', 0],
+          ['16:30', '出发去长沙南', '2 号线 25 分 + 安检，留足 1.5 小时', 1],
+          ['18:00', 'G6007 发车', '20:25 到虎门', 1]
+        ] }
+      ]
+    }
+  };
+
   var TASKS = [
-    { id: 'hnm', t: '抢湖南博物院预约（9/5 或 9/6 上午场）', w: '每晚 20:00 放票，提前 7 天。常设免费但无预约不能入馆', due: '今晚就查' },
-    { id: 'ylsy', t: '约岳麓书院门票 40 元', w: '微信搜"岳麓书院"公众号，最多提前 3 天，即 9/2 起可约周六场', due: '9/2 起' },
-    { id: 'ylsn', t: '约岳麓山入园（免费）', w: '与书院是两个独立入口，只约山进不了书院', due: '9/2 起' },
-    { id: 'juzi', t: '约橘子洲入园（免费）', w: '周日上午场，节假日限流', due: '出发前' },
-    { id: 'hotel', t: '订五一广场／黄兴路一带的酒店', w: '两天行程都绕这里，省掉大量通勤', due: '越早越便宜' },
-    { id: 'taxi', t: '手机装好网约车 App 并绑好支付', w: '周五 23:28 落地时地铁已停运，出站直接叫车', due: '出发前' },
-    { id: 'queue', t: '存好费大厨／炊烟／笨萝卜的小程序', w: '到市区先取号，边逛边等，别到店干等两小时', due: '出发前' }
+    { id: 'hotel', t: '订五一广场／黄兴路一带的酒店', w: '确认 24 小时前台（你零点后到店）和周日下午的行李寄存', due: '越早越便宜', modes: ['chill', 'packed'] },
+    { id: 'taxi', t: '装好网约车 App 并绑支付', w: '周五 23:28 落地时地铁已停运，出站直接叫车', due: '出发前', modes: ['chill', 'packed'] },
+    { id: 'lzj', t: '领李自健美术馆免费票', w: '公众号预约，免费不免票，周一闭馆', due: '出发前', soft: 1, modes: ['chill'] },
+    { id: 'xzl', t: '看谢子龙当期展览要不要买票', w: '一楼免费，二三楼按展收费，随展览变', due: '出发前', soft: 1, modes: ['chill'] },
+    { id: 'hnm', t: '抢湖南博物院预约', w: '每晚 20:00 放第 7 天的票，热门时段当晚抢空', due: '今晚就查', modes: ['packed'] },
+    { id: 'ylsy', t: '约岳麓书院门票 40 元', w: '微信"岳麓书院"公众号，最多提前 3 天，9/2 起可约周六', due: '9/2 起', modes: ['packed'] },
+    { id: 'ylsn', t: '约岳麓山入园（免费）', w: '与书院是两个独立入口', due: '9/2 起', modes: ['packed'] },
+    { id: 'juzi', t: '约橘子洲入园（免费）', w: '周日上午场', due: '出发前', modes: ['packed'] },
+    { id: 'queue', t: '存好费大厨／炊烟的小程序', w: '到市区先取号，边逛边等', due: '出发前', soft: 1, modes: ['packed'] }
   ];
 
-  var ul = document.getElementById('todo');
-  var KEY = 'changsha-todo';
+  var KEY = 'changsha-todo', MKEY = 'changsha-mode';
   var done = {};
   try { done = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { done = {}; }
+  var mode = 'chill';
+  try { mode = localStorage.getItem(MKEY) || 'chill'; } catch (e) { /* private mode */ }
+  if (!SCHED[mode]) mode = 'chill';
 
-  TASKS.forEach(function (task) {
-    var li = document.createElement('li');
-    if (done[task.id]) li.className = 'done';
-    var box = document.createElement('input');
-    box.type = 'checkbox';
-    box.checked = !!done[task.id];
-    box.id = 'chk-' + task.id;
-    var label = document.createElement('label');
-    label.className = 'task';
-    label.htmlFor = box.id;
-    label.innerHTML = task.t + (task.due ? '<span class="due">' + task.due + '</span>' : '')
-      + '<span class="why">' + task.w + '</span>';
-    box.addEventListener('change', function () {
-      done[task.id] = box.checked;
-      li.className = box.checked ? 'done' : '';
-      try { localStorage.setItem(KEY, JSON.stringify(done)); } catch (e) { /* private mode */ }
+  function renderTodo() {
+    var ul = document.getElementById('todo');
+    ul.innerHTML = '';
+    TASKS.forEach(function (task) {
+      var on = task.modes.indexOf(mode) > -1;
+      var li = document.createElement('li');
+      li.className = (done[task.id] ? 'done ' : '') + (on ? '' : 'off');
+      var box = document.createElement('input');
+      box.type = 'checkbox';
+      box.checked = !!done[task.id];
+      box.id = 'chk-' + task.id;
+      var label = document.createElement('label');
+      label.className = 'task';
+      label.htmlFor = box.id;
+      label.innerHTML = task.t
+        + '<span class="due' + (task.soft ? ' soft' : '') + '">' + (on ? task.due : '本节奏用不上') + '</span>'
+        + '<span class="why">' + task.w + '</span>';
+      box.addEventListener('change', function () {
+        done[task.id] = box.checked;
+        li.className = (box.checked ? 'done ' : '') + (on ? '' : 'off');
+        try { localStorage.setItem(KEY, JSON.stringify(done)); } catch (e) { /* private mode */ }
+      });
+      li.appendChild(box);
+      li.appendChild(label);
+      ul.appendChild(li);
     });
-    li.appendChild(box);
-    li.appendChild(label);
-    ul.appendChild(li);
+  }
+
+  function renderSched() {
+    var s = SCHED[mode];
+    document.getElementById('mode-note').textContent = s.note;
+    var html = '';
+    s.days.forEach(function (d) {
+      html += '<h3>' + d.h + '</h3><div class="day">';
+      d.rows.forEach(function (r) {
+        html += '<div class="slot' + (r[3] ? ' fix' : '') + '"><span class="t">' + r[0] + '</span>'
+          + '<span class="w"><b>' + r[1] + '</b><em>' + r[2] + '</em></span></div>';
+      });
+      html += '</div>';
+    });
+    document.getElementById('sched').innerHTML = html;
+  }
+
+  [].forEach.call(document.querySelectorAll('.mode'), function (b) {
+    b.setAttribute('aria-pressed', String(b.dataset.m === mode));
+    b.addEventListener('click', function () {
+      mode = b.dataset.m;
+      try { localStorage.setItem(MKEY, mode); } catch (e) { /* private mode */ }
+      [].forEach.call(document.querySelectorAll('.mode'), function (o) {
+        o.setAttribute('aria-pressed', String(o.dataset.m === mode));
+      });
+      renderSched();
+      renderTodo();
+    });
   });
+
+  renderSched();
+  renderTodo();
 })();
 </script>
 </body>
