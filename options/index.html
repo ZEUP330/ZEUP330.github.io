@@ -43,6 +43,8 @@
   .sb-k { font-size: 11px; color: var(--ink-3); }
   .sb-v { font-size: 14px; font-variant-numeric: tabular-nums; }
   .sb-note { font-size: 12px; color: var(--ink-3); margin: 0; line-height: 1.6; }
+  .sb-note a { color: var(--accent); text-decoration: none; }
+  .sb-note a:hover { text-decoration: underline; }
   h1 { font-size: 26px; font-weight: 500; margin: 0 0 .5rem; letter-spacing: -.01em; }
   h2 { font-size: 18px; font-weight: 500; margin: 2.5rem 0 .75rem; }
   h3 { font-size: 15px; font-weight: 500; margin: 1.5rem 0 .5rem; }
@@ -363,8 +365,134 @@
     document.getElementById('sort').addEventListener('change', renderList);
     renderList();
     select(sorted()[0].symbol);
+    initRank();
     countdown();
     setInterval(countdown, 1000);
+  }
+
+  // ---- cross-symbol ranking -------------------------------------------------
+  var leg = 'puts', page = 0, PER_PAGE = 5;
+
+  function rankRows() {
+    var rows = [];
+    Object.values(data.symbols).forEach(function (v) {
+      (v[leg] || []).forEach(function (r) {
+        rows.push({
+          sym: v.symbol, group: v.group, iv30: v.iv30,
+          e: r.e, dte: r.dte, k: r.k, bid: r.bid, y: r.y, d: r.d,
+          cu: leg === 'puts' ? r.cu : r.up, sp: r.sp,
+          ratio: v.iv30 ? r.y / (v.iv30 / 100) : 0
+        });
+      });
+    });
+    var how = document.getElementById('rank-sort').value;
+    rows.sort(function (a, b) {
+      if (how === 'y') return b.y - a.y;
+      if (how === 'cushion') return (b.cu || 0) - (a.cu || 0);
+      if (how === 'delta') return Math.abs(a.d) - Math.abs(b.d);
+      if (how === 'dte') return a.dte - b.dte;
+      if (how === 'spread') return a.sp - b.sp;
+      return b.ratio - a.ratio;
+    });
+    return rows;
+  }
+
+  function flags(r) {
+    var f = [];
+    if (r.group === 'lev') f.push(['lev', '杠杆']);
+    if (Math.abs(r.d) >= 0.30) f.push(['d', 'Δ高']);
+    if (r.cu != null && r.cu < 0.05) f.push(['cu', '缓冲薄']);
+    if (r.sp > 0.15) f.push(['sp', '价差宽']);
+    if (r.dte <= 7) f.push(['dte', '临期']);
+    if (r.iv30 > 60) f.push(['iv', 'IV极高']);
+    return f.map(function (x) { return '<span class="flag ' + x[0] + '">' + x[1] + '</span>'; }).join('');
+  }
+
+  function renderRank() {
+    var rows = rankRows();
+    var pages = Math.max(1, Math.ceil(rows.length / PER_PAGE));
+    if (page >= pages) page = pages - 1;
+    if (page < 0) page = 0;
+    document.getElementById('rank-cu-h').textContent = leg === 'puts' ? '缓冲' : '上涨空间';
+    document.getElementById('rank-body').innerHTML =
+      rows.slice(page * PER_PAGE, page * PER_PAGE + PER_PAGE).map(function (r) {
+        return '<tr><td class="sym-cell">' + r.sym + '</td><td>' + r.e.slice(5) + '</td><td>' + Math.round(r.dte) + '</td>'
+          + '<td class="k">' + r.k + '</td><td>' + r.bid.toFixed(2) + '</td><td>' + pct(r.y) + '</td>'
+          + '<td>' + r.ratio.toFixed(2) + '</td><td>' + r.d.toFixed(2) + '</td><td>' + pct(r.cu) + '</td>'
+          + '<td class="hide-sm">' + pct(r.sp, 0) + '</td><td>' + (flags(r) || '—') + '</td></tr>';
+      }).join('');
+    document.getElementById('rank-info').textContent =
+      (rows.length ? (page * PER_PAGE + 1) + '–' + Math.min(rows.length, (page + 1) * PER_PAGE) : 0)
+      + ' / 共 ' + rows.length + ' 张 · 第 ' + (page + 1) + '/' + pages + ' 页';
+    document.getElementById('rank-prev').disabled = page === 0;
+    document.getElementById('rank-next').disabled = page >= pages - 1;
+  }
+
+  function initRank() {
+    var csp = document.getElementById('leg-csp'), cc = document.getElementById('leg-cc');
+    var pick = function (which, btn, other) {
+      leg = which; page = 0;
+      btn.setAttribute('aria-pressed', 'true');
+      other.setAttribute('aria-pressed', 'false');
+      renderRank();
+    };
+    csp.addEventListener('click', function () { pick('puts', csp, cc); });
+    cc.addEventListener('click', function () { pick('calls', cc, csp); });
+    document.getElementById('rank-sort').addEventListener('change', function () { page = 0; renderRank(); });
+    document.getElementById('rank-prev').addEventListener('click', function () { page--; renderRank(); });
+    document.getElementById('rank-next').addEventListener('click', function () { page++; renderRank(); });
+    renderRank();
+  }
+
+  // ---- forward vol between expiries ----------------------------------------
+  // A quoted IV is the average from today to that expiry, which smears an event
+  // across every tenor spanning it. Un-averaging into forward segments puts the
+  // premium back on the stretch of time the market is actually pricing.
+  var fwdChart = null;
+
+  function drawForward(v) {
+    var atmIdx = v.moneyness.indexOf(1);
+    var pts = (v.surface || [])
+      .map(function (r) { return { dte: r.dte, iv: atmIdx >= 0 ? r.iv[atmIdx] : null }; })
+      .filter(function (p) { return p.iv != null && p.dte > 0; })
+      .sort(function (a, b) { return a.dte - b.dte; });
+
+    var bars = [], labels = [], best = null;
+    for (var i = 1; i < pts.length; i++) {
+      var t1 = pts[i - 1].dte / 365, t2 = pts[i].dte / 365;
+      var s1 = pts[i - 1].iv, s2 = pts[i].iv;
+      var varF = (s2 * s2 * t2 - s1 * s1 * t1) / (t2 - t1);
+      var f = varF > 0 ? Math.sqrt(varF) * 100 : null;
+      labels.push(Math.round(pts[i - 1].dte) + '–' + Math.round(pts[i].dte) + ' 天');
+      bars.push(f);
+      if (f != null && (!best || f > best.f)) best = { f: f, from: pts[i - 1].dte, to: pts[i].dte };
+    }
+
+    document.getElementById('fwd-note').textContent = best
+      ? '最贵的一段是 ' + Math.round(best.from) + '–' + Math.round(best.to) + ' 天后，远期 IV ' + best.f.toFixed(1)
+        + '%。市场给那一段定的价最高：卖跨过它的合约收到的权利金更多，要承担的事件风险也在那里。'
+      : '这个标的的到期日太少或报价噪声太大，算不出可信的分段波动率。';
+
+    var ds = [{ label: '远期 IV', data: bars, backgroundColor: '#2a78d6', borderRadius: 4 }];
+    if (fwdChart) {
+      fwdChart.data.labels = labels;
+      fwdChart.data.datasets = ds;
+      fwdChart.update();
+      return;
+    }
+    fwdChart = new Chart(document.getElementById('fwd'), {
+      type: 'bar', data: { labels: labels, datasets: ds },
+      options: Object.assign({}, base, {
+        plugins: { legend: { display: false }, tooltip: { callbacks: {
+          label: function (c) { return c.parsed.y == null ? '报价噪声，无法计算' : '远期 IV ' + c.parsed.y.toFixed(1) + '%'; }
+        } } },
+        scales: {
+          x: { ticks: { color: GRAY, maxRotation: 45 }, grid: { display: false } },
+          y: { title: { display: true, text: '远期 IV（%）', color: GRAY }, ticks: { color: GRAY },
+               grid: { color: 'rgba(138,138,138,.22)' } }
+        }
+      })
+    });
   }
 
   // Mirrors the workflow's cron: weekdays at 14:00, 17:00, 19:00 and 19:55 UTC.
@@ -498,6 +626,7 @@
     }).join('');
     document.getElementById('d-calls-note').textContent = v.calls.length ? '' : '同上：这份快照没有符合条件的看涨合约。';
 
+    drawForward(v);
     drawSmile(v);
     drawHistory(sym);
     if (gl) drawSurface(v);
