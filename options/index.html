@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BTC 期权快照：微笑、曲面与期权链</title>
+<meta name="description" content="Deribit BTC 期权公开数据的定时快照：IV 微笑、IV 曲面、期权链与历史趋势。">
+<style>
+  :root {
+    --bg: #fcfcfb; --card: #ffffff; --ink: #0b0b0b; --ink-2: #52514e; --ink-3: #898781;
+    --line: #e1e0d9; --accent: #2a78d6; --call: #1baf7a; --put: #e34948;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #1a1a19; --card: #222221; --ink: #f0efec; --ink-2: #c3c2b7; --ink-3: #898781;
+            --line: #2c2c2a; --accent: #3987e5; --call: #199e70; --put: #e66767; }
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  body {
+    margin: 0; padding: 2rem 1.25rem 4rem; background: var(--bg); color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    line-height: 1.7; -webkit-font-smoothing: antialiased;
+  }
+  main { max-width: 760px; margin: 0 auto; }
+  h1 { font-size: 26px; font-weight: 500; margin: 0 0 .5rem; letter-spacing: -.01em; }
+  h2 { font-size: 18px; font-weight: 500; margin: 2.75rem 0 .75rem; }
+  p { color: var(--ink-2); margin: 0 0 1rem; }
+  .back { font-size: 14px; margin: 0 0 1rem; }
+  .back a { color: var(--ink-3); text-decoration: none; }
+  .back a:hover { color: var(--accent); }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin: 1.5rem 0; }
+  .stat { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: .85rem 1rem; }
+  .stat .k { font-size: 13px; color: var(--ink-3); }
+  .stat .v { font-size: 24px; font-weight: 500; font-variant-numeric: tabular-nums; margin-top: 2px; }
+  .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 0 0 .75rem; }
+  select, button { font: inherit; font-size: 14px; color: var(--ink); background: var(--card);
+    border: 1px solid var(--line); border-radius: 8px; padding: 7px 14px; cursor: pointer; }
+  select:hover, button:hover { border-color: var(--ink-3); }
+  label.pick { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-3); }
+  .legend { display: flex; flex-wrap: wrap; gap: 18px; font-size: 12px; color: var(--ink-2); margin-bottom: 8px; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .swatch { width: 16px; height: 2px; background: var(--accent); }
+  .swatch.call { background: var(--call); }
+  .swatch.put { background: var(--put); }
+  .swatch.dash { background: none; border-top: 2px dashed var(--ink-3); }
+  .chart { position: relative; height: 320px; }
+  .chart3d { height: 460px; }
+  .hint { font-size: 12px; color: var(--ink-3); margin: 0 0 1rem; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+  th, td { padding: 6px 5px; border-bottom: 1px solid var(--line); text-align: right; }
+  th { color: var(--ink-3); font-weight: 400; font-size: 12px; }
+  td.strike { text-align: center; font-weight: 500; background: var(--card); }
+  tr.atm td { color: var(--accent); }
+  .callside { color: var(--call); }
+  .putside { color: var(--put); }
+  .placeholder { background: var(--card); border: 1px dashed var(--line); border-radius: 12px;
+    padding: 2rem 1.25rem; text-align: center; color: var(--ink-3); font-size: 14px; }
+  ul.links { padding-left: 1.1rem; margin: 0; }
+  ul.links li { color: var(--ink-3); font-size: 14px; margin-bottom: .5rem; }
+  ul.links a { color: var(--accent); text-decoration: none; }
+  ul.links a:hover { text-decoration: underline; }
+  footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--line);
+    font-size: 13px; color: var(--ink-3); }
+</style>
+</head>
+<body>
+<main>
+  <p class="back"><a href="../">← 首页</a></p>
+  <h1>BTC 期权快照</h1>
+  <p class="lede" id="lede">数据由 GitHub Actions 每 4 小时抓一次 Deribit 公开接口，算好后提交进仓库，这个页面只读静态 JSON —— 没有后端，也没有 API key。</p>
+
+  <div id="empty" class="placeholder" hidden>
+    还没有快照数据。等第一次 Actions 跑完（或手动触发 <code>options snapshot</code> 工作流）后刷新本页。
+  </div>
+
+  <div id="app" hidden>
+    <div class="stats">
+      <div class="stat"><div class="k">BTC 指数</div><div class="v" id="s-index">—</div></div>
+      <div class="stat"><div class="k">近 30 天 ATM IV</div><div class="v" id="s-atm">—</div></div>
+      <div class="stat"><div class="k">Put/Call 未平仓比</div><div class="v" id="s-pcr">—</div></div>
+      <div class="stat"><div class="k">在挂到期日</div><div class="v" id="s-exp">—</div></div>
+    </div>
+    <p class="hint" id="asof">—</p>
+
+    <h2>IV 微笑</h2>
+    <div class="toolbar">
+      <label class="pick">到期日
+        <select id="expiry"></select>
+      </label>
+    </div>
+    <div class="legend">
+      <span><i class="swatch call"></i>看涨 IV</span>
+      <span><i class="swatch put"></i>看跌 IV</span>
+      <span><i class="swatch dash"></i>远期价格</span>
+    </div>
+    <div class="chart"><canvas id="smile" role="img" aria-label="隐含波动率对行权价的曲线，两端高中间低，形成微笑或偏斜。">隐含波动率随行权价变化的微笑曲线。</canvas></div>
+    <p class="hint">两翼高、中间低就是「微笑」；左高右低是「偏斜」，说明市场为下跌保护付的溢价更高。</p>
+
+    <h2>IV 曲面</h2>
+    <div class="toolbar"><button id="load3d" type="button">加载 3D 曲面</button></div>
+    <p class="hint" id="hint3d" hidden>拖动旋转，滚轮缩放。X 轴是行权价／远期价（1.0 即平值），Y 轴是剩余天数，高度是 IV。</p>
+    <div class="chart chart3d" id="wrap3d" hidden></div>
+
+    <h2>期权链</h2>
+    <div class="legend">
+      <span><i class="swatch call"></i>看涨</span>
+      <span><i class="swatch put"></i>看跌</span>
+      <span>标价单位为 BTC，IV 为 %，OI 为张数</span>
+    </div>
+    <div style="overflow-x: auto;">
+      <table id="chain">
+        <thead>
+          <tr>
+            <th class="callside">OI</th><th class="callside">标价</th><th class="callside">IV</th>
+            <th>行权价</th>
+            <th class="putside">IV</th><th class="putside">标价</th><th class="putside">OI</th>
+          </tr>
+        </thead>
+        <tbody id="chain-body"></tbody>
+      </table>
+    </div>
+    <p class="hint">只列远期价上下各 12 档，蓝色行是最接近平值的一档。</p>
+
+    <h2>历史趋势</h2>
+    <p class="hint" id="hist-note">每次快照追加一条记录。cron 会被 GitHub 延迟或跳过，所以点位间隔不均匀，横轴按真实时间画。</p>
+    <div class="legend"><span><i class="swatch"></i>近 30 天 ATM IV（%）</span></div>
+    <div class="chart" style="height: 220px;"><canvas id="h-iv" role="img" aria-label="平值隐含波动率随时间变化的折线图。">ATM IV 历史。</canvas></div>
+    <div class="legend" style="margin-top: 1.25rem;"><span><i class="swatch"></i>BTC 指数价（USD）</span></div>
+    <div class="chart" style="height: 220px;"><canvas id="h-px" role="img" aria-label="BTC 指数价格随时间变化的折线图。">BTC 指数价历史。</canvas></div>
+  </div>
+
+  <h2>数据与口径</h2>
+  <ul class="links">
+    <li><a href="https://docs.deribit.com/" rel="noopener">Deribit API 文档</a> — 用的是 <code>public/get_book_summary_by_currency</code> 与 <code>public/get_index_price</code>，公开只读，无需鉴权</li>
+    <li>IV 取交易所的 <code>mark_iv</code>（标记波动率），不是自己反解 BS 得来的</li>
+    <li>曲面按 OTM 惯例取值：行权价低于远期价用看跌一侧，高于则用看涨一侧，再按 行权价／远期价 插值到统一网格</li>
+    <li><a href="./data/options.json" rel="noopener">options.json</a> · <a href="./data/history.json" rel="noopener">history.json</a> — 原始快照，直接可下载</li>
+  </ul>
+
+  <footer>行情为快照，非实时，仅作数据可视化演示，不构成任何投资建议。加密期权波动极大，别拿这页面做交易决策。</footer>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+(function () {
+  var CALL = '#1baf7a', PUT = '#e34948', GRAY = '#8a8a8a', BLUE = '#3b82f6';
+  var num = function (v, d) { return v == null ? '—' : (+v).toLocaleString('en-US', { maximumFractionDigits: d == null ? 0 : d }); };
+  var base = { responsive: true, maintainAspectRatio: false, animation: { duration: 200 },
+    interaction: { mode: 'index', intersect: false }, plugins: { legend: { display: false } } };
+  var axis = function (xLabel, yLabel) {
+    return {
+      x: { title: { display: true, text: xLabel, color: GRAY }, ticks: { color: GRAY, maxTicksLimit: 10 }, grid: { display: false } },
+      y: { title: { display: true, text: yLabel, color: GRAY }, ticks: { color: GRAY }, grid: { color: 'rgba(138,138,138,.22)' } }
+    };
+  };
+
+  var data = null, gl = null, glReady = null, smileChart = null;
+  var sel = document.getElementById('expiry');
+
+  function script(src) {
+    return new Promise(function (ok, fail) {
+      var s = document.createElement('script');
+      s.src = src; s.onload = ok; s.onerror = fail;
+      document.head.appendChild(s);
+    });
+  }
+
+  Promise.all([
+    fetch('./data/options.json', { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
+    fetch('./data/history.json', { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : []; }).catch(function () { return []; })
+  ]).then(function (res) {
+    data = res[0];
+    if (!data || !data.expiries || !data.expiries.length) {
+      document.getElementById('empty').hidden = false;
+      return;
+    }
+    document.getElementById('app').hidden = false;
+    boot(res[1] || []);
+  });
+
+  function boot(history) {
+    var last = history.length ? history[history.length - 1] : null;
+    document.getElementById('s-index').textContent = '$' + num(data.index);
+    document.getElementById('s-atm').textContent = last && last.atm_iv ? last.atm_iv.toFixed(1) + '%' : '—';
+    document.getElementById('s-pcr').textContent = last && last.pcr ? last.pcr.toFixed(2) : '—';
+    document.getElementById('s-exp').textContent = data.expiries.length;
+    document.getElementById('asof').textContent =
+      '快照时间 ' + new Date(data.t).toLocaleString('zh-CN', { hour12: false }) + '（本地时区）· 共 '
+      + data.expiries.reduce(function (n, e) { return n + e.k.length; }, 0) + ' 个行权价';
+
+    data.expiries.forEach(function (e, i) {
+      var o = document.createElement('option');
+      o.value = i;
+      o.textContent = e.expiry + '（' + Math.round(e.days) + ' 天）';
+      sel.appendChild(o);
+    });
+    sel.value = String(data.expiries.reduce(function (b, e, i) {
+      return Math.abs(e.days - 30) < Math.abs(data.expiries[b].days - 30) ? i : b;
+    }, 0));
+
+    smileChart = new Chart(document.getElementById('smile'), {
+      type: 'line',
+      data: { datasets: [
+        { label: '看涨 IV', borderColor: CALL, borderWidth: 2, tension: .3, pointRadius: 0, spanGaps: true, data: [] },
+        { label: '看跌 IV', borderColor: PUT, borderWidth: 2, tension: .3, pointRadius: 0, spanGaps: true, data: [] },
+        { label: '远期价', borderColor: GRAY, borderWidth: 2, borderDash: [6, 4], pointRadius: 0, data: [] }
+      ] },
+      options: Object.assign({}, base, {
+        plugins: { legend: { display: false }, tooltip: { callbacks: {
+          title: function (t) { return '行权价 $' + num(t[0].parsed.x); },
+          label: function (c) { return c.dataset.label + '：' + (c.parsed.y == null ? '—' : c.parsed.y.toFixed(1) + '%'); }
+        } } },
+        scales: Object.assign(axis('行权价（USD）', '隐含波动率（%）'), { x: Object.assign(axis('行权价（USD）', '')['x'], { type: 'linear' }) })
+      })
+    });
+
+    drawSmile();
+    drawChain();
+    drawHistory(history);
+    sel.addEventListener('change', function () { drawSmile(); drawChain(); });
+  }
+
+  function drawSmile() {
+    var e = data.expiries[+sel.value];
+    var pair = function (arr) { return e.k.map(function (s, i) { return { x: s, y: arr[i] }; }); };
+    var ivs = e.civ.concat(e.piv).filter(function (v) { return v != null; });
+    var top = Math.max.apply(null, ivs) * 1.05;
+    smileChart.data.datasets[0].data = pair(e.civ);
+    smileChart.data.datasets[1].data = pair(e.piv);
+    smileChart.data.datasets[2].data = [{ x: e.fwd, y: 0 }, { x: e.fwd, y: top }];
+    smileChart.options.scales.y.max = Math.ceil(top);
+    smileChart.update();
+    if (gl) drawSurface();
+  }
+
+  function drawChain() {
+    var e = data.expiries[+sel.value];
+    var atm = e.k.reduce(function (b, s, i) { return Math.abs(s - e.fwd) < Math.abs(e.k[b] - e.fwd) ? i : b; }, 0);
+    var from = Math.max(0, atm - 12), to = Math.min(e.k.length, atm + 13);
+    var rows = '';
+    for (var i = from; i < to; i++) {
+      rows += '<tr' + (i === atm ? ' class="atm"' : '') + '>'
+        + '<td>' + num(e.coi[i]) + '</td><td>' + (e.cmk[i] == null ? '—' : e.cmk[i].toFixed(4)) + '</td>'
+        + '<td>' + (e.civ[i] == null ? '—' : e.civ[i].toFixed(1)) + '</td>'
+        + '<td class="strike">' + num(e.k[i]) + '</td>'
+        + '<td>' + (e.piv[i] == null ? '—' : e.piv[i].toFixed(1)) + '</td>'
+        + '<td>' + (e.pmk[i] == null ? '—' : e.pmk[i].toFixed(4)) + '</td><td>' + num(e.poi[i]) + '</td></tr>';
+    }
+    document.getElementById('chain-body').innerHTML = rows;
+  }
+
+  function drawHistory(history) {
+    if (history.length < 2) {
+      document.getElementById('hist-note').textContent = '只有 ' + history.length + ' 条记录，等更多快照累积后这里才有趋势可看。';
+    }
+    var mk = function (id, key, label, unit) {
+      new Chart(document.getElementById(id), {
+        type: 'line',
+        data: { datasets: [{ label: label, borderColor: BLUE, borderWidth: 2, tension: .25,
+          pointRadius: history.length < 40 ? 3 : 0, pointBackgroundColor: BLUE, spanGaps: true,
+          data: history.map(function (h) { return { x: h.t, y: h[key] }; }) }] },
+        options: Object.assign({}, base, {
+          plugins: { legend: { display: false }, tooltip: { callbacks: {
+            title: function (t) { return new Date(t[0].parsed.x).toLocaleString('zh-CN', { hour12: false }); },
+            label: function (c) { return label + '：' + num(c.parsed.y, 2) + unit; }
+          } } },
+          scales: {
+            x: { type: 'linear', ticks: { color: GRAY, maxTicksLimit: 7, callback: function (v) {
+                  return new Date(v).toLocaleDateString('zh-CN', { month: 'numeric', day: 'numeric' }); } },
+                 grid: { display: false } },
+            y: { ticks: { color: GRAY }, grid: { color: 'rgba(138,138,138,.22)' } }
+          }
+        })
+      });
+    };
+    mk('h-iv', 'atm_iv', 'ATM IV', '%');
+    mk('h-px', 'index', 'BTC 指数', ' USD');
+  }
+
+  // Rows can have holes where a wing has no quotes; carry the nearest value out
+  // to the edges so surface3D gets a complete rectangular grid.
+  function filled(row) {
+    var out = row.slice(), i, seen = null;
+    for (i = 0; i < out.length; i++) { if (out[i] == null) out[i] = seen; else seen = out[i]; }
+    seen = null;
+    for (i = out.length - 1; i >= 0; i--) { if (out[i] == null) out[i] = seen; else seen = out[i]; }
+    return out;
+  }
+
+  function drawSurface() {
+    var rows = data.surface.filter(function (r) { return r.iv.some(function (v) { return v != null; }); });
+    var grid = [], lo = Infinity, hi = -Infinity;
+    rows.forEach(function (r) {
+      filled(r.iv).forEach(function (v, i) {
+        if (v == null) return;
+        grid.push([data.moneyness[i], r.days, v]);
+        if (v < lo) lo = v;
+        if (v > hi) hi = v;
+      });
+    });
+    if (!gl) { gl = echarts.init(document.getElementById('wrap3d'), null, { renderer: 'canvas' }); }
+    gl.setOption({
+      backgroundColor: 'transparent',
+      tooltip: { formatter: function (p) {
+        return '行权价／远期价 ' + p.value[0].toFixed(2) + '<br>剩余 ' + Math.round(p.value[1]) + ' 天<br>IV ' + p.value[2].toFixed(1) + '%';
+      } },
+      visualMap: { show: false, dimension: 2, min: lo, max: hi,
+        inRange: { color: ['#1b3a6b', '#2a78d6', '#5dcaa5', '#eda100', '#e34948'] } },
+      xAxis3D: { type: 'value', name: 'K / F' },
+      yAxis3D: { type: 'value', name: '天数' },
+      zAxis3D: { type: 'value', name: 'IV %', min: Math.floor(lo) },
+      grid3D: {
+        boxWidth: 118, boxDepth: 85, boxHeight: 70, top: -30,
+        axisLine: { lineStyle: { color: GRAY } },
+        axisLabel: { color: GRAY, fontSize: 11 },
+        splitLine: { lineStyle: { color: 'rgba(138,138,138,.25)' } },
+        environment: 'auto',
+        light: { main: { intensity: 1.4, shadow: true, alpha: 38, beta: 40 }, ambient: { intensity: .35 } },
+        viewControl: { alpha: 22, beta: 42, distance: 205, autoRotate: false, damping: .85 }
+      },
+      series: [{
+        type: 'surface', shading: 'realistic', wireframe: { show: false },
+        realisticMaterial: { roughness: .5, metalness: 0 },
+        dataShape: [rows.length, data.moneyness.length],
+        data: grid
+      }]
+    });
+    requestAnimationFrame(function () { gl.resize(); });
+  }
+
+  document.getElementById('load3d').addEventListener('click', function () {
+    var btn = this, wrap = document.getElementById('wrap3d'), hint = document.getElementById('hint3d');
+    if (!wrap.hidden) { wrap.hidden = true; hint.hidden = true; btn.textContent = '加载 3D 曲面'; return; }
+    btn.textContent = '加载中…';
+    if (!glReady) {
+      glReady = script('https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js')
+        .then(function () { return script('https://cdn.jsdelivr.net/npm/echarts-gl@2.0.9/dist/echarts-gl.min.js'); });
+    }
+    glReady.then(function () {
+      wrap.hidden = false; hint.hidden = false;
+      btn.textContent = '收起 3D 曲面';
+      drawSurface();
+    }, function () { btn.textContent = '加载失败，检查网络'; });
+  });
+
+  window.addEventListener('resize', function () { if (gl) gl.resize(); });
+})();
+</script>
+</body>
+</html>
