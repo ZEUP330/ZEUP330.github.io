@@ -218,6 +218,48 @@
     </div>
     <p class="hint">风险标签是机械判定：<b>杠杆</b> = 三倍杠杆 ETF，<b>Δ高</b> = |Δ| ≥ 0.30（被指派概率约三成以上），<b>缓冲薄</b> = 行权价离现价不到 5%，<b>价差宽</b> = 超过中间价 15%，<b>临期</b> = DTE ≤ 7，<b>IV极高</b> = IV30 &gt; 60。标签越多不等于不能做，只说明这一张的钱是从哪儿来的。</p>
 
+    <h2>两个标的对比</h2>
+    <p>直接比「各自年化最高的那张」没有意义 —— Δ 不同、DTE 不同，等于拿不同的风险换不同的钱。这里按<b>同一个 Δ 目标</b>各挑一张最接近的合约来比，价格轴也统一成 行权价／现价，两个价位差十倍的标的才放得到一张图上。</p>
+    <div class="toolbar">
+      <label>A <select id="cmp-a"></select></label>
+      <label>B <select id="cmp-b"></select></label>
+      <label>Δ 目标
+        <select id="cmp-delta">
+          <option value="0.15">0.15（少被指派）</option>
+          <option value="0.20">0.20</option>
+          <option value="0.25" selected>0.25（常用）</option>
+          <option value="0.30">0.30（收得多）</option>
+        </select>
+      </label>
+      <label>腿
+        <select id="cmp-leg">
+          <option value="puts">CSP 现金担保看跌</option>
+          <option value="calls">CC 备兑看涨</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="scroll">
+      <table>
+        <thead><tr><th>指标</th><th id="cmp-ha">A</th><th id="cmp-hb">B</th><th>差</th></tr></thead>
+        <tbody id="cmp-body"></tbody>
+      </table>
+    </div>
+    <p class="hint" id="cmp-note"></p>
+
+    <h3>IV 微笑叠放</h3>
+    <div class="legend">
+      <span><i class="swatch" id="lg-a-sw"></i><span id="lg-a">A</span></span>
+      <span><i class="swatch" id="lg-b-sw" style="background:#eb6834"></i><span id="lg-b">B</span></span>
+      <span><i class="swatch dash"></i>平值（K/S = 1）</span>
+    </div>
+    <div class="chart" style="height:260px"><canvas id="cmp-smile" role="img" aria-label="两个标的的隐含波动率微笑曲线叠放对比，横轴为行权价除以现价。">两标的 IV 微笑对比。</canvas></div>
+    <p class="hint">横轴统一成 行权价／现价：1.0 是平值，左侧是卖看跌会用到的价外区。曲线整体越高说明期权越贵，左翼越陡说明市场为下跌保护要价越凶。</p>
+
+    <h3>分段远期波动率对比</h3>
+    <div class="chart" style="height:260px"><canvas id="cmp-fwd" role="img" aria-label="两个标的在各到期段之间的远期隐含波动率对比柱状图。">两标的远期波动率对比。</canvas></div>
+    <p class="hint" id="cmp-fwd-note">同样按相邻到期反解分段波动率。两根柱子在同一段差得越多，说明市场对这两个标的在那段时间的事件预期差得越多。</p>
+
     <div id="detail">
       <h2 id="d-title">—</h2>
       <div class="stats">
@@ -366,6 +408,7 @@
     renderList();
     select(sorted()[0].symbol);
     initRank();
+    initCompare();
     countdown();
     setInterval(countdown, 1000);
   }
@@ -442,6 +485,192 @@
     document.getElementById('rank-prev').addEventListener('click', function () { page--; renderRank(); });
     document.getElementById('rank-next').addEventListener('click', function () { page++; renderRank(); });
     renderRank();
+  }
+
+  // ---- two-symbol comparison ------------------------------------------------
+  var A_COLOR = '#2a78d6', B_COLOR = '#eb6834';
+  var cmpSmile = null, cmpFwd = null;
+
+  // Use the delta ladder the screener stores, not the top-by-yield list: that
+  // list is always clustered at the highest delta it is allowed to hold, so
+  // asking it for 0.15 would silently hand back a 0.30 contract.
+  function atDelta(v, legKey, target) {
+    var rung = v.ladder && v.ladder[legKey] && v.ladder[legKey][target];
+    if (rung) return rung;
+    var list = v[legKey] || [];
+    if (!list.length) return null;
+    return list.reduce(function (best, r) {
+      return Math.abs(Math.abs(r.d) - target) < Math.abs(Math.abs(best.d) - target) ? r : best;
+    });
+  }
+
+  // ATM IV per expiry, then forward vol between adjacent expiries.
+  function fwdSeries(v) {
+    var atmIdx = v.moneyness.indexOf(1);
+    var pts = (v.surface || [])
+      .map(function (r) { return { dte: r.dte, iv: atmIdx >= 0 ? r.iv[atmIdx] : null }; })
+      .filter(function (p) { return p.iv != null && p.dte > 0; })
+      .sort(function (a, b) { return a.dte - b.dte; });
+    var out = [];
+    for (var i = 1; i < pts.length; i++) {
+      var t1 = pts[i - 1].dte / 365, t2 = pts[i].dte / 365;
+      var vf = (pts[i].iv * pts[i].iv * t2 - pts[i - 1].iv * pts[i - 1].iv * t1) / (t2 - t1);
+      out.push({ from: pts[i - 1].dte, to: pts[i].dte, f: vf > 0 ? Math.sqrt(vf) * 100 : null });
+    }
+    return out;
+  }
+
+  function renderCompare() {
+    var a = data.symbols[document.getElementById('cmp-a').value];
+    var b = data.symbols[document.getElementById('cmp-b').value];
+    if (!a || !b) return;
+    var legKey = document.getElementById('cmp-leg').value;
+    var target = +document.getElementById('cmp-delta').value;
+    var ra = atDelta(a, legKey, String(target)), rb = atDelta(b, legKey, String(target));
+    var isPut = legKey === 'puts';
+
+    document.getElementById('cmp-ha').textContent = a.symbol;
+    document.getElementById('cmp-hb').textContent = b.symbol;
+    document.getElementById('lg-a').textContent = a.symbol;
+    document.getElementById('lg-b').textContent = b.symbol;
+    document.getElementById('lg-a-sw').style.background = A_COLOR;
+
+    var rows = [
+      ['现价', usd(a.spot), usd(b.spot), null],
+      ['IV30', a.iv30 == null ? '—' : a.iv30.toFixed(1), b.iv30 == null ? '—' : b.iv30.toFixed(1),
+        a.iv30 != null && b.iv30 != null ? (a.iv30 - b.iv30).toFixed(1) : null],
+      ['Put/Call 未平仓比', a.pcr == null ? '—' : a.pcr.toFixed(2), b.pcr == null ? '—' : b.pcr.toFixed(2), null],
+      ['在挂合约', num(a.contracts), num(b.contracts), null]
+    ];
+
+    if (ra && rb) {
+      var yd = (ra.y - rb.y) * 100;
+      var cua = isPut ? ra.cu : ra.up, cub = isPut ? rb.cu : rb.up;
+      rows.push(
+        ['实际 Δ', ra.d.toFixed(2), rb.d.toFixed(2), null],
+        ['到期 / DTE', ra.e.slice(5) + '（' + Math.round(ra.dte) + '天）', rb.e.slice(5) + '（' + Math.round(rb.dte) + '天）', null],
+        ['行权价', String(ra.k), String(rb.k), null],
+        ['权利金', ra.bid.toFixed(2), rb.bid.toFixed(2), null],
+        ['年化', pct(ra.y), pct(rb.y), (yd >= 0 ? '+' : '') + yd.toFixed(1) + 'pp'],
+        ['年化 ÷ IV30',
+          a.iv30 ? (ra.y / (a.iv30 / 100)).toFixed(2) : '—',
+          b.iv30 ? (rb.y / (b.iv30 / 100)).toFixed(2) : '—',
+          a.iv30 && b.iv30 ? (ra.y / (a.iv30 / 100) - rb.y / (b.iv30 / 100)).toFixed(2) : null],
+        [isPut ? '缓冲' : '上涨空间', pct(cua), pct(cub), null],
+        ['价差', pct(ra.sp, 0), pct(rb.sp, 0), null],
+        ['未平仓', num(ra.oi), num(rb.oi), null]
+      );
+    }
+
+    document.getElementById('cmp-body').innerHTML = rows.map(function (r) {
+      var d = r[3] == null ? '—' : r[3];
+      var cls = r[3] == null ? '' : (parseFloat(r[3]) >= 0 ? ' class="up"' : ' class="down"');
+      return '<tr><td>' + r[0] + '</td><td>' + r[1] + '</td><td>' + r[2] + '</td><td' + cls + '>' + d + '</td></tr>';
+    }).join('');
+
+    var note = document.getElementById('cmp-note');
+    if (!ra || !rb) {
+      note.textContent = (!ra ? a.symbol : b.symbol) + ' 在这份快照里没有该腿的候选合约，只能比上面几行通用指标。';
+    } else {
+      var richer = ra.y >= rb.y ? a : b, lean = ra.y >= rb.y ? b : a;
+      var rr = ra.y >= rb.y ? ra : rb, rl = ra.y >= rb.y ? rb : ra;
+      var off = Math.max(Math.abs(Math.abs(ra.d) - target), Math.abs(Math.abs(rb.d) - target));
+      note.textContent = (off > 0.04 ? '这份快照里没有正好落在 Δ≈' + target + ' 的合约，用的是最接近的两张（见上面「实际 Δ」）。' : '')
+        + '在 Δ≈' + target + ' 这档，' + richer.symbol + ' 的年化是 ' + pct(rr.y)
+        + '，' + lean.symbol + ' 是 ' + pct(rl.y) + '。差价基本来自 IV：'
+        + richer.symbol + ' 的 IV30 是 ' + (richer.iv30 == null ? '—' : richer.iv30.toFixed(1))
+        + '，' + lean.symbol + ' 是 ' + (lean.iv30 == null ? '—' : lean.iv30.toFixed(1))
+        + '。多收的权利金是波动率的价格，不是白捡的。';
+    }
+
+    drawCmpSmile(a, b);
+    drawCmpFwd(a, b);
+  }
+
+  function drawCmpSmile(a, b) {
+    var mk = function (v, color) {
+      var e = v.smile && v.smile[0];
+      if (!e) return null;
+      var pts = e.k.map(function (k, i) {
+        var iv = k < v.spot ? (e.piv[i] == null ? e.civ[i] : e.piv[i]) : (e.civ[i] == null ? e.piv[i] : e.civ[i]);
+        return iv == null ? null : { x: k / v.spot, y: iv * 100 };
+      }).filter(Boolean);
+      return { label: v.symbol, borderColor: color, borderWidth: 2, tension: .3,
+        pointRadius: 0, spanGaps: true, data: pts };
+    };
+    var sets = [mk(a, A_COLOR), mk(b, B_COLOR)].filter(Boolean);
+    var all = sets.reduce(function (t, s) { return t.concat(s.data.map(function (p) { return p.y; })); }, []);
+    var top = all.length ? Math.max.apply(null, all) * 1.08 : 100;
+    sets.push({ label: '平值', borderColor: GRAY, borderWidth: 2, borderDash: [6, 4], pointRadius: 0,
+      data: [{ x: 1, y: 0 }, { x: 1, y: top }] });
+
+    if (cmpSmile) { cmpSmile.data.datasets = sets; cmpSmile.options.scales.y.max = Math.ceil(top); cmpSmile.update(); return; }
+    cmpSmile = new Chart(document.getElementById('cmp-smile'), {
+      type: 'line', data: { datasets: sets },
+      options: Object.assign({}, base, {
+        plugins: { legend: { display: false }, tooltip: { callbacks: {
+          title: function (t) { return 'K/S ' + t[0].parsed.x.toFixed(3); },
+          label: function (c) { return c.dataset.label + '：' + c.parsed.y.toFixed(1) + '%'; }
+        } } },
+        scales: {
+          x: { type: 'linear', title: { display: true, text: '行权价 / 现价', color: GRAY },
+               ticks: { color: GRAY, maxTicksLimit: 8 }, grid: { display: false } },
+          y: { max: Math.ceil(top), title: { display: true, text: 'IV（%）', color: GRAY },
+               ticks: { color: GRAY }, grid: { color: 'rgba(138,138,138,.22)' } }
+        }
+      })
+    });
+  }
+
+  function drawCmpFwd(a, b) {
+    var fa = fwdSeries(a), fb = fwdSeries(b);
+    // Expiry calendars differ between symbols, so bucket both onto shared DTE
+    // bins instead of pretending bar i of A and bar i of B cover the same span.
+    var BINS = [[0, 14], [14, 30], [30, 60], [60, 120], [120, 400]];
+    var pick = function (series, lo, hi) {
+      var hits = series.filter(function (s) { return s.f != null && s.from < hi && s.to > lo; });
+      if (!hits.length) return null;
+      return hits.reduce(function (t, s) { return t + s.f; }, 0) / hits.length;
+    };
+    var labels = BINS.map(function (x) { return x[0] + '–' + x[1] + ' 天'; });
+    var sets = [
+      { label: a.symbol, data: BINS.map(function (x) { return pick(fa, x[0], x[1]); }), backgroundColor: A_COLOR, borderRadius: 4 },
+      { label: b.symbol, data: BINS.map(function (x) { return pick(fb, x[0], x[1]); }), backgroundColor: B_COLOR, borderRadius: 4 }
+    ];
+    if (cmpFwd) { cmpFwd.data.labels = labels; cmpFwd.data.datasets = sets; cmpFwd.update(); return; }
+    cmpFwd = new Chart(document.getElementById('cmp-fwd'), {
+      type: 'bar', data: { labels: labels, datasets: sets },
+      options: Object.assign({}, base, {
+        plugins: { legend: { display: false }, tooltip: { callbacks: {
+          label: function (c) { return c.dataset.label + '：' + (c.parsed.y == null ? '无数据' : c.parsed.y.toFixed(1) + '%'); }
+        } } },
+        scales: {
+          x: { ticks: { color: GRAY }, grid: { display: false } },
+          y: { title: { display: true, text: '远期 IV（%）', color: GRAY }, ticks: { color: GRAY },
+               grid: { color: 'rgba(138,138,138,.22)' } }
+        }
+      })
+    });
+  }
+
+  function initCompare() {
+    var list = Object.values(data.symbols);
+    var a = document.getElementById('cmp-a'), b = document.getElementById('cmp-b');
+    list.forEach(function (v) {
+      [a, b].forEach(function (sel) {
+        var o = document.createElement('option');
+        o.value = v.symbol;
+        o.textContent = v.symbol + '（' + (GROUPS[v.group] || '') + '）';
+        sel.appendChild(o);
+      });
+    });
+    var withPuts = list.filter(function (v) { return v.puts.length; });
+    a.value = (withPuts[0] || list[0]).symbol;
+    b.value = (withPuts.find(function (v) { return v.group === 'lev'; }) || withPuts[1] || list[1]).symbol;
+    ['cmp-a', 'cmp-b', 'cmp-delta', 'cmp-leg'].forEach(function (id) {
+      document.getElementById(id).addEventListener('change', renderCompare);
+    });
+    renderCompare();
   }
 
   // ---- forward vol between expiries ----------------------------------------

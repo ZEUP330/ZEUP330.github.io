@@ -1,0 +1,53 @@
+name: housing index
+
+on:
+  schedule:
+    # NBS publishes the 70-city release mid-month, and the upstream mirror picks
+    # it up within a day or two. Checking on the 18th, 20th and 24th costs three
+    # runs a month and tolerates a late upstream update; the commit step no-ops
+    # when the CSV has not changed.
+    - cron: '20 3 18,20,24 * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: housing-index
+  cancel-in-progress: false
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build province/city index series
+        run: node scripts/fetch-house-index.mjs
+
+      - name: Commit snapshot
+        run: |
+          set -euo pipefail
+          git config user.name 'ZEUP330'
+          git config user.email '37589028+ZEUP330@users.noreply.github.com'
+          git add mortgage/data
+          if git diff --cached --quiet; then
+            echo 'no change'
+            exit 0
+          fi
+          # Same squash rule as the options workflow: amend onto the previous
+          # housing commit so the repo does not carry one 290KB blob per run,
+          # and only when HEAD is itself a housing commit.
+          if git log -1 --pretty=%s | grep -q '^data: housing index$'; then
+            git commit --amend --no-edit --date=now
+            git push --force-with-lease origin HEAD:main
+          else
+            git commit -m 'data: housing index'
+            git push origin HEAD:main
+          fi

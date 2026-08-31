@@ -38,6 +38,11 @@ const MAX_SPREAD_ABS = 0.1;
 const MAX_SPREAD_PCT = 0.3;
 const TOP_PUTS = 8;
 const TOP_CALLS = 5;
+// Delta rungs kept so the page can compare two symbols at the SAME delta.
+// Ranking by yield alone always returns the highest-delta contracts, so a
+// top-N-by-yield list cannot answer "what does 0.15 pay on each of these".
+const DELTA_LADDER = [0.15, 0.20, 0.25, 0.30];
+const LADDER_IDEAL_DTE = 30;
 
 const MONEYNESS = [];
 for (let m = 0.8; m <= 1.2001; m += 0.025) MONEYNESS.push(+m.toFixed(4));
@@ -134,6 +139,28 @@ function screen(raw, now) {
     be: r.breakeven == null ? null : r2(r.breakeven)
   });
 
+  // Closest contract to each delta rung, tie-broken toward a ~30 day tenor so
+  // the two symbols being compared also sit at a similar time to expiry.
+  const rung = (pool, target) => {
+    if (!pool.length) return null;
+    const best = pool.reduce((acc, r) => {
+      const d = Math.abs(Math.abs(r.delta) - target);
+      const accD = Math.abs(Math.abs(acc.delta) - target);
+      if (d < accD - 0.005) return r;
+      if (d > accD + 0.005) return acc;
+      return Math.abs(r.dte - LADDER_IDEAL_DTE) < Math.abs(acc.dte - LADDER_IDEAL_DTE) ? r : acc;
+    });
+    return Math.abs(Math.abs(best.delta) - target) <= 0.08 ? best : null;
+  };
+
+  const ladder = { puts: {}, calls: {} };
+  for (const t of DELTA_LADDER) {
+    const p = rung(puts, t);
+    const c = rung(calls, t);
+    if (p) ladder.puts[t] = trim(p);
+    if (c) ladder.calls[t] = trim(c);
+  }
+
   // Surface over the standard expiries, OTM side of each strike.
   const byExpiry = new Map();
   for (const r of rows) {
@@ -184,6 +211,7 @@ function screen(raw, now) {
     med_spread: r4(med(puts.map((p) => p.spread))),
     puts: puts.slice(0, TOP_PUTS).map(trim),
     calls: calls.slice(0, TOP_CALLS).map(trim),
+    ladder,
     moneyness: MONEYNESS,
     surface,
     smile
