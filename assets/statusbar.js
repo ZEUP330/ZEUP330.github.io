@@ -113,7 +113,9 @@
     + '<button class="zb-draw" id="zb-draw" type="button">🎋 抽一签</button>'
     + '</div>'
     + '<div class="zb-panel" id="zb-panel" hidden><div class="zb-inner">'
-    + '<p class="zb-h">数据更新</p><div class="zb-sets" id="zb-sets"></div>'
+    + '<div class="zb-top"><p class="zb-h">数据更新</p>'
+    + '<button class="zb-small" id="zb-close" type="button">收起 ▴</button></div>'
+    + '<div class="zb-sets" id="zb-sets"></div>'
     + '<p class="zb-note">时间来自各自的 GitHub Actions 工作流。cron 会排队，实际可能晚 10–30 分钟，'
     + '高负载时整次跳过 —— 倒计时是计划时间，不是保证。</p>'
     + '<div class="zb-slip" id="zb-slip" hidden>'
@@ -144,6 +146,12 @@
       toggle.setAttribute('aria-expanded', String(yes));
     };
     toggle.addEventListener('click', function () { open(panel.hidden); });
+    // The draw button turns into a redraw once a slip is showing, so without a
+    // second control there is no visible way back out of the expanded panel.
+    document.getElementById('zb-close').addEventListener('click', function () {
+      open(false);
+      bar.scrollIntoView({ block: 'start' });
+    });
 
     function render(lot, isRedraw) {
       lotEl.textContent = lot.n;
