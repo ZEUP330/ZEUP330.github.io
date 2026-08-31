@@ -108,10 +108,11 @@
     </div>
     <div class="maphead">
       <button id="map-back" type="button" class="mini" hidden>← 返回全国</button>
+      <button id="map-zoom" type="button" class="mini" hidden>放大</button>
       <span class="maplevel" id="map-level">全国 · 双击省份放大到市级</span>
     </div>
     <div class="chart map" id="chinamap"></div>
-    <p class="hint" id="map-note">点省份看细节。色阶固定在 ±15%（覆盖全序列 95% 的月份），2016 年那种极端涨幅会顶到色阶尽头；不随当月自适应，否则平静的月份和疯狂的月份会长得一样。台湾、西藏、香港、澳门不在 70 城样本内，显示为无数据。</p>
+    <p class="hint" id="map-note">点省份看细节，双击（手机点「放大到…」）进入该省的市级地图。色阶固定在 ±15%（覆盖全序列 95% 的月份），2016 年那种极端涨幅会顶到色阶尽头；不随当月自适应，否则平静的月份和疯狂的月份会长得一样。台湾、西藏、香港、澳门不在 70 城样本内，显示为无数据。</p>
 
     <div id="prov-detail" hidden>
       <h3 id="prov-title">—</h3>
@@ -229,6 +230,7 @@
   function drawMap() {
     var i = +slider.value, key = typeSel.value;
     document.getElementById('map-month-out').textContent = hp.months[i];
+    if (level) { drawProvinceMap(i, key); return; }
     var data = Object.values(hp.provinces).map(function (p) {
       return { name: p.prov, value: p[key][i], n: p.cities.length };
     });
@@ -281,6 +283,9 @@
     }
     curProv = name;
     detail.hidden = false;
+    var zoomBtn = document.getElementById('map-zoom');
+    zoomBtn.hidden = !!level || !!MUNICIPALITY[name] || !PROVINCE_PY[name];
+    zoomBtn.textContent = '放大到 ' + name;
     var key = typeSel.value, i = +slider.value, series = p[key];
     var seen = series.filter(function (v) { return v != null; });
     document.getElementById('prov-title').textContent = name + ' · ' + hp.months[i];
@@ -359,6 +364,95 @@
     provChart.update('none');
   }
 
+  // ---- drill down ----
+  function drillInto(name) {
+    if (MUNICIPALITY[name]) {
+      document.getElementById('map-level').textContent =
+        name + ' 是直辖市：这套数据只有一个市级数值，没有区级数据，放大进去也是一片空白，所以不放大。';
+      return;
+    }
+    var py = PROVINCE_PY[name];
+    if (!py) return;
+    document.getElementById('map-level').textContent = '正在加载 ' + name + ' …';
+    var got = geoCache[py]
+      ? Promise.resolve(geoCache[py])
+      : fetch('https://cdn.jsdelivr.net/npm/echarts@4.9.0/map/json/province/' + py + '.json')
+          .then(function (r) {
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            return r.json();
+          })
+          .then(function (g) { geoCache[py] = g; echarts.registerMap(py, g); return g; });
+
+    got.then(function () {
+      level = name;
+      // Geometry changes, so the province option has to be built from scratch;
+      // the per-frame data-only path resumes after this first render.
+      mapChart.__level = null;
+      document.getElementById('map-back').hidden = false;
+      document.getElementById('map-zoom').hidden = true;
+      drawMap();
+      showProvince(name);
+    }).catch(function (err) {
+      document.getElementById('map-level').textContent = name + ' 的地图加载失败：' + err.message;
+    });
+  }
+
+  function backToChina() {
+    level = null;
+    mapChart.__level = null;
+    document.getElementById('map-back').hidden = true;
+    document.getElementById('map-zoom').hidden = !curProv || !!MUNICIPALITY[curProv];
+    document.getElementById('map-zoom').textContent = curProv ? '放大到 ' + curProv : '放大';
+    document.getElementById('map-level').textContent = '全国 · 双击省份放大到市级';
+    mapChart.clear();
+    mapChart.__ready = false;
+    drawMap();
+  }
+
+  function drawProvinceMap(i, key) {
+    var py = PROVINCE_PY[level];
+    var rows = hp.cities.filter(function (c) { return c.prov === level; });
+    var byName = {};
+    rows.forEach(function (c) { byName[c.city] = c; });
+    var feats = geoCache[py].features.map(function (f) { return f.properties.name; });
+    var data = feats.map(function (f) {
+      var c = byName[normName(f)];
+      return { name: f, value: c ? c[key][i] : null };
+    });
+    var covered = data.filter(function (d) { return d.value != null; }).length;
+
+    document.getElementById('map-level').textContent =
+      level + ' · ' + hp.months[i] + ' · ' + feats.length + ' 个地级单位中 ' + covered + ' 个在 70 城样本内';
+
+    if (mapChart.__level === level) {
+      mapChart.setOption({ series: [{ data: data }] });
+      return;
+    }
+    mapChart.__level = level;
+    mapChart.setOption({
+      backgroundColor: 'transparent',
+      tooltip: {
+        formatter: function (p) {
+          if (p.value == null || isNaN(p.value)) return p.name + '<br>不在 70 城样本内';
+          return p.name + '<br>' + hp.months[+slider.value] + ' 同比 '
+            + (p.value > 0 ? '+' : '') + p.value.toFixed(1) + '%';
+        }
+      },
+      visualMap: {
+        min: -15, max: 15, left: 'left', bottom: 20, calculable: true,
+        text: ['涨 ≥15%', '跌 ≤−15%'], precision: 1,
+        textStyle: { color: '#8a8a8a' },
+        inRange: { color: [DOWN, '#cfe8dd', '#f0efec', '#f6cfcf', UP] }
+      },
+      series: [{
+        type: 'map', map: py, roam: false, data: data,
+        label: { show: true, fontSize: 10, color: '#8a8a8a', formatter: function (p) { return normName(p.name); } },
+        itemStyle: { areaColor: 'rgba(138,138,138,.15)', borderColor: 'rgba(138,138,138,.5)', borderWidth: .5 },
+        emphasis: { label: { show: true, color: '#0b0b0b' }, itemStyle: { areaColor: null } }
+      }]
+    }, true);
+  }
+
   function stopPlay() {
     if (playTimer) { clearInterval(playTimer); playTimer = null; }
     document.getElementById('map-play').textContent = '▶ 播放';
@@ -373,6 +467,8 @@
     if (wrap.hidden) stopPlay(); else if (mapChart) mapChart.resize();
   });
 
+  document.getElementById('map-back').addEventListener('click', backToChina);
+  document.getElementById('map-zoom').addEventListener('click', function () { if (curProv) drillInto(curProv); });
   slider.addEventListener('input', function () { drawMap(); if (curProv) showProvince(curProv); });
   typeSel.addEventListener('change', function () { drawMap(); if (curProv) showProvince(curProv); });
 
