@@ -58,6 +58,18 @@
     border: 1px solid currentColor; margin-left: 6px; }
   .tag.halt { color: var(--danger); }
 
+  /* Own height, not .chart's: that rule is declared later and would win. */
+  .citymap { position: relative; height: 460px; }
+  @media (max-width: 640px) { .citymap { height: 340px; } }
+  .fold { border-top: 1px solid var(--line); margin: 2.5rem 0 1rem; }
+  .fold > summary { display: flex; align-items: baseline; gap: 10px; cursor: pointer;
+    list-style: none; padding: .35rem 0; }
+  .fold > summary::-webkit-details-marker { display: none; }
+  .fold > summary::after { content: '展开'; margin-left: auto; font-size: 13px; color: var(--accent); }
+  .fold[open] > summary::after { content: '收起'; }
+  .fold > summary h2 { margin: 0; }
+  .fold > summary:hover h2 { color: var(--accent); }
+  .fold .cnt { font-size: 12px; color: var(--ink-3); }
   .legend { display: flex; flex-wrap: wrap; gap: 16px; font-size: 12px; color: var(--ink-2); margin-bottom: 8px; }
   .sw.ring { background: none; border: 1.5px solid var(--ink-3); border-radius: 50%; width: 10px; height: 10px; }
   #timeline svg, #smalls svg { display: block; width: 100%; height: auto; }
@@ -111,14 +123,16 @@
     <div class="owns" id="owns"></div>
     <p class="hint" id="own-note"></p>
 
-    <h2>逐家回撤</h2>
-    <div class="legend">
-      <span><i class="sw" style="background:var(--private)"></i>民营</span>
-      <span><i class="sw" style="background:var(--mixed)"></i>混合 / 地方国资</span>
-      <span><i class="sw" style="background:var(--soe)"></i>央企 / 国资</span>
-      <span>条越长跌得越多</span>
-    </div>
-    <ul class="firms" id="firms"></ul>
+    <details class="fold">
+      <summary><h2>逐家回撤</h2><span class="cnt" id="firms-count"></span></summary>
+      <div class="legend">
+        <span><i class="sw" style="background:var(--private)"></i>民营</span>
+        <span><i class="sw" style="background:var(--mixed)"></i>混合 / 地方国资</span>
+        <span><i class="sw" style="background:var(--soe)"></i>央企 / 国资</span>
+        <span>条越长跌得越多</span>
+      </div>
+      <ul class="firms" id="firms"></ul>
+    </details>
 
     <h2>暴雷时间轴</h2>
     <div class="legend">
@@ -155,11 +169,17 @@
   <div id="cityblock" hidden>
     <h2>这场崩塌落在哪些城市</h2>
     <p id="city-lede"></p>
-    <div class="legend">
-      <span><i class="sw" style="background:var(--private)"></i>跌幅最大的 10 个</span>
-      <span><i class="sw" style="background:var(--soe)"></i>最抗跌的 10 个</span>
-    </div>
-    <ul class="firms" id="cities"></ul>
+    <div class="citymap" id="citymap"></div>
+    <p class="hint">点越大跌得越多，颜色同理。房价指数由 70 城同比逐月累乘还原，衡量的是各城市距<b>自己</b>指数最高点的距离，不是绝对房价。</p>
+
+    <details class="fold">
+      <summary><h2>逐城明细</h2><span class="cnt" id="cities-count"></span></summary>
+      <div class="legend">
+        <span><i class="sw" style="background:var(--private)"></i>跌幅最大的 10 个</span>
+        <span><i class="sw" style="background:var(--soe)"></i>最抗跌的 10 个</span>
+      </div>
+      <ul class="firms" id="cities"></ul>
+    </details>
     <p class="hint" id="city-note"></p>
   </div>
 
@@ -329,6 +349,7 @@
 
     drawTimeline();
     drawSmalls();
+    document.getElementById('firms-count').textContent = data.firms.length + ' 家';
 
     var priv = data.byOwn.filter(function (b) { return b.own === 'private'; })[0];
     var soe = data.byOwn.filter(function (b) { return b.own === 'soe'; })[0];
@@ -368,6 +389,8 @@
   function drawCities() {
     if (!data.cities || !data.cities.length) return;
     document.getElementById('cityblock').hidden = false;
+    document.getElementById('cities-count').textContent = data.cities.length + ' 城';
+    drawCityMap();
     var cs = data.cities, m = data.cityMeta;
     var mid = cs[Math.floor(cs.length / 2)].dd;
     var nearPeak = cs.filter(function (c) { return c.dd > -0.05; }).length;
@@ -441,6 +464,61 @@
         }
       }
     });
+  }
+
+  // Scatter on a china base rather than a choropleth: the unit here is a city,
+  // and colouring whole provinces would spread one city's number across land it
+  // says nothing about. Coordinates are resolved in the build script.
+  function drawCityMap() {
+    var pts = data.cities.filter(function (c) { return c.lng != null && c.lat != null; });
+    if (!pts.length) return;
+    var host = document.getElementById('citymap');
+
+    var s1 = document.createElement('script');
+    s1.src = 'https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js';
+    s1.onload = function () {
+      fetch('https://cdn.jsdelivr.net/npm/echarts@4.9.0/map/json/china.json')
+        .then(function (r) { return r.json(); })
+        .then(function (geo) {
+          echarts.registerMap('china', geo);
+          var chart = echarts.init(host, null, { renderer: 'canvas' });
+          var worst = Math.min.apply(null, pts.map(function (c) { return c.dd; }));
+          chart.setOption({
+            backgroundColor: 'transparent',
+            tooltip: {
+              formatter: function (p) {
+                var c = p.data.c;
+                return c.city + '（' + c.prov + '）<br>距自身最高点 ' + pct(c.dd)
+                  + '<br>最高点 ' + c.peakMonth + '，已过去 ' + c.monthsSincePeak + ' 个月';
+              }
+            },
+            geo: {
+              map: 'china', roam: false, silent: true,
+              itemStyle: { areaColor: 'rgba(138,138,138,.12)', borderColor: 'rgba(138,138,138,.45)', borderWidth: .5 }
+            },
+            visualMap: {
+              min: worst, max: 0, left: 'left', bottom: 16, calculable: true,
+              text: ['持平', '跌得最多'], precision: 0,
+              textStyle: { color: GRAY },
+              formatter: function (v) { return Math.round(v * 100) + '%'; },
+              inRange: { color: ['#7f1d1d', '#e34948', '#eda100', '#9fe1cb'] }
+            },
+            series: [{
+              type: 'scatter', coordinateSystem: 'geo',
+              data: pts.map(function (c) {
+                return { name: c.city, value: [c.lng, c.lat, c.dd], c: c };
+              }),
+              symbolSize: function (v) { return 5 + Math.sqrt(Math.abs(v[2])) * 26; },
+              itemStyle: { opacity: .85 },
+              emphasis: { label: { show: true, formatter: function (p) { return p.data.c.city; }, position: 'top', color: 'inherit' } }
+            }]
+          });
+          window.addEventListener('resize', function () { chart.resize(); });
+        })
+        .catch(function () { host.textContent = '地图加载失败'; });
+    };
+    s1.onerror = function () { host.textContent = '地图组件加载失败'; };
+    document.head.appendChild(s1);
   }
 
   var reflow;

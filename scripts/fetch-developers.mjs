@@ -147,6 +147,63 @@ try {
     };
   }).sort((a, b) => a.dd - b.dd);
 
+  // Coordinates come from echarts' own province GeoJSONs, where every
+  // prefecture feature carries a `cp` centre point. Resolving them here rather
+  // than in the browser keeps the page from fetching 30 map files just to plot
+  // 70 dots. Names carry an administrative suffix in the map (广州市) and none
+  // in the data (广州), so they are normalised the same way the housing map does.
+  const PROVINCE_PY = {
+    11: 'beijing', 12: 'tianjin', 13: 'hebei', 14: 'shanxi', 15: 'neimenggu',
+    21: 'liaoning', 22: 'jilin', 23: 'heilongjiang', 31: 'shanghai', 32: 'jiangsu',
+    33: 'zhejiang', 34: 'anhui', 35: 'fujian', 36: 'jiangxi', 37: 'shandong',
+    41: 'henan', 42: 'hubei', 43: 'hunan', 44: 'guangdong', 45: 'guangxi',
+    46: 'hainan', 50: 'chongqing', 51: 'sichuan', 52: 'guizhou', 53: 'yunnan',
+    61: 'shanxi1', 62: 'gansu', 63: 'qinghai', 64: 'ningxia', 65: 'xinjiang'
+  };
+  const normName = (x) => x
+    .replace(/(市|地区|自治州|盟|特别行政区)$/, '')
+    .replace(/(回族|蒙古族|藏族|维吾尔族|壮族|傣族|白族|哈尼族|彝族|苗族|侗族|朝鲜族|土家族|自治)/g, '');
+
+  const geoCache = new Map();
+  let located = 0;
+  for (const c of cities) {
+    const py = PROVINCE_PY[+String(c.adcode).slice(0, 2)];
+    if (!py) continue;
+    if (!geoCache.has(py)) {
+      try {
+        const res = await fetch(`https://cdn.jsdelivr.net/npm/echarts@4.9.0/map/json/province/${py}.json`);
+        geoCache.set(py, res.ok ? await res.json() : null);
+      } catch { geoCache.set(py, null); }
+      await new Promise((r) => setTimeout(r, 120));
+    }
+    const geo = geoCache.get(py);
+    if (!geo) continue;
+    // Municipalities subdivide into districts, so the city itself is the whole
+    // province outline - take the province centre instead of a district's.
+    const feat = geo.features.find((f) => normName(f.properties.name) === c.city);
+    const cp = feat ? feat.properties.cp : null;
+    if (cp) { c.lng = +cp[0].toFixed(4); c.lat = +cp[1].toFixed(4); located++; }
+  }
+
+  // The four municipalities have no matching prefecture feature - their province
+  // file lists districts - so fall back to the province centre in china.json.
+  const stillMissing = cities.filter((c) => c.lng == null);
+  if (stillMissing.length) {
+    try {
+      const res = await fetch('https://cdn.jsdelivr.net/npm/echarts@4.9.0/map/json/china.json');
+      const cn = res.ok ? await res.json() : null;
+      if (cn) {
+        for (const c of stillMissing) {
+          const f = cn.features.find((x) => x.properties.name === c.prov);
+          const cp = f && f.properties.cp;
+          if (cp) { c.lng = +cp[0].toFixed(4); c.lat = +cp[1].toFixed(4); located++; }
+        }
+      }
+    } catch { /* leave them unplotted; the page filters on lng */ }
+  }
+  const missing = cities.filter((c) => c.lng == null).map((c) => c.city);
+  console.log(`city coordinates: ${located}/${cities.length}${missing.length ? ' · missing ' + missing.join(',') : ''}`);
+
   out.cities = cities;
   out.cityMeta = { months: months.length, from: months[0], to: months[months.length - 1], series: '新建商品住宅' };
   console.log(`\ncities: ${cities.length} · worst ${cities[0].city} ${(cities[0].dd * 100).toFixed(1)}%`
