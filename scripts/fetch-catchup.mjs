@@ -21,7 +21,12 @@ const INDICATORS = {
   pcap: 'NY.GDP.PCAP.KD',       // 人均 GDP，2015 年不变价美元 - 发展阶段
   savings: 'NY.GNS.ICTR.ZS',    // 总储蓄占 GDP
   invest: 'NE.GDI.TOTL.ZS',     // 资本形成总额占 GDP
-  fdiOut: 'BM.KLT.DINV.WD.GD.ZS' // 对外直接投资净流出占 GDP
+  fdiOut: 'BM.KLT.DINV.WD.GD.ZS', // 对外直接投资净流出占 GDP
+  // 用来检验辜朝明的核心机制：被追赶阶段「没人愿意借钱」。日本的这条线在
+  // 2000-2010 年真的塌了，中国的却在创新高 —— 同一个框架套不上两边。
+  credit: 'FS.AST.PRVT.GD.ZS',   // 私人部门信贷占 GDP
+  old65: 'SP.POP.65UP.TO.ZS',    // 65 岁以上人口占比
+  pppcap: 'NY.GDP.PCAP.PP.KD'    // 人均 GDP，购买力平价不变价 - 跨国比收入水平
 };
 
 // Who is being pursued, and by whom. Koo's point is about the one in front, so
@@ -92,6 +97,15 @@ const countries = Object.fromEntries(Object.entries(COUNTRIES).map(([iso, name])
   savings: years.map((y) => round(at('savings', iso, y), 2)),
   invest: years.map((y) => round(at('invest', iso, y), 2)),
   fdiOut: years.map((y) => round(at('fdiOut', iso, y), 3)),
+  credit: years.map((y) => round(at('credit', iso, y), 1)),
+  old65: years.map((y) => round(at('old65', iso, y), 2)),
+  pppcap: years.map((y) => round(at('pppcap', iso, y), 0)),
+  // Income relative to the US on the same PPP basis. Japan was caught up with
+  // from ~80% of US income; China is being caught from about a third of it.
+  relUS: years.map((y) => {
+    const me = at('pppcap', iso, y), us = at('pppcap', 'USA', y);
+    return me == null || !us ? null : +((me / us) * 100).toFixed(1);
+  }),
   // The signature Koo describes: savings stay high while domestic investment
   // falls away, so the surplus has to leave the country or be absorbed by the
   // government. Positive means saving more than the economy invests at home.
