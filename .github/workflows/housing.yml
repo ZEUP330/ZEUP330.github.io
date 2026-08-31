@@ -31,6 +31,17 @@ jobs:
       - name: Build province/city index series
         run: node scripts/fetch-house-index.mjs
 
+      # Sidecar for the shared status bar: every page shows this dataset's
+      # freshness, and the full index is ~290KB - far too heavy to fetch just
+      # to read one timestamp.
+      - name: Write status sidecar
+        run: |
+          node -e "
+            const fs = require('node:fs');
+            const d = JSON.parse(fs.readFileSync('housing/data/house-index.json', 'utf8'));
+            fs.writeFileSync('housing/data/status.json', JSON.stringify({ t: d.t, latest: d.latest }));
+          "
+
       - name: Commit snapshot
         run: |
           set -euo pipefail

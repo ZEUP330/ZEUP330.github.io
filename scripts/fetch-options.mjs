@@ -245,6 +245,12 @@ out.failures = failures;
 
 mkdirSync('options/data', { recursive: true });
 writeFileSync('options/data/options.json', JSON.stringify(out));
+// Tiny sidecar so the shared status bar can show freshness on every page
+// without pulling the whole snapshot down.
+writeFileSync('options/data/status.json', JSON.stringify({
+  t: now, symbols: got, failures: failures.length,
+  feed: Object.values(out.symbols)[0].feed_time
+}));
 
 let history = [];
 try { history = JSON.parse(readFileSync('options/data/history.json', 'utf8')); } catch { /* first run */ }

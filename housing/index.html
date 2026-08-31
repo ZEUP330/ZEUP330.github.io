@@ -56,6 +56,9 @@
     border-radius: 50%; background: var(--accent); cursor: pointer; }
   .map-time output { font-size: 14px; font-variant-numeric: tabular-nums; min-width: 5.5em; text-align: right; }
   .play { flex: none; font-size: 13px; padding: 5px 12px; }
+  .maphead { display: flex; align-items: center; gap: 10px; margin: 0 0 .4rem; min-height: 30px; }
+  .maplevel { font-size: 13px; color: var(--ink-3); }
+  .mini { font-size: 13px; padding: 4px 12px; border-radius: 999px; flex: none; }
   ul.links { padding-left: 1.1rem; margin: 0; }
   ul.links li { color: var(--ink-3); font-size: 14px; margin-bottom: .5rem; }
   ul.links a { color: var(--accent); text-decoration: none; }
@@ -74,6 +77,8 @@
     .chart.map { height: 340px; }
   }
 </style>
+<link rel="stylesheet" href="/assets/statusbar.css">
+<script src="/assets/statusbar.js" defer></script>
 </head>
 <body>
 <main>
@@ -100,6 +105,10 @@
       <button id="map-play" type="button" class="play">▶ 播放</button>
       <input type="range" id="map-month" min="0" max="0" value="0" step="1" aria-label="月份">
       <output id="map-month-out">—</output>
+    </div>
+    <div class="maphead">
+      <button id="map-back" type="button" class="mini" hidden>← 返回全国</button>
+      <span class="maplevel" id="map-level">全国 · 双击省份放大到市级</span>
     </div>
     <div class="chart map" id="chinamap"></div>
     <p class="hint" id="map-note">点省份看细节。色阶固定在 ±15%（覆盖全序列 95% 的月份），2016 年那种极端涨幅会顶到色阶尽头；不随当月自适应，否则平静的月份和疯狂的月份会长得一样。台湾、西藏、香港、澳门不在 70 城样本内，显示为无数据。</p>
@@ -143,6 +152,33 @@
   var UP = '#e34948', DOWN = '#1baf7a';
   var pctTxt = function (v) { return v == null ? '—' : (v > 0 ? '+' : '') + v.toFixed(1) + '%'; };
 
+  // null = national view; otherwise the Chinese name of the province drilled into.
+  var level = null, geoCache = {};
+
+  // echarts@4 ships one GeoJSON per province under map/json/province/<pinyin>.
+  // 山西 is `shanxi` and 陕西 is `shanxi1` - an easy pair to swap by accident.
+  var PROVINCE_PY = {
+    '北京': 'beijing', '天津': 'tianjin', '河北': 'hebei', '山西': 'shanxi', '内蒙古': 'neimenggu',
+    '辽宁': 'liaoning', '吉林': 'jilin', '黑龙江': 'heilongjiang', '上海': 'shanghai',
+    '江苏': 'jiangsu', '浙江': 'zhejiang', '安徽': 'anhui', '福建': 'fujian', '江西': 'jiangxi',
+    '山东': 'shandong', '河南': 'henan', '湖北': 'hubei', '湖南': 'hunan', '广东': 'guangdong',
+    '广西': 'guangxi', '海南': 'hainan', '重庆': 'chongqing', '四川': 'sichuan', '贵州': 'guizhou',
+    '云南': 'yunnan', '陕西': 'shanxi1', '甘肃': 'gansu', '青海': 'qinghai', '宁夏': 'ningxia',
+    '新疆': 'xinjiang', '西藏': 'xizang', '台湾': 'taiwan', '香港': 'xianggang', '澳门': 'aomen'
+  };
+  // The four municipalities subdivide into districts, but the 70-city series
+  // carries a single city-level number for each, so there is nothing to colour
+  // district by district. Drilling in would paint invented detail.
+  var MUNICIPALITY = { '北京': 1, '天津': 1, '上海': 1, '重庆': 1 };
+
+  // Map feature names carry the administrative suffix ("广州市") while the data
+  // uses the bare name ("广州"). Verified to match every sampled city across all
+  // 26 non-municipal provinces before this was wired up.
+  function normName(s) {
+    return s.replace(/(市|地区|自治州|盟|特别行政区)$/, '')
+      .replace(/(回族|蒙古族|藏族|维吾尔族|壮族|傣族|白族|哈尼族|彝族|苗族|侗族|朝鲜族|土家族|自治)/g, '');
+  }
+
   function script(src) {
     return new Promise(function (ok, fail) {
       var s = document.createElement('script');
@@ -175,7 +211,8 @@
         btn.textContent = '收起地图';
         btn.dataset.loaded = '1';
         mapChart = echarts.init(document.getElementById('chinamap'), null, { renderer: 'canvas' });
-        mapChart.on('click', function (p) { if (p.name) showProvince(p.name); });
+        mapChart.on('click', function (p) { if (p.name && !level) showProvince(p.name); });
+        mapChart.on('dblclick', function (p) { if (p.name && !level) drillInto(p.name); });
         drawMap();
         showProvince('广东');
       })
