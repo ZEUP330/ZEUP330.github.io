@@ -170,12 +170,22 @@
   <h2>反证：这套框架哪里靠不住</h2>
   <p>下面三条不是立场，是拿同一套世界银行数据去撞这个框架的结果。</p>
 
+  <h3>零、如果框架成立，这张图上该有一条斜线</h3>
+  <p>框架的隐含预测是：<b>越靠近技术前沿、身后追兵越多的经济体，储蓄投资缺口应该越大</b>。把各国最近一年的「人均收入相当于美国的百分比」当作被追赶程度的代理，对上缺口，画出来是这样：</p>
+  <div class="chart"><canvas id="scatter-chart" role="img" aria-label="各经济体相对美国收入水平与储蓄投资缺口的散点图，两者没有明显关系。">相对收入与储蓄投资缺口的散点图。</canvas></div>
+  <p class="hint" id="scatter-note"></p>
+  <p>没有斜线。最刺眼的是英国和韩国：相对收入几乎一样（70.2% 与 72.4%），缺口一个 −2.5%、一个 +6.5%，符号都相反。扩到 235 个国家—年度观测，相关系数同样接近零。</p>
+  <p class="hint">代理变量有局限：相对收入不等于「被追赶程度」，样本只有 7 个经济体，相关系数也不能证明因果。但这张图至少说明，框架预测的那个方向性关系在数据里不明显。</p>
+
   <h3>一、最被追赶的经济体，没有出现被追赶的症状</h3>
   <p>按这个框架自己的定义，美国是被追得最凶的：中国占它 GDP 的比例从 40 年前的 7.1% 涨到现在的 63.4%。但美国身上一个症状都对不上 —— 储蓄减投资的缺口<b>一直是负的</b>（2024 年 −4.9%），私人部门信贷占 GDP 长期在 190% 以上还在涨，企业照样在国内借钱投资。</p>
   <p>也就是说，「被追赶」并不能预测「借款人消失」。框架把两件事绑在一起，但数据里它们可以分开。辜朝明的解释是里根减税提高了国内回报率，可这等于承认：被追赶不是充分条件，政策才是变量 —— 那这个阶段划分还剩多少解释力，就是个问题。</p>
 
   <h3>二、德国那条线更像欧元的故事，不像被追赶的故事</h3>
-  <p>德国的储蓄投资缺口在 2000 年还是 −1.8%，到 2015 年摆到 +8.1%。时间点很尴尬：欧元 1999 年启动，哈茨改革 2003–2005 年落地，德国在一个不能贬值的固定汇率区里靠压工资拿到了巨额顺差。把这条曲线记在「被追赶」账上，还是记在「加入货币联盟 + 工资抑制」账上，数据本身分不出来 —— 但后者有明确的时间对应。</p>
+  <p>德国的储蓄投资缺口在 2000 年还是 −1.8%，到 2015 年摆到 +8.1%。把两个制度性事件标在同一条时间轴上：</p>
+  <div class="chart"><canvas id="germany-chart" role="img" aria-label="德国储蓄投资缺口时间序列，标注欧元启动与哈茨改革的时点。">德国储蓄投资缺口与制度事件时点。</canvas></div>
+  <p class="hint">竖线为欧元启动（1999）与哈茨改革实施期（2003–2005）。缺口的转正与陡升正好落在这两件事之后。</p>
+  <p>德国在一个不能贬值的固定汇率区里靠压工资拿到了巨额顺差。把这条曲线记在「被追赶」账上，还是记在「加入货币联盟 + 工资抑制」账上，数据本身分不出来 —— 但后者有明确的时间对应，而「被追赶」没有对应的时点。</p>
 
   <h3>三、拐点没有判定标准，所以证伪不了</h3>
   <p>刘易斯拐点还能拿劳动力市场数据吵，「被追赶拐点」没有公认的量化门槛。结果是：任何一个陷入停滞的经济体，都可以事后被归进第三阶段；而任何一个没停滞的（比如美国），可以说它靠政策扛住了。<b>一个怎样都对的框架，预测能力是零。</b>批评者说它「答案写在谜面上」，指的就是这个。</p>
@@ -185,10 +195,17 @@
 
   <h3>一、信贷方向完全相反</h3>
   <p>辜朝明的机制核心是<b>企业净还债、没人借钱</b>。日本确实如此：私人部门信贷占 GDP 从 2000 年的 206% 掉到 2010 年的 <b>158%</b>，十年去掉 48 个百分点。中国是反的 —— 从 2015 年的 150% 涨到 2024 年的 <b>194%</b>，创历史新高且还在升。</p>
-  <p>用「资产负债表衰退」描述中国，至少在这个总量口径上不成立：中国不是没人借，是借的结构变了（地方政府与居民端承压，而非全社会净还债）。把选择器切到「私人部门信贷」可以直接看这两条线。</p>
+  <div class="chart" style="height:200px"><canvas id="credit-bar" role="img" aria-label="日本与中国十年间私人部门信贷占GDP变化量的对比条形图，方向相反。">十年信贷变化对比。</canvas></div>
+  <p class="hint">各取十年窗口：日本 2000→2010（辜朝明所说的去杠杆期），中国 2015→2024（近十年）。柱子方向相反。</p>
+  <p>用「资产负债表衰退」描述中国，至少在这个总量口径上不成立：中国不是没人借，是借的结构变了（地方政府与居民端承压，而非全社会净还债）。</p>
+  <p>更麻烦的是机制本身：如果「信贷萎缩」真的驱动「缺口扩大」，两者该显著负相关。逐国算出来是这样：</p>
+  <div class="chart" style="height:220px"><canvas id="mech-bar" role="img" aria-label="各国私人信贷与储蓄投资缺口的相关系数条形图，符号不一致。">信贷与缺口的相关系数。</canvas></div>
+  <p class="hint" id="mech-note"></p>
 
   <h3>二、被追赶的时候，收入水平差了一个量级</h3>
   <p>日本 1990 年被追上时，人均 GDP（购买力平价）已经是美国的 <b>81%</b>，德国是 95%。中国现在是 <b>31%</b>。</p>
+  <div class="chart" style="height:210px"><canvas id="income-bar" role="img" aria-label="各国人均收入相当于美国百分比的对比条形图，中国显著低于日本德国。">各国相对美国的收入水平。</canvas></div>
+  <p class="hint">购买力平价口径，取各自最近一年；日本另附 1990 年（被追上那年）作为对照。</p>
   <p>这是最关键的一处不同：日本进入第三阶段时已经站在收入的天花板附近，「找不到更高回报的国内项目」是合理的；中国在只有美国三分之一收入的位置上就遭遇产业外迁，意味着它面对的不是「发达经济体没项目投」，而是<b>在远未完成收敛时就丢失了成本优势</b>。这两件事的政策含义完全不同。</p>
 
   <h3>三、未富先老，日本没有这个约束</h3>
@@ -211,6 +228,10 @@
       </tbody>
     </table>
   </div>
+  <div class="chart" style="height:200px"><canvas id="verdict-invest" role="img" aria-label="中日德资本形成占GDP对比条形图。">资本形成占 GDP 对比。</canvas></div>
+  <div class="chart" style="height:200px"><canvas id="verdict-gap" role="img" aria-label="中日德储蓄减投资缺口对比条形图。">储蓄减投资缺口对比。</canvas></div>
+  <p class="hint">两项分开画，是因为量级差了一个数量级（资本形成 20–40%，缺口 2–5%）画在同一根轴上，缺口那组会被压成一条线。私人信贷已有上面的专图，不重复。</p>
+  <p class="hint">中国的资本形成远高于日德，储蓄缺口却低于它们 —— 「钱多得投不出去」这个描述落不到中国身上。</p>
   <p>结论不是「框架全错」或「框架全对」，而是<b>它描述的症状对上了一半，机制那一半没对上</b>。对得上的是资产价格下行与产业外迁；对不上的是他理论的发动机 —— 企业净还债、信贷收缩、投资无处可去。中国的投资率和信贷余额都还在高位，问题更像是<b>投资的回报在塌</b>（尤其地产与地方基建），而不是<b>没有人投资</b>。这两者用同一个药方，未必对症。</p>
   <p class="hint">上表中「资本形成」「信贷」「储蓄缺口」三行来自本页数据，可在上面的图里核对；「房价指数」一行见本站的<a href="../housing/">全国房价走势地图</a>；其余为公开报道的定性描述，不是本页数据得出的结论。</p>
 
@@ -268,6 +289,179 @@
     drawRatio();
     drawInd();
     drawAge();
+    drawScatter();
+    drawGermany();
+    drawCreditBar();
+    drawMechBar();
+    drawIncomeBar();
+    drawVerdictBar();
+  }
+
+  var C = function (iso) { return data.countries[iso]; };
+  var idx = function (year) { return data.years.indexOf(year); };
+  var valAt = function (iso, key, year) { var i = idx(year); return i < 0 ? null : C(iso)[key][i]; };
+  var lastAt = function (iso, key) {
+    var a = C(iso)[key];
+    for (var i = a.length - 1; i >= 0; i--) if (a[i] != null) return { v: a[i], year: data.years[i] };
+    return null;
+  };
+
+  function bar(id, labels, values, colors, yLabel, fmt) {
+    return new Chart(document.getElementById(id), {
+      type: 'bar',
+      data: { labels: labels, datasets: [{ data: values, backgroundColor: colors, borderRadius: 4, borderSkipped: 'bottom' }] },
+      options: {
+        responsive: true, maintainAspectRatio: false, animation: { duration: 200 },
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: function (c) { return fmt(c.parsed.y); } } }
+        },
+        scales: {
+          x: { ticks: { color: GRAY, autoSkip: false, maxRotation: 45 }, grid: { display: false } },
+          y: { title: { display: true, text: yLabel, color: GRAY },
+               ticks: { color: GRAY }, grid: { color: 'rgba(138,138,138,.22)' } }
+        }
+      }
+    });
+  }
+
+  // The framework's implied prediction is a rising line here. Each point is one
+  // economy at its latest complete year, labelled so the England/Korea pair -
+  // same income, opposite gap - is findable by eye.
+  function drawScatter() {
+    var pts = data.stats.latest.points;
+    new Chart(document.getElementById('scatter-chart'), {
+      type: 'scatter',
+      data: { datasets: [{
+        data: pts.map(function (p) { return { x: p.x, y: p.y, name: p.name, year: p.year }; }),
+        backgroundColor: pts.map(function (p) { return PALETTE[p.iso] || GRAY; }),
+        pointRadius: 7, pointHoverRadius: 9
+      }] },
+      options: {
+        responsive: true, maintainAspectRatio: false, animation: { duration: 200 },
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: {
+            label: function (c) {
+              return c.raw.name + ' ' + c.raw.year + '：收入为美国的 ' + c.raw.x.toFixed(1)
+                + '%，缺口 ' + (c.raw.y > 0 ? '+' : '') + c.raw.y.toFixed(1) + '%';
+            }
+          } }
+        },
+        scales: {
+          x: { title: { display: true, text: '人均 GDP 相当于美国（%，购买力平价）', color: GRAY },
+               ticks: { color: GRAY }, grid: { display: false } },
+          y: { title: { display: true, text: '储蓄 − 投资（占 GDP %）', color: GRAY },
+               ticks: { color: GRAY }, grid: { color: 'rgba(138,138,138,.22)' } }
+        }
+      }
+    });
+    document.getElementById('scatter-note').textContent =
+      '横截面相关系数 r = ' + data.stats.latest.r + '（n = ' + data.stats.latest.n + ' 个经济体）；'
+      + '扩到全部国家—年度观测为 r = ' + data.stats.panel.r + '（n = ' + data.stats.panel.n
+      + '）。两个都接近零，也就是看不出框架预测的那种关系。';
+  }
+
+  // Institutional dates rather than a "pursued" date, because the pursued
+  // turning point has no date to draw.
+  function drawGermany() {
+    var g = C('DEU');
+    var pts = data.years.map(function (y, i) { return { x: y, y: g.gap[i] }; });
+    var band = {
+      id: 'germanyMarks',
+      beforeDatasetsDraw: function (c) {
+        var x = c.scales.x, y = c.scales.y, ctx = c.ctx;
+        if (!x || !y) return;
+        ctx.save();
+        ctx.fillStyle = 'rgba(237,161,0,.14)';
+        ctx.fillRect(x.getPixelForValue(2003), y.top, x.getPixelForValue(2005) - x.getPixelForValue(2003), y.bottom - y.top);
+        ctx.strokeStyle = GRAY; ctx.setLineDash([5, 4]); ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(x.getPixelForValue(1999), y.top); ctx.lineTo(x.getPixelForValue(1999), y.bottom); ctx.stroke();
+        if (c.width >= 420) {
+          ctx.setLineDash([]); ctx.fillStyle = GRAY; ctx.font = '11px -apple-system, sans-serif';
+          ctx.textAlign = 'left';
+          ctx.fillText('欧元启动', x.getPixelForValue(1999) + 4, y.top + 12);
+          ctx.fillText('哈茨改革', x.getPixelForValue(2003) + 4, y.top + 28);
+        }
+        ctx.restore();
+      }
+    };
+    new Chart(document.getElementById('germany-chart'), {
+      type: 'line', plugins: [band],
+      data: { datasets: [
+        { label: '德国 储蓄 − 投资', borderColor: PALETTE.DEU, borderWidth: 2, tension: .2, pointRadius: 0, spanGaps: true, data: pts },
+        { label: '零线', borderColor: GRAY, borderWidth: 1.5, borderDash: [5, 3], pointRadius: 0,
+          data: data.years.map(function (y) { return { x: y, y: 0 }; }) }
+      ] },
+      options: {
+        responsive: true, maintainAspectRatio: false, animation: { duration: 200 },
+        interaction: { mode: 'index', intersect: false },
+        plugins: { legend: { display: false }, tooltip: { callbacks: {
+          title: function (t) { return t[0].parsed.x + ' 年'; },
+          label: function (c) { return c.dataset.label + '：' + (c.parsed.y == null ? '—' : c.parsed.y.toFixed(1) + '%'); }
+        } } },
+        scales: {
+          x: { type: 'linear', min: 1991, ticks: { color: GRAY, maxTicksLimit: 8, callback: function (v) { return Math.round(v); } }, grid: { display: false } },
+          y: { title: { display: true, text: '占 GDP（%）', color: GRAY }, ticks: { color: GRAY }, grid: { color: 'rgba(138,138,138,.22)' } }
+        }
+      }
+    });
+  }
+
+  function drawCreditBar() {
+    var jp = valAt('JPN', 'credit', 2010) - valAt('JPN', 'credit', 2000);
+    var cnLast = lastAt('CHN', 'credit');
+    var cn = cnLast.v - valAt('CHN', 'credit', 2015);
+    bar('credit-bar',
+      ['日本 2000→2010', '中国 2015→' + cnLast.year],
+      [+jp.toFixed(1), +cn.toFixed(1)],
+      [PALETTE.JPN, PALETTE.CHN],
+      '私人信贷/GDP 变化（百分点）',
+      function (v) { return (v > 0 ? '+' : '') + v.toFixed(1) + ' 个百分点'; });
+  }
+
+  function drawMechBar() {
+    var rows = data.stats.creditVsGap.slice().sort(function (a, b) { return a.r - b.r; });
+    bar('mech-bar', rows.map(function (d) { return d.name; }), rows.map(function (d) { return d.r; }),
+      rows.map(function (d) { return d.r < 0 ? PALETTE.USA : PALETTE.JPN; }),
+      '信贷与缺口的相关系数 r',
+      function (v) { return 'r = ' + v.toFixed(3); });
+    var jp = rows.find(function (d) { return d.iso === 'JPN'; });
+    document.getElementById('mech-note').textContent =
+      '蓝色为负相关（符合机制预期），红色为正相关（与机制相反）。符号并不一致 —— '
+      + '而作为这套理论原型的日本，r = ' + (jp ? jp.r : '—') + '，基本没有关系。'
+      + '相关系数不证明因果，但机制若成立，至少不该在原型国家身上消失。';
+  }
+
+  function drawIncomeBar() {
+    var items = [
+      { label: '日本 1990（被追上那年）', v: valAt('JPN', 'relUS', 1990), c: PALETTE.JPN },
+      { label: '德国 最新', v: lastAt('DEU', 'relUS').v, c: PALETTE.DEU },
+      { label: '韩国 最新', v: lastAt('KOR', 'relUS').v, c: PALETTE.KOR },
+      { label: '日本 最新', v: lastAt('JPN', 'relUS').v, c: PALETTE.JPN },
+      { label: '中国 最新', v: lastAt('CHN', 'relUS').v, c: PALETTE.CHN }
+    ].filter(function (d) { return d.v != null; });
+    bar('income-bar', items.map(function (d) { return d.label; }), items.map(function (d) { return d.v; }),
+      items.map(function (d) { return d.c; }), '相当于美国（%）',
+      function (v) { return v.toFixed(1) + '%'; });
+  }
+
+  // Two charts, not one grouped chart: capital formation runs 20-40% of GDP and
+  // the savings gap runs 2-5%, so sharing an axis would flatten the gap bars to
+  // nothing, and a second axis is worse than a second chart.
+  function drawVerdictBar() {
+    var isos = ['CHN', 'JPN', 'DEU'];
+    var one = function (id, key, yLabel) {
+      var items = isos.map(function (iso) {
+        var l = lastAt(iso, key);
+        return { name: C(iso).name + (l ? ' ' + l.year : ''), v: l ? l.v : null, c: PALETTE[iso] };
+      });
+      bar(id, items.map(function (d) { return d.name; }), items.map(function (d) { return d.v; }),
+        items.map(function (d) { return d.c; }), yLabel,
+        function (v) { return (v > 0 ? '+' : '') + v.toFixed(1) + '% of GDP'; });
+    };
+    one('verdict-invest', 'invest', '资本形成占 GDP（%）');
+    one('verdict-gap', 'gap', '储蓄 − 投资（占 GDP %）');
   }
 
   // Aging plotted against income rather than against time: at the same share of

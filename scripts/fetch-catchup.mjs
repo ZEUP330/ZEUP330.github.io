@@ -127,10 +127,60 @@ const pairs = PAIRS.map((p) => ({
   })
 }));
 
+// If being pursued really drove the syndrome, richer economies - the ones with
+// cheaper competitors behind them - should show wider savings-investment gaps.
+// These correlations are computed here so the page shows a number that moves
+// with the data instead of a claim baked into the prose.
+function pearson(xs, ys) {
+  const n = xs.length;
+  if (n < 3) return null;
+  const mx = xs.reduce((a, b) => a + b, 0) / n;
+  const my = ys.reduce((a, b) => a + b, 0) / n;
+  const sx = Math.sqrt(xs.reduce((t, x) => t + (x - mx) ** 2, 0));
+  const sy = Math.sqrt(ys.reduce((t, y) => t + (y - my) ** 2, 0));
+  if (!sx || !sy) return null;
+  let c = 0;
+  for (let i = 0; i < n; i++) c += (xs[i] - mx) * (ys[i] - my);
+  return +(c / (sx * sy)).toFixed(3);
+}
+
+const panel = [];
+for (const c of Object.values(countries)) {
+  years.forEach((y, i) => {
+    if (c.relUS[i] != null && c.gap[i] != null) {
+      panel.push({ iso: c.iso, name: c.name, year: y, x: c.relUS[i], y: c.gap[i] });
+    }
+  });
+}
+// One point per country at its latest complete year.
+const latest = Object.values(countries).map((c) => {
+  let li = -1;
+  years.forEach((_, i) => { if (c.relUS[i] != null && c.gap[i] != null) li = i; });
+  return li < 0 ? null : { iso: c.iso, name: c.name, year: years[li], x: c.relUS[li], y: c.gap[li] };
+}).filter(Boolean);
+
+// Koo's engine says shrinking credit and a widening gap go together, i.e. a
+// negative correlation. Reported per country so the exceptions stay visible.
+const creditVsGap = Object.values(countries).map((c) => {
+  const xs = [], ys = [];
+  years.forEach((_, i) => {
+    if (c.credit[i] != null && c.gap[i] != null) { xs.push(c.credit[i]); ys.push(c.gap[i]); }
+  });
+  return { iso: c.iso, name: c.name, r: pearson(xs, ys), n: xs.length };
+}).filter((d) => d.r != null);
+
+const stats = {
+  panel: { r: pearson(panel.map((p) => p.x), panel.map((p) => p.y)), n: panel.length, points: panel },
+  latest: { r: pearson(latest.map((p) => p.x), latest.map((p) => p.y)), n: latest.length, points: latest },
+  creditVsGap
+};
+console.log(`\ncorr relUS~gap: panel r=${stats.panel.r} n=${stats.panel.n}; `
+  + `cross-section r=${stats.latest.r} n=${stats.latest.n}`);
+
 mkdirSync('catchup/data', { recursive: true });
 writeFileSync('catchup/data/catchup.json', JSON.stringify({
   t: Date.now(), source: 'World Bank Open Data', updated,
-  years, countries, pairs
+  years, countries, pairs, stats
 }));
 
 console.log(`\nyears ${FROM}..${TO}`);
