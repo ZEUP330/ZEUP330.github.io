@@ -59,6 +59,13 @@
   .tag.halt { color: var(--danger); }
 
   .legend { display: flex; flex-wrap: wrap; gap: 16px; font-size: 12px; color: var(--ink-2); margin-bottom: 8px; }
+  .sw.ring { background: none; border: 1.5px solid var(--ink-3); border-radius: 50%; width: 10px; height: 10px; }
+  #timeline svg, #smalls svg { display: block; width: 100%; height: auto; }
+  .sm-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 10px; }
+  .sm { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px 4px; }
+  .sm .nm { font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sm .dd { font-size: 11px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+  @media (max-width: 640px) { .sm-grid { grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; } }
   .legend span { display: inline-flex; align-items: center; gap: 6px; }
   .sw { width: 16px; height: 2px; }
   .chart { position: relative; height: 340px; }
@@ -112,6 +119,20 @@
       <span>条越长跌得越多</span>
     </div>
     <ul class="firms" id="firms"></ul>
+
+    <h2>暴雷时间轴</h2>
+    <div class="legend">
+      <span><i class="sw" style="background:var(--private)"></i>民营</span>
+      <span><i class="sw" style="background:var(--mixed)"></i>混合 / 地方国资</span>
+      <span><i class="sw" style="background:var(--soe)"></i>央企 / 国资</span>
+      <span><i class="sw ring"></i>空心 = 从未跌破</span>
+    </div>
+    <div id="timeline"></div>
+    <p class="hint">每行一家公司：左端是跌破 −50%、右端是跌破 −90% 的月份，横条长度就是从「腰斩」滑到「几乎归零」用掉的时间。按暴雷先后排序。<b>两个日期都从各自的历史最高点之后算起</b> —— 有几家在 2015 年也曾腰斩过，但后来创了新高，那次不属于这一轮。</p>
+
+    <h2>22 家，同一把尺子</h2>
+    <div id="smalls"></div>
+    <p class="hint">每格是一家公司的回撤路径，纵轴统一 0 到 −100%，虚线是 −90%。不用读数字，看形状就知道哪一类塌了。</p>
 
     <h2>塌下去的过程</h2>
     <div class="legend" id="path-legend"></div>
@@ -185,12 +206,129 @@
       boot();
     });
 
+  var esc = function (t) { return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); };
+  var ms = function (d) { return d ? Date.parse(d + 'T00:00:00Z') : null; };
+  var ymd = function (t) { var d = new Date(t); return d.getUTCFullYear() + '-' + String(d.getUTCMonth() + 1).padStart(2, '0'); };
+
+  // A dumbbell per firm: left end the -50% crossing, right end the -90% one, so
+  // the bar length is how long the slide from "halved" to "almost nothing" took.
+  // Sorted by when each firm blew up, which is the question the page asks.
+  // cross[] records the FIRST time a firm ever fell 50% / 90% below its running
+  // peak, which for several of these is 2015 - against an older peak they later
+  // recovered past. Drawing that as the start of the collapse would claim
+  // Evergrande slid from 2015 to 2021. Measure from each firm's all-time peak
+  // instead: the last month it printed a new high, then the crossings after it.
+  function collapseSpan(f) {
+    // Anchor on the reported all-time peak, not on a peak re-derived from the
+    // monthly path: the true high often falls mid-month, so the sampled series
+    // never reads exactly 0 there. Deriving it put Evergrande's anchor in 2015
+    // against a 2017 peak, and dated Xuhui's -50% crossing three years before
+    // the peak it is supposed to be measured from.
+    var v = f.path.v, d = f.path.d, peak = f.peakDate;
+    var a = null, b = null;
+    for (var j = 0; j < v.length; j++) {
+      if (peak && d[j] < peak) continue;
+      if (a == null && v[j] <= -0.5) a = d[j];
+      if (b == null && v[j] <= -0.9) b = d[j];
+    }
+    return { a: ms(a), b: ms(b), peak: peak };
+  }
+
+  function drawTimeline() {
+    var rows = data.firms.map(function (f) {
+      return { f: f, a: f.span.a, b: f.span.b, peak: f.span.peak };
+    }).filter(function (r) { return r.a || r.b; });
+    rows.sort(function (x, y) { return (x.b || Infinity) - (y.b || Infinity) || (x.a || 0) - (y.a || 0); });
+
+    var all = rows.flatMap(function (r) { return [r.a, r.b]; }).filter(Boolean);
+    var t0 = Math.min.apply(null, all), t1 = Math.max.apply(null, all);
+    // Draw at roughly the container's own pixel width. A fixed 720-wide viewBox
+    // scaled down to a 346px phone shrank the 11px firm labels to about 5px.
+    var host = document.getElementById('timeline');
+    var W = Math.max(320, Math.min(760, host.clientWidth || 720));
+    var narrow = W < 560;
+    var padL = narrow ? 74 : 108, padR = narrow ? 34 : 46, padT = narrow ? 18 : 24;
+    var rowH = narrow ? 16 : 19;
+    var fLabel = narrow ? 9 : 11, fAxis = narrow ? 9 : 10;
+    var H = padT + rows.length * rowH + 26;
+    var x = function (t) { return padL + (t - t0) / (t1 - t0) * (W - padL - padR); };
+
+    var ticks = [];
+    for (var y = new Date(t0).getUTCFullYear(); y <= new Date(t1).getUTCFullYear(); y++) {
+      var tt = Date.UTC(y, 0, 1);
+      if (tt >= t0 && tt <= t1) ticks.push({ t: tt, label: y });
+    }
+
+    var svg = ['<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="时间轴：每家房企从跌破 −50% 到跌破 −90% 的区间，按暴雷时间排序。">'];
+    svg.push('<title>各房企跌破 −50% 与 −90% 的时间</title>');
+    ticks.forEach(function (k) {
+      svg.push('<line x1="' + x(k.t).toFixed(1) + '" y1="' + padT + '" x2="' + x(k.t).toFixed(1) + '" y2="' + (H - 22)
+        + '" stroke="' + GRAY + '" stroke-opacity=".22"/>');
+      svg.push('<text x="' + x(k.t).toFixed(1) + '" y="' + (H - 8) + '" fill="' + GRAY
+        + '" font-size="' + fAxis + '" text-anchor="middle">' + k.label + '</text>');
+    });
+    rows.forEach(function (r, i) {
+      var yy = padT + i * rowH + rowH / 2, c = C[r.f.own];
+      svg.push('<text x="' + (padL - 8) + '" y="' + (yy + 3.5) + '" fill="currentColor" font-size="' + fLabel + '" text-anchor="end">'
+        + esc(r.f.name) + '</text>');
+      if (r.a && r.b) {
+        svg.push('<line x1="' + x(r.a).toFixed(1) + '" y1="' + yy + '" x2="' + x(r.b).toFixed(1) + '" y2="' + yy
+          + '" stroke="' + c + '" stroke-width="2.5" stroke-opacity=".45" stroke-linecap="round"/>');
+      }
+      if (r.a) svg.push('<circle cx="' + x(r.a).toFixed(1) + '" cy="' + yy + '" r="3.4" fill="none" stroke="' + c + '" stroke-width="1.6"><title>'
+        + esc(r.f.name) + ' 跌破 −50%：' + ymd(r.a) + '（自 ' + r.peak + ' 的最高点起算）</title></circle>');
+      if (r.b) {
+        svg.push('<circle cx="' + x(r.b).toFixed(1) + '" cy="' + yy + '" r="4.2" fill="' + c + '"><title>'
+          + esc(r.f.name) + ' 跌破 −90%：' + ymd(r.b) + '</title></circle>');
+      } else {
+        svg.push('<text x="' + (W - padR + 6) + '" y="' + (yy + 3.5) + '" fill="' + GRAY
+          + '" font-size="' + fAxis + '">' + (narrow ? '未破' : '未破 −90%') + '</text>');
+      }
+    });
+    svg.push('</svg>');
+    document.getElementById('timeline').innerHTML = svg.join('');
+  }
+
+  // Small multiples: same axes in every cell, so the eye compares shape rather
+  // than reading 22 numbers off one spaghetti plot.
+  function drawSmalls() {
+    var order = data.firms.slice().sort(function (a, b) {
+      return (a.own === b.own ? a.dd - b.dd : (a.own < b.own ? -1 : 1));
+    });
+    var W = 118, H = 40;
+    var html = order.map(function (f) {
+      var v = f.path.v, n = v.length, c = C[f.own];
+      var pts = v.map(function (val, i) {
+        var yy = Math.max(-1, Math.min(0, val));
+        return (i / (n - 1) * W).toFixed(1) + ',' + (-yy * H).toFixed(1);
+      }).join(' ');
+      return '<div class="sm">'
+        + '<div class="nm" title="' + esc(f.name) + '">' + esc(f.name) + '</div>'
+        + '<svg viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" aria-hidden="true">'
+        + '<line x1="0" y1="' + (0.9 * H) + '" x2="' + W + '" y2="' + (0.9 * H)
+        + '" stroke="' + GRAY + '" stroke-opacity=".35" stroke-dasharray="3 3" stroke-width="1"/>'
+        + '<polyline points="' + pts + '" fill="none" stroke="' + c + '" stroke-width="1.6" '
+        + 'vector-effect="non-scaling-stroke" stroke-linejoin="round"/>'
+        + '</svg>'
+        + '<div class="dd">' + pct(f.dd, 0) + '</div>'
+        + '</div>';
+    }).join('');
+    document.getElementById('smalls').innerHTML = '<div class="sm-grid">' + html + '</div>';
+  }
+
   function boot() {
     document.getElementById('owns').innerHTML = data.byOwn.map(function (b) {
       return '<div class="own ' + b.own + '"><div class="k">' + data.ownLabels[b.own] + '</div>'
         + '<div class="v">' + pct(b.median) + '</div>'
         + '<div class="s">' + b.n + ' 家的中位回撤</div></div>';
     }).join('');
+
+    // One definition of "this collapse" for the whole page: the timeline, the
+    // table and the year histogram must not disagree about when a firm blew up.
+    data.firms.forEach(function (f) { f.span = collapseSpan(f); });
+
+    drawTimeline();
+    drawSmalls();
 
     var priv = data.byOwn.filter(function (b) { return b.own === 'private'; })[0];
     var soe = data.byOwn.filter(function (b) { return b.own === 'soe'; })[0];
@@ -204,7 +342,7 @@
         + '<span class="track"><i class="' + f.own + '" style="width:' + w.toFixed(1) + '%"></i></span>'
         + '<span class="dd">' + pct(f.dd) + '</span>'
         + '<span class="meta">高点 ' + f.peakDate + ' · ' + data.ownLabels[f.own]
-        + (f.cross['0.9'] ? ' · 跌破 −90% 于 ' + f.cross['0.9'] : '')
+        + (f.span.b ? ' · 跌破 −90% 于 ' + ymd(f.span.b) : '')
         + (f.halted ? '<span class="tag halt">已停牌/退市 · 最后交易 ' + f.lastDate + '</span>' : '')
         + (f.note ? ' · ' + f.note : '') + '</span></li>';
     }).join('');
@@ -217,8 +355,8 @@
     document.getElementById('dates').innerHTML = data.firms.map(function (f) {
       return '<tr><td>' + f.name + '</td><td>' + f.peakDate + '</td>'
         + '<td class="hide-sm">' + f.peak + '</td>'
-        + '<td>' + (f.cross['0.5'] || '未跌破') + '</td>'
-        + '<td>' + (f.cross['0.9'] || '未跌破') + '</td>'
+        + '<td>' + (f.span.a ? ymd(f.span.a) : '未跌破') + '</td>'
+        + '<td>' + (f.span.b ? ymd(f.span.b) : '未跌破') + '</td>'
         + '<td>' + pct(f.dd) + '</td>'
         + '<td class="hide-sm">' + f.lastDate + (f.halted ? ' ⏸' : '') + '</td></tr>';
     }).join('');
@@ -256,9 +394,9 @@
     var peaks = {};
     cs.forEach(function (c) { var y = c.peakMonth.slice(0, 4); peaks[y] = (peaks[y] || 0) + 1; });
     var topYears = Object.keys(peaks).sort(function (a, b) { return peaks[b] - peaks[a]; }).slice(0, 3);
-    var crossed = data.firms.filter(function (f) { return f.cross['0.9']; });
+    var crossed = data.firms.filter(function (f) { return f.span.b; });
     var crossYears = {};
-    crossed.forEach(function (f) { var y = f.cross['0.9'].slice(0, 4); crossYears[y] = (crossYears[y] || 0) + 1; });
+    crossed.forEach(function (f) { var y = ymd(f.span.b).slice(0, 4); crossYears[y] = (crossYears[y] || 0) + 1; });
     var topCross = Object.keys(crossYears).sort(function (a, b) { return crossYears[b] - crossYears[a]; })[0];
     document.getElementById('city-note').textContent =
       '城市房价见顶最集中的年份是 ' + topYears.map(function (y) { return y + ' 年（' + peaks[y] + ' 城）'; }).join('、')
@@ -304,6 +442,13 @@
       }
     });
   }
+
+  var reflow;
+  window.addEventListener('resize', function () {
+    if (!data || !data.firms) return;
+    clearTimeout(reflow);
+    reflow = setTimeout(drawTimeline, 150);
+  });
 })();
 </script>
 </body>
