@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>房贷年限 × 月供：为什么贷再久月供也降不下去</title>
-<meta name="description" content="等额本息月供随贷款年限变化的交互曲线：月供有下限，等于本金 × 月利率，也就是纯利息。">
+<title>Linjiatao</title>
+<meta name="description" content="Linjiatao（ZEUP330）的主页：可交互的数学小实验与开源项目。">
 <style>
   :root {
     --bg: #fcfcfb; --card: #ffffff; --ink: #0b0b0b; --ink-2: #52514e; --ink-3: #898781;
@@ -16,186 +16,64 @@
   }
   * { box-sizing: border-box; }
   body {
-    margin: 0; padding: 2rem 1.25rem 4rem; background: var(--bg); color: var(--ink);
+    margin: 0; padding: 4rem 1.25rem 5rem; background: var(--bg); color: var(--ink);
     font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
     line-height: 1.7; -webkit-font-smoothing: antialiased;
   }
-  main { max-width: 760px; margin: 0 auto; }
-  h1 { font-size: 26px; font-weight: 500; margin: 0 0 .5rem; letter-spacing: -.01em; }
-  h2 { font-size: 18px; font-weight: 500; margin: 2.5rem 0 .75rem; }
+  main { max-width: 680px; margin: 0 auto; }
+  h1 { font-size: 30px; font-weight: 500; margin: 0 0 .25rem; letter-spacing: -.02em; }
+  h2 { font-size: 14px; font-weight: 500; color: var(--ink-3); margin: 3rem 0 1rem;
+       text-transform: uppercase; letter-spacing: .08em; }
   p { color: var(--ink-2); margin: 0 0 1rem; }
+  .handle { color: var(--ink-3); font-size: 15px; margin: 0 0 1.25rem; }
   .lede { font-size: 17px; }
-  .controls { display: grid; gap: 14px; margin: 1.75rem 0; }
-  .row { display: grid; grid-template-columns: 5.5em 1fr 6.5em; align-items: center; gap: 12px; }
-  .row label { font-size: 14px; color: var(--ink-2); }
-  .row output { font-size: 14px; font-variant-numeric: tabular-nums; text-align: right; color: var(--ink); }
-  input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 4px; border-radius: 2px;
-    background: var(--line); outline: none; }
-  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 18px; height: 18px;
-    border-radius: 50%; background: var(--accent); cursor: pointer; border: 2px solid var(--card); }
-  input[type=range]::-moz-range-thumb { width: 18px; height: 18px; border: 2px solid var(--card);
-    border-radius: 50%; background: var(--accent); cursor: pointer; }
-  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin: 1.5rem 0; }
-  .stat { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: .85rem 1rem; }
-  .stat .k { font-size: 13px; color: var(--ink-3); }
-  .stat .v { font-size: 24px; font-weight: 500; font-variant-numeric: tabular-nums; margin-top: 2px; }
-  .legend { display: flex; flex-wrap: wrap; gap: 18px; font-size: 12px; color: var(--ink-2); margin-bottom: 8px; }
-  .legend span { display: inline-flex; align-items: center; gap: 6px; }
-  .swatch { width: 16px; height: 2px; background: var(--accent); }
-  .swatch.dash { background: none; border-top: 2px dashed var(--ink-3); }
-  .chart { position: relative; height: 360px; }
-  table { width: 100%; border-collapse: collapse; font-size: 14px; font-variant-numeric: tabular-nums; }
-  th, td { padding: 8px 6px; border-bottom: 1px solid var(--line); text-align: right; }
-  th { color: var(--ink-3); font-weight: 400; font-size: 13px; }
-  th:first-child, td:first-child { text-align: left; }
-  code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .92em;
-    background: var(--card); border: 1px solid var(--line); border-radius: 4px; padding: 1px 5px; }
-  footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--line);
-    font-size: 13px; color: var(--ink-3); }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  .feature { display: block; background: var(--card); border: 1px solid var(--line);
+    border-radius: 12px; padding: 1.25rem 1.4rem; color: inherit; }
+  .feature:hover { border-color: var(--ink-3); text-decoration: none; }
+  .feature h3 { font-size: 18px; font-weight: 500; margin: 0 0 .35rem; color: var(--ink); }
+  .feature p { margin: 0; font-size: 15px; }
+  .feature .go { color: var(--accent); font-size: 14px; margin-top: .6rem; display: block; }
+
+  ul.repos { list-style: none; padding: 0; margin: 0; }
+  ul.repos li { padding: .7rem 0; border-bottom: 1px solid var(--line); display: grid;
+    grid-template-columns: 1fr auto; gap: 4px 16px; align-items: baseline; }
+  ul.repos .desc { grid-column: 1 / -1; font-size: 14px; color: var(--ink-3); margin: 0; }
+  ul.repos .meta { font-size: 13px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+  footer { margin-top: 3.5rem; padding-top: 1.25rem; border-top: 1px solid var(--line);
+    font-size: 14px; color: var(--ink-3); }
 </style>
 </head>
 <body>
 <main>
-  <h1>房贷年限 × 月供</h1>
-  <p class="lede">等额本息下，月供不会随年限一直降。它有个下限：<strong id="lede-floor">4,167</strong> 元 —— 等于本金 × 月利率，也就是每月纯利息。贷到那一步，本金一分没还。</p>
+  <h1>Linjiatao</h1>
+  <p class="handle">@ZEUP330 · Shenzhen University · “I'm King of the Eaters”</p>
+  <p class="lede">这里放一些能自己动起来的小东西：把一个反直觉的结论做成可以拖动的图，比讲道理快。</p>
 
-  <div class="controls">
-    <div class="row">
-      <label for="p">贷款本金</label>
-      <input type="range" id="p" min="10" max="1000" step="10" value="100">
-      <output id="p-out">100 万</output>
-    </div>
-    <div class="row">
-      <label for="r">年利率</label>
-      <input type="range" id="r" min="1" max="8" step="0.05" value="5">
-      <output id="r-out">5.00%</output>
-    </div>
-    <div class="row">
-      <label for="n">贷款年限</label>
-      <input type="range" id="n" min="5" max="100" step="1" value="30">
-      <output id="n-out">30 年</output>
-    </div>
-  </div>
+  <h2>实验</h2>
+  <a class="feature" href="./mortgage/">
+    <h3>房贷年限 × 月供</h3>
+    <p>等额本息的月供有下限，等于本金 × 月利率 —— 也就是纯利息。年限拉到 1000 年也降不下去。三个滑块随便调，还有 3D 曲面看年限和利率一起变的样子。</p>
+    <span class="go">打开 →</span>
+  </a>
 
-  <div class="stats">
-    <div class="stat"><div class="k">月供</div><div class="v" id="s-pay">5,368</div></div>
-    <div class="stat"><div class="k">总还款</div><div class="v" id="s-total">193 万</div></div>
-    <div class="stat"><div class="k">总利息</div><div class="v" id="s-int">93 万</div></div>
-    <div class="stat"><div class="k">月供下限（纯利息）</div><div class="v" id="s-floor">4,167</div></div>
-  </div>
+  <h2>代码</h2>
+  <ul class="repos">
+    <li><a href="https://github.com/ZEUP330/3D-reconstruction">3D-reconstruction</a><span class="meta">C++ · ★3</span>
+      <p class="desc">Kinect v2 + ROS 的三维重建</p></li>
+    <li><a href="https://github.com/ZEUP330/MaskFusion_with_Fetch">MaskFusion_with_Fetch</a><span class="meta">C++ · ★1</span>
+      <p class="desc">用 Fetch 机器人头部相机的 rostopic 做重建与跟踪</p></li>
+    <li><a href="https://github.com/ZEUP330/POMDP">POMDP</a><span class="meta">Jupyter · ★0</span>
+      <p class="desc">部分可观测马尔可夫决策过程</p></li>
+    <li><a href="https://github.com/ZEUP330/2048-RL">2048-RL</a><span class="meta">Jupyter · ★0</span>
+      <p class="desc">用 Deep Q-Learning 玩 2048</p></li>
+  </ul>
 
-  <div class="legend">
-    <span><i class="swatch"></i>月供（等额本息）</span>
-    <span><i class="swatch dash"></i>渐近线 = 纯月息</span>
-  </div>
-  <div class="chart">
-    <canvas id="chart" role="img" aria-label="折线图：贷款年限对等额本息月供的影响，月供先陡降后逼近纯利息水平线。">
-      月供随年限增加而下降，但收敛到本金乘月利率的水平，不会更低。
-    </canvas>
-  </div>
-
-  <h2>关键档位</h2>
-  <table>
-    <thead><tr><th>年限</th><th>月供</th><th>每多贷 10 年省</th><th>总还款</th><th>总利息</th></tr></thead>
-    <tbody id="tbody"></tbody>
-  </table>
-
-  <h2>为什么会有下限</h2>
-  <p>等额本息月供公式 <code>M = P·i / (1 − (1+i)<sup>−n</sup>)</code>，i 是月利率，n 是总月数。n 越大，<code>(1+i)<sup>−n</sup></code> 越接近 0，分母越接近 1，于是 <code>M → P·i</code>。</p>
-  <p>P·i 就是第一个月产生的利息。月供压到这个数，意味着每期还的钱刚好抵掉当期利息，本金余额永远不动 —— 这是一笔还不完的贷款。所以年限再长也突破不了它。</p>
-  <p>曲线前 20 年陡降，30 年后基本贴地。每多贷 10 年，月供降幅大约砍半（几何衰减），总利息却接近线性增长。银行把房贷卡在 30 年，主因是借款人年龄上限（需在退休或 70 岁前结清）和银行的久期与资金错配，月供收敛只是顺带的佐证。</p>
-
-  <footer>纯利息与复利模型计算，不含税费、保险、提前还款和浮动利率调整，仅作数学演示，不构成任何投资或贷款建议。</footer>
+  <footer>
+    <a href="https://github.com/ZEUP330">GitHub</a> · 全部 22 个仓库在那边
+  </footer>
 </main>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-<script>
-(function () {
-  var P = document.getElementById('p'), R = document.getElementById('r'), N = document.getElementById('n');
-  var fmt = function (v) { return Math.round(v).toLocaleString('en-US'); };
-  var wan = function (v) { return (v / 10000).toFixed(v < 100000 ? 1 : 0) + ' 万'; };
-
-  function model() {
-    var principal = +P.value * 10000, i = (+R.value / 100) / 12;
-    return {
-      principal: principal, i: i, floor: principal * i,
-      pay: function (years) { return principal * i / (1 - Math.pow(1 + i, -12 * years)); }
-    };
-  }
-
-  var YEARS = [];
-  for (var y = 5; y <= 100; y++) YEARS.push(y);
-
-  var chart = new Chart(document.getElementById('chart'), {
-    type: 'line',
-    data: {
-      labels: YEARS,
-      datasets: [
-        { label: '月供', data: [], borderColor: '#3b82f6', borderWidth: 2, tension: .25,
-          pointRadius: 0, pointHoverRadius: 0 },
-        { label: '渐近线', data: [], borderColor: '#8a8a8a', borderWidth: 2, borderDash: [6, 4],
-          pointRadius: 0, pointHoverRadius: 0 },
-        { label: '当前选择', data: [], borderColor: 'transparent', pointRadius: 6,
-          pointBackgroundColor: '#3b82f6', pointBorderColor: '#8a8a8a', pointBorderWidth: 2, showLine: false }
-      ]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false, animation: { duration: 200 },
-      interaction: { mode: 'index', intersect: false },
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          filter: function (c) { return c.datasetIndex < 2; },
-          callbacks: {
-            title: function (t) { return t[0].label + ' 年'; },
-            label: function (c) { return c.dataset.label + '：' + fmt(c.parsed.y) + ' 元/月'; }
-          }
-        }
-      },
-      scales: {
-        x: { title: { display: true, text: '贷款年限（年）', color: '#8a8a8a' },
-             ticks: { color: '#8a8a8a', maxTicksLimit: 11 }, grid: { display: false } },
-        y: { title: { display: true, text: '月供（元）', color: '#8a8a8a' },
-             ticks: { color: '#8a8a8a', callback: function (v) { return v.toLocaleString('en-US'); } },
-             grid: { color: 'rgba(138,138,138,.22)' } }
-      }
-    }
-  });
-
-  function render() {
-    var m = model(), years = +N.value, pay = m.pay(years), total = pay * 12 * years;
-
-    P.nextElementSibling.textContent = wan(m.principal);
-    R.nextElementSibling.textContent = (+R.value).toFixed(2) + '%';
-    N.nextElementSibling.textContent = years + ' 年';
-
-    document.getElementById('s-pay').textContent = fmt(pay);
-    document.getElementById('s-total').textContent = wan(total);
-    document.getElementById('s-int').textContent = wan(total - m.principal);
-    document.getElementById('s-floor').textContent = fmt(m.floor);
-    document.getElementById('lede-floor').textContent = fmt(m.floor);
-
-    chart.data.datasets[0].data = YEARS.map(m.pay);
-    chart.data.datasets[1].data = YEARS.map(function () { return m.floor; });
-    chart.data.datasets[2].data = YEARS.map(function (y) { return y === years ? pay : null; });
-    chart.options.scales.y.min = Math.floor(m.floor * 0.9);
-    chart.options.scales.y.max = Math.ceil(m.pay(5) * 1.05);
-    chart.update();
-
-    var rows = '', prev = null, prevY = null;
-    [20, 30, 40, 50, 60, 100].forEach(function (y) {
-      var v = m.pay(y), t = v * 12 * y;
-      rows += '<tr><td>' + y + ' 年</td><td>' + fmt(v) + '</td><td>'
-            + (y - prevY === 10 ? '−' + fmt(prev - v) : '—') + '</td><td>'
-            + wan(t) + '</td><td>' + wan(t - m.principal) + '</td></tr>';
-      prev = v; prevY = y;
-    });
-    document.getElementById('tbody').innerHTML = rows;
-  }
-
-  [P, R, N].forEach(function (el) { el.addEventListener('input', render); });
-  render();
-})();
-</script>
 </body>
 </html>
