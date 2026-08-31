@@ -1,0 +1,23 @@
+name: check site
+
+# Pages accumulate; the failure that actually happens is a new one never getting
+# linked, or a link quietly pointing at nothing. Catch both on push rather than
+# when someone clicks.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: node scripts/check-site.mjs
