@@ -31,6 +31,9 @@ jobs:
       - name: Build province/city index series
         run: node scripts/fetch-house-index.mjs
 
+      - name: Build regional average prices
+        run: node scripts/fetch-house-price.mjs
+
       # Sidecar for the shared status bar: every page shows this dataset's
       # freshness, and the full index is ~290KB - far too heavy to fetch just
       # to read one timestamp.

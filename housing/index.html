@@ -84,18 +84,19 @@
 <main>
   <p class="back"><a href="../">← 首页</a> · <a href="../mortgage/">房贷年限 × 月供</a></p>
   <h1>全国房价走势地图</h1>
-  <p>国家统计局 70 城房价指数做成的省级地图。拖进度条看 2006 年以来每个月的同比涨跌，点省份看它下面各城市的走势。</p>
+  <p>两套官方数据：<b>涨跌速度</b>用 70 城指数（城市级，2006 年至今逐月），<b>真实均价</b>用月度新闻稿里的销售额÷销售面积（大区级，元/㎡）。口径下拉框切换，进度条拖时间，双击省份放大到市级。</p>
 
   <div class="alert-note">
-    <strong>这张图上没有「均价多少钱一平」，因为拿不到。</strong>统计局的 70 城发布本身只有指数、不含绝对价格；带 元/㎡ 的分省数据在 <code>data.stats.gov.cn</code> 后面，该站对境外 IP 一律 403，GitHub 的 runner 也取不到。所以这里显示的是<b>同比涨跌幅（%）</b> —— 官方口径，能看走势，但不能反推房价。
+    <strong>均价只有大区口径，没有分省。</strong>分省 元/㎡ 只存在于 <code>data.stats.gov.cn</code>，该站对境外 IP 一律 403（runner 也取不到），统计年鉴的表格又是 JPG 图片。能拿到的最细粒度是月度新闻稿里的全国与东/中/西/东北四大区，所以均价模式下同一大区的省份是同色的 —— 那是<b>整个大区</b>的均价，不是该省的。城市级只有指数，没有价格。
   </div>
 
   <div class="toolbar">
     <button id="load-map" type="button">加载地图</button>
     <label class="pick" id="map-type-pick" hidden>口径
       <select id="map-type">
-        <option value="yoy_new">新建商品住宅 同比</option>
-        <option value="yoy_2nd">二手住宅 同比</option>
+        <option value="yoy_new">同比涨跌 · 新建商品住宅（城市级）</option>
+        <option value="yoy_2nd">同比涨跌 · 二手住宅（城市级）</option>
+        <option value="price">真实均价 元/㎡（大区级）</option>
       </select>
     </label>
   </div>
@@ -128,6 +129,19 @@
     </div>
   </div>
 
+  <div id="price-block" hidden>
+    <h3>真实均价（元/㎡）</h3>
+    <div class="stats">
+      <div class="stat"><div class="k">全国</div><div class="v" id="pz-nation">—</div></div>
+      <div class="stat"><div class="k">东部</div><div class="v" id="pz-east">—</div></div>
+      <div class="stat"><div class="k">中部</div><div class="v" id="pz-mid">—</div></div>
+      <div class="stat"><div class="k">西部 / 东北</div><div class="v" id="pz-west">—</div></div>
+    </div>
+    <div class="legend" id="pz-legend"></div>
+    <div class="chart"><canvas id="price-chart" role="img" aria-label="全国与四大区新建商品房平均销售价格的历史折线图。">全国与四大区均价走势。</canvas></div>
+    <p class="hint" id="pz-note"></p>
+  </div>
+
   <h2>读这张图要知道的三件事</h2>
   <p><b>同比不是房价，是变化速度。</b>连续几个月 −3% 意味着一直在跌，不是跌了 3%。想看累计跌幅要看那条折线走了多久、走了多深。</p>
   <p><b>省级数字是样本城市的简单平均。</b>统计局不发布省级汇总，这些城市也没按存量或人口加权。广东那一格是广州、深圳、惠州、韶关、湛江五个城市的平均，不代表全省，更不代表你要买的那个小区。</p>
@@ -155,6 +169,13 @@
 
   // null = national view; otherwise the Chinese name of the province drilled into.
   var level = null, geoCache = {};
+  var hpr = null, provRegion = {}, priceChart = null;
+  var isPrice = function () { return typeSel.value === 'price'; };
+  // The two views run on different clocks: 247 monthly index points versus 32
+  // cumulative price releases. The slider is re-ranged when the mode flips
+  // rather than trying to force one axis onto both.
+  function sliderMax() { return (isPrice() ? hpr.records.length : hp.months.length) - 1; }
+  function periodLabel(i) { return isPrice() ? hpr.records[i].label : hp.months[i]; }
 
   // echarts@4 ships one GeoJSON per province under map/json/province/<pinyin>.
   // 山西 is `shanxi` and 陕西 is `shanxi1` - an easy pair to swap by accident.
@@ -199,12 +220,26 @@
           fetch('./data/house-index.json', { cache: 'no-cache' }).then(function (r) {
             if (!r.ok) throw new Error('house-index.json ' + r.status);
             return r.json();
-          })
+          }),
+          fetch('./data/house-price.json', { cache: 'no-cache' })
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .catch(function () { return null; })
         ]);
       })
       .then(function (res) {
         echarts.registerMap('china', res[0]);
         hp = res[1];
+        hpr = res[2];
+        if (hpr) {
+          // Which region a province belongs to, inverted from the split the
+          // release itself prints in its footnotes.
+          Object.keys(hpr.region).forEach(function (rg) {
+            hpr.region[rg].forEach(function (pv) { provRegion[pv] = rg; });
+          });
+        } else {
+          var opt = document.querySelector('#map-type option[value="price"]');
+          if (opt) opt.remove();
+        }
         slider.max = String(hp.months.length - 1);
         slider.value = String(hp.months.length - 1);
         document.getElementById('map-wrap').hidden = false;
@@ -212,8 +247,8 @@
         btn.textContent = '收起地图';
         btn.dataset.loaded = '1';
         mapChart = echarts.init(document.getElementById('chinamap'), null, { renderer: 'canvas' });
-        mapChart.on('click', function (p) { if (p.name && !level) showProvince(p.name); });
-        mapChart.on('dblclick', function (p) { if (p.name && !level) drillInto(p.name); });
+        mapChart.on('click', function (p) { if (p.name && !level && !isPrice()) showProvince(p.name); });
+        mapChart.on('dblclick', function (p) { if (p.name && !level && !isPrice()) drillInto(p.name); });
         drawMap();
         showProvince('广东');
       })
@@ -229,7 +264,8 @@
   // per frame.
   function drawMap() {
     var i = +slider.value, key = typeSel.value;
-    document.getElementById('map-month-out').textContent = hp.months[i];
+    document.getElementById('map-month-out').textContent = periodLabel(i);
+    if (isPrice()) { drawPriceMap(i); return; }
     if (level) { drawProvinceMap(i, key); return; }
     var data = Object.values(hp.provinces).map(function (p) {
       return { name: p.prov, value: p[key][i], n: p.cities.length };
@@ -364,6 +400,108 @@
     provChart.update('none');
   }
 
+  // ---- real prices (yuan per square metre) ----
+  // Sequential ramp, not the diverging one used for rates of change: this is a
+  // magnitude with no meaningful zero, so a two-hue scale would invent a
+  // midpoint that does not exist.
+  function drawPriceMap(i) {
+    var rec = hpr.records[i];
+    var data = Object.keys(provRegion).map(function (pv) {
+      return { name: pv, value: rec.p[provRegion[pv]], region: provRegion[pv] };
+    });
+    var all = ['东部', '中部', '西部', '东北'].map(function (r) { return rec.p[r]; });
+
+    document.getElementById('map-level').textContent =
+      rec.label + ' · 大区口径均价，同一大区内所有省份同色';
+
+    mapChart.__level = null;
+    mapChart.setOption({
+      backgroundColor: 'transparent',
+      tooltip: {
+        formatter: function (p) {
+          if (p.value == null || isNaN(p.value)) return p.name + '<br>不在统计口径内';
+          return p.name + ' · 属' + p.data.region + '地区<br>' + rec.label
+            + '<br>' + p.value.toLocaleString('en-US') + ' 元/㎡'
+            + '<br><span style="opacity:.7">这是整个' + p.data.region + '地区的均价，不是本省</span>';
+        }
+      },
+      visualMap: {
+        min: Math.floor(Math.min.apply(null, all) / 500) * 500,
+        max: Math.ceil(Math.max.apply(null, all) / 500) * 500,
+        left: 'left', bottom: 20, calculable: true, precision: 0,
+        text: ['贵', '便宜'], textStyle: { color: '#8a8a8a' },
+        inRange: { color: ['#e6f1fb', '#85b7eb', '#2a78d6', '#185fa5', '#042c53'] }
+      },
+      series: [{
+        type: 'map', map: 'china', roam: false, data: data,
+        label: { show: false },
+        itemStyle: { areaColor: 'rgba(138,138,138,.15)', borderColor: 'rgba(138,138,138,.5)', borderWidth: .5 },
+        emphasis: { label: { show: true, color: '#0b0b0b' }, itemStyle: { areaColor: null } }
+      }]
+    }, true);
+
+    var fmt = function (v) { return v == null ? '—' : v.toLocaleString('en-US'); };
+    document.getElementById('pz-nation').textContent = fmt(rec.p['全国']);
+    document.getElementById('pz-east').textContent = fmt(rec.p['东部']);
+    document.getElementById('pz-mid').textContent = fmt(rec.p['中部']);
+    document.getElementById('pz-west').textContent = fmt(rec.p['西部']) + ' / ' + fmt(rec.p['东北']);
+    drawPriceChart(i);
+  }
+
+  function drawPriceChart(cur) {
+    var series = [
+      { key: '全国', color: '#0b0b0b' }, { key: '东部', color: '#2a78d6' },
+      { key: '中部', color: '#eb6834' }, { key: '西部', color: '#1baf7a' },
+      { key: '东北', color: '#eda100' }
+    ];
+    var sets = series.map(function (s) {
+      return { label: s.key, borderColor: s.key === '全国' ? '#8a8a8a' : s.color,
+        borderWidth: s.key === '全国' ? 2.5 : 1.8, borderDash: s.key === '全国' ? [5, 3] : undefined,
+        tension: .2, pointRadius: 0, spanGaps: true,
+        data: hpr.records.map(function (r, j) { return { x: j, y: r.p[s.key] }; }) };
+    });
+    document.getElementById('pz-legend').innerHTML = sets.map(function (s) {
+      return '<span><i class="swatch" style="' + (s.borderDash ? 'background:none;border-top:2px dashed ' + s.borderColor : 'background:' + s.borderColor) + '"></i>' + s.label + '</span>';
+    }).join('');
+    var ys = sets.flatMap(function (s) { return s.data.map(function (d) { return d.y; }); }).filter(function (v) { return v != null; });
+    sets.push({ label: '当前', borderColor: '#e34948', borderWidth: 1.5, pointRadius: 0, __marker: true,
+      data: [{ x: cur, y: Math.min.apply(null, ys) }, { x: cur, y: Math.max.apply(null, ys) }] });
+
+    document.getElementById('price-block').hidden = false;
+    document.getElementById('pz-note').textContent =
+      hpr.method + '。' + hpr.caveat + '。累计口径意味着 1—7 月是这七个月的平均成交价，不是 7 月单月。';
+
+    if (!priceChart) {
+      priceChart = new Chart(document.getElementById('price-chart'), {
+        type: 'line', data: { datasets: sets },
+        options: {
+          responsive: true, maintainAspectRatio: false, animation: { duration: 200 },
+          interaction: { mode: 'index', intersect: false },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              filter: function (c) { return !c.dataset.__marker; },
+              callbacks: {
+                title: function (t) { return hpr.records[t[0].parsed.x].label; },
+                label: function (c) { return c.dataset.label + '：' + (c.parsed.y == null ? '—' : c.parsed.y.toLocaleString('en-US') + ' 元/㎡'); }
+              }
+            }
+          },
+          scales: {
+            x: { type: 'linear', ticks: { color: '#8a8a8a', maxTicksLimit: 7,
+                  callback: function (v) { var r = hpr.records[Math.round(v)]; return r ? r.label.slice(0, 5) : ''; } },
+                 grid: { display: false } },
+            y: { title: { display: true, text: '元/㎡', color: '#8a8a8a' },
+                 ticks: { color: '#8a8a8a' }, grid: { color: 'rgba(138,138,138,.22)' } }
+          }
+        }
+      });
+    } else {
+      priceChart.data.datasets = sets;
+      priceChart.update();
+    }
+  }
+
   // ---- drill down ----
   function drillInto(name) {
     if (MUNICIPALITY[name]) {
@@ -469,18 +607,37 @@
 
   document.getElementById('map-back').addEventListener('click', backToChina);
   document.getElementById('map-zoom').addEventListener('click', function () { if (curProv) drillInto(curProv); });
-  slider.addEventListener('input', function () { drawMap(); if (curProv) showProvince(curProv); });
-  typeSel.addEventListener('change', function () { drawMap(); if (curProv) showProvince(curProv); });
+  slider.addEventListener('input', function () { drawMap(); if (!isPrice() && curProv) showProvince(curProv); });
+  typeSel.addEventListener('change', function () {
+    stopPlay();
+    // Price mode is national+region only, so a province drill-down has nothing
+    // to show; back out of it before the slider is re-ranged.
+    if (isPrice() && level) backToChina();
+    var frac = +slider.value / Math.max(1, +slider.max);
+    slider.max = String(sliderMax());
+    slider.value = String(Math.round(frac * sliderMax()));
+    ['prov-detail', 'map-zoom', 'map-back'].forEach(function (id) {
+      if (isPrice()) document.getElementById(id).hidden = true;
+    });
+    document.getElementById('price-block').hidden = !isPrice();
+    document.getElementById('map-note').hidden = isPrice();
+    mapChart.clear();
+    mapChart.__ready = false;
+    mapChart.__level = null;
+    if (!isPrice()) document.getElementById('map-level').textContent = '全国 · 双击省份放大到市级';
+    drawMap();
+    if (!isPrice() && curProv) showProvince(curProv);
+  });
 
   document.getElementById('map-play').addEventListener('click', function () {
     if (playTimer) { stopPlay(); return; }
     this.textContent = '⏸ 暂停';
     playTimer = setInterval(function () {
-      var next = (+slider.value + 1) % hp.months.length;
+      var next = (+slider.value + 1) % (sliderMax() + 1);
       slider.value = String(next);
       drawMap();
       if (curProv) showProvince(curProv);
-      if (next === hp.months.length - 1) stopPlay();
+      if (next === sliderMax()) stopPlay();
     }, 160);
   });
 
