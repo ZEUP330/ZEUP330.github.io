@@ -224,6 +224,47 @@
     }).join('');
 
     drawPaths();
+    drawCities();
+  }
+
+  function drawCities() {
+    if (!data.cities || !data.cities.length) return;
+    document.getElementById('cityblock').hidden = false;
+    var cs = data.cities, m = data.cityMeta;
+    var mid = cs[Math.floor(cs.length / 2)].dd;
+    var nearPeak = cs.filter(function (c) { return c.dd > -0.05; }).length;
+
+    document.getElementById('city-lede').textContent =
+      '统计局只发布同比涨跌幅，不发布绝对房价，所以这里把 ' + m.months + ' 个月的同比链式还原成各城市自己的价格指数（'
+      + m.from + ' = 100），再算它距自身峰值的回撤。70 城中位数是 ' + pct(mid)
+      + '，只有 ' + nearPeak + ' 个城市还在自己的峰值附近。';
+
+    var rows = cs.slice(0, 10).map(function (c) { return { c: c, cls: 'private' }; })
+      .concat(cs.slice(-10).reverse().map(function (c) { return { c: c, cls: 'soe' }; }));
+    var worst = Math.abs(cs[0].dd);
+    document.getElementById('cities').innerHTML = rows.map(function (r) {
+      var c = r.c, w = Math.min(100, Math.abs(c.dd) / worst * 100);
+      return '<li class="firm"><span class="nm">' + c.city + '<span class="tk">' + c.prov + '</span></span>'
+        + '<span class="track"><i class="' + r.cls + '" style="width:' + w.toFixed(1) + '%"></i></span>'
+        + '<span class="dd">' + pct(c.dd) + '</span>'
+        + '<span class="meta">峰值 ' + c.peakMonth + ' · 已过去 ' + c.monthsSincePeak + ' 个月</span></li>';
+    }).join('');
+
+    // Both clusters land on the same year rather than one leading the other:
+    // the cities topped out and the equity was written off together, so this
+    // is not evidence of the housing market turning first.
+    var peaks = {};
+    cs.forEach(function (c) { var y = c.peakMonth.slice(0, 4); peaks[y] = (peaks[y] || 0) + 1; });
+    var topYears = Object.keys(peaks).sort(function (a, b) { return peaks[b] - peaks[a]; }).slice(0, 3);
+    var crossed = data.firms.filter(function (f) { return f.cross['0.9']; });
+    var crossYears = {};
+    crossed.forEach(function (f) { var y = f.cross['0.9'].slice(0, 4); crossYears[y] = (crossYears[y] || 0) + 1; });
+    var topCross = Object.keys(crossYears).sort(function (a, b) { return crossYears[b] - crossYears[a]; })[0];
+    document.getElementById('city-note').textContent =
+      '城市房价见顶最集中的年份是 ' + topYears.map(function (y) { return y + ' 年（' + peaks[y] + ' 城）'; }).join('、')
+      + '；房企股价跌破 −90% 最集中的是 ' + topCross + ' 年（' + crossYears[topCross] + ' 家）。'
+      + '口径是新建商品住宅，二手房另有一套序列。温州的峰值停在 2011 年，那是当年民间借贷崩盘留下的，至今没回去 —— '
+      + '这一条也是对上面这套链式还原方法的验证。';
   }
 
   function drawPaths() {
