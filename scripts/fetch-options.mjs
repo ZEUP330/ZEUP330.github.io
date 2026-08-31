@@ -1,40 +1,72 @@
-// Pulls the BTC option chain from Deribit's public API and writes the two
-// artifacts the page reads. Everything derived here rather than in the browser,
-// so the committed JSON stays small and the page needs no API key or CORS proxy.
+// Screens US equity/ETF option chains for wheel-strategy candidates using
+// Cboe's public delayed-quote feed, and writes the small derived artifacts the
+// page reads. All the filtering and ranking happens here (in the runner) so the
+// committed JSON stays a few hundred KB instead of the ~35MB of raw chains.
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 
-const CURRENCY = process.env.CURRENCY || 'BTC';
-const API = 'https://www.deribit.com/api/v2/public';
-// Tight around the money on purpose: short-dated expiries only list strikes in
-// roughly 0.88-1.15 of the forward, so a wider grid would be mostly holes and
-// the surface would be built out of extrapolation rather than quotes.
+// Edit this list to change what gets screened. Order is preserved on the page.
+const SYMBOLS = [
+  { s: 'AAPL', g: 'mag7' }, { s: 'MSFT', g: 'mag7' }, { s: 'GOOGL', g: 'mag7' },
+  { s: 'AMZN', g: 'mag7' }, { s: 'NVDA', g: 'mag7' }, { s: 'META', g: 'mag7' },
+  { s: 'TSLA', g: 'mag7' },
+  { s: 'SPY', g: 'index' }, { s: 'QQQ', g: 'index' }, { s: 'IWM', g: 'index' },
+  { s: 'DIA', g: 'index' },
+  { s: 'XLK', g: 'sector' }, { s: 'XLF', g: 'sector' }, { s: 'XLE', g: 'sector' },
+  { s: 'XLV', g: 'sector' }, { s: 'SMH', g: 'sector' }, { s: 'XBI', g: 'sector' },
+  { s: 'TQQQ', g: 'lev' }, { s: 'SQQQ', g: 'lev' }, { s: 'SOXL', g: 'lev' },
+  { s: 'TNA', g: 'lev' }, { s: 'SPXL', g: 'lev' }
+];
+
+const FEED = 'https://cdn.cboe.com/api/global/delayed_quotes/options';
+const HISTORY_CAP = 500;
+
+// Wheel screening bands. Puts are the entry leg (cash-secured), calls the exit
+// leg after assignment; both are sold OTM, so the delta bands are mirrored.
+const DTE = [5, 70];
+const PUT_DELTA = [-0.35, -0.10];
+const CALL_DELTA = [0.10, 0.35];
+const MIN_BID = 0.05;
+// Open interest OR traded volume: a strike can be freshly listed and busy, or
+// old and heavily held, and either one means someone is quoting it.
+const MIN_OI = 25;
+// Liquidity gate has to be absolute-or-relative. This feed is delayed and often
+// captured with the market closed, when asks on cheap ETF options go stale and
+// wide (XLV puts quoted 0.10 x 4.95 on a Sunday). A pure percentage gate throws
+// away perfectly liquid names for that reason alone, so a few cents wide is
+// allowed regardless of the percentage.
+const MAX_SPREAD_ABS = 0.1;
+const MAX_SPREAD_PCT = 0.3;
+const TOP_PUTS = 8;
+const TOP_CALLS = 5;
+
 const MONEYNESS = [];
-for (let m = 0.9; m <= 1.1501; m += 0.0125) MONEYNESS.push(+m.toFixed(4));
-const HISTORY_CAP = 2000;
+for (let m = 0.8; m <= 1.2001; m += 0.025) MONEYNESS.push(+m.toFixed(4));
 
-async function api(path) {
-  const res = await fetch(`${API}/${path}`, { headers: { 'user-agent': 'zeup330.github.io options snapshot' } });
-  if (!res.ok) throw new Error(`${path} -> HTTP ${res.status}`);
-  const body = await res.json();
-  if (body.error) throw new Error(`${path} -> ${JSON.stringify(body.error)}`);
-  return body.result;
+const r2 = (v) => (v == null ? null : +(+v).toFixed(2));
+const r4 = (v) => (v == null ? null : +(+v).toFixed(4));
+
+// AAPL260831C00205000 -> root, 2026-08-31, C, 205
+function parseOcc(code) {
+  const m = /^([A-Z0-9]+?)(\d{2})(\d{2})(\d{2})([CP])(\d{8})$/.exec(code);
+  if (!m) return null;
+  // US options settle at the close; 20:00 UTC is 16:00 ET during EDT and is
+  // close enough for a DTE used only to annualise a premium.
+  return {
+    expiryMs: Date.UTC(2000 + +m[2], +m[3] - 1, +m[4], 20),
+    expiry: `20${m[2]}-${m[3]}-${m[4]}`,
+    type: m[5],
+    strike: +m[6] / 1000
+  };
 }
 
-// BTC-26SEP26-120000-C
-function parseName(name) {
-  const [, expiry, strike, type] = name.split('-');
-  return { expiry, strike: +strike, type };
+async function chain(symbol) {
+  const res = await fetch(`${FEED}/${symbol}.json`, {
+    headers: { 'user-agent': 'zeup330.github.io wheel screener' }
+  });
+  if (!res.ok) throw new Error(`${symbol} -> HTTP ${res.status}`);
+  return res.json();
 }
 
-const MONTHS = { JAN: 0, FEB: 1, MAR: 2, APR: 3, MAY: 4, JUN: 5, JUL: 6, AUG: 7, SEP: 8, OCT: 9, NOV: 10, DEC: 11 };
-function expiryMs(expiry) {
-  const m = /^(\d{1,2})([A-Z]{3})(\d{2})$/.exec(expiry);
-  if (!m) return NaN;
-  // Deribit options expire 08:00 UTC.
-  return Date.UTC(2000 + +m[3], MONTHS[m[2]], +m[1], 8);
-}
-
-// Linear interpolation over sorted [x, y] pairs; no extrapolation.
 function interp(points, x) {
   if (points.length < 2 || x < points[0][0] || x > points[points.length - 1][0]) return null;
   for (let i = 1; i < points.length; i++) {
@@ -44,91 +76,156 @@ function interp(points, x) {
   return null;
 }
 
-const now = Date.now();
-const [summary, index] = await Promise.all([
-  api(`get_book_summary_by_currency?currency=${CURRENCY}&kind=option`),
-  api(`get_index_price?index_name=${CURRENCY.toLowerCase()}_usd`)
-]);
-console.log(`fetched ${summary.length} instruments; sample keys: ${Object.keys(summary[0]).join(',')}`);
+function screen(raw, now) {
+  const spot = raw.data.current_price || raw.data.close;
+  if (!spot) throw new Error('no spot price');
 
-const byExpiry = new Map();
-for (const row of summary) {
-  const { expiry, strike, type } = parseName(row.instrument_name);
-  if (!byExpiry.has(expiry)) byExpiry.set(expiry, { expiry, ts: expiryMs(expiry), fwd: 0, strikes: new Map() });
-  const e = byExpiry.get(expiry);
-  if (row.underlying_price) e.fwd = row.underlying_price;
-  if (!e.strikes.has(strike)) e.strikes.set(strike, {});
-  e.strikes.get(strike)[type] = {
-    iv: row.mark_iv ?? null,
-    mark: row.mark_price ?? null,
-    oi: row.open_interest ?? 0,
-    vol: row.volume ?? 0,
-    bid: row.bid_price ?? null,
-    ask: row.ask_price ?? null
-  };
-}
+  const rows = [];
+  for (const o of raw.data.options) {
+    const p = parseOcc(o.option);
+    if (!p) continue;
+    const dte = (p.expiryMs - now) / 86400000;
+    if (dte < 0.5) continue;
+    const mid = (o.bid + o.ask) / 2;
+    rows.push({
+      ...p, dte,
+      bid: o.bid, ask: o.ask, mid,
+      spread: mid > 0 ? (o.ask - o.bid) / mid : Infinity,
+      iv: o.iv, delta: o.delta, theta: o.theta,
+      oi: o.open_interest, vol: o.volume
+    });
+  }
 
-const expiries = [...byExpiry.values()]
-  .filter((e) => Number.isFinite(e.ts) && e.ts > now && e.fwd > 0)
-  .sort((a, b) => a.ts - b.ts)
-  .map((e) => {
-    const k = [...e.strikes.keys()].sort((a, b) => a - b);
-    const pick = (t, f) => k.map((s) => (e.strikes.get(s)[t] ? f(e.strikes.get(s)[t]) : null));
+  const liquid = (r) =>
+    r.bid >= MIN_BID &&
+    (r.oi >= MIN_OI || r.vol >= MIN_OI) &&
+    (r.ask - r.bid <= MAX_SPREAD_ABS || r.spread <= MAX_SPREAD_PCT) &&
+    r.dte >= DTE[0] && r.dte <= DTE[1];
+
+  // Cash-secured put: premium is return on the strike you must keep in cash.
+  const puts = rows
+    .filter((r) => r.type === 'P' && liquid(r) && r.delta >= PUT_DELTA[0] && r.delta <= PUT_DELTA[1])
+    .map((r) => ({
+      ...r,
+      yield: (r.bid / r.strike) * (365 / r.dte),
+      cushion: (spot - r.strike) / spot,
+      breakeven: r.strike - r.bid
+    }))
+    .sort((a, b) => b.yield - a.yield);
+
+  // Covered call: premium is return on shares already held, so measure it
+  // against spot rather than the strike.
+  const calls = rows
+    .filter((r) => r.type === 'C' && liquid(r) && r.delta >= CALL_DELTA[0] && r.delta <= CALL_DELTA[1])
+    .map((r) => ({
+      ...r,
+      yield: (r.bid / spot) * (365 / r.dte),
+      upside: (r.strike - spot) / spot
+    }))
+    .sort((a, b) => b.yield - a.yield);
+
+  const trim = (r) => ({
+    e: r.expiry, dte: +r.dte.toFixed(1), k: r.strike,
+    bid: r2(r.bid), ask: r2(r.ask), iv: r4(r.iv), d: r4(r.delta),
+    th: r4(r.theta), oi: Math.round(r.oi), vol: Math.round(r.vol),
+    sp: r4(r.spread), y: r4(r.yield),
+    cu: r.cushion == null ? null : r4(r.cushion),
+    up: r.upside == null ? null : r4(r.upside),
+    be: r.breakeven == null ? null : r2(r.breakeven)
+  });
+
+  // Surface over the standard expiries, OTM side of each strike.
+  const byExpiry = new Map();
+  for (const r of rows) {
+    if (r.dte < 3 || r.dte > 400 || !r.iv) continue;
+    if (!byExpiry.has(r.expiry)) byExpiry.set(r.expiry, []);
+    byExpiry.get(r.expiry).push(r);
+  }
+  const expiries = [...byExpiry.entries()]
+    .map(([expiry, list]) => ({ expiry, dte: list[0].dte, list }))
+    .filter((e) => e.list.length >= 12)
+    .sort((a, b) => a.dte - b.dte)
+    .slice(0, 8);
+
+  const surface = expiries.map((e) => {
+    const pts = e.list
+      .filter((r) => (r.strike < spot ? r.type === 'P' : r.type === 'C'))
+      .map((r) => [r.strike / spot, r.iv])
+      .sort((a, b) => a[0] - b[0]);
+    return { dte: +e.dte.toFixed(1), iv: MONEYNESS.map((m) => r4(interp(pts, m))) };
+  });
+
+  // Smile detail for the two nearest expiries only, trimmed to the strikes a
+  // wheel seller would actually look at.
+  const smile = expiries.slice(0, 2).map((e) => {
+    const ks = [...new Set(e.list.map((r) => r.strike))]
+      .filter((k) => k >= spot * 0.75 && k <= spot * 1.25)
+      .sort((a, b) => a - b);
+    const find = (k, t) => e.list.find((r) => r.strike === k && r.type === t);
     return {
-      expiry: e.expiry,
-      ts: e.ts,
-      days: +((e.ts - now) / 86400000).toFixed(2),
-      fwd: +e.fwd.toFixed(2),
-      k,
-      civ: pick('C', (o) => o.iv), piv: pick('P', (o) => o.iv),
-      coi: pick('C', (o) => o.oi), poi: pick('P', (o) => o.oi),
-      cmk: pick('C', (o) => o.mark), pmk: pick('P', (o) => o.mark),
-      cvol: pick('C', (o) => o.vol), pvol: pick('P', (o) => o.vol)
+      e: e.expiry, dte: +e.dte.toFixed(1), k: ks,
+      civ: ks.map((k) => r4(find(k, 'C')?.iv)),
+      piv: ks.map((k) => r4(find(k, 'P')?.iv))
     };
   });
 
-if (!expiries.length) throw new Error('no live expiries parsed — API shape may have changed');
+  const putOI = rows.filter((r) => r.type === 'P').reduce((t, r) => t + r.oi, 0);
+  const callOI = rows.filter((r) => r.type === 'C').reduce((t, r) => t + r.oi, 0);
+  const med = (a) => (a.length ? a.slice().sort((x, y) => x - y)[Math.floor(a.length / 2)] : null);
 
-// OTM convention: puts below the forward, calls above it. That is the side with
-// real quotes, so the smile is built from the liquid wing on each strike.
-const surface = expiries.map((e) => {
-  const pts = e.k
-    .map((s, i) => {
-      const iv = s < e.fwd ? e.piv[i] ?? e.civ[i] : e.civ[i] ?? e.piv[i];
-      return iv ? [s / e.fwd, iv] : null;
-    })
-    .filter(Boolean)
-    .sort((a, b) => a[0] - b[0]);
-  return { days: e.days, expiry: e.expiry, iv: MONEYNESS.map((m) => interp(pts, m)) };
-});
+  return {
+    spot: r2(spot),
+    iv30: r4(raw.data.iv30),
+    change: r4(raw.data.price_change_percent),
+    contracts: rows.length,
+    put_oi: Math.round(putOI),
+    call_oi: Math.round(callOI),
+    pcr: callOI ? r4(putOI / callOI) : null,
+    med_spread: r4(med(puts.map((p) => p.spread))),
+    puts: puts.slice(0, TOP_PUTS).map(trim),
+    calls: calls.slice(0, TOP_CALLS).map(trim),
+    moneyness: MONEYNESS,
+    surface,
+    smile
+  };
+}
 
-const atm = (e) => {
-  const i = e.k.reduce((best, s, idx) => (Math.abs(s - e.fwd) < Math.abs(e.k[best] - e.fwd) ? idx : best), 0);
-  const c = e.civ[i], p = e.piv[i];
-  return c && p ? (c + p) / 2 : c || p || null;
-};
-const near30 = expiries.reduce((best, e) => (Math.abs(e.days - 30) < Math.abs(best.days - 30) ? e : best), expiries[0]);
-const sum = (a) => a.reduce((t, v) => t + (v || 0), 0);
-const callOI = sum(expiries.flatMap((e) => e.coi));
-const putOI = sum(expiries.flatMap((e) => e.poi));
+const now = Date.now();
+const out = { t: now, source: 'cboe-delayed', symbols: {} };
+const failures = [];
+
+for (const { s, g } of SYMBOLS) {
+  try {
+    const raw = await chain(s);
+    const screened = screen(raw, now);
+    out.symbols[s] = { symbol: s, group: g, feed_time: raw.timestamp, ...screened };
+    console.log(
+      `${s.padEnd(6)} spot=${String(screened.spot).padStart(8)} iv30=${screened.iv30}` +
+      ` puts=${screened.puts.length} calls=${screened.calls.length}` +
+      ` best_yield=${screened.puts[0] ? (screened.puts[0].y * 100).toFixed(1) + '%' : '-'}`
+    );
+  } catch (err) {
+    failures.push(`${s}: ${err.message}`);
+    console.log(`${s.padEnd(6)} FAILED ${err.message}`);
+  }
+  await new Promise((r) => setTimeout(r, 250));
+}
+
+const got = Object.keys(out.symbols).length;
+if (!got) throw new Error(`every symbol failed: ${failures.join('; ')}`);
+out.failures = failures;
 
 mkdirSync('options/data', { recursive: true });
-writeFileSync('options/data/options.json', JSON.stringify({
-  t: now, currency: CURRENCY, index: index.index_price,
-  moneyness: MONEYNESS, expiries, surface
-}));
+writeFileSync('options/data/options.json', JSON.stringify(out));
 
 let history = [];
 try { history = JSON.parse(readFileSync('options/data/history.json', 'utf8')); } catch { /* first run */ }
 history.push({
   t: now,
-  index: +index.index_price.toFixed(2),
-  atm_iv: atm(near30) ? +atm(near30).toFixed(2) : null,
-  atm_days: near30.days,
-  call_oi: Math.round(callOI),
-  put_oi: Math.round(putOI),
-  pcr: callOI ? +(putOI / callOI).toFixed(3) : null
+  s: Object.fromEntries(Object.entries(out.symbols).map(([s, v]) => [
+    s, { p: v.spot, iv: v.iv30, y: v.puts[0] ? v.puts[0].y : null }
+  ]))
 });
 writeFileSync('options/data/history.json', JSON.stringify(history.slice(-HISTORY_CAP)));
 
-console.log(`index=${index.index_price} expiries=${expiries.length} atm30=${atm(near30)} pcr=${(putOI / callOI).toFixed(3)} history=${history.length}`);
+console.log(`\n${got}/${SYMBOLS.length} symbols, ${failures.length} failed, history=${history.length}`);

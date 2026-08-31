@@ -2,10 +2,13 @@ name: options snapshot
 
 on:
   schedule:
-    # Every 4 hours. GitHub queues cron jobs and can run them 10-30 min late or
-    # skip them entirely under load, so treat the timestamps in history.json as
-    # the truth rather than assuming an even 4h spacing.
-    - cron: '7 */4 * * *'
+    # Weekdays only, roughly 10:00 / 13:00 / 15:55 ET during EDT. US options do
+    # not trade overnight, so running around the clock would just append
+    # duplicate rows. GitHub queues cron jobs and can run them 10-30 min late or
+    # skip them under load, so treat the timestamps in history.json as the truth
+    # rather than assuming even spacing. Shifts by an hour when EST starts.
+    - cron: '0 14,17,19 * * 1-5'
+    - cron: '55 19 * * 1-5'
   workflow_dispatch:
 
 permissions:

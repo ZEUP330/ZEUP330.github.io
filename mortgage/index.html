@@ -73,6 +73,22 @@
     background: var(--card); border: 1px solid var(--line); border-radius: 4px; padding: 1px 5px; }
   footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--line);
     font-size: 13px; color: var(--ink-3); }
+  .scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  @media (max-width: 640px) {
+    body { padding: 1.5rem .9rem 3rem; -webkit-text-size-adjust: 100%; }
+    h1 { font-size: 21px; }
+    h2 { font-size: 17px; margin: 2rem 0 .6rem; }
+    .row { grid-template-columns: 4.5em 1fr 5em; gap: 8px; }
+    .row label, .row output { font-size: 13px; }
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .stat .v { font-size: 19px; }
+    .chart { height: 250px; }
+    .chart3d { height: 330px; }
+    table { font-size: 13px; }
+    th, td { padding: 6px 4px; }
+    table.policy td:last-child, table.policy th:last-child { font-size: 12px; white-space: normal; }
+    .toolbar { gap: 8px; }
+  }
 </style>
 </head>
 <body>
@@ -154,7 +170,7 @@
   <h2>现行利率与政策</h2>
   <p class="asof">数据核对日期：2026-08-31。利率与政策会变，用之前请点开原文复核。</p>
 
-  <table class="policy">
+  <table class="policy" style="width:100%">
     <thead><tr><th>项目</th><th>现值</th><th>说明</th></tr></thead>
     <tbody>
       <tr><td>LPR 5 年期以上</td><td>3.50%</td><td>2026-08-20 报价，连续 15 个月持平；房贷利率以它为定价基准</td></tr>
@@ -203,8 +219,43 @@
   var YEARS = [];
   for (var y = 5; y <= 100; y++) YEARS.push(y);
 
+  // Draws the policy context straight onto the plot: the old 30-year ceiling,
+  // the new 40-year one, and the band the 2026-08-28 rule opened up. Labels are
+  // dropped on narrow screens where they would collide with the axis.
+  var policyBands = {
+    id: 'policyBands',
+    beforeDatasetsDraw: function (c) {
+      var x = c.scales.x, y = c.scales.y, ctx = c.ctx;
+      if (!x || !y) return;
+      var x30 = x.getPixelForValue(30), x40 = x.getPixelForValue(40);
+      var css = getComputedStyle(document.documentElement);
+      var ink3 = css.getPropertyValue('--ink-3').trim() || '#898781';
+      ctx.save();
+      ctx.fillStyle = 'rgba(42,120,214,.10)';
+      ctx.fillRect(x30, y.top, x40 - x30, y.bottom - y.top);
+      ctx.setLineDash([5, 4]);
+      ctx.lineWidth = 1;
+      [[x30, '旧上限 30 年'], [x40, '新上限 40 年']].forEach(function (pair, i) {
+        ctx.strokeStyle = ink3;
+        ctx.beginPath();
+        ctx.moveTo(pair[0], y.top);
+        ctx.lineTo(pair[0], y.bottom);
+        ctx.stroke();
+        if (c.width < 420) return;
+        ctx.setLineDash([]);
+        ctx.fillStyle = ink3;
+        ctx.font = '11px -apple-system, sans-serif';
+        ctx.textAlign = i ? 'left' : 'right';
+        ctx.fillText(pair[1], pair[0] + (i ? 5 : -5), y.top + 12);
+        ctx.setLineDash([5, 4]);
+      });
+      ctx.restore();
+    }
+  };
+
   var chart = new Chart(document.getElementById('chart'), {
     type: 'line',
+    plugins: [policyBands],
     data: {
       labels: YEARS,
       datasets: [
@@ -241,6 +292,7 @@
 
   var chartInt = new Chart(document.getElementById('chartInt'), {
     type: 'line',
+    plugins: [policyBands],
     data: {
       labels: YEARS,
       datasets: [

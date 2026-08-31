@@ -3,159 +3,228 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>BTC 期权快照：微笑、曲面与期权链</title>
-<meta name="description" content="Deribit BTC 期权公开数据的定时快照：IV 微笑、IV 曲面、期权链与历史趋势。">
+<title>美股期权 Wheel 筛选器：七姐妹 / 行业 ETF / 杠杆 ETF</title>
+<meta name="description" content="用 Cboe 延迟行情筛选适合 wheel 策略的现金担保看跌与备兑看涨候选，覆盖七姐妹、指数与行业 ETF、杠杆 ETF。">
 <style>
   :root {
     --bg: #fcfcfb; --card: #ffffff; --ink: #0b0b0b; --ink-2: #52514e; --ink-3: #898781;
-    --line: #e1e0d9; --accent: #2a78d6; --call: #1baf7a; --put: #e34948;
+    --line: #e1e0d9; --accent: #2a78d6; --call: #1baf7a; --put: #e34948; --warn: #eda100;
   }
   @media (prefers-color-scheme: dark) {
     :root { --bg: #1a1a19; --card: #222221; --ink: #f0efec; --ink-2: #c3c2b7; --ink-3: #898781;
-            --line: #2c2c2a; --accent: #3987e5; --call: #199e70; --put: #e66767; }
+            --line: #2c2c2a; --accent: #3987e5; --call: #199e70; --put: #e66767; --warn: #fac775; }
   }
   * { box-sizing: border-box; }
   [hidden] { display: none !important; }
   body {
     margin: 0; padding: 2rem 1.25rem 4rem; background: var(--bg); color: var(--ink);
     font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-    line-height: 1.7; -webkit-font-smoothing: antialiased;
+    line-height: 1.7; -webkit-font-smoothing: antialiased; -webkit-text-size-adjust: 100%;
   }
-  main { max-width: 760px; margin: 0 auto; }
+  main { max-width: 820px; margin: 0 auto; }
   h1 { font-size: 26px; font-weight: 500; margin: 0 0 .5rem; letter-spacing: -.01em; }
-  h2 { font-size: 18px; font-weight: 500; margin: 2.75rem 0 .75rem; }
+  h2 { font-size: 18px; font-weight: 500; margin: 2.5rem 0 .75rem; }
+  h3 { font-size: 15px; font-weight: 500; margin: 1.5rem 0 .5rem; }
   p { color: var(--ink-2); margin: 0 0 1rem; }
   .back { font-size: 14px; margin: 0 0 1rem; }
   .back a { color: var(--ink-3); text-decoration: none; }
-  .back a:hover { color: var(--accent); }
-  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin: 1.5rem 0; }
-  .stat { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: .85rem 1rem; }
-  .stat .k { font-size: 13px; color: var(--ink-3); }
-  .stat .v { font-size: 24px; font-weight: 500; font-variant-numeric: tabular-nums; margin-top: 2px; }
-  .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 0 0 .75rem; }
+  .hint { font-size: 12px; color: var(--ink-3); margin: 0 0 1rem; }
+  .warn { background: var(--card); border: 1px solid var(--line); border-left: 3px solid var(--warn);
+    border-radius: 0 8px 8px 0; padding: .7rem .9rem; font-size: 13px; color: var(--ink-2); margin: 0 0 1.25rem; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 1.25rem 0 .75rem; }
+  .chip { font: inherit; font-size: 13px; color: var(--ink-2); background: var(--card);
+    border: 1px solid var(--line); border-radius: 999px; padding: 5px 13px; cursor: pointer; }
+  .chip[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
   select, button { font: inherit; font-size: 14px; color: var(--ink); background: var(--card);
-    border: 1px solid var(--line); border-radius: 8px; padding: 7px 14px; cursor: pointer; }
-  select:hover, button:hover { border-color: var(--ink-3); }
-  label.pick { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-3); }
-  .legend { display: flex; flex-wrap: wrap; gap: 18px; font-size: 12px; color: var(--ink-2); margin-bottom: 8px; }
+    border: 1px solid var(--line); border-radius: 8px; padding: 7px 12px; cursor: pointer; }
+  .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 0 0 1rem; }
+  .toolbar label { font-size: 13px; color: var(--ink-3); display: inline-flex; align-items: center; gap: 6px; }
+
+  ul.syms { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+  .sym { width: 100%; text-align: left; display: grid; gap: 2px 12px; padding: .7rem .9rem;
+    grid-template-columns: 1fr auto auto auto; align-items: baseline; border-radius: 10px; }
+  .sym[aria-pressed="true"] { border-color: var(--accent); }
+  .sym .t { font-size: 15px; font-weight: 500; }
+  .sym .g { font-size: 11px; color: var(--ink-3); margin-left: 6px; }
+  .sym .n { font-size: 14px; font-variant-numeric: tabular-nums; color: var(--ink-2); }
+  .sym .y { font-size: 15px; font-weight: 500; font-variant-numeric: tabular-nums; color: var(--accent); }
+  .sym .none { color: var(--ink-3); font-weight: 400; font-size: 13px; }
+
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin: 1rem 0; }
+  .stat { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: .7rem .9rem; }
+  .stat .k { font-size: 12px; color: var(--ink-3); }
+  .stat .v { font-size: 21px; font-weight: 500; font-variant-numeric: tabular-nums; margin-top: 2px; }
+
+  .scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+  th, td { padding: 7px 6px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap; }
+  th { color: var(--ink-3); font-weight: 400; font-size: 12px; }
+  th:first-child, td:first-child { text-align: left; }
+  td.k { font-weight: 500; }
+  .up { color: var(--call); } .down { color: var(--put); }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 16px; font-size: 12px; color: var(--ink-2); margin-bottom: 8px; }
   .legend span { display: inline-flex; align-items: center; gap: 6px; }
   .swatch { width: 16px; height: 2px; background: var(--accent); }
-  .swatch.call { background: var(--call); }
-  .swatch.put { background: var(--put); }
+  .swatch.call { background: #1baf7a; } .swatch.put { background: #e34948; }
   .swatch.dash { background: none; border-top: 2px dashed var(--ink-3); }
-  .chart { position: relative; height: 320px; }
-  .chart3d { height: 460px; }
-  .hint { font-size: 12px; color: var(--ink-3); margin: 0 0 1rem; }
-  table { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
-  th, td { padding: 6px 5px; border-bottom: 1px solid var(--line); text-align: right; }
-  th { color: var(--ink-3); font-weight: 400; font-size: 12px; }
-  td.strike { text-align: center; font-weight: 500; background: var(--card); }
-  tr.atm td { color: var(--accent); }
-  .callside { color: var(--call); }
-  .putside { color: var(--put); }
+  .chart { position: relative; height: 300px; }
+  .chart3d { height: 420px; }
   .placeholder { background: var(--card); border: 1px dashed var(--line); border-radius: 12px;
     padding: 2rem 1.25rem; text-align: center; color: var(--ink-3); font-size: 14px; }
+  dl.gloss { margin: 0; font-size: 14px; }
+  dl.gloss dt { font-weight: 500; margin-top: .75rem; }
+  dl.gloss dd { margin: 0; color: var(--ink-2); }
   ul.links { padding-left: 1.1rem; margin: 0; }
   ul.links li { color: var(--ink-3); font-size: 14px; margin-bottom: .5rem; }
-  ul.links a { color: var(--accent); text-decoration: none; }
+  ul.links a, .back a:hover { color: var(--accent); }
+  ul.links a { text-decoration: none; }
   ul.links a:hover { text-decoration: underline; }
   footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--line);
     font-size: 13px; color: var(--ink-3); }
+
+  @media (max-width: 640px) {
+    body { padding: 1.5rem .9rem 3rem; }
+    h1 { font-size: 21px; }
+    h2 { font-size: 17px; margin: 2rem 0 .6rem; }
+    .sym { grid-template-columns: 1fr auto; row-gap: 4px; }
+    .sym .t { grid-column: 1; } .sym .y { grid-column: 2; grid-row: 1; }
+    .sym .n { grid-column: 1 / -1; font-size: 13px; }
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .stat .v { font-size: 18px; }
+    .chart { height: 240px; }
+    .chart3d { height: 320px; }
+    .hide-sm { display: none; }
+    th, td { padding: 6px 4px; font-size: 12px; }
+  }
 </style>
 </head>
 <body>
 <main>
   <p class="back"><a href="../">← 首页</a></p>
-  <h1>BTC 期权快照</h1>
-  <p class="lede" id="lede">数据由 GitHub Actions 每 4 小时抓一次 Deribit 公开接口，算好后提交进仓库，这个页面只读静态 JSON —— 没有后端，也没有 API key。</p>
+  <h1>美股期权 Wheel 筛选器</h1>
+  <p>覆盖七姐妹、指数与行业 ETF、杠杆 ETF。GitHub Actions 在美股交易时段定时抓 Cboe 延迟行情，在 runner 里筛完再把结果提交进仓库 —— 页面只读静态 JSON，没有后端。</p>
+
+  <div class="warn" id="stale">
+    这是延迟行情快照，不是实时报价；盘后与周末的卖价常被挂得很宽，年化收益会因此偏低或偏高。所有数字是公开数据的机械计算，不是投资建议。
+  </div>
 
   <div id="empty" class="placeholder" hidden>
-    还没有快照数据。等第一次 Actions 跑完（或手动触发 <code>options snapshot</code> 工作流）后刷新本页。
+    还没有快照数据。等 <code>options snapshot</code> 工作流跑完后刷新本页。
   </div>
 
   <div id="app" hidden>
-    <div class="stats">
-      <div class="stat"><div class="k">BTC 指数</div><div class="v" id="s-index">—</div></div>
-      <div class="stat"><div class="k">近 30 天 ATM IV</div><div class="v" id="s-atm">—</div></div>
-      <div class="stat"><div class="k">Put/Call 未平仓比</div><div class="v" id="s-pcr">—</div></div>
-      <div class="stat"><div class="k">在挂到期日</div><div class="v" id="s-exp">—</div></div>
-    </div>
     <p class="hint" id="asof">—</p>
 
-    <h2>IV 微笑</h2>
+    <div class="chips" id="groups"></div>
     <div class="toolbar">
-      <label class="pick">到期日
-        <select id="expiry"></select>
+      <label>排序
+        <select id="sort">
+          <option value="y">最佳现金担保看跌年化</option>
+          <option value="ratio">年化 ÷ IV30（每单位波动率的收益）</option>
+          <option value="iv">IV30 由高到低</option>
+          <option value="spot">现价</option>
+          <option value="sym">代码</option>
+        </select>
       </label>
     </div>
-    <div class="legend">
-      <span><i class="swatch call"></i>看涨 IV</span>
-      <span><i class="swatch put"></i>看跌 IV</span>
-      <span><i class="swatch dash"></i>远期价格</span>
-    </div>
-    <div class="chart"><canvas id="smile" role="img" aria-label="隐含波动率对行权价的曲线，两端高中间低，形成微笑或偏斜。">隐含波动率随行权价变化的微笑曲线。</canvas></div>
-    <p class="hint">两翼高、中间低就是「微笑」；左高右低是「偏斜」，说明市场为下跌保护付的溢价更高。</p>
+    <ul class="syms" id="syms"></ul>
+    <p class="hint">年化 = 卖价 ÷ 行权价 × 365 ÷ 剩余天数，即现金担保看跌的资金年化回报（按最保守的买价成交计算）。点一行看细节。</p>
+    <p class="hint">按年化排序，榜首基本恒定是杠杆 ETF —— 高年化就是高隐含波动率的另一种写法，那是风险的标价，不是找到了便宜。换成「年化 ÷ IV30」能看出谁在单位波动率上给得更多；wheel 的前提是这个标的跌下来你愿意接，这一条任何排序都替你判断不了。</p>
 
-    <h2>IV 曲面</h2>
-    <div class="toolbar"><button id="load3d" type="button">加载 3D 曲面</button></div>
-    <p class="hint" id="hint3d" hidden>拖动旋转，滚轮缩放。X 轴是行权价／远期价（1.0 即平值），Y 轴是剩余天数，高度是 IV。</p>
-    <div class="chart chart3d" id="wrap3d" hidden></div>
+    <div id="detail">
+      <h2 id="d-title">—</h2>
+      <div class="stats">
+        <div class="stat"><div class="k">现价</div><div class="v" id="d-spot">—</div></div>
+        <div class="stat"><div class="k">IV30</div><div class="v" id="d-iv">—</div></div>
+        <div class="stat"><div class="k">Put/Call 未平仓比</div><div class="v" id="d-pcr">—</div></div>
+        <div class="stat"><div class="k">在挂合约</div><div class="v" id="d-ct">—</div></div>
+      </div>
 
-    <h2>期权链</h2>
-    <div class="legend">
-      <span><i class="swatch call"></i>看涨</span>
-      <span><i class="swatch put"></i>看跌</span>
-      <span>标价单位为 BTC，IV 为 %，OI 为张数</span>
-    </div>
-    <div style="overflow-x: auto;">
-      <table id="chain">
-        <thead>
-          <tr>
-            <th class="callside">OI</th><th class="callside">标价</th><th class="callside">IV</th>
-            <th>行权价</th>
-            <th class="putside">IV</th><th class="putside">标价</th><th class="putside">OI</th>
-          </tr>
-        </thead>
-        <tbody id="chain-body"></tbody>
-      </table>
-    </div>
-    <p class="hint">只列远期价上下各 12 档，蓝色行是最接近平值的一档。</p>
+      <h3>现金担保看跌（入场腿）</h3>
+      <div class="scroll">
+        <table>
+          <thead><tr>
+            <th>到期</th><th>天</th><th>行权价</th><th>卖价</th><th>年化</th>
+            <th>Δ</th><th>距现价</th><th class="hide-sm">盈亏平衡</th><th class="hide-sm">OI</th><th class="hide-sm">价差</th>
+          </tr></thead>
+          <tbody id="d-puts"></tbody>
+        </table>
+      </div>
+      <p class="hint" id="d-puts-note"></p>
 
-    <h2>历史趋势</h2>
-    <p class="hint" id="hist-note">每次快照追加一条记录。cron 会被 GitHub 延迟或跳过，所以点位间隔不均匀，横轴按真实时间画。</p>
-    <div class="legend"><span><i class="swatch"></i>近 30 天 ATM IV（%）</span></div>
-    <div class="chart" style="height: 220px;"><canvas id="h-iv" role="img" aria-label="平值隐含波动率随时间变化的折线图。">ATM IV 历史。</canvas></div>
-    <div class="legend" style="margin-top: 1.25rem;"><span><i class="swatch"></i>BTC 指数价（USD）</span></div>
-    <div class="chart" style="height: 220px;"><canvas id="h-px" role="img" aria-label="BTC 指数价格随时间变化的折线图。">BTC 指数价历史。</canvas></div>
+      <h3>备兑看涨（被指派后的出场腿）</h3>
+      <div class="scroll">
+        <table>
+          <thead><tr>
+            <th>到期</th><th>天</th><th>行权价</th><th>卖价</th><th>年化</th>
+            <th>Δ</th><th>上涨空间</th><th class="hide-sm">OI</th><th class="hide-sm">价差</th>
+          </tr></thead>
+          <tbody id="d-calls"></tbody>
+        </table>
+      </div>
+      <p class="hint" id="d-calls-note"></p>
+
+      <h3>IV 微笑</h3>
+      <div class="legend">
+        <span><i class="swatch call"></i>看涨 IV</span>
+        <span><i class="swatch put"></i>看跌 IV</span>
+        <span><i class="swatch dash"></i>现价</span>
+      </div>
+      <div class="chart"><canvas id="smile" role="img" aria-label="隐含波动率对行权价的曲线。">IV 微笑曲线。</canvas></div>
+      <p class="hint">左高右低是股票期权的常态偏斜：下跌保护更贵。卖看跌正是卖这条腿的溢价。</p>
+
+      <h3>IV 曲面</h3>
+      <div class="toolbar"><button id="load3d" type="button">加载 3D 曲面</button></div>
+      <p class="hint" id="hint3d" hidden></p>
+      <div class="chart chart3d" id="wrap3d" hidden></div>
+
+      <h3>历史</h3>
+      <div class="legend"><span><i class="swatch"></i>IV30</span></div>
+      <div class="chart" style="height: 200px;"><canvas id="h-iv" role="img" aria-label="IV30 随时间变化。">IV30 历史。</canvas></div>
+      <div class="legend" style="margin-top: 1rem;"><span><i class="swatch"></i>现价</span></div>
+      <div class="chart" style="height: 200px;"><canvas id="h-px" role="img" aria-label="现价随时间变化。">现价历史。</canvas></div>
+      <p class="hint" id="hist-note"></p>
+    </div>
   </div>
+
+  <h2>这些数字在 wheel 里是什么意思</h2>
+  <dl class="gloss">
+    <dt>年化（看跌）</dt>
+    <dd>卖出一张现金担保看跌，要冻结 行权价×100 的现金。年化 = 卖价 ÷ 行权价 × 365 ÷ 剩余天数，就是这笔冻结资金的回报率。用买价而不是中间价，因为那是立刻能成交的一侧。</dd>
+    <dt>Δ（Delta）</dt>
+    <dd>看跌的 Δ 绝对值粗略等于到期被指派的概率。−0.30 就是大约三成概率接到股票。wheel 的常见区间是 −0.30 到 −0.15：收得到权利金，又不至于经常被指派。</dd>
+    <dt>距现价 / 盈亏平衡</dt>
+    <dd>距现价是行权价离当前价的缓冲。盈亏平衡 = 行权价 − 卖价，跌破它这一轮才真的亏钱。</dd>
+    <dt>上涨空间（看涨）</dt>
+    <dd>备兑看涨被行权时，股票按行权价被卖走。上涨空间就是你放弃的那段涨幅。</dd>
+    <dt>价差</dt>
+    <dd>(卖价−买价)÷中间价。越宽越难按理想价格成交。盘后快照的价差普遍虚高，盘中再看一次。</dd>
+  </dl>
 
   <h2>数据与口径</h2>
   <ul class="links">
-    <li><a href="https://docs.deribit.com/" rel="noopener">Deribit API 文档</a> — 用的是 <code>public/get_book_summary_by_currency</code> 与 <code>public/get_index_price</code>，公开只读，无需鉴权</li>
-    <li>IV 取交易所的 <code>mark_iv</code>（标记波动率），不是自己反解 BS 得来的</li>
-    <li>曲面按 OTM 惯例取值：行权价低于远期价用看跌一侧，高于则用看涨一侧，再按 行权价／远期价 插值到统一网格</li>
-    <li><a href="./data/options.json" rel="noopener">options.json</a> · <a href="./data/history.json" rel="noopener">history.json</a> — 原始快照，直接可下载</li>
+    <li><a href="https://www.cboe.com/delayed_quotes/" rel="noopener">Cboe 延迟行情</a> — 用的是公开的 <code>delayed_quotes/options</code> 接口，IV 与希腊字母取交易所计算值，不是自己反解</li>
+    <li>筛选条件：剩余 5–70 天，看跌 Δ 在 −0.35–−0.10、看涨 Δ 在 0.10–0.35，买价 ≥ 0.05，未平仓或成交量 ≥ 25，价差 ≤ 0.10 或 ≤ 中间价的 30%</li>
+    <li>曲面按 OTM 惯例取值（低于现价用看跌、高于用看涨），插值到 行权价／现价 0.8–1.2 的统一网格</li>
+    <li><a href="./data/options.json" rel="noopener">options.json</a> · <a href="./data/history.json" rel="noopener">history.json</a> — 原始快照</li>
   </ul>
 
-  <footer>行情为快照，非实时，仅作数据可视化演示，不构成任何投资建议。加密期权波动极大，别拿这页面做交易决策。</footer>
+  <footer>行情延迟且为快照，仅作数据可视化演示，不构成任何投资建议。卖出期权的亏损可以远超收到的权利金，杠杆 ETF 的期权尤其如此 —— 本页的高年化数字几乎都来自高波动标的，那是风险的价格，不是免费的收益。</footer>
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script>
 (function () {
   var CALL = '#1baf7a', PUT = '#e34948', GRAY = '#8a8a8a', BLUE = '#3b82f6';
-  var num = function (v, d) { return v == null ? '—' : (+v).toLocaleString('en-US', { maximumFractionDigits: d == null ? 0 : d }); };
-  var base = { responsive: true, maintainAspectRatio: false, animation: { duration: 200 },
-    interaction: { mode: 'index', intersect: false }, plugins: { legend: { display: false } } };
-  var axis = function (xLabel, yLabel) {
-    return {
-      x: { title: { display: true, text: xLabel, color: GRAY }, ticks: { color: GRAY, maxTicksLimit: 10 }, grid: { display: false } },
-      y: { title: { display: true, text: yLabel, color: GRAY }, ticks: { color: GRAY }, grid: { color: 'rgba(138,138,138,.22)' } }
-    };
-  };
+  var GROUPS = { all: '全部', mag7: '七姐妹', index: '指数 ETF', sector: '行业 ETF', lev: '杠杆 ETF' };
+  var data = null, history = [], cur = null, group = 'all', gl = null, glReady = null;
+  var smileChart = null, hIv = null, hPx = null;
 
-  var data = null, gl = null, glReady = null, smileChart = null;
-  var sel = document.getElementById('expiry');
+  var pct = function (v, d) { return v == null ? '—' : (v * 100).toFixed(d == null ? 1 : d) + '%'; };
+  var usd = function (v) { return v == null ? '—' : '$' + v.toLocaleString('en-US', { maximumFractionDigits: 2 }); };
+  var num = function (v) { return v == null ? '—' : v.toLocaleString('en-US'); };
 
   function script(src) {
     return new Promise(function (ok, fail) {
@@ -169,116 +238,182 @@
     fetch('./data/options.json', { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
     fetch('./data/history.json', { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : []; }).catch(function () { return []; })
   ]).then(function (res) {
-    data = res[0];
-    if (!data || !data.expiries || !data.expiries.length) {
+    data = res[0]; history = res[1] || [];
+    if (!data || !data.symbols || !Object.keys(data.symbols).length) {
       document.getElementById('empty').hidden = false;
       return;
     }
     document.getElementById('app').hidden = false;
-    boot(res[1] || []);
+    boot();
   });
 
-  function boot(history) {
-    var last = history.length ? history[history.length - 1] : null;
-    document.getElementById('s-index').textContent = '$' + num(data.index);
-    document.getElementById('s-atm').textContent = last && last.atm_iv ? last.atm_iv.toFixed(1) + '%' : '—';
-    document.getElementById('s-pcr').textContent = last && last.pcr ? last.pcr.toFixed(2) : '—';
-    document.getElementById('s-exp').textContent = data.expiries.length;
+  function boot() {
+    var list = Object.values(data.symbols);
+    var feed = list[0] && list[0].feed_time ? list[0].feed_time : null;
     document.getElementById('asof').textContent =
-      '快照时间 ' + new Date(data.t).toLocaleString('zh-CN', { hour12: false }) + '（本地时区）· 共 '
-      + data.expiries.reduce(function (n, e) { return n + e.k.length; }, 0) + ' 个行权价';
+      '抓取于 ' + new Date(data.t).toLocaleString('zh-CN', { hour12: false })
+      + (feed ? '，行情时间戳 ' + feed : '') + ' · ' + list.length + ' 个标的'
+      + (data.failures && data.failures.length ? ' · ' + data.failures.length + ' 个失败' : '');
 
-    data.expiries.forEach(function (e, i) {
-      var o = document.createElement('option');
-      o.value = i;
-      o.textContent = e.expiry + '（' + Math.round(e.days) + ' 天）';
-      sel.appendChild(o);
-    });
-    sel.value = String(data.expiries.reduce(function (b, e, i) {
-      return Math.abs(e.days - 30) < Math.abs(data.expiries[b].days - 30) ? i : b;
-    }, 0));
-
-    smileChart = new Chart(document.getElementById('smile'), {
-      type: 'line',
-      data: { datasets: [
-        { label: '看涨 IV', borderColor: CALL, borderWidth: 2, tension: .3, pointRadius: 0, spanGaps: true, data: [] },
-        { label: '看跌 IV', borderColor: PUT, borderWidth: 2, tension: .3, pointRadius: 0, spanGaps: true, data: [] },
-        { label: '远期价', borderColor: GRAY, borderWidth: 2, borderDash: [6, 4], pointRadius: 0, data: [] }
-      ] },
-      options: Object.assign({}, base, {
-        plugins: { legend: { display: false }, tooltip: { callbacks: {
-          title: function (t) { return '行权价 $' + num(t[0].parsed.x); },
-          label: function (c) { return c.dataset.label + '：' + (c.parsed.y == null ? '—' : c.parsed.y.toFixed(1) + '%'); }
-        } } },
-        scales: Object.assign(axis('行权价（USD）', '隐含波动率（%）'), { x: Object.assign(axis('行权价（USD）', '')['x'], { type: 'linear' }) })
-      })
+    var chips = document.getElementById('groups');
+    Object.keys(GROUPS).forEach(function (g) {
+      if (g !== 'all' && !list.some(function (v) { return v.group === g; })) return;
+      var b = document.createElement('button');
+      b.className = 'chip'; b.type = 'button'; b.textContent = GROUPS[g];
+      b.setAttribute('aria-pressed', String(g === group));
+      b.addEventListener('click', function () {
+        group = g;
+        [].forEach.call(chips.children, function (c) { c.setAttribute('aria-pressed', String(c === b)); });
+        renderList();
+      });
+      chips.appendChild(b);
     });
 
-    drawSmile();
-    drawChain();
-    drawHistory(history);
-    sel.addEventListener('change', function () { drawSmile(); drawChain(); });
+    document.getElementById('sort').addEventListener('change', renderList);
+    renderList();
+    select(sorted()[0].symbol);
   }
 
-  function drawSmile() {
-    var e = data.expiries[+sel.value];
-    var pair = function (arr) { return e.k.map(function (s, i) { return { x: s, y: arr[i] }; }); };
-    var ivs = e.civ.concat(e.piv).filter(function (v) { return v != null; });
-    var top = Math.max.apply(null, ivs) * 1.05;
-    smileChart.data.datasets[0].data = pair(e.civ);
-    smileChart.data.datasets[1].data = pair(e.piv);
-    smileChart.data.datasets[2].data = [{ x: e.fwd, y: 0 }, { x: e.fwd, y: top }];
+  function sorted() {
+    var how = document.getElementById('sort').value;
+    var list = Object.values(data.symbols).filter(function (v) { return group === 'all' || v.group === group; });
+    var best = function (v) { return v.puts.length ? v.puts[0].y : -1; };
+    var ratio = function (v) { return v.puts.length && v.iv30 ? v.puts[0].y / (v.iv30 / 100) : -1; };
+    return list.sort(function (a, b) {
+      if (how === 'ratio') return ratio(b) - ratio(a);
+      if (how === 'iv') return (b.iv30 || 0) - (a.iv30 || 0);
+      if (how === 'spot') return (b.spot || 0) - (a.spot || 0);
+      if (how === 'sym') return a.symbol < b.symbol ? -1 : 1;
+      return best(b) - best(a);
+    });
+  }
+
+  function renderList() {
+    var ul = document.getElementById('syms');
+    ul.innerHTML = '';
+    sorted().forEach(function (v) {
+      var li = document.createElement('li');
+      var b = document.createElement('button');
+      b.className = 'sym'; b.type = 'button';
+      b.setAttribute('aria-pressed', String(v.symbol === cur));
+      var chg = v.change == null ? '' :
+        '<span class="' + (v.change >= 0 ? 'up' : 'down') + '">' + (v.change >= 0 ? '+' : '') + v.change.toFixed(2) + '%</span>';
+      b.innerHTML =
+        '<span class="t">' + v.symbol + '<em class="g">' + (GROUPS[v.group] || '') + '</em></span>'
+        + '<span class="y">' + (v.puts.length ? pct(v.puts[0].y) : '<span class="none">无候选</span>') + '</span>'
+        + '<span class="n">' + usd(v.spot) + ' ' + chg + ' · IV30 ' + (v.iv30 == null ? '—' : v.iv30.toFixed(1))
+        + (v.puts.length ? ' · Δ' + v.puts[0].d.toFixed(2) + ' · ' + Math.round(v.puts[0].dte) + '天' : '') + '</span>';
+      b.addEventListener('click', function () { select(v.symbol); });
+      li.appendChild(b);
+      ul.appendChild(li);
+    });
+  }
+
+  function select(sym) {
+    cur = sym;
+    var v = data.symbols[sym];
+    [].forEach.call(document.querySelectorAll('.sym'), function (b) {
+      b.setAttribute('aria-pressed', String(b.querySelector('.t').textContent.indexOf(sym) === 0));
+    });
+
+    document.getElementById('d-title').textContent = sym + ' 细节';
+    document.getElementById('d-spot').textContent = usd(v.spot);
+    document.getElementById('d-iv').textContent = v.iv30 == null ? '—' : v.iv30.toFixed(1);
+    document.getElementById('d-pcr').textContent = v.pcr == null ? '—' : v.pcr.toFixed(2);
+    document.getElementById('d-ct').textContent = num(v.contracts);
+
+    document.getElementById('d-puts').innerHTML = v.puts.map(function (r) {
+      return '<tr><td>' + r.e.slice(5) + '</td><td>' + Math.round(r.dte) + '</td><td class="k">' + r.k + '</td>'
+        + '<td>' + r.bid.toFixed(2) + '</td><td>' + pct(r.y) + '</td><td>' + r.d.toFixed(2) + '</td>'
+        + '<td>' + pct(r.cu) + '</td><td class="hide-sm">' + r.be.toFixed(2) + '</td>'
+        + '<td class="hide-sm">' + num(r.oi) + '</td><td class="hide-sm">' + pct(r.sp, 0) + '</td></tr>';
+    }).join('');
+    document.getElementById('d-puts-note').textContent = v.puts.length
+      ? '按年化排序，取前 ' + v.puts.length + ' 档。'
+      : '这份快照里没有同时满足流动性与 Δ 区间的看跌合约 —— 通常是盘后卖价挂得太宽，盘中再看。';
+
+    document.getElementById('d-calls').innerHTML = v.calls.map(function (r) {
+      return '<tr><td>' + r.e.slice(5) + '</td><td>' + Math.round(r.dte) + '</td><td class="k">' + r.k + '</td>'
+        + '<td>' + r.bid.toFixed(2) + '</td><td>' + pct(r.y) + '</td><td>' + r.d.toFixed(2) + '</td>'
+        + '<td>' + pct(r.up) + '</td><td class="hide-sm">' + num(r.oi) + '</td>'
+        + '<td class="hide-sm">' + pct(r.sp, 0) + '</td></tr>';
+    }).join('');
+    document.getElementById('d-calls-note').textContent = v.calls.length ? '' : '同上：这份快照没有符合条件的看涨合约。';
+
+    drawSmile(v);
+    drawHistory(sym);
+    if (gl) drawSurface(v);
+    document.getElementById('hint3d').textContent =
+      '拖动旋转，滚轮缩放。X 轴是 行权价／现价（1.0 即平值），Y 轴是剩余天数，高度是 IV。';
+  }
+
+  var base = { responsive: true, maintainAspectRatio: false, animation: { duration: 200 },
+    interaction: { mode: 'index', intersect: false }, plugins: { legend: { display: false } } };
+
+  function drawSmile(v) {
+    var e = v.smile && v.smile[0];
+    if (!e) return;
+    var pair = function (arr) { return e.k.map(function (k, i) { return { x: k, y: arr[i] == null ? null : arr[i] * 100 }; }); };
+    var ivs = e.civ.concat(e.piv).filter(function (x) { return x != null; });
+    var top = ivs.length ? Math.max.apply(null, ivs) * 105 : 100;
+    var sets = [
+      { label: '看涨 IV', borderColor: CALL, borderWidth: 2, tension: .3, pointRadius: 0, spanGaps: true, data: pair(e.civ) },
+      { label: '看跌 IV', borderColor: PUT, borderWidth: 2, tension: .3, pointRadius: 0, spanGaps: true, data: pair(e.piv) },
+      { label: '现价', borderColor: GRAY, borderWidth: 2, borderDash: [6, 4], pointRadius: 0, data: [{ x: v.spot, y: 0 }, { x: v.spot, y: top }] }
+    ];
+    if (!smileChart) {
+      smileChart = new Chart(document.getElementById('smile'), {
+        type: 'line', data: { datasets: sets },
+        options: Object.assign({}, base, {
+          plugins: { legend: { display: false }, tooltip: { callbacks: {
+            title: function (t) { return '行权价 ' + t[0].parsed.x; },
+            label: function (c) { return c.dataset.label + '：' + (c.parsed.y == null ? '—' : c.parsed.y.toFixed(1) + '%'); }
+          } } },
+          scales: {
+            x: { type: 'linear', title: { display: true, text: '行权价', color: GRAY }, ticks: { color: GRAY, maxTicksLimit: 8 }, grid: { display: false } },
+            y: { title: { display: true, text: 'IV（%）', color: GRAY }, ticks: { color: GRAY }, grid: { color: 'rgba(138,138,138,.22)' } }
+          }
+        })
+      });
+    } else {
+      smileChart.data.datasets = sets;
+    }
     smileChart.options.scales.y.max = Math.ceil(top);
     smileChart.update();
-    if (gl) drawSurface();
   }
 
-  function drawChain() {
-    var e = data.expiries[+sel.value];
-    var atm = e.k.reduce(function (b, s, i) { return Math.abs(s - e.fwd) < Math.abs(e.k[b] - e.fwd) ? i : b; }, 0);
-    var from = Math.max(0, atm - 12), to = Math.min(e.k.length, atm + 13);
-    var rows = '';
-    for (var i = from; i < to; i++) {
-      rows += '<tr' + (i === atm ? ' class="atm"' : '') + '>'
-        + '<td>' + num(e.coi[i]) + '</td><td>' + (e.cmk[i] == null ? '—' : e.cmk[i].toFixed(4)) + '</td>'
-        + '<td>' + (e.civ[i] == null ? '—' : e.civ[i].toFixed(1)) + '</td>'
-        + '<td class="strike">' + num(e.k[i]) + '</td>'
-        + '<td>' + (e.piv[i] == null ? '—' : e.piv[i].toFixed(1)) + '</td>'
-        + '<td>' + (e.pmk[i] == null ? '—' : e.pmk[i].toFixed(4)) + '</td><td>' + num(e.poi[i]) + '</td></tr>';
-    }
-    document.getElementById('chain-body').innerHTML = rows;
-  }
-
-  function drawHistory(history) {
-    if (history.length < 2) {
-      document.getElementById('hist-note').textContent = '只有 ' + history.length + ' 条记录，等更多快照累积后这里才有趋势可看。';
-    }
-    var mk = function (id, key, label, unit) {
-      new Chart(document.getElementById(id), {
-        type: 'line',
-        data: { datasets: [{ label: label, borderColor: BLUE, borderWidth: 2, tension: .25,
-          pointRadius: history.length < 40 ? 3 : 0, pointBackgroundColor: BLUE, spanGaps: true,
-          data: history.map(function (h) { return { x: h.t, y: h[key] }; }) }] },
+  function drawHistory(sym) {
+    var pts = history.map(function (h) { return { t: h.t, v: h.s && h.s[sym] }; }).filter(function (p) { return p.v; });
+    document.getElementById('hist-note').textContent = pts.length < 2
+      ? '只有 ' + pts.length + ' 条记录，等更多快照累积后才有趋势。cron 会被 GitHub 延迟或跳过，横轴按真实时间画。'
+      : '共 ' + pts.length + ' 条快照。cron 会被 GitHub 延迟或跳过，所以点位间隔不均匀，横轴按真实时间画。';
+    var mk = function (chart, id, key, label, fmt) {
+      var ds = [{ label: label, borderColor: BLUE, borderWidth: 2, tension: .25,
+        pointRadius: pts.length < 40 ? 3 : 0, pointBackgroundColor: BLUE, spanGaps: true,
+        data: pts.map(function (p) { return { x: p.t, y: p.v[key] }; }) }];
+      if (chart) { chart.data.datasets = ds; chart.update(); return chart; }
+      return new Chart(document.getElementById(id), {
+        type: 'line', data: { datasets: ds },
         options: Object.assign({}, base, {
           plugins: { legend: { display: false }, tooltip: { callbacks: {
             title: function (t) { return new Date(t[0].parsed.x).toLocaleString('zh-CN', { hour12: false }); },
-            label: function (c) { return label + '：' + num(c.parsed.y, 2) + unit; }
+            label: function (c) { return label + '：' + fmt(c.parsed.y); }
           } } },
           scales: {
-            x: { type: 'linear', ticks: { color: GRAY, maxTicksLimit: 7, callback: function (v) {
-                  return new Date(v).toLocaleDateString('zh-CN', { month: 'numeric', day: 'numeric' }); } },
+            x: { type: 'linear', ticks: { color: GRAY, maxTicksLimit: 6, callback: function (x) {
+                  return new Date(x).toLocaleDateString('zh-CN', { month: 'numeric', day: 'numeric' }); } },
                  grid: { display: false } },
             y: { ticks: { color: GRAY }, grid: { color: 'rgba(138,138,138,.22)' } }
           }
         })
       });
     };
-    mk('h-iv', 'atm_iv', 'ATM IV', '%');
-    mk('h-px', 'index', 'BTC 指数', ' USD');
+    hIv = mk(hIv, 'h-iv', 'iv', 'IV30', function (y) { return y == null ? '—' : y.toFixed(1); });
+    hPx = mk(hPx, 'h-px', 'p', '现价', usd);
   }
 
-  // Rows can have holes where a wing has no quotes; carry the nearest value out
-  // to the edges so surface3D gets a complete rectangular grid.
+  // Carry the nearest quoted IV out to the grid edges; rows too sparse to be
+  // anything but extrapolation are dropped rather than drawn.
   function filled(row) {
     var out = row.slice(), i, seen = null;
     for (i = 0; i < out.length; i++) { if (out[i] == null) out[i] = seen; else seen = out[i]; }
@@ -287,53 +422,51 @@
     return out;
   }
 
-  function drawSurface() {
-    // An expiry whose quoted strikes cover little of the grid would be mostly
-    // carried-out edge values, i.e. invented IV. Drop it and say so.
-    var all = data.surface;
-    var rows = all.filter(function (r) {
-      return r.iv.filter(function (v) { return v != null; }).length / r.iv.length >= .7;
+  function drawSurface(v) {
+    var rows = (v.surface || []).filter(function (r) {
+      return r.iv.filter(function (x) { return x != null; }).length / r.iv.length >= .6;
     });
-    var dropped = all.length - rows.length;
+    var dropped = (v.surface || []).length - rows.length;
     document.getElementById('hint3d').textContent =
-      '拖动旋转，滚轮缩放。X 轴是行权价／远期价（1.0 即平值），Y 轴是剩余天数，高度是 IV。'
-      + (dropped ? '有 ' + dropped + ' 个到期日报价档位太少，覆盖不足 70%，已从曲面剔除，避免把外推值画成真实数据。' : '');
+      '拖动旋转，滚轮缩放。X 轴是 行权价／现价（1.0 即平值），Y 轴是剩余天数，高度是 IV。'
+      + (dropped ? ' 有 ' + dropped + ' 个到期日报价太稀疏已剔除。' : '');
+    if (!rows.length) return;
     var grid = [], lo = Infinity, hi = -Infinity;
     rows.forEach(function (r) {
-      filled(r.iv).forEach(function (v, i) {
-        if (v == null) return;
-        grid.push([data.moneyness[i], r.days, v]);
-        if (v < lo) lo = v;
-        if (v > hi) hi = v;
+      filled(r.iv).forEach(function (x, i) {
+        if (x == null) return;
+        var z = x * 100;
+        grid.push([v.moneyness[i], r.dte, z]);
+        if (z < lo) lo = z;
+        if (z > hi) hi = z;
       });
     });
-    if (!gl) { gl = echarts.init(document.getElementById('wrap3d'), null, { renderer: 'canvas' }); }
+    if (!gl) gl = echarts.init(document.getElementById('wrap3d'), null, { renderer: 'canvas' });
     gl.setOption({
       backgroundColor: 'transparent',
       tooltip: { formatter: function (p) {
-        return '行权价／远期价 ' + p.value[0].toFixed(2) + '<br>剩余 ' + Math.round(p.value[1]) + ' 天<br>IV ' + p.value[2].toFixed(1) + '%';
+        return '行权价／现价 ' + p.value[0].toFixed(3) + '<br>剩余 ' + Math.round(p.value[1]) + ' 天<br>IV ' + p.value[2].toFixed(1) + '%';
       } },
       visualMap: { show: false, dimension: 2, min: lo, max: hi,
         inRange: { color: ['#1b3a6b', '#2a78d6', '#5dcaa5', '#eda100', '#e34948'] } },
-      xAxis3D: { type: 'value', name: 'K / F' },
+      xAxis3D: { type: 'value', name: 'K / S' },
       yAxis3D: { type: 'value', name: '天数' },
       zAxis3D: { type: 'value', name: 'IV %', min: Math.floor(lo) },
       grid3D: {
-        boxWidth: 118, boxDepth: 85, boxHeight: 70, top: -30,
+        boxWidth: 112, boxDepth: 82, boxHeight: 66, top: -20,
         axisLine: { lineStyle: { color: GRAY } },
         axisLabel: { color: GRAY, fontSize: 11 },
         splitLine: { lineStyle: { color: 'rgba(138,138,138,.25)' } },
         environment: 'auto',
         light: { main: { intensity: 1.4, shadow: true, alpha: 38, beta: 40 }, ambient: { intensity: .35 } },
-        viewControl: { alpha: 22, beta: 42, distance: 205, autoRotate: false, damping: .85 }
+        viewControl: { alpha: 22, beta: 42, distance: 210, autoRotate: false, damping: .85 }
       },
       series: [{
         type: 'surface', shading: 'realistic', wireframe: { show: false },
         realisticMaterial: { roughness: .5, metalness: 0 },
-        dataShape: [rows.length, data.moneyness.length],
-        data: grid
+        dataShape: [rows.length, v.moneyness.length], data: grid
       }]
-    });
+    }, true);
     requestAnimationFrame(function () { gl.resize(); });
   }
 
@@ -348,7 +481,7 @@
     glReady.then(function () {
       wrap.hidden = false; hint.hidden = false;
       btn.textContent = '收起 3D 曲面';
-      drawSurface();
+      drawSurface(data.symbols[cur]);
     }, function () { btn.textContent = '加载失败，检查网络'; });
   });
 
