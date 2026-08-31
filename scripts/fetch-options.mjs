@@ -5,8 +5,11 @@ import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 
 const CURRENCY = process.env.CURRENCY || 'BTC';
 const API = 'https://www.deribit.com/api/v2/public';
+// Tight around the money on purpose: short-dated expiries only list strikes in
+// roughly 0.88-1.15 of the forward, so a wider grid would be mostly holes and
+// the surface would be built out of extrapolation rather than quotes.
 const MONEYNESS = [];
-for (let m = 0.6; m <= 1.601; m += 0.05) MONEYNESS.push(+m.toFixed(2));
+for (let m = 0.9; m <= 1.1501; m += 0.0125) MONEYNESS.push(+m.toFixed(4));
 const HISTORY_CAP = 2000;
 
 async function api(path) {

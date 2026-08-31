@@ -288,7 +288,16 @@
   }
 
   function drawSurface() {
-    var rows = data.surface.filter(function (r) { return r.iv.some(function (v) { return v != null; }); });
+    // An expiry whose quoted strikes cover little of the grid would be mostly
+    // carried-out edge values, i.e. invented IV. Drop it and say so.
+    var all = data.surface;
+    var rows = all.filter(function (r) {
+      return r.iv.filter(function (v) { return v != null; }).length / r.iv.length >= .7;
+    });
+    var dropped = all.length - rows.length;
+    document.getElementById('hint3d').textContent =
+      '拖动旋转，滚轮缩放。X 轴是行权价／远期价（1.0 即平值），Y 轴是剩余天数，高度是 IV。'
+      + (dropped ? '有 ' + dropped + ' 个到期日报价档位太少，覆盖不足 70%，已从曲面剔除，避免把外推值画成真实数据。' : '');
     var grid = [], lo = Infinity, hi = -Infinity;
     rows.forEach(function (r) {
       filled(r.iv).forEach(function (v, i) {
