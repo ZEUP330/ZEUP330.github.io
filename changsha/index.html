@@ -36,6 +36,24 @@
   figure svg { width: 100%; height: auto; display: block; }
   figcaption { font-size: 12px; color: var(--ink-3); margin-top: .5rem; }
 
+  /* The one block worth screenshotting: everything with a fixed time or a
+     hard consequence, nothing that can be looked up on the spot. */
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    padding: 1rem 1.2rem; margin: 1.5rem 0; }
+  .card-h { font-size: 14px; color: var(--ink-3); margin: 0 0 .75rem;
+    text-transform: none; letter-spacing: normal; font-weight: 500; }
+  dl.kv { display: grid; grid-template-columns: 4.5em 1fr; gap: .5rem 14px; margin: 0; font-size: 14px; }
+  dl.kv dt { color: var(--ink-3); }
+  dl.kv dd { margin: 0; color: var(--ink-2); }
+  dl.kv dd b { color: var(--ink); font-weight: 500; }
+
+  .toc { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 2rem; }
+  .toc a { font-size: 13px; color: var(--ink-2); text-decoration: none;
+    border: 1px solid var(--line); border-radius: 999px; padding: 3px 11px; }
+  .toc a:hover { border-color: var(--accent); color: var(--accent); text-decoration: none; }
+  /* The shared status bar is sticky, so anchor jumps would land under it. */
+  h2[id] { scroll-margin-top: 4rem; }
+
   .alert { background: var(--card); border: 1px solid var(--line); border-left: 3px solid var(--danger);
     border-radius: 0 8px 8px 0; padding: .8rem 1rem; margin: 0 0 1rem; font-size: 14px; color: var(--ink-2); }
   .alert strong { color: var(--ink); }
@@ -88,6 +106,10 @@
     figure { overflow-x: auto; -webkit-overflow-scrolling: touch; }
     figure svg { min-width: 600px; }
     figcaption::after { content: '（图可左右滑动）'; color: var(--ink-3); }
+    dl.kv { grid-template-columns: 4em 1fr; gap: .45rem 10px; font-size: 13.5px; }
+    .card { padding: .9rem 1rem; }
+    .toc { gap: 5px; }
+    .toc a { font-size: 12px; padding: 3px 9px; }
   }
 </style>
 <link rel="stylesheet" href="/assets/statusbar.css">
@@ -99,7 +121,36 @@
   <h1>长沙 41 小时</h1>
   <p>周五 23:28 到长沙南，周日 18:00 从长沙南走。默认给的是<b>松弛版</b>：一天只排一件必须做的事，其余时间用来坐着。想赶满可以切到暴走版。</p>
 
-  <h2>时间到底有多少</h2>
+  <section class="card" aria-labelledby="card-h">
+    <h2 id="card-h" class="card-h">出门前截这一张就够</h2>
+    <dl class="kv">
+      <dt>去程</dt><dd>周五 9/4 · 20:15 虎门 → <b>23:28 长沙南</b> · G6026</dd>
+      <dt>回程</dt><dd>周日 9/6 · <b>18:00 长沙南</b> → 20:25 虎门 · G6007</dd>
+      <dt>住</dt><dd>五一广场 / 黄兴路一带。确认 24 小时前台、周日行李寄存到 16:00</dd>
+      <dt>落地</dt><dd><b>直接打车</b>，约 40 元 20 分钟。往市区的地铁末班 23:03，你到站时已停运</dd>
+      <dt>回站</dt><dd>周日 <b>16:30 出发</b>，2 号线直达 25 分 + 安检，留足 1.5 小时</dd>
+      <dt>要预约</dt><dd>李自健美术馆（免费领票）· 谢子龙（看展是否收费）· 走暴走版还要博物院、岳麓书院、岳麓山、橘子洲</dd>
+      <dt>带</dt><dd>身份证（场馆实名核验，二维码不顶用）· 折叠伞 · 充电宝 · 薄外套</dd>
+      <dt>别指望</dt><dd>橘子洲周末焰火，早就停办了</dd>
+    </dl>
+  </section>
+
+  <nav class="toc" aria-label="页面目录">
+    <a href="#sec-time">时间预算</a>
+    <a href="#sec-geo">地理</a>
+    <a href="#sec-hotel">住哪</a>
+    <a href="#sec-todo">预约清单</a>
+    <a href="#sec-plan">时间表</a>
+    <a href="#sec-pool">景点池</a>
+    <a href="#sec-walk">步行圈</a>
+    <a href="#sec-food">吃什么</a>
+    <a href="#sec-rain">下雨</a>
+    <a href="#sec-cost">预算</a>
+    <a href="#sec-pack">带什么</a>
+    <a href="#sec-trap">避坑</a>
+  </nav>
+
+  <h2 id="sec-time">时间到底有多少</h2>
   <figure>
     <svg viewBox="0 0 700 200" role="img" aria-label="时间预算条形图：41 小时中约 14 小时睡觉、5 小时通勤，剩约 22 小时可用，其中只有周六是完整白天。">
       <title>41 小时怎么分</title>
@@ -130,7 +181,7 @@
     <figcaption>睡眠按两晚各 7 小时估，通勤含往返车站、市内换乘与进出站安检。</figcaption>
   </figure>
 
-  <h2>长沙的地理其实很简单</h2>
+  <h2 id="sec-geo">长沙的地理其实很简单</h2>
   <figure>
     <svg viewBox="0 0 700 400" role="img" aria-label="长沙主要景点与湘江的关系示意图：湘江纵贯南北，橘子洲在江心；东岸是五一广场、湖南博物院和长沙南站，西岸是岳麓山、大学城和洋湖艺术区。">
       <title>湘江两岸与主要目的地</title>
@@ -193,7 +244,7 @@
     <figcaption>一切都围着湘江排。住东岸的五一广场，两天里去西岸一次就够，别来回过江。</figcaption>
   </figure>
 
-  <h2>酒店怎么办</h2>
+  <h2 id="sec-hotel">酒店怎么办</h2>
   <p>你的约束很特殊：<b>深夜 23:28 落地、周日 16:30 就得走</b>。所以选址只有一个标准 —— 到长沙南地铁直达，且楼下就有吃的。三个候选：</p>
 
   <figure>
@@ -242,11 +293,11 @@
   </div>
   <p class="hint">订房时留意两点：一是确认前台 24 小时值守，你到店时已过零点；二是周日退房后行李能不能寄存到下午 4 点，不然中午就得拖着箱子。</p>
 
-  <h2>出发前要做完的</h2>
+  <h2 id="sec-todo">出发前要做完的</h2>
   <ul class="todo" id="todo"></ul>
   <p class="hint">清单会跟着上面的节奏切换：松弛版不去博物院，就不用熬夜抢预约。勾选状态存在本机浏览器里。</p>
 
-  <h2>时间表</h2>
+  <h2 id="sec-plan">时间表</h2>
   <div class="modes" id="modes">
     <button class="mode" type="button" data-m="chill" aria-pressed="true">松弛版</button>
     <button class="mode" type="button" data-m="packed" aria-pressed="false">暴走版</button>
@@ -286,7 +337,7 @@
     </svg>
   </figure>
 
-  <h2>景点池：按耗时和体力挑</h2>
+  <h2 id="sec-pool">景点池：按耗时和体力挑</h2>
   <p>上面的时间表只是一种排法。真正有用的是这张图 —— 看你还剩多少时间、多少体力，从对应的区域里拿一个。左下角那片是松弛版的弹药库。</p>
   <figure>
     <svg viewBox="0 0 700 430" role="img" aria-label="景点散点图：横轴是需要的时间，纵轴是体力消耗。岳麓山耗时长且费体力，两座美术馆和几条老街在左下角省时省力，湖南博物院耗时长但不费体力。">
@@ -358,7 +409,7 @@
     <figcaption>耗时按正常节奏估，不含路上往返。文和友是灰色，因为它花多久完全取决于队伍长度。</figcaption>
   </figure>
 
-  <h2>五一广场的步行圈</h2>
+  <h2 id="sec-walk">五一广场的步行圈</h2>
   <p>住五一广场最大的好处：下面这些地方彼此都在走路范围内，不用查地铁。真正需要坐车的只有四个点。</p>
   <figure>
     <svg viewBox="0 0 700 330" role="img" aria-label="以五一广场为圆心的步行圈：五分钟内是黄兴路和 IFS，十分钟内是太平街、坡子街和文和友，二十分钟内是潮宗街、都正街和湘江风光带；橘子洲、岳麓山、洋湖和长沙南站需要坐地铁。">
@@ -405,7 +456,7 @@
     <figcaption>圈表示步行时间，不是距离比例。四个灰盒子是必须坐车的。</figcaption>
   </figure>
 
-  <h2>吃什么</h2>
+  <h2 id="sec-food">吃什么</h2>
   <p>长沙的餐饮密度高到不需要提前做功课，但两件事值得先知道：<b>网红店周末等两小时是常态</b>，而<b>本地人真正吃的那些不用等</b>。按一天的进食节奏排：</p>
 
   <h3>早午饭 · 嗦粉</h3>
@@ -435,7 +486,7 @@
   <h3>喝的</h3>
   <p>茶颜悦色市区几百家店，<b>永远不需要为它排队</b>，看到就进，幽兰拿铁是招牌。果呀呀、柠季是本地水果茶。咖啡则去潮宗街、都正街、后湖艺术区，独立咖啡馆密度高、人少 —— 那才是松弛版真正该待的地方。</p>
 
-  <h2>下雨怎么办</h2>
+  <h2 id="sec-rain">下雨怎么办</h2>
   <p>9 月的长沙白天常在 30 °C 上下，闷热，秋老虎和阵雨都可能。出门前看一眼天气，按这个分叉走：</p>
   <figure>
     <svg viewBox="0 0 700 300" role="img" aria-label="雨天决策树：晴天走岳麓山或橘子洲的户外线；小雨改走美术馆、博物馆和老街咖啡馆的室内线；暴雨则留在五一广场，靠商场与地下连廊活动。">
@@ -481,7 +532,7 @@
     <figcaption>暴雨那一列是住五一广场才有的退路：商场和地铁站地下连通，一整天不出地面也能过。</figcaption>
   </figure>
 
-  <h2>大概要花多少</h2>
+  <h2 id="sec-cost">大概要花多少</h2>
   <figure>
     <svg viewBox="0 0 700 215" role="img" aria-label="两天人均预算：住宿两晚 600 到 1200 元，吃 300 到 500 元，市内交通 150 到 250 元，门票 0 到 100 元，合计约 1050 到 2050 元，不含往返高铁。">
       <title>两天人均预算</title>
@@ -513,7 +564,7 @@
     <figcaption>交通含周五深夜打车约 40 元与周日回站，其余按地铁 4 元一程估；住宿按周末中档连锁。</figcaption>
   </figure>
 
-  <h2>9 月的长沙 · 带什么</h2>
+  <h2 id="sec-pack">9 月的长沙 · 带什么</h2>
   <p>白天常在 <b>30 °C 上下</b>，湿度高、闷，早晚略降。可能连着几天阵雨，也可能是秋老虎。</p>
   <div class="scroll">
     <table>
@@ -529,7 +580,7 @@
     </table>
   </div>
 
-  <h2>避坑</h2>
+  <h2 id="sec-trap">避坑</h2>
   <table>
     <tbody>
       <tr><td><b>橘子洲烟花没有</b></td><td>每周六焰火早就停办了，现在只在元旦、除夕、元宵、国庆这类节日放。9 月 4–6 日没有场次，老攻略里"周六看烟花"是过期信息。</td></tr>
