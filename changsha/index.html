@@ -53,6 +53,8 @@
   blockquote.rev { margin: 0 0 .7rem; padding: .55rem .8rem; background: var(--bg);
     border: 1px solid var(--line); border-radius: 8px; }
   blockquote.rev p { margin: 0; font-size: 13px; color: var(--ink-2); }
+  blockquote.rev .score { display: inline-block; margin-left: 6px; font-size: 11px;
+    color: var(--warn); border: 1px solid currentColor; border-radius: 999px; padding: 0 7px; }
   blockquote.rev cite { display: block; margin-top: .35rem; font-style: normal;
     font-size: 11px; color: var(--ink-3); }
 
@@ -87,6 +89,23 @@
   details.how summary { cursor: pointer; color: var(--ink-2); font-size: 13px; }
   details.how ul { margin: .6rem 0; padding-left: 1.2rem; color: var(--ink-2); }
   details.how li { margin-bottom: .25rem; }
+
+  /* Sticky group rail, parked under the shared status bar. */
+  .rail { position: sticky; top: var(--rail-top, 0px); z-index: 15;
+    background: var(--bg); border-bottom: 1px solid var(--line); }
+  .rail-in { max-width: 760px; margin: 0 auto; display: flex; gap: 4px;
+    overflow-x: auto; scrollbar-width: none; padding: 6px 1.25rem; }
+  .rail-in::-webkit-scrollbar { display: none; }
+  .rail a { flex: none; font-size: 13px; color: var(--ink-3); text-decoration: none;
+    padding: 4px 12px; border-radius: 999px; white-space: nowrap; }
+  .rail a:hover { color: var(--ink); text-decoration: none; }
+  .rail a[aria-current="true"] { background: var(--accent); color: #fff; }
+
+  section.grp { margin: 2.5rem 0 0; scroll-margin-top: calc(var(--rail-top, 0px) + var(--rail-h, 44px) + 8px); }
+  .grp-h { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
+    margin: 0 0 .25rem; padding-bottom: .4rem; border-bottom: 2px solid var(--ink); }
+  .grp-t { font-size: 20px; font-weight: 500; }
+  .grp-n { font-size: 12px; color: var(--ink-3); font-weight: 400; }
 
   details.sec { border-top: 1px solid var(--line); padding: 0; margin: 0; }
   details.sec > summary { font-size: 18px; font-weight: 500; color: var(--ink);
@@ -128,7 +147,7 @@
     border: 1px solid var(--line); border-radius: 999px; padding: 3px 11px; }
   .toc a:hover { border-color: var(--accent); color: var(--accent); text-decoration: none; }
   /* The shared status bar is sticky, so anchor jumps would land under it. */
-  h2[id], details.sec[id] { scroll-margin-top: 4rem; }
+  h2[id], details.sec[id] { scroll-margin-top: calc(var(--rail-top, 0px) + var(--rail-h, 44px) + 12px); }
 
   .alert { background: var(--card); border: 1px solid var(--line); border-left: 3px solid var(--danger);
     border-radius: 0 8px 8px 0; padding: .8rem 1rem; margin: 0 0 1rem; font-size: 14px; color: var(--ink-2); box-shadow: var(--shadow-1); }
@@ -536,10 +555,11 @@
         <th>酒店</th><th class="n">评分</th><th class="n">评论数</th><th class="n">起价</th><th class="n">楼层</th><th class="n">到笨萝卜</th><th>为什么选它</th>
       </tr></thead>
       <tbody>
+        <tr><td><b>五一广场异国印象·奢酒店</b></td><td class="n">9.6</td><td class="n">5,610</td><td class="n">待查</td><td class="n up">4–9</td><td class="n">10 分</td><td>楼层 4–9 完全在你线内，免费寄存 + 24h 前台 + 4 楼免费洗衣房，自带 SPA 和空中花园。2024 年开业</td></tr>
         <tr><td><b>Xi Hotel（五一广场 IFS）</b></td><td class="n">9.7</td><td class="n">5,977</td><td class="n">¥360</td><td class="n up">5–6</td><td class="n">10 分</td><td>全楼只有 5–6 层，你这条限制它完全不受影响。免费寄存 + 24h 前台 + 屋顶泳池</td></tr>
         <tr><td><b>FUNGEE（黄兴广场站）</b></td><td class="n">9.7</td><td class="n">10,353</td><td class="n">¥240</td><td class="n up">3–11</td><td class="n">8 分</td><td>服务分 9.8 是这批最高。地铁口下来就是，免费寄存 + 24h 前台，还最便宜</td></tr>
         <tr><td><b>Hampton by Hilton 五一广场</b></td><td class="n">9.7</td><td class="n">16,590</td><td class="n up">¥420</td><td class="n up">6–18</td><td class="n">10 分</td><td>整栋封顶就是 18 层，样本一万六，四项细分全 9.6 以上</td></tr>
-        <tr><td>异国印象（五一广场 IFS）</td><td class="n">9.4</td><td class="n">21,957</td><td class="n">¥360</td><td class="n down">7 / 12 / 25–29</td><td class="n">10 分</td><td>评论数最多，但<b>江景房在 25 层以上</b> —— 江景和 18 层这两条只能二选一</td></tr>
+        <tr><td>IFS 国金中心·异国印象酒店（五一广场店）</td><td class="n">9.4</td><td class="n">21,957</td><td class="n">¥360</td><td class="n down">7 / 12 / 25–29</td><td class="n">10 分</td><td>评论数最多，但<b>江景房在 25 层以上</b> —— 江景和 18 层这两条只能二选一</td></tr>
         <tr><td>Single Hotel（五一广场 IFS）</td><td class="n">9.6</td><td class="n">5,904</td><td class="n">¥240</td><td class="n">—</td><td class="n">10 分</td><td>同价备选，楼层未核</td></tr>
         <tr><td>桔子水晶（五一大道）</td><td class="n">9.6</td><td class="n">3,822</td><td class="n">¥420</td><td class="n">—</td><td class="n">12 分</td><td>连锁里房间质感稍好，楼层未核</td></tr>
         <tr><td>亚朵（长沙 IFS）</td><td class="n">9.5</td><td class="n">2,831</td><td class="n">¥470</td><td class="n">—</td><td class="n">10 分</td><td>看当天价差，楼层未核</td></tr>
@@ -549,13 +569,41 @@
   </div>
 
   <div class="alert ok">
-    <strong>查了楼层之后结论变了：选 Xi Hotel 或 FUNGEE。</strong>之前我推异国印象，是因为它评论最多又写了免费寄存。但翻详情页才发现<b>它的江景房都在 25–29 层</b>，7 层和 12 层虽然有房，多半看不到江 —— 江景和「不超过 18 层」在这家是互斥的。Xi Hotel 全楼只有 5–6 层，FUNGEE 是 3–11 层，两家都免费寄存、都有 24 小时前台，你零点到店和周日那四个半小时空窗一起解决了。想要品牌保底就 Hampton，它整栋封顶 18 层，正好压线。
+    <strong>你说的奢酒店是对的，而且它才是最合适的那家。</strong>我之前给的数据是「IFS 国金中心·异国印象酒店」—— 同品牌不同店，两家都在五一广场，名字只差一个字。查清楚之后：<b>奢酒店房间在 4–9 层</b>，你 18 层那条线根本用不上；免费寄存和 24 小时前台解决了周日空窗和你零点到店；还自带 SPA 和空中花园，正好接上你想泡脚那件事。9.6 分、5,610 条评论，样本也够。次选仍是 Xi Hotel（5–6 层，楼里有 spa）和 FUNGEE（最便宜）。
   </div>
+
+  <div class="alert warn">
+    <strong>订之前务必核对门店后缀 —— 这是这次最容易犯的错。</strong>「异国印象」是瑞尔酒店集团的连锁品牌，光五一广场一带就有五家名字极像的店：<b>奢</b>酒店、<b>悦</b>酒店、<b>假日</b>酒店、IFS 国金中心店、贺龙体育馆店，另有湖南金融中心店。评分、楼层、开业年份、价格全都不一样。搜索时用全称，并核对街道地址。
+  </div>
+
+  <div class="scroll">
+    <table>
+      <thead><tr><th>同品牌门店</th><th class="n">评分</th><th class="n">点评</th><th>地址 / 备注</th></tr></thead>
+      <tbody>
+        <tr><td><b>五一广场异国印象·奢酒店</b></td><td class="n">4.8 / 5</td><td class="n">约 4,900</td><td>2024 年开业，房间 4–9 层，设计感酒店榜 No.6 <b>← 你说的这家</b></td></tr>
+        <tr><td>IFS 国金中心·异国印象酒店（五一广场店）</td><td class="n">4.6 / 5</td><td class="n">2.2 万</td><td>天心区湘江中路 2 段 18 号，2019 年装修，房间 7/12/25–29 层，江景在 25 层以上</td></tr>
+        <tr><td>异国印象·悦酒店（IFS 国金中心店）</td><td class="n">4.7 / 5</td><td class="n">3,888</td><td>天心区黄兴南路 216 号 5 楼</td></tr>
+        <tr><td>异国印象·假日酒店（五一广场店）</td><td class="n">4.7 / 5</td><td class="n">—</td><td>芙蓉区梨头后街 034 号 003 栋 6 层，2024 年开业</td></tr>
+        <tr><td>湖南金融中心异国印象酒店</td><td class="n">4.8 / 5</td><td class="n">7,819</td><td>不在五一广场，主打远眺江景</td></tr>
+        <tr><td>异国印象酒店（贺龙体育馆店）</td><td class="n">4.7 / 5</td><td class="n">3,331</td><td>近贺龙体育场，离你的动线远</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="hint">这一列的分数是携程 5 分制，跟上面表里的 Trip.com 10 分制不是一套，别直接比。</p>
 
   <details class="how">
     <summary>四家的细分评分、住客怎么说、图片入口</summary>
-    <p class="hint">细分评分、楼层、照片与评论均来自各自的 Trip.com 详情页（2026-08-31）。照片是直链平台图床、未转存，<b>如果对方开了防盗链会显示不出来</b>，那时点图或末尾链接去原页看。评论按原文意思译写并保留署名与日期，完整评论区在每家末尾的链接里。</p>
+    <p class="hint">细分评分、楼层、照片与评论均来自各自的 Trip.com 详情页（2026-08-31）。照片是直链平台图床、未转存，<b>如果对方开了防盗链会显示不出来</b>，那时点图或末尾链接去原页看。评论按原文意思译写并保留署名与日期，<b>好评差评都留</b>，完整评论区在每家末尾的链接里。另外说明一点：这些是酒店官方相册的图，<b>住客实拍图我取不到</b> —— 它们挂在 App 的点评区里，网页端抓不出图片地址。想看真实房间就点每家末尾的链接，到点评区翻带图评价。</p>
 
+    <div class="hotel">
+      <h4>五一广场异国印象·奢酒店<span class="badge">最贴合你的四条</span></h4>
+      <div class="subs"><span><i>清洁</i><b>9.6</b></span><span><i>设施</i><b>9.5</b></span><span><i>位置</i><b>9.6</b></span><span><i>服务</i><b>9.6</b></span></div>
+      <p class="facts">总分 9.6 · 5,610 条 · 房间在 <b>4–9 层</b> · 免费寄存 · 24 小时前台 · 14:00 入住 · 2024 年开业 · 自带 SPA 与空中花园</p>
+      <div class="shots"><a href="https://us.trip.com/hotels/detail/?cityId=206&amp;hotelId=116989879" rel="noopener"><img src="https://ak-d.tripcdn.com/images/1mc2w12000h6972lfB564_R_960_660_R5_D.jpg" alt="五一广场异国印象·奢酒店 照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a><a href="https://us.trip.com/hotels/detail/?cityId=206&amp;hotelId=116989879" rel="noopener"><img src="https://ak-d.tripcdn.com/images/1mc2012000n02ehek4F5C_R_339_206_R5_D.jpg" alt="五一广场异国印象·奢酒店 照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a><a href="https://us.trip.com/hotels/detail/?cityId=206&amp;hotelId=116989879" rel="noopener"><img src="https://ak-d.tripcdn.com/images/1mc0w12000d5jaof727B9_R_339_206_R5_D.jpg" alt="五一广场异国印象·奢酒店 照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a><a href="https://us.trip.com/hotels/detail/?cityId=206&amp;hotelId=116989879" rel="noopener"><img src="https://ak-d.tripcdn.com/images/1mc2812000hjrkv757AC7_R_339_206_R5_D.jpg" alt="五一广场异国印象·奢酒店 照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a><a href="https://us.trip.com/hotels/detail/?cityId=206&amp;hotelId=116989879" rel="noopener"><img src="https://ak-d.tripcdn.com/images/1mc5f12000siz9yk57B10_R_339_206_R5_D.jpg" alt="五一广场异国印象·奢酒店 照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a><a href="https://us.trip.com/hotels/detail/?cityId=206&amp;hotelId=116989879" rel="noopener"><img src="https://ak-d.tripcdn.com/images/1mc5m12000drjnpz0DA45_R_339_206_R5_D.jpg" alt="五一广场异国印象·奢酒店 照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a><a href="https://us.trip.com/hotels/detail/?cityId=206&amp;hotelId=116989879" rel="noopener"><img src="https://ak-d.tripcdn.com/images/1mc0m12000e1x5htk86D5_R_339_206_R5_D.jpg" alt="五一广场异国印象·奢酒店 照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a></div>
+      <blockquote class="rev"><p>位置很好，有免费洗衣房和健身房，强烈推荐。</p><cite>_luna_ · 2026-08-27</cite></blockquote><blockquote class="rev"><p>前台很友好，4 楼有洗衣房。</p><cite>匿名住客 · 2026-08-17</cite></blockquote><blockquote class="rev"><p>环境很好，下次来长沙还会订这里。</p><cite>Pidan008 · 2026-08-27</cite></blockquote><blockquote class="rev"><p><b>希望酒店明白不是每个人都能接受透明的马桶和浴室门</b>，这点实在无法接受。<span class="score">评 8.5 / 10</span></p><cite>匿名住客 · 2026-08-29</cite></blockquote>
+      <p class="hint">最后那条是差评，我特意留着：<b>部分房型的卫生间和浴室是透明门</b>。这种设计在「设计感酒店」里不少见，介意的话订房前直接问客服要哪个房型不是透明的。</p>
+      <p><a href="https://us.trip.com/hotels/detail/?cityId=206&amp;hotelId=116989879" rel="noopener">Trip.com 上的完整相册与全部评论 →</a></p>
+    </div>
     <div class="hotel">
       <h4>Xi Hotel（五一广场 IFS）<span class="badge">推荐</span></h4>
       <div class="subs"><span><i>清洁</i><b>9.7</b></span><span><i>设施</i><b>9.6</b></span><span><i>位置</i><b>9.7</b></span><span><i>服务</i><b>9.7</b></span></div>
@@ -581,7 +629,7 @@
       <p><a href="https://us.trip.com/hotels/changsha-hotel-detail-117841238/hampton-by-hilton-changsha-wuyi-square/" rel="noopener">Trip.com 上的完整相册与全部评论 →</a></p>
     </div>
     <div class="hotel">
-      <h4>异国印象（五一广场 IFS）<span class="badge warn">江景在 25 层以上</span></h4>
+      <h4>IFS 国金中心·异国印象酒店（五一广场店）<span class="badge warn">另一家，江景在 25 层以上</span></h4>
       <div class="subs"><span><i>清洁</i><b>9.5</b></span><span><i>设施</i><b>9.2</b></span><span><i>位置</i><b>9.4</b></span><span><i>服务</i><b>9.5</b></span></div>
       <p class="facts">总分 9.4 · 21,957 条 · 房型分布 <b>7 / 12 / 25–26 / 28–29 层</b> · 免费寄存 · 14:00 入住</p>
       <div class="shots"><a href="https://us.trip.com/hotels/changsha-hotel-detail-1250258/changsha-ifs-international-finance-center-exotic-impression-hotel/" rel="noopener"><img src="https://ak-d.tripcdn.com/images/0206212000a0mms9x2C0C_R_960_660_R5_D.jpg" alt="异国印象（五一广场 IFS） 房间或公共区域照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a><a href="https://us.trip.com/hotels/changsha-hotel-detail-1250258/changsha-ifs-international-finance-center-exotic-impression-hotel/" rel="noopener"><img src="https://ak-d.tripcdn.com/images/0205i1200095gmpmp3072_R_339_206_R5_D.jpg" alt="异国印象（五一广场 IFS） 房间或公共区域照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a><a href="https://us.trip.com/hotels/changsha-hotel-detail-1250258/changsha-ifs-international-finance-center-exotic-impression-hotel/" rel="noopener"><img src="https://ak-d.tripcdn.com/images/0583l12000soq21dq8434_R_339_206_R5_D.jpg" alt="异国印象（五一广场 IFS） 房间或公共区域照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a><a href="https://us.trip.com/hotels/changsha-hotel-detail-1250258/changsha-ifs-international-finance-center-exotic-impression-hotel/" rel="noopener"><img src="https://ak-d.tripcdn.com/images/1mc4y12000im0em5uF2CD_R_339_206_R5_D.jpg" alt="异国印象（五一广场 IFS） 房间或公共区域照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a><a href="https://us.trip.com/hotels/changsha-hotel-detail-1250258/changsha-ifs-international-finance-center-exotic-impression-hotel/" rel="noopener"><img src="https://ak-d.tripcdn.com/images/02060120009d1n1ik7568_R_339_206_R5_D.jpg" alt="异国印象（五一广场 IFS） 房间或公共区域照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a><a href="https://us.trip.com/hotels/changsha-hotel-detail-1250258/changsha-ifs-international-finance-center-exotic-impression-hotel/" rel="noopener"><img src="https://ak-d.tripcdn.com/images/1mc5p12000hpnyprb6FC9_R_339_206_R5_D.jpg" alt="异国印象（五一广场 IFS） 房间或公共区域照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a></div>
@@ -1118,11 +1166,22 @@
     { id: 'queue', t: '存好费大厨／炊烟的小程序', w: '到市区先取号，边逛边等', due: '出发前', soft: 1, modes: ['packed'] }
   ];
 
-  // Fold every top-level section into a <details>. Done in JS on purpose: with
-  // scripting off the page still renders as plain prose with every section
-  // visible, which is the right fallback for a page you might open on hotel
-  // wifi. The h2's id moves onto the <details> so existing anchors keep working.
-  (function collapseSections() {
+  // Group the sections the way printed travel guides do - Wikivoyage's
+  // Understand / Get around / See / Eat / Sleep / Cope order - instead of the
+  // flat pile they were written in. Grouping and folding both happen in JS so
+  // that with scripting off the page is still plain readable prose.
+  (function structureSections() {
+    var GROUPS = [
+      { key: 'g-know', label: '概况', hint: '这趟有多少时间、城市怎么摆', ids: ['sec-time', 'sec-geo'] },
+      { key: 'g-plan', label: '行程', hint: '两种节奏的逐时段安排', ids: ['sec-plan', 'sec-rules'] },
+      { key: 'g-sleep', label: '住', hint: '选址标准与具体哪一家', ids: ['sec-hotel', 'sec-list'] },
+      { key: 'g-eat', label: '吃', hint: '按一天的进食节奏排', ids: ['sec-food'] },
+      { key: 'g-do', label: '玩', hint: '来过两次之后还剩什么', ids: ['sec-again', 'sec-more', 'sec-pool', 'sec-spa'] },
+      { key: 'g-move', label: '行', hint: '步行圈与地铁耗时', ids: ['sec-walk', 'sec-traffic'] },
+      { key: 'g-prep', label: '行前', hint: '预约、预算、带什么', ids: ['sec-todo', 'sec-cost', 'sec-pack'] },
+      { key: 'g-care', label: '当心', hint: '避坑与下雨的退路', ids: ['sec-trap', 'sec-rain'] },
+      { key: 'g-src', label: '来源', hint: '官方入口与核对日期', ids: ['sec-src'] }
+    ];
     var OPEN_BY_DEFAULT = ['sec-plan'];
     var main = document.querySelector('main');
     var heads = [].slice.call(main.querySelectorAll(':scope > h2[id]'));
@@ -1136,12 +1195,30 @@
       var sum = document.createElement('summary');
       sum.textContent = h.textContent;
       det.appendChild(sum);
-
       var move = [], n = h.nextSibling;
       while (n && !(n.nodeType === 1 && n.tagName === 'H2')) { move.push(n); n = n.nextSibling; }
       h.parentNode.insertBefore(det, h);
       move.forEach(function (x) { det.appendChild(x); });
       h.parentNode.removeChild(h);
+    });
+
+    // Anchor the groups where the sections already are, then move each section
+    // under its group. Anything not listed above keeps its place rather than
+    // silently disappearing.
+    var firstSec = main.querySelector('details.sec');
+    GROUPS.forEach(function (g) {
+      var members = g.ids.map(function (id) { return document.getElementById(id); }).filter(Boolean);
+      if (!members.length) { g.el = null; return; }
+      var wrap = document.createElement('section');
+      wrap.className = 'grp';
+      wrap.id = g.key;
+      var h = document.createElement('h2');
+      h.className = 'grp-h';
+      h.innerHTML = '<span class="grp-t">' + g.label + '</span><span class="grp-n">' + g.hint + '</span>';
+      wrap.appendChild(h);
+      firstSec.parentNode.insertBefore(wrap, firstSec);
+      members.forEach(function (m) { wrap.appendChild(m); });
+      g.el = wrap;
     });
 
     var all = [].slice.call(main.querySelectorAll('details.sec'));
@@ -1160,15 +1237,103 @@
       all.forEach(function (d) { d.open = false; });
     });
 
-    // A link into a collapsed section would otherwise scroll to a closed box.
     var openTarget = function () {
       if (!location.hash) return;
       var t = document.getElementById(location.hash.slice(1));
       if (t && t.tagName === 'DETAILS') { t.open = true; t.scrollIntoView(); }
     };
     window.addEventListener('hashchange', openTarget);
+
+    // Sticky group rail. It sits under the shared status bar, whose height is
+    // measured rather than hard-coded so the two never overlap.
+    var live = GROUPS.filter(function (g) { return g.el; });
+    var rail = document.createElement('nav');
+    rail.className = 'rail';
+    rail.setAttribute('aria-label', '章节导航');
+    var inner = document.createElement('div');
+    inner.className = 'rail-in';
+    live.forEach(function (g) {
+      var a = document.createElement('a');
+      a.href = '#' + g.key;
+      a.textContent = g.label;
+      a.dataset.k = g.key;
+      inner.appendChild(a);
+      g.link = a;
+    });
+    rail.appendChild(inner);
+    main.parentNode.insertBefore(rail, main);
+
+    // The status bar above is injected by a deferred script, so its height is
+    // not measurable when this runs. Re-measure on load and whenever it resizes
+    // rather than hard-coding an offset the two bars would fight over.
+    var railTop = 0, railH = 44;
+    var setTop = function () {
+      var bar = document.querySelector('.zb') || document.querySelector('.statusbar');
+      railTop = bar ? Math.round(bar.getBoundingClientRect().height) : 0;
+      railH = Math.round(rail.getBoundingClientRect().height) || 44;
+      document.documentElement.style.setProperty('--rail-top', railTop + 'px');
+      document.documentElement.style.setProperty('--rail-h', railH + 'px');
+      observe();
+    };
+
+    var setCurrent = function (g) {
+      live.forEach(function (x) {
+        x.link.setAttribute('aria-current', x === g ? 'true' : 'false');
+      });
+      var a = inner.querySelector('[aria-current="true"]');
+      if (!a) return;
+      var l = a.offsetLeft, w = a.offsetWidth, sw = inner.clientWidth;
+      if (l < inner.scrollLeft || l + w > inner.scrollLeft + sw) {
+        inner.scrollTo({ left: Math.max(0, l - sw / 2 + w / 2), behavior: 'smooth' });
+      }
+    };
+
+    // Geometry rather than scroll events: this page is read inside embedded
+    // panes that do not always dispatch window scroll, and sections expand and
+    // collapse under any cached offsets.
+    var pick = function () {
+      var edge = railTop + railH + 12;
+      var cur = live[0];
+      live.forEach(function (g) {
+        if (g.el.getBoundingClientRect().top <= edge) cur = g;
+      });
+      // At the foot of the page the last groups never reach the edge line, so
+      // they could never be marked current. Once scrolled to the bottom, take
+      // the last group that is visible at all.
+      var se = document.scrollingElement || document.documentElement;
+      if (se.scrollTop + window.innerHeight >= se.scrollHeight - 4) {
+        live.forEach(function (g) {
+          if (g.el.getBoundingClientRect().top < window.innerHeight) cur = g;
+        });
+      }
+      setCurrent(cur);
+    };
+
+    // No IntersectionObserver and no requestAnimationFrame throttle here. Both
+    // are suspended in hidden/embedded panes and in background tabs: an rAF
+    // throttle latches its guard and the highlight then dies permanently. A
+    // timestamp throttle plus a slow poll costs nine getBoundingClientRect
+    // calls a few times a second and works everywhere.
+    var observe = function () {};
+    var last = 0;
+    var onScroll = function () {
+      var now = Date.now();
+      if (now - last < 100) return;
+      last = now;
+      pick();
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    document.addEventListener('scroll', onScroll, { passive: true, capture: true });
+    window.addEventListener('resize', setTop);
+    window.addEventListener('load', setTop);
+    all.forEach(function (d) { d.addEventListener('toggle', pick); });
+    [0, 200, 600, 1500].forEach(function (t) { setTimeout(setTop, t); });
+    setInterval(pick, 400);
+
+    setTop();
     openTarget();
     sync();
+    pick();
   })();
 
   var KEY = 'changsha-todo', MKEY = 'changsha-mode';
