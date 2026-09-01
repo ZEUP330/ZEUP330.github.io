@@ -90,14 +90,29 @@
   details.how ul { margin: .6rem 0; padding-left: 1.2rem; color: var(--ink-2); }
   details.how li { margin-bottom: .25rem; }
 
-  /* Sticky group rail, parked under the shared status bar. */
+  /* This page stacks a second sticky layer under the status bar and offsets
+     its own anchors with scroll-margin, so the shared scroll-padding in
+     theme.css would apply the same gap a second time - anchors landed ~76px
+     too low. Opt out here; every anchor target on this page carries its own
+     scroll-margin. */
+  html { scroll-padding-top: 0; }
+
+  /* Sticky group rail, parked under the shared status bar. Same translucent
+     material as that bar, so the two stacked layers read as one piece of
+     chrome rather than a strip of page glued under a pane of glass. */
   .rail { position: sticky; top: var(--rail-top, 0px); z-index: 15;
-    background: var(--bg); border-bottom: 1px solid var(--line); }
+    background: var(--material); border-bottom: 1px solid var(--line);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    backdrop-filter: saturate(180%) blur(20px); }
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .rail { background: var(--bg); }
+  }
   .rail-in { max-width: 760px; margin: 0 auto; display: flex; gap: 4px;
     overflow-x: auto; scrollbar-width: none; padding: 6px 1.25rem; }
   .rail-in::-webkit-scrollbar { display: none; }
   .rail a { flex: none; font-size: 13px; color: var(--ink-3); text-decoration: none;
-    padding: 4px 12px; border-radius: 999px; white-space: nowrap; }
+    padding: 4px 12px; border-radius: 999px; white-space: nowrap;
+    transition: color var(--t) var(--ease), background-color var(--t) var(--ease); }
   .rail a:hover { color: var(--ink); text-decoration: none; }
   .rail a[aria-current="true"] { background: var(--accent); color: #fff; }
 
@@ -1205,7 +1220,14 @@
     // Anchor the groups where the sections already are, then move each section
     // under its group. Anything not listed above keeps its place rather than
     // silently disappearing.
+    // Insert against a marker, not against the first section. The first
+    // section belongs to the first group, so it gets moved inside it - and
+    // then `firstSec.parentNode` is that group, not main, and every later
+    // group lands nested inside the first one with its own members pushed to
+    // the end. A comment node stays put and cannot be swallowed.
     var firstSec = main.querySelector('details.sec');
+    var mark = document.createComment('groups');
+    firstSec.parentNode.insertBefore(mark, firstSec);
     GROUPS.forEach(function (g) {
       var members = g.ids.map(function (id) { return document.getElementById(id); }).filter(Boolean);
       if (!members.length) { g.el = null; return; }
@@ -1216,10 +1238,11 @@
       h.className = 'grp-h';
       h.innerHTML = '<span class="grp-t">' + g.label + '</span><span class="grp-n">' + g.hint + '</span>';
       wrap.appendChild(h);
-      firstSec.parentNode.insertBefore(wrap, firstSec);
+      mark.parentNode.insertBefore(wrap, mark);
       members.forEach(function (m) { wrap.appendChild(m); });
       g.el = wrap;
     });
+    mark.parentNode.removeChild(mark);
 
     var all = [].slice.call(main.querySelectorAll('details.sec'));
     var count = document.getElementById('open-count');
