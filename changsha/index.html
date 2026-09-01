@@ -599,7 +599,7 @@
         <p class="cmp-tag">最贴合你的四条</p>
         <h4 class="cmp-name">五一广场异国印象·奢酒店</h4>
         <p class="cmp-price"><b>¥1,294</b><span>两晚含税 · ¥615/晚</span></p>
-        <a class="cmp-go" href="https://us.trip.com/hotels/detail/?cityId=206&amp;hotelId=116989879" rel="noopener">看房型与相册</a>
+        <a class="cmp-go" href="https://us.trip.com/hotels/detail/?cityId=206&amp;hotelId=116989879&amp;checkIn=2026-09-04&amp;checkOut=2026-09-06&amp;adult=1" rel="noopener">查这两晚实时价</a>
         <dl class="cmp-rows">
           <dt>总评分</dt><dd class="big">9.6</dd>
           <dt>评论数</dt><dd>5,610</dd>
@@ -621,7 +621,7 @@
         <p class="cmp-tag">楼层最低</p>
         <h4 class="cmp-name">Xi Hotel（五一广场 IFS）</h4>
         <p class="cmp-price"><b>¥972</b><span>两晚含税 · ¥486/晚</span></p>
-        <a class="cmp-go" href="https://us.trip.com/hotels/changsha-hotel-detail-112342483/xi-hotel/" rel="noopener">看房型与相册</a>
+        <a class="cmp-go" href="https://us.trip.com/hotels/detail/?cityId=206&amp;hotelId=112342483&amp;checkIn=2026-09-04&amp;checkOut=2026-09-06&amp;adult=1" rel="noopener">查这两晚实时价</a>
         <dl class="cmp-rows">
           <dt>总评分</dt><dd class="big">9.7</dd>
           <dt>评论数</dt><dd>5,977</dd>
@@ -643,7 +643,7 @@
         <p class="cmp-tag">最便宜</p>
         <h4 class="cmp-name">FUNGEE（黄兴广场站）</h4>
         <p class="cmp-price"><b>¥615</b><span>两晚含税 · ¥293/晚</span></p>
-        <a class="cmp-go" href="https://us.trip.com/hotels/changsha-hotel-detail-92349369/fungee-hotel/" rel="noopener">看房型与相册</a>
+        <a class="cmp-go" href="https://us.trip.com/hotels/detail/?cityId=206&amp;hotelId=92349369&amp;checkIn=2026-09-04&amp;checkOut=2026-09-06&amp;adult=1" rel="noopener">查这两晚实时价</a>
         <dl class="cmp-rows">
           <dt>总评分</dt><dd class="big">9.7</dd>
           <dt>评论数</dt><dd>10,353</dd>
@@ -665,7 +665,7 @@
         <p class="cmp-tag">样本最大</p>
         <h4 class="cmp-name">Hampton by Hilton 五一广场</h4>
         <p class="cmp-price"><b>¥980</b><span>两晚含税 · ¥465/晚</span></p>
-        <a class="cmp-go" href="https://us.trip.com/hotels/changsha-hotel-detail-117841238/hampton-by-hilton-changsha-wuyi-square/" rel="noopener">看房型与相册</a>
+        <a class="cmp-go" href="https://us.trip.com/hotels/detail/?cityId=206&amp;hotelId=117841238&amp;checkIn=2026-09-04&amp;checkOut=2026-09-06&amp;adult=1" rel="noopener">查这两晚实时价</a>
         <dl class="cmp-rows">
           <dt>总评分</dt><dd class="big">9.7</dd>
           <dt>评论数</dt><dd>16,590</dd>
@@ -1488,11 +1488,22 @@
   (function livePrices() {
     var fresh = document.getElementById('price-fresh');
     if (!fresh) return;
+    var d0 = '2026-09-04', d1 = '2026-09-06';
     fetch('./data/prices.json', { cache: 'no-cache' })
       .then(function (r) { return r.ok ? r.json() : null; })
       .catch(function () { return null; })
       .then(function (d) {
-        if (!d || !d.hotels) return;
+        if (!d || !d.hotels) {
+          // Expected: the scheduled scrape is off because every OTA blocks
+          // server-side reads. The prices in the HTML are hand-checked and
+          // dated, so say when rather than pretending they are live.
+          fresh.className = 'hint fresh stale';
+          fresh.textContent = '价格为 2026-08-31 人工核对，' + d0 + ' 至 ' + d1
+            + ' 两晚含税。自动刷新拿不到 —— 各家 OTA 都挡服务器端抓取，'
+            + '实时价请点每家的「查这两晚实时价」，在你自己的浏览器里开。';
+          fresh.hidden = false;
+          return;
+        }
         var okCount = 0, total = 0;
         Object.keys(d.hotels).forEach(function (k) {
           var h = d.hotels[k];
