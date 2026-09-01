@@ -47,6 +47,25 @@
   dl.kv dd { margin: 0; color: var(--ink-2); }
   dl.kv dd b { color: var(--ink); font-weight: 500; }
 
+  .hotel { border-top: 1px solid var(--line); padding: .9rem 0 .2rem; }
+  .hotel:first-of-type { border-top: 0; }
+  .hotel h4 { font-size: 15px; font-weight: 500; margin: 0 0 .5rem; display: flex;
+    align-items: center; gap: 8px; flex-wrap: wrap; }
+  .badge { font-size: 11px; font-weight: 400; color: var(--ok);
+    border: 1px solid currentColor; border-radius: 999px; padding: 1px 8px; }
+  .badge.warn { color: var(--warn); }
+  .subs { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 .6rem; }
+  .subs span { display: inline-flex; align-items: baseline; gap: 5px; background: var(--bg);
+    border: 1px solid var(--line); border-radius: 8px; padding: 2px 9px; }
+  .subs i { font-style: normal; font-size: 11px; color: var(--ink-3); }
+  .subs b { font-size: 13px; font-variant-numeric: tabular-nums; }
+  .facts { font-size: 12px; color: var(--ink-3); margin: 0 0 .6rem; }
+  .quote { font-size: 13px; color: var(--ink-2); border-left: 2px solid var(--line);
+    padding-left: .7rem; margin: .5rem 0; }
+  .quote .src { display: block; font-size: 11px; color: var(--ink-3); margin-top: 2px; }
+  td.up { color: var(--ok); }
+  td.down { color: var(--warn); }
+
   .rules { display: flex; flex-wrap: wrap; gap: 7px; margin: 0 0 1rem; }
   .rule { font-size: 12px; border: 1px solid currentColor; border-radius: 999px; padding: 2px 11px; }
   .rule.ok { color: var(--ok); }
@@ -491,26 +510,79 @@
   <div class="scroll">
     <table>
       <thead><tr>
-        <th>酒店</th><th class="n">评分</th><th class="n">评论数</th><th class="n">起价</th><th class="n">到笨萝卜</th><th>为什么选它</th>
+        <th>酒店</th><th class="n">评分</th><th class="n">评论数</th><th class="n">起价</th><th class="n">楼层</th><th class="n">到笨萝卜</th><th>为什么选它</th>
       </tr></thead>
       <tbody>
-        <tr><td><b>Hampton by Hilton 五一广场</b></td><td class="n">9.7</td><td class="n">16,544</td><td class="n">¥420</td><td class="n">10 分</td><td>分高且样本大，最没有惊喜也最不会翻车</td></tr>
-        <tr><td><b>异国印象（五一广场 IFS）</b></td><td class="n">9.4</td><td class="n">22,006</td><td class="n">¥360</td><td class="n">10 分</td><td>两万条评论，江景房型，<b>明确写了退房后可寄存行李</b> —— 直接解决周日那四个半小时</td></tr>
-        <tr><td><b>Xi Hotel（五一广场 IFS）</b></td><td class="n">9.7</td><td class="n">5,955</td><td class="n">¥360</td><td class="n">10 分</td><td>同价位里唯一有泳池的</td></tr>
-        <tr><td><b>FUNGEE（黄兴广场站）</b></td><td class="n">9.7</td><td class="n">10,411</td><td class="n">¥240</td><td class="n">8 分</td><td>最便宜的高分选项，离笨萝卜也最近</td></tr>
-        <tr><td>Single Hotel（五一广场 IFS）</td><td class="n">9.6</td><td class="n">5,904</td><td class="n">¥240</td><td class="n">10 分</td><td>和上面同价，备选</td></tr>
-        <tr><td>桔子水晶（五一大道）</td><td class="n">9.6</td><td class="n">3,822</td><td class="n">¥420</td><td class="n">12 分</td><td>连锁里房间质感稍好</td></tr>
-        <tr><td>亚朵（长沙 IFS）</td><td class="n">9.5</td><td class="n">2,831</td><td class="n">¥470</td><td class="n">10 分</td><td>同上，看当天价差</td></tr>
-        <tr><td>Neyar 富广（五一广场）</td><td class="n">9.5</td><td class="n">5,864</td><td class="n">¥170</td><td class="n">12 分</td><td>预算优先时的选择</td></tr>
+        <tr><td><b>Xi Hotel（五一广场 IFS）</b></td><td class="n">9.7</td><td class="n">5,977</td><td class="n">¥360</td><td class="n up">5–6</td><td class="n">10 分</td><td>全楼只有 5–6 层，你这条限制它完全不受影响。免费寄存 + 24h 前台 + 屋顶泳池</td></tr>
+        <tr><td><b>FUNGEE（黄兴广场站）</b></td><td class="n">9.7</td><td class="n">10,353</td><td class="n">¥240</td><td class="n up">3–11</td><td class="n">8 分</td><td>服务分 9.8 是这批最高。地铁口下来就是，免费寄存 + 24h 前台，还最便宜</td></tr>
+        <tr><td><b>Hampton by Hilton 五一广场</b></td><td class="n">9.7</td><td class="n">16,590</td><td class="n up">¥420</td><td class="n up">6–18</td><td class="n">10 分</td><td>整栋封顶就是 18 层，样本一万六，四项细分全 9.6 以上</td></tr>
+        <tr><td>异国印象（五一广场 IFS）</td><td class="n">9.4</td><td class="n">21,957</td><td class="n">¥360</td><td class="n down">7 / 12 / 25–29</td><td class="n">10 分</td><td>评论数最多，但<b>江景房在 25 层以上</b> —— 江景和 18 层这两条只能二选一</td></tr>
+        <tr><td>Single Hotel（五一广场 IFS）</td><td class="n">9.6</td><td class="n">5,904</td><td class="n">¥240</td><td class="n">—</td><td class="n">10 分</td><td>同价备选，楼层未核</td></tr>
+        <tr><td>桔子水晶（五一大道）</td><td class="n">9.6</td><td class="n">3,822</td><td class="n">¥420</td><td class="n">—</td><td class="n">12 分</td><td>连锁里房间质感稍好，楼层未核</td></tr>
+        <tr><td>亚朵（长沙 IFS）</td><td class="n">9.5</td><td class="n">2,831</td><td class="n">¥470</td><td class="n">—</td><td class="n">10 分</td><td>看当天价差，楼层未核</td></tr>
+        <tr><td>Neyar 富广（五一广场）</td><td class="n">9.5</td><td class="n">5,864</td><td class="n">¥170</td><td class="n">—</td><td class="n">12 分</td><td>预算优先时的选择，楼层未核</td></tr>
       </tbody>
     </table>
   </div>
 
   <div class="alert ok">
-    <strong>要一句话的话：异国印象。</strong>两万条评论摆在那里，江景房型能选，价格在你线内的一半，而且它是这批里唯一明确写了「退房后可寄存行李」的——周日 12:00 退房到 16:30 出发那四个半小时，这一条比多半颗星有用。想要更稳就 Hampton，想省钱就 FUNGEE。
+    <strong>查了楼层之后结论变了：选 Xi Hotel 或 FUNGEE。</strong>之前我推异国印象，是因为它评论最多又写了免费寄存。但翻详情页才发现<b>它的江景房都在 25–29 层</b>，7 层和 12 层虽然有房，多半看不到江 —— 江景和「不超过 18 层」在这家是互斥的。Xi Hotel 全楼只有 5–6 层，FUNGEE 是 3–11 层，两家都免费寄存、都有 24 小时前台，你零点到店和周日那四个半小时空窗一起解决了。想要品牌保底就 Hampton，它整栋封顶 18 层，正好压线。
   </div>
 
-  <p class="hint"><b>楼层这条我给不了数据。</b>Trip.com 列表页只有酒店信息，没有房间在几层——那是订房时选房型的事。上面这批本身都不是高塔，订的时候在备注里写「低楼层，18 层以下」，或者直接打酒店电话确认，比在列表里筛靠谱。</p>
+  <details class="how">
+    <summary>四家的细分评分、住客怎么说、图片入口</summary>
+    <p class="hint">细分评分和楼层来自各自的 Trip.com 详情页（2026-08-31）。<b>照片我没有搬过来</b> —— 那是平台和酒店的版权内容，热链别人的图床既不合适也随时会挂。每家末尾的链接点开就是官方相册，且永远比我存的副本新。</p>
+
+    <div class="hotel">
+      <h4>Xi Hotel（五一广场 IFS）<span class="badge">推荐</span></h4>
+      <div class="subs">
+        <span><i>清洁</i><b>9.7</b></span><span><i>设施</i><b>9.6</b></span>
+        <span><i>位置</i><b>9.7</b></span><span><i>服务</i><b>9.7</b></span>
+      </div>
+      <p class="facts">总分 9.7 · 5,977 条 · 房间在 <b>5–6 层</b> · 免费寄存 · 24 小时前台 · 15:00 入住</p>
+      <p>住客反复提到的三件事：屋顶泳池被当成最大惊喜、房型偏小但布置紧凑、离五一广场地铁口很近。有人形容它是城市上空的一小片清净地。</p>
+      <p class="quote">“The rooftop pool was the biggest surprise for me.”<span class="src">Trip.com 住客评论</span></p>
+      <p><a href="https://us.trip.com/hotels/changsha-hotel-detail-112342483/xi-hotel/" rel="noopener">看照片和房型 →</a></p>
+    </div>
+
+    <div class="hotel">
+      <h4>FUNGEE（黄兴广场站）<span class="badge">推荐</span></h4>
+      <div class="subs">
+        <span><i>清洁</i><b>9.7</b></span><span><i>设施</i><b>9.6</b></span>
+        <span><i>位置</i><b>9.7</b></span><span><i>服务</i><b>9.8</b></span>
+      </div>
+      <p class="facts">总分 9.7 · 10,353 条 · 房间在 <b>3–11 层</b> · 免费寄存 · 24 小时前台 · 14:00 入住</p>
+      <p>服务分 9.8 是这批里最高的一个。评论里出现频率最高的是「地铁口出来就是」和「房间不大但刚好」，另外常有人提房间没有异味 —— 这在同价位是稀缺评价。楼下就是黄兴路步行街。</p>
+      <p class="quote">“Right by the subway entrance.”<span class="src">Trip.com 住客评论</span></p>
+      <p><a href="https://us.trip.com/hotels/changsha-hotel-detail-92349369/fungee-hotel/" rel="noopener">看照片和房型 →</a></p>
+    </div>
+
+    <div class="hotel">
+      <h4>Hampton by Hilton 五一广场</h4>
+      <div class="subs">
+        <span><i>清洁</i><b>9.7</b></span><span><i>设施</i><b>9.6</b></span>
+        <span><i>位置</i><b>9.7</b></span><span><i>服务</i><b>9.7</b></span>
+      </div>
+      <p class="facts">总分 9.7 · 16,590 条 · 房间在 <b>6–18 层</b>（整栋封顶 18 层）· 24 小时前台 · 自助入住机 · 14:00 入住 / 12:00 退房</p>
+      <p>一万六千条评论里 99% 是正面。集中夸的是位置、清洁度和早餐（含长沙米粉），房间是翻新过的。它的性格就是没有性格 —— 想要一晚不出岔子选它。<b>页面上没有列行李寄存</b>，这条得订之前问。</p>
+      <p class="quote">“Newly renovated, and the facilities are clean.”<span class="src">Trip.com 住客评论</span></p>
+      <p><a href="https://us.trip.com/hotels/changsha-hotel-detail-117841238/hampton-by-hilton-changsha-wuyi-square/" rel="noopener">看照片和房型 →</a></p>
+    </div>
+
+    <div class="hotel">
+      <h4>异国印象（五一广场 IFS）<span class="badge warn">江景在 25 层以上</span></h4>
+      <div class="subs">
+        <span><i>清洁</i><b>9.5</b></span><span><i>设施</i><b>9.2</b></span>
+        <span><i>位置</i><b>9.4</b></span><span><i>服务</i><b>9.5</b></span>
+      </div>
+      <p class="facts">总分 9.4 · 21,957 条 · 房型分布 <b>7 / 12 / 25–26 / 28–29 层</b> · 免费寄存 · 14:00 入住</p>
+      <p>评论数是全表最多的，江景是它被反复夸的点 —— 白天看江水、晚上看灯光秀，有人说无遮挡。但设施分 9.2 是这四家里最低的。<b>关键冲突：值得住的是那些 25 层以上的江景房，而你要 18 层以下。</b>真想住这家，就得接受 7 层或 12 层、大概率没有江景。</p>
+      <p class="quote">“The view is absolutely stunning with no obstructions.”<span class="src">Trip.com 住客评论</span></p>
+      <p><a href="https://us.trip.com/hotels/changsha-hotel-detail-1250258/changsha-ifs-international-finance-center-exotic-impression-hotel/" rel="noopener">看照片和房型 →</a></p>
+    </div>
+
+    <p class="hint">上面的整句引文各一条，出处均为对应酒店的 Trip.com 评论区，其余是我对评论共性的归纳，不是原文。</p>
+  </details>
 
   <details class="how">
     <summary>被排除的，和排除的理由</summary>
