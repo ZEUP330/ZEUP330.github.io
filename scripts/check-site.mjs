@@ -70,6 +70,18 @@ for (const p of pages) {
   if (!bar.includes(`/${p}/data/status.json`)) note(`/${p}/ publishes status.json but the status bar does not list it`);
 }
 
+// Duplicate ids have now broken two pages the same way: a section anchor and a
+// canvas sharing a name, so getElementById hands Chart.js an <h2> and every
+// chart after it dies. Cheap to check, invisible until it bites.
+for (const file of htmlFiles) {
+  const html = readFileSync(file, 'utf8');
+  const seen = new Map();
+  for (const m of html.matchAll(/\sid="([^"]+)"/g)) {
+    seen.set(m[1], (seen.get(m[1]) || 0) + 1);
+  }
+  for (const [id, n] of seen) if (n > 1) note(`${file}: duplicate id "${id}" (${n}x)`);
+}
+
 console.log(`${pages.length} pages: ${pages.join(', ')}`);
 console.log(`${htmlFiles.length} html files checked`);
 
