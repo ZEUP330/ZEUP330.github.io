@@ -70,6 +70,18 @@
   .fresh.old { border-left-color: var(--danger); }
   .per { font-size: 11px; color: var(--ink-3); }
 
+  /* Real photographs, hotlinked from Wikimedia Commons. Every one is CC or
+     CC0 and the caption carries the author and licence, which is the condition
+     of using them. */
+  figure.photo { margin: .9rem 0 1.2rem; }
+  figure.photo img { width: 100%; height: auto; border-radius: 10px; display: block;
+    border: 1px solid var(--line); }
+  figure.photo .two { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  figure.photo figcaption { font-size: 12px; color: var(--ink-3); margin-top: .45rem; line-height: 1.6; }
+  figure.photo .cred { display: block; font-size: 11px; opacity: .8; }
+  figure.photo .cred a { color: var(--ink-3); text-decoration: none; }
+  figure.photo .cred a:hover { text-decoration: underline; }
+
   .shots { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
     gap: 6px; margin: 0 0 .8rem; }
   .shots a { display: block; aspect-ratio: 4 / 3; border-radius: 8px; overflow: hidden;
@@ -405,6 +417,10 @@
   </figure>
 
   <h2 id="sec-geo">长沙的地理其实很简单</h2>
+  <figure class="photo">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Night_view_of_Xiang_River_in_Changsha_2025031305.jpg/960px-Night_view_of_Xiang_River_in_Changsha_2025031305.jpg" alt="长沙湘江夜景" referrerpolicy="no-referrer" onerror="this.closest('figure').hidden=true">
+    <figcaption>湘江夜景。整座城市就是围着这条江排的 —— 东岸是五一广场，西岸是岳麓山，江心那条是橘子洲。<span class="cred"><a href="https://commons.wikimedia.org/wiki/File:Night_view_of_Xiang_River_in_Changsha_2025031305.jpg" rel="noopener">Huangdan2060 / CC BY 4.0 · Wikimedia Commons</a></span></figcaption>
+  </figure>
   <figure>
     <svg viewBox="0 0 700 400" role="img" aria-label="长沙主要景点与湘江的关系示意图：湘江纵贯南北，橘子洲在江心；东岸是五一广场、湖南博物院和长沙南站，西岸是岳麓山、大学城和洋湖艺术区。">
       <title>湘江两岸与主要目的地</title>
@@ -843,6 +859,10 @@
   </figure>
 
   <h2 id="sec-again">来过两次了，还剩什么</h2>
+  <figure class="photo">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Taiping_Street_at_night%2C_Changsha.jpg/960px-Taiping_Street_at_night%2C_Changsha.jpg" alt="夜晚的太平街，人流密集" referrerpolicy="no-referrer" onerror="this.closest('figure').hidden=true">
+    <figcaption>太平街的夜晚长这样。第一次来值得走一趟，第三次来就是纯人流了 —— 这也是它被排进「直接跳过」那一堆的原因。<span class="cred"><a href="https://commons.wikimedia.org/wiki/File:Taiping_Street_at_night,_Changsha.jpg" rel="noopener">EditQ / CC BY-SA 4.0 · Wikimedia Commons</a></span></figcaption>
+  </figure>
   <p>如果岳麓山、橘子洲、太平街、火宫殿都去过了，那么这趟的正确做法不是再找几个没去过的景点补上，而是<b>换一种使用这座城市的方式</b>：把它当成一个吃饭和坐着的地方，不是一个打卡的地方。下面按「还值不值得再去」分三堆。</p>
 
   <div class="scroll">
@@ -878,6 +898,10 @@
   </div>
 
   <h2 id="sec-more">还有哪里好玩</h2>
+  <figure class="photo">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c4/New_building_of_Hunan_Museum_20230403a.jpg/960px-New_building_of_Hunan_Museum_20230403a.jpg" alt="湖南博物院新馆建筑外观" referrerpolicy="no-referrer" onerror="this.closest('figure').hidden=true">
+    <figcaption>湖南博物院新馆。免费但必须提前 7 天抢预约 —— 松弛版跳过它，改去洋湖那两座不用抢的美术馆。<span class="cred"><a href="https://commons.wikimedia.org/wiki/File:New_building_of_Hunan_Museum_20230403a.jpg" rel="noopener">Huangdan2060 / CC BY 3.0 · Wikimedia Commons</a></span></figcaption>
+  </figure>
   <p>都是前两次大概率漏掉的。共同点：不是传统景点，所以人少，而且大多免费。按离你住处的远近排。</p>
 
   <div class="scroll">
@@ -911,6 +935,10 @@
   <p class="hint">这两处票价来自 2023–2024 年的公开资料，可能已调整，去之前查景区公众号。相比之下市区那一列基本免费，这也是我不推荐出城的理由之一。</p>
 
   <h2 id="sec-pool">景点池：按耗时和体力挑</h2>
+  <figure class="photo">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Yuelu_Mountain_1.jpg/960px-Yuelu_Mountain_1.jpg" alt="岳麓山山景" referrerpolicy="no-referrer" onerror="this.closest('figure').hidden=true">
+    <figcaption>岳麓山。图上那一片就是「户外费腿」那一档 —— 爬上去要 3–4 小时，坐索道能砍掉一半。<span class="cred"><a href="https://commons.wikimedia.org/wiki/File:Yuelu_Mountain_1.jpg" rel="noopener">EditQ / CC BY-SA 4.0 · Wikimedia Commons</a></span></figcaption>
+  </figure>
   <p>这张图是给还没去过的人排的，但对你也有用 —— 反过来看：把你去过的那些划掉，剩下的就是这趟的候选。左下角那片人少、省力、能坐，是松弛版的弹药库，也基本就是上面「大概率还没去」那一行。</p>
   <figure>
     <svg viewBox="0 0 700 430" role="img" aria-label="景点散点图：横轴是需要的时间，纵轴是体力消耗。岳麓山耗时长且费体力，两座美术馆和几条老街在左下角省时省力，湖南博物院耗时长但不费体力。">
@@ -983,6 +1011,10 @@
   </figure>
 
   <h2 id="sec-walk">五一广场的步行圈</h2>
+  <figure class="photo">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/03/Changsha_IFS_at_night.jpg/960px-Changsha_IFS_at_night.jpg" alt="夜晚的长沙 IFS 国金中心" referrerpolicy="no-referrer" onerror="this.closest('figure').hidden=true">
+    <figcaption>IFS 国金中心，步行圈的圆心。上面几家酒店的名字里带「IFS」的，指的都是这栋。<span class="cred"><a href="https://commons.wikimedia.org/wiki/File:Changsha_IFS_at_night.jpg" rel="noopener">EditQ / CC BY-SA 4.0 · Wikimedia Commons</a></span></figcaption>
+  </figure>
   <p>住五一广场最大的好处：下面这些地方彼此都在走路范围内，不用查地铁。真正需要坐车的只有四个点。</p>
   <figure>
     <svg viewBox="0 0 700 330" role="img" aria-label="以五一广场为圆心的步行圈：五分钟内是黄兴路和 IFS，十分钟内是太平街、坡子街和文和友，二十分钟内是潮宗街、都正街和湘江风光带；橘子洲、岳麓山、洋湖和长沙南站需要坐地铁。">
@@ -1033,6 +1065,13 @@
   <p>长沙的餐饮密度高到不需要提前做功课，但两件事值得先知道：<b>网红店周末等两小时是常态</b>，而<b>本地人真正吃的那些不用等</b>。按一天的进食节奏排：</p>
 
   <h3>早午饭 · 嗦粉</h3>
+  <figure class="photo pair">
+    <div class="two">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Changsha-style_mixed_rice_noodles_before_stirring_at_Baman_%2820211225175333%29.jpg/960px-Changsha-style_mixed_rice_noodles_before_stirring_at_Baman_%2820211225175333%29.jpg" alt="拌之前的长沙拌粉" referrerpolicy="no-referrer" onerror="this.closest('figure').hidden=true">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Changsha-style_mixed_rice_noodles_after_stirring_at_Baman_%2820211225175628%29.jpg/960px-Changsha-style_mixed_rice_noodles_after_stirring_at_Baman_%2820211225175628%29.jpg" alt="拌之后的长沙拌粉" referrerpolicy="no-referrer">
+    </div>
+    <figcaption>长沙拌粉：上桌是左边那样，码子堆在面上，得自己拌成右边那样再吃。<span class="cred"><a href="https://commons.wikimedia.org/wiki/File:Changsha-style_mixed_rice_noodles_before_stirring_at_Baman_(20211225175333).jpg" rel="noopener">N509FZ / CC BY-SA 4.0 · Wikimedia Commons</a></span></figcaption>
+  </figure>
   <p>长沙人的早饭是米粉，不是包子。<b>肆姐面粉馆、杨裕兴、甘长顺</b>是常见连锁，社区里的无名粉店往往更好吃。点单说「圆粉还是扁粉 + 码子」，肉丝、酸辣、排骨、酱汁都是常见浇头；「重挑」是加量，「轻挑」是减量。</p>
 
   <h3>正餐 · 湘菜</h3>
@@ -1051,6 +1090,10 @@
   <p class="hint">松弛版的答案很干脆：<b>前三家一家都别去</b>。省下的两小时够在江边坐一下午。真想吃，进城第一件事先取号，边逛边等。</p>
 
   <h3>小吃 · 边走边吃</h3>
+  <figure class="photo">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Changsha-style_Stinky_Tofu_at_Huogongdian_%2820180222183104%29.jpg/960px-Changsha-style_Stinky_Tofu_at_Huogongdian_%2820180222183104%29.jpg" alt="火宫殿的长沙臭豆腐" referrerpolicy="no-referrer" onerror="this.closest('figure').hidden=true">
+    <figcaption>火宫殿的臭豆腐。长沙的是黑色的，跟别处的白臭豆腐不是一回事。<span class="cred"><a href="https://commons.wikimedia.org/wiki/File:Changsha-style_Stinky_Tofu_at_Huogongdian_(20180222183104).jpg" rel="noopener">N509FZ / CC BY-SA 4.0 · Wikimedia Commons</a></span></figcaption>
+  </figure>
   <p>臭豆腐（黑色经典是连锁，火宫殿是老字号）、糖油粑粑、姊妹团子、葱油粑粑、刮凉粉。坡子街和太平街密度最高，但也最贵最挤；拐进黄兴路的支巷，同样的东西便宜三成。</p>
 
   <h3>夜宵 · 长沙真正的主场</h3>
@@ -1203,6 +1246,10 @@
   </table>
 
   <h2 id="sec-traffic">交通速查</h2>
+  <figure class="photo">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/Concourse_of_South_Railway_Station%2C_Changsha_Metro_%28Aug_2%2C_2024%29.jpg/960px-Concourse_of_South_Railway_Station%2C_Changsha_Metro_%28Aug_2%2C_2024%29.jpg" alt="长沙南站地铁站站厅" referrerpolicy="no-referrer" onerror="this.closest('figure').hidden=true">
+    <figcaption>长沙南站的地铁站厅。你周五 23:28 到站时，往市区方向的末班车（23:03）已经开走了 —— 这里会是空的，别下来找。<span class="cred"><a href="https://commons.wikimedia.org/wiki/File:Concourse_of_South_Railway_Station,_Changsha_Metro_(Aug_2,_2024).jpg" rel="noopener">Bob Wehn / CC BY-SA 4.0 · Wikimedia Commons</a></span></figcaption>
+  </figure>
   <div class="scroll">
     <table>
       <thead><tr><th>路线</th><th>方式</th><th class="n">时间</th><th class="n">费用</th></tr></thead>
