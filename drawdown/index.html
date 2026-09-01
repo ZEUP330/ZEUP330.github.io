@@ -53,8 +53,10 @@
   }
 </style>
 <link rel="stylesheet" href="/assets/statusbar.css">
+<link rel="stylesheet" href="/assets/rail.css">
 <script src="/assets/statusbar.js" defer></script>
 <script src="/assets/theme.js" defer></script>
+<script src="/assets/rail.js" defer></script>
 </head>
 <body>
 <main>
@@ -73,7 +75,7 @@
     <div class="cards" id="cards"></div>
     <p class="hint" id="asof">—</p>
 
-    <h2>水下图</h2>
+    <h2 id="sec1">水下图</h2>
     <div class="toolbar">
       <div class="chips" id="range">
         <button class="chip" data-r="weekly" type="button" aria-pressed="true">全历史（周）</button>
@@ -84,7 +86,7 @@
     <div class="chart"><canvas id="uw" role="img" aria-label="水下图：三大指数距历史最高收盘的回撤幅度随时间变化，标注 -10%、-20%、-30% 三条参考线。">三大指数回撤水下图。</canvas></div>
     <p class="hint">线贴着 0 走 = 在创新高附近；掉得越深离高点越远。回到 0 才算收复前高。</p>
 
-    <h2>跌破关注线之后</h2>
+    <h2 id="sec2">跌破关注线之后</h2>
     <div class="toolbar">
       <label>指数 <select id="ix-a"></select></label>
     </div>
@@ -99,7 +101,7 @@
     </div>
     <p class="hint" id="after-note"></p>
 
-    <h2>历次回撤（≥10%）</h2>
+    <h2 id="sec3">历次回撤（≥10%）</h2>
     <div class="toolbar">
       <label>指数 <select id="ix-b"></select></label>
       <label>排序
@@ -125,7 +127,7 @@
     </div>
   </div>
 
-  <h2>这些数字的局限</h2>
+  <h2 id="sec4">这些数字的局限</h2>
   <p><b class="hl hl--warn">样本极小。</b>标普跌破 30% 在半个多世纪里只有 5 次，道指 3 次。5 个样本的「中位数」和「胜率」统计意义很弱，看看可以，别当概率用。</p>
   <p><b>中位数藏起了过程。</b>跌破 −30% 之后一年中位是正的，但那一年里可能先再跌 20% 再涨回来。「触线后还跌了」那一列就是给这个的：它是从第一次触线到本轮最低点又跌掉的幅度。2008 年标普跌破 30% 之后又跌了将近 27%。</p>
   <p><b>更深不等于更好。</b>标普跌破 30% 之后 1 年中位 <span id="quirk">—</span>，反而低于跌破 20% 的。深跌往往意味着危机还在展开，反弹来得更晚。</p>
@@ -134,7 +136,7 @@
   <h2 id="close">收尾：这页该怎么用</h2>
   <p>当下的回撤数字本身信息量很小 —— 指数距峰几个百分点是常态，一年里大半时间都在这个区间。真正有用的是<b>关注线被跌破之后的条件分布</b>：历史上每次跌破 −10%，后面继续跌到哪、花了多久才回来。</p>
   <p>要注意这里有个幸存者视角：图上每一次回撤最终都被收复了，因为用的是至今仍在的指数。<span class="hl">「跌下去总会回来」在指数层面成立，在个股和个人的持有期上不成立。</span>回撤的深度决定你亏多少，回撤的长度决定你能不能扛到回来。</p>
-  <h2>数据与口径</h2>
+  <h2 id="sec5">数据与口径</h2>
   <ul>
     <li>日线收盘价来自 Yahoo Finance 的公开 chart 接口，取全量日频；节假日与缺失价格跳过</li>
     <li>回撤按<b>收盘价</b>算，不用盘中最高最低，所以比新闻里常见的「盘中最大跌幅」浅一些</li>

@@ -114,61 +114,6 @@
     .toolbar { gap: 8px; }
   }
 
-  /* Sticky section rail parked under the shared status bar, same material so
-     the two layers read as one piece of chrome. Anchors carry their own
-     scroll-margin, so opt out of the shared scroll-padding to avoid a double gap. */
-  html { scroll-padding-top: 0; }
-  .rail { position: sticky; top: var(--rail-top, 0px); z-index: 15;
-    background: var(--material); border-bottom: 1px solid var(--line);
-    -webkit-backdrop-filter: saturate(180%) blur(20px); backdrop-filter: saturate(180%) blur(20px); }
-  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-    .rail { background: var(--bg); } }
-  .rail-in { max-width: 760px; margin: 0 auto; display: flex; gap: 4px;
-    overflow-x: auto; scrollbar-width: none; padding: 6px 1.25rem; }
-  .rail-in::-webkit-scrollbar { display: none; }
-  .rail a { flex: none; font-size: 13px; color: var(--ink-3); text-decoration: none;
-    padding: 4px 12px; border-radius: 999px; white-space: nowrap;
-    transition: color var(--t) var(--ease), background-color var(--t) var(--ease); }
-  .rail a:hover { color: var(--ink); text-decoration: none; }
-  .rail a[aria-current="true"] { background: var(--accent); color: #fff; }
-  h2[id] { scroll-margin-top: calc(var(--rail-top, 0px) + var(--rail-h, 44px) + 12px); }
-  .stage { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin: 1.1rem 0; }
-  .stage .s { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: .75rem .9rem; }
-  .stage .sk { font-size: 12px; color: var(--ink-3); }
-  .stage .sv { font-size: 1.35rem; font-weight: 600; font-variant-numeric: tabular-nums; margin-top: 2px; }
-  .stage .sd { font-size: 12px; color: var(--ink-3); margin-top: 2px; }
-  .cn .sv { color: var(--danger); } .jp .sv { color: var(--accent); } .kr .sv { color: var(--warn); }
-
-  /* Spec sheet. Four columns on desktop: dimension plus three countries. Each
-     cell carries a bar or a flag, so the sheet is read by comparing shapes
-     rather than by reading three sentences per row. */
-  .sheet { margin: 1.25rem 0 .5rem; }
-  .srow { display: grid; grid-template-columns: 8.5rem repeat(3, 1fr); gap: 0 10px;
-    padding: .7rem 0; border-top: 1px solid var(--line); align-items: start; }
-  .srow.head { border-top: 0; position: sticky; top: calc(var(--rail-top,0px) + var(--rail-h,44px));
-    z-index: 12; background: var(--material); -webkit-backdrop-filter: blur(18px);
-    backdrop-filter: blur(18px); padding: .55rem 0; border-bottom: 1px solid var(--line); }
-  .srow.head .cty { font-weight: 600; font-size: .95rem; display: flex; align-items: baseline; gap: 6px; }
-  .srow.head .cty i { width: 10px; height: 10px; border-radius: 3px; flex: none; }
-  .sdim { font-size: 13px; color: var(--ink-3); padding-top: 2px; }
-  .sdim b { display: block; color: var(--ink-2); font-weight: 500; font-size: 13.5px; }
-  .cell { min-width: 0; }
-  .cval { font-size: .95rem; font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1.35; }
-  .csub { font-size: 11.5px; color: var(--ink-3); line-height: 1.45; margin-top: 1px; }
-  .bar { height: 6px; border-radius: 3px; background: var(--bg-2); margin: 5px 0 3px; overflow: hidden; }
-  .bar i { display: block; height: 100%; border-radius: 3px; }
-  .flag { display: inline-flex; align-items: center; gap: 5px; font-size: .9rem; font-weight: 600; }
-  .flag .g { width: 16px; height: 16px; border-radius: 50%; display: inline-grid; place-items: center;
-    font-size: 11px; color: #fff; flex: none; }
-  .g.yes { background: var(--ok); } .g.no { background: var(--danger); } .g.mid { background: var(--warn); }
-  .g.na { background: var(--ink-3); }
-  .spark { display: block; width: 100%; height: 34px; }
-  @media (max-width: 700px) {
-    .srow { grid-template-columns: 1fr 1fr 1fr; gap: 0 8px; padding: .6rem 0; }
-    .sdim { grid-column: 1 / -1; padding: 0 0 .3rem; }
-    .cval { font-size: .88rem; } .csub { font-size: 11px; }
-    .srow.head .cty { font-size: .86rem; }
-  }
   details.fold { border-top: 1px solid var(--line); margin: 1.5rem 0 0; }
   details.fold > summary { display: flex; align-items: baseline; gap: 10px; cursor: pointer;
     list-style: none; padding: .8rem 0; font-size: 1rem; font-weight: 500; }
@@ -179,8 +124,10 @@
   details.fold h2 { margin: 0; font-size: 1rem; font-weight: 500; }
 </style>
 <link rel="stylesheet" href="/assets/statusbar.css">
+<link rel="stylesheet" href="/assets/rail.css">
 <script src="/assets/statusbar.js" defer></script>
 <script src="/assets/theme.js" defer></script>
+<script src="/assets/rail.js" defer></script>
 </head>
 <body>
 <main>
@@ -200,13 +147,13 @@
 
   <h2 id="detail">逐项细节</h2>
   <p class="hint">上表每一行的来龙去脉。默认收起，需要时展开。</p>
-  <h2 id="jp">日本：50 年配给能活 100 年的房子</h2>
+  <h2 id="jp" data-rail="日本房价">日本：跌了三十四年，还没回来</h2>
   <p>日本的这条线从 1955 年开始，是这三国里唯一一条长到能看见「一整代人」的序列。它在 1991 年一季度见顶，然后连跌到 2009 年 —— <strong class="hl">十八年</strong>。</p>
   <div class="chart"><canvas id="jp-chart" role="img" aria-label="折线图：日本实际住宅价格指数 1955 至 2025，1991 年见顶后长期下跌。">日本实际房价 1955–2025。</canvas></div>
   <p class="hint" id="jp-note"></p>
   <p>把这条曲线和日本的 50 年房贷放在一起看，才知道那个产品是什么意思：<strong>在一个房价三十年不回本的市场里，「把成本摊平到一辈子」不是营销话术，是唯一能让账算得过来的办法。</strong>下面这一节是它的具体设计。</p>
 
-  <h2>日本：50 年配给能活 100 年的房子</h2>
+  <h2 id="s-50-100" data-rail="日本 50 年">日本：50 年配给能活 100 年的房子</h2>
   <p>日本的长期贷款主力是住宅金融支援机构与民间银行合办的<strong>全期间固定</strong>利率贷款。【フラット35】最长 35 年；【フラット50】最长 50 年 —— 但它有一条别处没有的入口条件：<strong>房子必须先拿到「长期优良住宅」认定</strong>（2025 年 10 月起把「管理计划认定公寓」也放了进来）。</p>
   <p>这条认定的核心是「劣化对策等级 3」：在通常维护条件下，结构主体的可使用期限要达到<strong>百年量级</strong>。翻译成一句话就是：<strong class="hl">先证明房子能活 100 年，才允许贷 50 年</strong>。抵押物的寿命必须长过贷款，这个顺序在日本是写进产品准入的。</p>
   <p>年龄这一关也没绕开：フラット50 申请时须未满 44 岁、完済时须未满 80 岁，期限取「80 − 申请时年龄」与 50 年里较短的那个。真要用满 50 年，通常得走<strong>親子リレー返済</strong>（父子接力）—— 期限按后继者（子女）的年龄算，等于把贷款摊到两代人身上。</p>
@@ -263,12 +210,12 @@
   <p>代价现在非常直接。フラット35 2026 年 9 月的最低利率是 <strong>3.46%</strong>，比上月涨 0.17 个百分点，创下 2017 年 10 月现行制度以来的最高；8 月是 3.290%，7 月 3.140%，一路在破纪录。フラット50 2026 年 7 月的最频利率（融资率 9 成以下）是 3.32%。背景是日本央行 2026 年 6 月把政策利率加到 <strong>1.00%</strong>，长端国债收益率升到三十年高位。</p>
   <p>于是出现一个反差：<strong class="hl">日本人自己并不买这个长期固定</strong>。国土交通省《民间住宅贷款实态调查》令和 6 年度口径，新发放里 <strong>84.3% 选浮动利率</strong>（2026 年 8 月主要行浮动型中位数约 1.2%）。他们签 35 年，然后靠<strong>繰上返済</strong>（提前还款，不收违约金）在十几年里还完 —— 合同年限买的是「月供地板」这份保险，不是真打算还到最后一期。住宅贷款减税（年末余额 × 0.7%、最长 13 年，已延长至 2030 年）把补贴堆在前 13 年，也在劝人前期别急着还本金。</p>
 
-  <h2 id="kr">韩国：50 年成了绕开 DSR 的路，两年就收回</h2>
+  <h2 id="kr" data-rail="韩国房价">韩国：跌得更狠，但收复了</h2>
   <p>韩国和日本同年见顶，跌得更急。区别在后面 —— 它<strong class="hl">收复了失地，然后又吹起一轮</strong>，2021 年再次见顶。这是理解韩国为什么两年就收回 50 年贷款的前提。</p>
   <div class="chart"><canvas id="kr-chart" role="img" aria-label="折线图：韩国实际住宅价格指数 1975 至 2026，1991 年见顶、1998 年触底后收复并于 2021 年再度见顶。">韩国实际房价 1975–2026。</canvas></div>
   <p class="hint" id="kr-note"></p>
 
-  <h2>韩国：50 年成了绕开 DSR 的路，两年就收回</h2>
+  <h2 id="s-50-dsr" data-rail="韩国 50 年">韩国：50 年成了绕开 DSR 的路，两年就收回</h2>
   <p>2023 年 1 月，Sh 水协银行首推 50 年期房贷，7 月各大行跟进。热闹了半年，监管就出手了。</p>
   <p>原因是韩国有一条中国没有的硬约束：<strong>DSR（总负债本息偿还比率）</strong>，银行口径 40%。DSR 的分子是<strong>一年要还的本息</strong>，分母是年收入。把期限从 30 年拉到 50 年，年还本息下降，<strong class="hl hl--warn">同一份收入能借到的钱直接变多</strong>。在这个约束下，延长期限根本不是减负工具，而是<strong class="hl hl--warn">加杠杆的旋钮</strong>：省下来的月供不会留在口袋里，会变成买更贵的房子。</p>
   <figure class="fig" data-rise="0">
@@ -306,7 +253,7 @@
   <p>但韩国并没有把 50 年一刀切掉，它只是<strong>换了个地方放</strong>：政策性贷款「보금자리론」是全期间固定利率，期限可选 10/15/20/30/40/50 年，用年龄定向 —— <strong>40 年限 39 岁以下</strong>（新婚家庭放宽到 49 岁）、<strong>50 年限 34 岁以下</strong>（新婚 39 岁）；符合条件的，即便在首都圈也仍可用 40、50 年。</p>
   <p>结果是家庭债务/GDP 从 2024 年三季度之前的 90% 以上，降到 <strong>2026 年一季度的 85.3%</strong>，官方目标是 2030 年降到 80% 以下。</p>
 
-  <h2 id="cn">中国：刚从 30 年放到 40 年</h2>
+  <h2 id="cn" data-rail="中国">中国：刚从 30 年放到 40 年</h2>
   <div class="chart"><canvas id="cn-chart" role="img" aria-label="折线图：中国实际住宅价格指数 2005 至 2026，2021 年三季度见顶后持续下跌。">中国实际房价 2005–2026。</canvas></div>
   <p class="hint" id="cn-note"></p>
 
@@ -418,7 +365,7 @@
     <figcaption>韩国那条线在 2021 年之前没有画 —— 我没有找到可靠的统一口径，不猜。日本的 50 年一直是虚线：它不是普遍上限，只对拿到长期优良住宅认定的房子开放。</figcaption>
   </figure>
 
-  <h2 id="cmp">同一笔 100 万，在三国的档位上分别是什么样</h2>
+  <h2 id="cmp" data-rail="同一笔 100 万">同一笔 100 万，在三国的档位上分别是什么样</h2>
 
   <h3>把滑块调到各国的档位</h3>
   <p class="hint">点一下，上面的年利率与年限滑块就切到该口径；本金保持你自己设的数。下表按同一笔本金重算，只比「利率 × 年限」这一个组合，不含各国的税费、保险、补贴与首付要求。</p>
@@ -801,45 +748,6 @@
     document.getElementById('sheet').innerHTML = html.join('');
   }
 
-  // ---- sticky rail ----
-  var SEC = [['now', '现状'], ['spec', '规格'], ['detail', '细节'], ['src', '来源']];
-  var live = SEC.map(function (x) { return { key: x[0], label: x[1], el: document.getElementById(x[0]) }; })
-                .filter(function (g) { return g.el; });
-  if (live.length) {
-    var main = document.querySelector('main');
-    var rail = document.createElement('nav');
-    rail.className = 'rail';
-    rail.setAttribute('aria-label', '章节导航');
-    var inner = document.createElement('div');
-    inner.className = 'rail-in';
-    live.forEach(function (g) {
-      var a = document.createElement('a');
-      a.href = '#' + g.key; a.textContent = g.label;
-      inner.appendChild(a); g.link = a;
-    });
-    rail.appendChild(inner);
-    main.parentNode.insertBefore(rail, main);
-    var railTop = 0, railH = 44;
-    var setTop = function () {
-      var bar = document.querySelector('.zb') || document.querySelector('.statusbar');
-      railTop = bar ? Math.round(bar.getBoundingClientRect().height) : 0;
-      railH = Math.round(rail.getBoundingClientRect().height) || 44;
-      document.documentElement.style.setProperty('--rail-top', railTop + 'px');
-      document.documentElement.style.setProperty('--rail-h', railH + 'px');
-    };
-    var pick = function () {
-      var edge = railTop + railH + 12, cur = live[0];
-      live.forEach(function (g) { if (g.el.getBoundingClientRect().top <= edge) cur = g; });
-      var se = document.scrollingElement || document.documentElement;
-      if (se.scrollTop + window.innerHeight >= se.scrollHeight - 4) cur = live[live.length - 1];
-      live.forEach(function (g) { g.link.setAttribute('aria-current', g === cur ? 'true' : 'false'); });
-    };
-    setTop(); pick();
-    addEventListener('scroll', pick, { passive: true });
-    addEventListener('resize', function () { setTop(); pick(); });
-    setTimeout(function () { setTop(); pick(); }, 400);
-    setInterval(pick, 700);
-  }
 })();
 </script>
 </body>

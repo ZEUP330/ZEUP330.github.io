@@ -70,6 +70,15 @@ for (const p of pages) {
   if (!bar.includes(`/${p}/data/status.json`)) note(`/${p}/ publishes status.json but the status bar does not list it`);
 }
 
+// An id starting with a digit is legal HTML but not a valid CSS selector, so
+// document.querySelector('#50-dsr') throws. Cheap to prevent, annoying to find.
+for (const file of htmlFiles) {
+  const html = readFileSync(file, 'utf8');
+  for (const m of html.matchAll(/\sid="([^"]+)"/g)) {
+    if (/^[0-9]/.test(m[1])) note(`${file}: id "${m[1]}" starts with a digit and breaks querySelector`);
+  }
+}
+
 // Duplicate ids have now broken two pages the same way: a section anchor and a
 // canvas sharing a name, so getElementById hands Chart.js an <h2> and every
 // chart after it dies. Cheap to check, invisible until it bites.

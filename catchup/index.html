@@ -79,8 +79,10 @@
   details.fold h2, details.fold h3 { margin: 0; font-size: 1rem; font-weight: 500; }
 </style>
 <link rel="stylesheet" href="/assets/statusbar.css">
+<link rel="stylesheet" href="/assets/rail.css">
 <script src="/assets/statusbar.js" defer></script>
 <script src="/assets/theme.js" defer></script>
+<script src="/assets/rail.js" defer></script>
 </head>
 <body>
 <main>
@@ -88,7 +90,7 @@
   <h1 id="top">被追赶的经济体：四国规格表</h1>
   <p class="lede">辜朝明把工业化分成三段、两个拐点，并预言「被追赶」的经济体会出现一个特征：<span class="hl">钱存下来了，但投不出去</span>。这页把他的每一条主张拆成一个可比的维度，日德美中逐项对照 —— 包括<b>对不上的那几项</b>。</p>
 
-  <h2 id="sheet-h">框架主张 × 四国实测</h2>
+  <h2 id="sheet-h" data-rail="规格表">框架主张 × 四国实测</h2>
   <p class="hint">条形在每行内归一，比的是同一维度上的相对位置；✓／✗ 表示该国是否符合框架的预期。数据为世界银行公开统计，年份见各格注脚。</p>
   <div class="sheet" id="sheet"></div>
   <p class="hint" id="sheet-note"></p>
@@ -246,7 +248,7 @@
   <p>结论不是「框架全错」或「框架全对」，而是<b>它描述的症状对上了一半，机制那一半没对上</b>。对得上的是资产价格下行与产业外迁；对不上的是他理论的发动机 —— 企业净还债、信贷收缩、投资无处可去。中国的投资率和信贷余额都还在高位，问题更像是<b>投资的回报在塌</b>（尤其地产与地方基建），而不是<b>没有人投资</b>。这两者用同一个药方，未必对症。</p>
   <p class="hint">上表中「资本形成」「信贷」「储蓄缺口」三行来自本页数据，可在上面的图里核对；「房价指数」一行见本站的<a href="../housing/">全国房价走势地图</a>；其余为公开报道的定性描述，不是本页数据得出的结论。</p>
 
-  <h2>数据来源</h2>
+  <h2 id="sec1">数据来源</h2>
   <ul class="links">
     <li><a href="https://data.worldbank.org/" rel="noopener">World Bank Open Data</a> — GDP（现价美元）、人均 GDP（2015 年不变价）、总储蓄、资本形成、对外直接投资净流出，均为各国官方上报口径</li>
     <li><a href="./data/catchup.json" rel="noopener">catchup.json</a> — 本页用的派生数据</li>

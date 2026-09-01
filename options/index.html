@@ -80,8 +80,10 @@
   }
 </style>
 <link rel="stylesheet" href="/assets/statusbar.css">
+<link rel="stylesheet" href="/assets/rail.css">
 <script src="/assets/statusbar.js" defer></script>
 <script src="/assets/theme.js" defer></script>
+<script src="/assets/rail.js" defer></script>
 </head>
 <body>
 <main>
@@ -117,7 +119,7 @@
     <p class="hint">年化 = 卖价 ÷ 行权价 × 365 ÷ 剩余天数，即现金担保看跌的资金年化回报（按最保守的买价成交计算）。点一行看细节。</p>
     <p class="hint">按年化排序，榜首基本恒定是杠杆 ETF —— 高年化就是高隐含波动率的另一种写法，那是风险的标价，不是找到了便宜。换成「年化 ÷ IV30」能看出谁在单位波动率上给得更多；wheel 的前提是这个标的跌下来你愿意接，这一条任何排序都替你判断不了。</p>
 
-    <h2>全市场候选排行</h2>
+    <h2 id="sec1">全市场候选排行</h2>
     <p>把 22 个标的的候选合起来排，而不是只看每个标的的第一名。CSP = cash-secured put（现金担保看跌，入场腿），CC = covered call（备兑看涨，出场腿）。</p>
     <div class="toolbar">
       <div class="chips" style="margin:0">
@@ -151,7 +153,7 @@
     </div>
     <p class="hint">风险标签是机械判定：<b>杠杆</b> = 三倍杠杆 ETF，<b>Δ高</b> = |Δ| ≥ 0.30（被指派概率约三成以上），<b>缓冲薄</b> = 行权价离现价不到 5%，<b>价差宽</b> = 超过中间价 15%，<b>临期</b> = DTE ≤ 7，<b>IV极高</b> = IV30 &gt; 60。标签越多不等于不能做，只说明这一张的钱是从哪儿来的。</p>
 
-    <h2>两个标的对比</h2>
+    <h2 id="sec2">两个标的对比</h2>
     <p>直接比「各自年化最高的那张」没有意义 —— Δ 不同、DTE 不同，等于拿不同的风险换不同的钱。这里按<b>同一个 Δ 目标</b>各挑一张最接近的合约来比，价格轴也统一成 行权价／现价，两个价位差十倍的标的才放得到一张图上。</p>
     <div class="toolbar">
       <label>A <select id="cmp-a"></select></label>
@@ -257,7 +259,7 @@
     </div>
   </div>
 
-  <h2>这些数字在 wheel 里是什么意思</h2>
+  <h2 id="wheel" data-rail="名词解释">这些数字在 wheel 里是什么意思</h2>
   <dl class="gloss">
     <dt>年化（看跌）</dt>
     <dd>卖出一张现金担保看跌，要冻结 行权价×100 的现金。年化 = 卖价 ÷ 行权价 × 365 ÷ 剩余天数，就是这笔冻结资金的回报率。用买价而不是中间价，因为那是立刻能成交的一侧。</dd>
@@ -274,7 +276,7 @@
   <h2 id="close">收尾：这张表能替你做什么</h2>
   <p><b>能做的</b>：把「同样卖 0.25 Delta 的看跌，各标的分别给多少年化」这个横向比较自动化，并把流动性（未平仓、成交量、买卖价差）摆在同一行里，让不可成交的高年化露出原形。</p>
   <p><b>不能做的</b>：替你判断愿不愿意接这只股票。Wheel 的前提是<b>跌下来你愿意持有</b>，这一条任何排序都算不出来。按年化排，榜首恒定是杠杆 ETF；换成「年化 ÷ IV30」，排序立刻变成 AAPL、QQQ 在前。<span class="hl">高年化不是找到了便宜，是市场给这段波动开的价。</span></p>
-  <h2>数据与口径</h2>
+  <h2 id="sec4">数据与口径</h2>
   <ul class="links">
     <li><a href="https://www.cboe.com/delayed_quotes/" rel="noopener">Cboe 延迟行情</a> — 用的是公开的 <code>delayed_quotes/options</code> 接口，IV 与希腊字母取交易所计算值，不是自己反解</li>
     <li>筛选条件：剩余 5–70 天，看跌 Δ 在 −0.35–−0.10、看涨 Δ 在 0.10–0.35，买价 ≥ 0.05，未平仓或成交量 ≥ 25，价差 ≤ 0.10 或 ≤ 中间价的 30%</li>

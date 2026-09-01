@@ -47,8 +47,10 @@
   }
 </style>
 <link rel="stylesheet" href="/assets/statusbar.css">
+<link rel="stylesheet" href="/assets/rail.css">
 <script src="/assets/statusbar.js" defer></script>
 <script src="/assets/theme.js" defer></script>
+<script src="/assets/rail.js" defer></script>
 </head>
 <body>
 <main>
@@ -117,7 +119,7 @@
     <p class="hint" id="pz-note"></p>
   </div>
 
-  <h2>读这张图要知道的三件事</h2>
+  <h2 id="sec1" data-rail="怎么读">读这张图要知道的三件事</h2>
   <p><b>同比不是房价，是变化速度。</b>连续几个月 −3% 意味着一直在跌，不是跌了 3%。想看累计跌幅要看那条折线走了多久、走了多深。</p>
   <p><b>省级数字是样本城市的简单平均。</b>统计局不发布省级汇总，这些城市也没按存量或人口加权。广东那一格是广州、深圳、惠州、韶关、湛江五个城市的平均，不代表全省，更不代表你要买的那个小区。</p>
   <p><b>官方停发了定基指数。</b>2023 年起统计局不再公布定基比，此前也每五年轮换一次基期（2010、2015、2020 = 100）。所以没有一条官方的「2006 年至今累计涨了多少」的序列，本页也不自己拼一条 —— 跨基期拼接会在接缝处造出人为跳变。</p>
@@ -125,7 +127,7 @@
   <h2 id="close">收尾：这两把尺子各能回答什么</h2>
   <p><b>涨跌速度</b>能回答「在跌还是在涨、跌多久了」，粒度到城市、到月，可以双击省份下钻。<b>真实均价</b>能回答「一平方米多少钱」，但只到东中西东北四个大区 —— 分省的元/㎡ 只存在于 <code>data.stats.gov.cn</code>，该站对境外 IP 一律 403。</p>
   <p>两把尺子都<b>不能</b>回答的是：你要买的那个小区值多少。指数是抽样城市的加权变动，均价是一个大区所有成交的算术平均，它们和具体一套房之间隔着地段、楼龄、户型和运气。<span class="hl">把它当作背景气压，不是当作估价单。</span></p>
-  <h2>数据来源</h2>
+  <h2 id="sec2">数据来源</h2>
   <ul class="links">
     <li><a href="https://www.stats.gov.cn/" rel="noopener">国家统计局</a> — 70 个大中城市商品住宅销售价格变动情况，每月发布</li>
     <li><a href="https://github.com/hugohe3/70cityprice" rel="noopener">hugohe3/70cityprice</a> — 上游整理与月度更新，本页的数据管线从这里取 CSV</li>
