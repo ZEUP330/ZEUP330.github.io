@@ -60,6 +60,20 @@
   .subs i { font-style: normal; font-size: 11px; color: var(--ink-3); }
   .subs b { font-size: 13px; font-variant-numeric: tabular-nums; }
   .facts { font-size: 12px; color: var(--ink-3); margin: 0 0 .6rem; }
+  .shots { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 6px; margin: 0 0 .8rem; }
+  .shots a { display: block; aspect-ratio: 4 / 3; border-radius: 8px; overflow: hidden;
+    background: var(--bg); border: 1px solid var(--line); }
+  .shots img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  /* Hotlinked from the platform CDN, so a referer block just leaves a hole.
+     Collapse the tile instead of showing a broken-image icon. */
+  .shots a.dead { display: none; }
+  blockquote.rev { margin: 0 0 .7rem; padding: .55rem .8rem; background: var(--bg);
+    border: 1px solid var(--line); border-radius: 8px; }
+  blockquote.rev p { margin: 0; font-size: 13px; color: var(--ink-2); }
+  blockquote.rev cite { display: block; margin-top: .35rem; font-style: normal;
+    font-size: 11px; color: var(--ink-3); }
+
   .quote { font-size: 13px; color: var(--ink-2); border-left: 2px solid var(--line);
     padding-left: .7rem; margin: .5rem 0; }
   .quote .src { display: block; font-size: 11px; color: var(--ink-3); margin-top: 2px; }
@@ -207,9 +221,9 @@
         <a href="#sec-list">
           <rect x="0" y="112" width="167" height="86" rx="10" fill="var(--card)" stroke="var(--accent)"/>
           <text x="14" y="136" fill="var(--ink)" font-size="13">住哪家</text>
-          <text x="14" y="156" fill="var(--ink-3)" font-size="10">22 家真实评分</text>
-          <text x="14" y="172" fill="var(--ink-3)" font-size="10">标签筛选 + 推荐指数</text>
-          <text x="14" y="188" fill="var(--accent)" font-size="10">沿江 &gt; 潮宗街 &gt; 五一</text>
+          <text x="14" y="156" fill="var(--ink-3)" font-size="10">按你的四条筛出 8 家</text>
+          <text x="14" y="172" fill="var(--ink-3)" font-size="10">带照片、评论、楼层</text>
+          <text x="14" y="188" fill="var(--accent)" font-size="10">Xi Hotel / FUNGEE</text>
         </a>
         <a href="#sec-again">
           <rect x="178" y="112" width="167" height="86" rx="10" fill="var(--card)" stroke="var(--line)"/>
@@ -531,57 +545,40 @@
 
   <details class="how">
     <summary>四家的细分评分、住客怎么说、图片入口</summary>
-    <p class="hint">细分评分和楼层来自各自的 Trip.com 详情页（2026-08-31）。<b>照片我没有搬过来</b> —— 那是平台和酒店的版权内容，热链别人的图床既不合适也随时会挂。每家末尾的链接点开就是官方相册，且永远比我存的副本新。</p>
+    <p class="hint">细分评分、楼层、照片与评论均来自各自的 Trip.com 详情页（2026-08-31）。照片是直链平台图床、未转存，<b>如果对方开了防盗链会显示不出来</b>，那时点图或末尾链接去原页看。评论按原文意思译写并保留署名与日期，完整评论区在每家末尾的链接里。</p>
 
     <div class="hotel">
       <h4>Xi Hotel（五一广场 IFS）<span class="badge">推荐</span></h4>
-      <div class="subs">
-        <span><i>清洁</i><b>9.7</b></span><span><i>设施</i><b>9.6</b></span>
-        <span><i>位置</i><b>9.7</b></span><span><i>服务</i><b>9.7</b></span>
-      </div>
+      <div class="subs"><span><i>清洁</i><b>9.7</b></span><span><i>设施</i><b>9.6</b></span><span><i>位置</i><b>9.7</b></span><span><i>服务</i><b>9.7</b></span></div>
       <p class="facts">总分 9.7 · 5,977 条 · 房间在 <b>5–6 层</b> · 免费寄存 · 24 小时前台 · 15:00 入住</p>
-      <p>住客反复提到的三件事：屋顶泳池被当成最大惊喜、房型偏小但布置紧凑、离五一广场地铁口很近。有人形容它是城市上空的一小片清净地。</p>
-      <p class="quote">“The rooftop pool was the biggest surprise for me.”<span class="src">Trip.com 住客评论</span></p>
-      <p><a href="https://us.trip.com/hotels/changsha-hotel-detail-112342483/xi-hotel/" rel="noopener">看照片和房型 →</a></p>
+      <div class="shots"><a href="https://us.trip.com/hotels/changsha-hotel-detail-112342483/xi-hotel/" rel="noopener"><img src="https://ak-d.tripcdn.com/images/1mc6w12000c77rymq86BE_R_960_660_R5_D.jpg" alt="Xi Hotel（五一广场 IFS） 房间或公共区域照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a><a href="https://us.trip.com/hotels/changsha-hotel-detail-112342483/xi-hotel/" rel="noopener"><img src="https://ak-d.tripcdn.com/images/1mc5i12000c77s9dmB7AB_R_339_206_R5_D.jpg" alt="Xi Hotel（五一广场 IFS） 房间或公共区域照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a><a href="https://us.trip.com/hotels/changsha-hotel-detail-112342483/xi-hotel/" rel="noopener"><img src="https://ak-d.tripcdn.com/images/1mc4i12000ctr591h39D3_R_339_206_R5_D.jpg" alt="Xi Hotel（五一广场 IFS） 房间或公共区域照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a><a href="https://us.trip.com/hotels/changsha-hotel-detail-112342483/xi-hotel/" rel="noopener"><img src="https://ak-d.tripcdn.com/images/1mc2y12000cszlh75557E_R_339_206_R5_D.jpg" alt="Xi Hotel（五一广场 IFS） 房间或公共区域照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a><a href="https://us.trip.com/hotels/changsha-hotel-detail-112342483/xi-hotel/" rel="noopener"><img src="https://ak-d.tripcdn.com/images/1mc4n12000c77sjo35E14_R_339_206_R5_D.jpg" alt="Xi Hotel（五一广场 IFS） 房间或公共区域照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a><a href="https://us.trip.com/hotels/changsha-hotel-detail-112342483/xi-hotel/" rel="noopener"><img src="https://ak-d.tripcdn.com/images/1mc0a12000c77sk1y9C48_R_339_206_R5_D.jpg" alt="Xi Hotel（五一广场 IFS） 房间或公共区域照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a></div>
+      <blockquote class="rev"><p>超大露台泳池和空中花园，房间是全景落地窗，隔音很好，外面再热闹屋里也安静。迷你吧饮料免费，早餐有不少湖南小吃，还能免费试穿汉服。</p><cite>Okkkkkkzi · 2026-08-25</cite></blockquote><blockquote class="rev"><p>石材和木头为主的精品设计，床品很舒服。健身房和洗衣房不大但够用，两台洗衣机两台烘干机，洗衣液柔顺剂都配好。位置离热闹地带不远也不吵。</p><cite>gptzjs127 · 2026-07-12</cite></blockquote><blockquote class="rev"><p>小而精，洗衣房、泳池、健身房、拍照点都有，早餐含。<b>唯一的问题是洗衣房没人管</b>，我的衣服被人拿出来堆着，丢了几件。</p><cite>匿名住客 · 2026-08-30</cite></blockquote>
+      <p><a href="https://us.trip.com/hotels/changsha-hotel-detail-112342483/xi-hotel/" rel="noopener">Trip.com 上的完整相册与全部评论 →</a></p>
     </div>
-
     <div class="hotel">
       <h4>FUNGEE（黄兴广场站）<span class="badge">推荐</span></h4>
-      <div class="subs">
-        <span><i>清洁</i><b>9.7</b></span><span><i>设施</i><b>9.6</b></span>
-        <span><i>位置</i><b>9.7</b></span><span><i>服务</i><b>9.8</b></span>
-      </div>
+      <div class="subs"><span><i>清洁</i><b>9.7</b></span><span><i>设施</i><b>9.6</b></span><span><i>位置</i><b>9.7</b></span><span><i>服务</i><b>9.8</b></span></div>
       <p class="facts">总分 9.7 · 10,353 条 · 房间在 <b>3–11 层</b> · 免费寄存 · 24 小时前台 · 14:00 入住</p>
-      <p>服务分 9.8 是这批里最高的一个。评论里出现频率最高的是「地铁口出来就是」和「房间不大但刚好」，另外常有人提房间没有异味 —— 这在同价位是稀缺评价。楼下就是黄兴路步行街。</p>
-      <p class="quote">“Right by the subway entrance.”<span class="src">Trip.com 住客评论</span></p>
-      <p><a href="https://us.trip.com/hotels/changsha-hotel-detail-92349369/fungee-hotel/" rel="noopener">看照片和房型 →</a></p>
+      <div class="shots"><a href="https://us.trip.com/hotels/changsha-hotel-detail-92349369/fungee-hotel/" rel="noopener"><img src="https://ak-d.tripcdn.com/images/1mc4a12000dexyvr4CB77_R_960_660_R5_D.jpg" alt="FUNGEE（黄兴广场站） 房间或公共区域照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a><a href="https://us.trip.com/hotels/changsha-hotel-detail-92349369/fungee-hotel/" rel="noopener"><img src="https://ak-d.tripcdn.com/images/1mc4y12000n9w2x1a8E04_R_339_206_R5_D.jpg" alt="FUNGEE（黄兴广场站） 房间或公共区域照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a><a href="https://us.trip.com/hotels/changsha-hotel-detail-92349369/fungee-hotel/" rel="noopener"><img src="https://ak-d.tripcdn.com/images/02025120009o06eyd9E3B_R_339_206_R5_D.jpg" alt="FUNGEE（黄兴广场站） 房间或公共区域照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a><a href="https://us.trip.com/hotels/changsha-hotel-detail-92349369/fungee-hotel/" rel="noopener"><img src="https://ak-d.tripcdn.com/images/0203j120009ftk0siB9A6_R_339_206_R5_D.jpg" alt="FUNGEE（黄兴广场站） 房间或公共区域照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a><a href="https://us.trip.com/hotels/changsha-hotel-detail-92349369/fungee-hotel/" rel="noopener"><img src="https://ak-d.tripcdn.com/images/0201g120009fp3kwf3AE7_R_339_206_R5_D.jpg" alt="FUNGEE（黄兴广场站） 房间或公共区域照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a><a href="https://us.trip.com/hotels/changsha-hotel-detail-92349369/fungee-hotel/" rel="noopener"><img src="https://ak-d.tripcdn.com/images/0203b120009grhd071764_R_339_206_R5_D.jpg" alt="FUNGEE（黄兴广场站） 房间或公共区域照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a></div>
+      <blockquote class="rev"><p>房间干净没有异味，住得很舒服，离地铁站也近。</p><cite>Geiwobadukongjian · 2026-08-30</cite></blockquote><blockquote class="rev"><p>房间很好，智能助手能控灯、空调和窗帘。</p><cite>白金会员 · 2026-08-26</cite></blockquote><blockquote class="rev"><p>位置极好，就在地铁出口旁边，楼下就是黄兴广场步行街。</p><cite>匿名住客 · 2026-08-30</cite></blockquote>
+      <p><a href="https://us.trip.com/hotels/changsha-hotel-detail-92349369/fungee-hotel/" rel="noopener">Trip.com 上的完整相册与全部评论 →</a></p>
     </div>
-
     <div class="hotel">
       <h4>Hampton by Hilton 五一广场</h4>
-      <div class="subs">
-        <span><i>清洁</i><b>9.7</b></span><span><i>设施</i><b>9.6</b></span>
-        <span><i>位置</i><b>9.7</b></span><span><i>服务</i><b>9.7</b></span>
-      </div>
-      <p class="facts">总分 9.7 · 16,590 条 · 房间在 <b>6–18 层</b>（整栋封顶 18 层）· 24 小时前台 · 自助入住机 · 14:00 入住 / 12:00 退房</p>
-      <p>一万六千条评论里 99% 是正面。集中夸的是位置、清洁度和早餐（含长沙米粉），房间是翻新过的。它的性格就是没有性格 —— 想要一晚不出岔子选它。<b>页面上没有列行李寄存</b>，这条得订之前问。</p>
-      <p class="quote">“Newly renovated, and the facilities are clean.”<span class="src">Trip.com 住客评论</span></p>
-      <p><a href="https://us.trip.com/hotels/changsha-hotel-detail-117841238/hampton-by-hilton-changsha-wuyi-square/" rel="noopener">看照片和房型 →</a></p>
+      <div class="subs"><span><i>清洁</i><b>9.7</b></span><span><i>设施</i><b>9.6</b></span><span><i>位置</i><b>9.7</b></span><span><i>服务</i><b>9.7</b></span></div>
+      <p class="facts">总分 9.7 · 16,590 条 · 房间在 <b>6–18 层</b>（整栋封顶）· 24 小时前台 + 自助入住机 · 14:00 入住 / 12:00 退房</p>
+      <div class="shots"><a href="https://us.trip.com/hotels/changsha-hotel-detail-117841238/hampton-by-hilton-changsha-wuyi-square/" rel="noopener"><img src="https://ak-d.tripcdn.com/images/0201p12000dg5nmn10AF9_R_960_660_R5_D.jpg" alt="Hampton by Hilton 五一广场 房间或公共区域照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a><a href="https://us.trip.com/hotels/changsha-hotel-detail-117841238/hampton-by-hilton-changsha-wuyi-square/" rel="noopener"><img src="https://ak-d.tripcdn.com/images/0200g12000dg5nxmx139A_R_339_206_R5_D.jpg" alt="Hampton by Hilton 五一广场 房间或公共区域照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a><a href="https://us.trip.com/hotels/changsha-hotel-detail-117841238/hampton-by-hilton-changsha-wuyi-square/" rel="noopener"><img src="https://ak-d.tripcdn.com/images/1mc1z12000dgp6fak8F35_R_339_206_R5_D.jpg" alt="Hampton by Hilton 五一广场 房间或公共区域照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a><a href="https://us.trip.com/hotels/changsha-hotel-detail-117841238/hampton-by-hilton-changsha-wuyi-square/" rel="noopener"><img src="https://ak-d.tripcdn.com/images/1mc6912000dgjozgoA980_R_339_206_R5_D.jpg" alt="Hampton by Hilton 五一广场 房间或公共区域照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a><a href="https://us.trip.com/hotels/changsha-hotel-detail-117841238/hampton-by-hilton-changsha-wuyi-square/" rel="noopener"><img src="https://ak-d.tripcdn.com/images/1mc3i12000dgp2qt05F0A_R_339_206_R5_D.jpg" alt="Hampton by Hilton 五一广场 房间或公共区域照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a><a href="https://us.trip.com/hotels/changsha-hotel-detail-117841238/hampton-by-hilton-changsha-wuyi-square/" rel="noopener"><img src="https://ak-d.tripcdn.com/images/1mc6112000dgp5vby2979_R_339_206_R5_D.jpg" alt="Hampton by Hilton 五一广场 房间或公共区域照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a></div>
+      <blockquote class="rev"><p>酒店非常干净，早餐种类好。<b>夜班前台特别客气，还打电话跟我确认深夜入住。</b></p><cite>匿名住客 · 2026-08-22</cite></blockquote><blockquote class="rev"><p>位置很好，房间尺寸合适，是翻新过的，设施干净，服务态度好又周到。</p><cite>CC0703 · 2026-08-22</cite></blockquote><blockquote class="rev"><p>就在五一商圈中心、离地铁很近，虽然周边热闹，房间隔音很好，晚上休息不受影响。</p><cite>匿名住客 · 2026-08-31</cite></blockquote>
+      <p><a href="https://us.trip.com/hotels/changsha-hotel-detail-117841238/hampton-by-hilton-changsha-wuyi-square/" rel="noopener">Trip.com 上的完整相册与全部评论 →</a></p>
     </div>
-
     <div class="hotel">
       <h4>异国印象（五一广场 IFS）<span class="badge warn">江景在 25 层以上</span></h4>
-      <div class="subs">
-        <span><i>清洁</i><b>9.5</b></span><span><i>设施</i><b>9.2</b></span>
-        <span><i>位置</i><b>9.4</b></span><span><i>服务</i><b>9.5</b></span>
-      </div>
+      <div class="subs"><span><i>清洁</i><b>9.5</b></span><span><i>设施</i><b>9.2</b></span><span><i>位置</i><b>9.4</b></span><span><i>服务</i><b>9.5</b></span></div>
       <p class="facts">总分 9.4 · 21,957 条 · 房型分布 <b>7 / 12 / 25–26 / 28–29 层</b> · 免费寄存 · 14:00 入住</p>
-      <p>评论数是全表最多的，江景是它被反复夸的点 —— 白天看江水、晚上看灯光秀，有人说无遮挡。但设施分 9.2 是这四家里最低的。<b>关键冲突：值得住的是那些 25 层以上的江景房，而你要 18 层以下。</b>真想住这家，就得接受 7 层或 12 层、大概率没有江景。</p>
-      <p class="quote">“The view is absolutely stunning with no obstructions.”<span class="src">Trip.com 住客评论</span></p>
-      <p><a href="https://us.trip.com/hotels/changsha-hotel-detail-1250258/changsha-ifs-international-finance-center-exotic-impression-hotel/" rel="noopener">看照片和房型 →</a></p>
+      <div class="shots"><a href="https://us.trip.com/hotels/changsha-hotel-detail-1250258/changsha-ifs-international-finance-center-exotic-impression-hotel/" rel="noopener"><img src="https://ak-d.tripcdn.com/images/0206212000a0mms9x2C0C_R_960_660_R5_D.jpg" alt="异国印象（五一广场 IFS） 房间或公共区域照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a><a href="https://us.trip.com/hotels/changsha-hotel-detail-1250258/changsha-ifs-international-finance-center-exotic-impression-hotel/" rel="noopener"><img src="https://ak-d.tripcdn.com/images/0205i1200095gmpmp3072_R_339_206_R5_D.jpg" alt="异国印象（五一广场 IFS） 房间或公共区域照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a><a href="https://us.trip.com/hotels/changsha-hotel-detail-1250258/changsha-ifs-international-finance-center-exotic-impression-hotel/" rel="noopener"><img src="https://ak-d.tripcdn.com/images/0583l12000soq21dq8434_R_339_206_R5_D.jpg" alt="异国印象（五一广场 IFS） 房间或公共区域照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a><a href="https://us.trip.com/hotels/changsha-hotel-detail-1250258/changsha-ifs-international-finance-center-exotic-impression-hotel/" rel="noopener"><img src="https://ak-d.tripcdn.com/images/1mc4y12000im0em5uF2CD_R_339_206_R5_D.jpg" alt="异国印象（五一广场 IFS） 房间或公共区域照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a><a href="https://us.trip.com/hotels/changsha-hotel-detail-1250258/changsha-ifs-international-finance-center-exotic-impression-hotel/" rel="noopener"><img src="https://ak-d.tripcdn.com/images/02060120009d1n1ik7568_R_339_206_R5_D.jpg" alt="异国印象（五一广场 IFS） 房间或公共区域照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a><a href="https://us.trip.com/hotels/changsha-hotel-detail-1250258/changsha-ifs-international-finance-center-exotic-impression-hotel/" rel="noopener"><img src="https://ak-d.tripcdn.com/images/1mc5p12000hpnyprb6FC9_R_339_206_R5_D.jpg" alt="异国印象（五一广场 IFS） 房间或公共区域照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a></div>
+      <blockquote class="rev"><p>房间能看到湘江夜景，白天是缓缓的江水，晚上有灯光秀。</p><cite>匿名住客 · —</cite></blockquote><blockquote class="rev"><p>每次来长沙都住这里，视野实在好，完全没有遮挡。</p><cite>匿名住客 · —</cite></blockquote><blockquote class="rev"><p>整趟中国行里住得最好的一家，一切都很完美。</p><cite>匿名住客 · —</cite></blockquote>
+      <p><a href="https://us.trip.com/hotels/changsha-hotel-detail-1250258/changsha-ifs-international-finance-center-exotic-impression-hotel/" rel="noopener">Trip.com 上的完整相册与全部评论 →</a></p>
     </div>
-
-    <p class="hint">上面的整句引文各一条，出处均为对应酒店的 Trip.com 评论区，其余是我对评论共性的归纳，不是原文。</p>
   </details>
 
   <details class="how">
