@@ -99,6 +99,26 @@
   details.sec[open] > summary { padding-bottom: .5rem; }
   details.sec > *:last-child { margin-bottom: 1.5rem; }
   details.sec h3:first-of-type { margin-top: .5rem; }
+  .tdt { height: 440px; border: 1px solid var(--line); border-radius: var(--r);
+    overflow: hidden; box-shadow: var(--shadow-1); margin: 1rem 0 .5rem;
+    background: var(--bg-2); }
+  .tdt .leaflet-container { font: inherit; background: var(--bg-2); }
+  /* Leaflet paints its own chrome; pull it back onto the site's surfaces. */
+  .tdt .leaflet-control-attribution { font-size: 11px; background: var(--material);
+    -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); color: var(--ink-3); }
+  .tdt .leaflet-control-attribution a { color: var(--ink-2); }
+  .tdt .leaflet-bar a { background: var(--card); color: var(--ink); border-color: var(--line); }
+  .tdt .leaflet-bar a:hover { background: var(--bg-2); }
+  .tdt .tdt-pin { width: auto !important; height: auto !important; background: none; border: 0; }
+  /* Nearly opaque on purpose: a translucent pill over satellite imagery lands
+     on whatever colour happens to be underneath and stops being readable. */
+  .tdt .pin { display: block; font-size: 12px; font-weight: 600; line-height: 1.5; color: var(--ink);
+    background: color-mix(in srgb, var(--card) 92%, transparent);
+    -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+    border: 1px solid var(--line); border-radius: var(--r-pill); box-shadow: var(--shadow-2);
+    padding: 1px 9px; white-space: nowrap; transform: translate(-50%, -50%); }
+  .tdt .pin.stay { color: #fff; background: var(--accent); border-color: transparent; }
+
   .overview a { cursor: pointer; }
   .overview a rect { transition: stroke .15s; }
   .overview a:hover rect { stroke: var(--accent); }
@@ -384,6 +404,18 @@
     </svg>
     <figcaption>一切都围着湘江排。住东岸的五一广场，两天里去西岸一次就够，别来回过江。</figcaption>
   </figure>
+
+  <p>上面那张是示意图，比例是排版排出来的。下面这张是真的 —— 底图走<a href="https://www.tianditu.gov.cn/" rel="noopener">天地图</a>官方瓦片服务。</p>
+
+  <div class="toolbar">
+    <button id="tdt-load" type="button">加载实景地图</button>
+    <span class="chips" id="tdt-layers" hidden>
+      <button type="button" class="chip" data-layer="img" aria-pressed="true">卫星影像</button>
+      <button type="button" class="chip" data-layer="vec" aria-pressed="false">矢量地图</button>
+    </span>
+  </div>
+  <div class="tdt" id="tdt" hidden></div>
+  <p class="hint" id="tdt-note" hidden></p>
 
   <h2 id="sec-hotel">酒店怎么办</h2>
   <p><b>第一次来</b>选址看动线：住哪里能少在路上耗时间。<b>第三次来、景点刷得差不多了</b>，动线这个理由就不成立了 —— 你不再需要靠近任何景点，酒店本身反而变成了这趟的目的地。两套标准差别很大，先看你是哪一种。</p>
@@ -1205,6 +1237,148 @@
   renderSched();
   renderTodo();
 })();
+</script>
+
+<script>
+/* Real basemap for the geography section, on 天地图's official tile service.
+ *
+ * It needs a key. Register at https://console.tianditu.gov.cn/ , create an
+ * application of type "浏览器端", and whitelist the domain this is served from
+ * (zeup330.github.io). Then paste the key below - nothing else has to change.
+ * The key is public by design for browser-side use; the domain whitelist is
+ * what protects it, so keep that list tight.
+ *
+ * Chosen over a third-party satellite viewer because it is the one Chinese
+ * basemap with a documented endpoint, a stated licence and a stable URL.
+ * _w is Web Mercator, which is what Leaflet already speaks; the coordinates
+ * are CGCS2000, close enough to WGS84 that plain lat/lng lands correctly
+ * (do NOT feed it GCJ-02 coordinates from Amap or Baidu - they sit ~500m off).
+ */
+(function () {
+  var TDT_KEY = '';
+
+  var LEAFLET = 'https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/';
+  var btn = document.getElementById('tdt-load');
+  var host = document.getElementById('tdt');
+  var note = document.getElementById('tdt-note');
+  var chips = document.getElementById('tdt-layers');
+  if (!btn) return;
+
+  // Approximate positions, good to a few hundred metres - enough to see which
+  // side of the river something is on, which is the whole point of this
+  // section. Not enough to navigate by, and the note under the map says so.
+  var PLACES = [
+    { n: '长沙南站',        at: [28.150, 113.062] },
+    { n: '五一广场 · 住这里', at: [28.196, 112.978], stay: true },
+    { n: '橘子洲',          at: [28.187, 112.963] },
+    { n: '岳麓山 · 岳麓书院', at: [28.182, 112.936] },
+    { n: '湖南博物院',      at: [28.218, 112.999] },
+    { n: '后湖 · 大学城',    at: [28.163, 112.934] },
+    { n: '洋湖 · 两座美术馆', at: [28.125, 112.938] }
+  ];
+
+  function asset(tag, attrs) {
+    return new Promise(function (ok, fail) {
+      var el = document.createElement(tag);
+      Object.keys(attrs).forEach(function (k) { el[k] = attrs[k]; });
+      el.onload = ok;
+      el.onerror = fail;
+      document.head.appendChild(el);
+    });
+  }
+
+  function layer(kind) {
+    // img_w = 影像, vec_w = 矢量; cia_w / cva_w are the matching label layers,
+    // which are separate tiles - without them the satellite view has no names.
+    return L.layerGroup([
+      L.tileLayer('https://t{s}.tianditu.gov.cn/DataServer?T=' + kind + '_w&x={x}&y={y}&l={z}&tk=' + TDT_KEY,
+        { subdomains: ['0','1','2','3','4','5','6','7'], minZoom: 5, maxZoom: 17 }),
+      L.tileLayer('https://t{s}.tianditu.gov.cn/DataServer?T=' + (kind === 'img' ? 'cia' : 'cva') + '_w&x={x}&y={y}&l={z}&tk=' + TDT_KEY,
+        { subdomains: ['0','1','2','3','4','5','6','7'], minZoom: 5, maxZoom: 17 })
+    ]);
+  }
+
+  var map = null, layers = {}, active = 'img';
+
+  function build() {
+    map = L.map(host, {
+      center: [28.175, 112.975], zoom: 12, minZoom: 10, maxZoom: 17,
+      scrollWheelZoom: false,     // the page is long; don't hijack the scroll
+      attributionControl: true
+    });
+    map.attributionControl.setPrefix('');
+    layers.img = layer('img');
+    layers.vec = layer('vec');
+    layers[active].addTo(map);
+    map.attributionControl.addAttribution('底图 © <a href="https://www.tianditu.gov.cn/" rel="noopener">天地图</a>');
+
+    PLACES.forEach(function (p) {
+      L.marker(p.at, {
+        // iconSize null: Leaflet then leaves the box unsized and the label
+        // sizes to its own text, which is what centres it on the point.
+        icon: L.divIcon({ className: 'tdt-pin', html: '<span class="pin' + (p.stay ? ' stay' : '') + '">' + p.n + '</span>', iconSize: null })
+      }).addTo(map);
+    });
+
+    // A map that eats the scroll wheel in the middle of a long page is a
+    // trap; click to take control, and it lets go again on mouse-out.
+    map.on('click', function () { map.scrollWheelZoom.enable(); });
+    host.addEventListener('mouseleave', function () { map.scrollWheelZoom.disable(); });
+
+    // The page folds each section into a <details>. A Leaflet map measured
+    // while its container is display:none comes back 0x0 and renders one grey
+    // tile, so re-measure whenever the section is reopened.
+    var sec = host.closest('details');
+    if (sec) sec.addEventListener('toggle', function () { if (sec.open) map.invalidateSize(); });
+
+    chips.hidden = false;
+    note.hidden = false;
+    note.textContent = '点位是按公开资料标的大致位置（误差几百米），只用来看相互关系；'
+      + '导航请用地图 App。滚轮缩放需要先点一下地图。';
+  }
+
+  Array.prototype.forEach.call(chips.querySelectorAll('.chip'), function (c) {
+    c.addEventListener('click', function () {
+      var want = c.getAttribute('data-layer');
+      if (!map || want === active) return;
+      map.removeLayer(layers[active]);
+      active = want;
+      layers[active].addTo(map);
+      Array.prototype.forEach.call(chips.querySelectorAll('.chip'), function (o) {
+        o.setAttribute('aria-pressed', String(o === c));
+      });
+    });
+  });
+
+  btn.addEventListener('click', function () {
+    if (map) return;
+    if (!TDT_KEY) {
+      // Say what is missing rather than showing a grid of broken tiles.
+      note.hidden = false;
+      note.innerHTML = '还没有填天地图的 key。到 <a href="https://console.tianditu.gov.cn/" rel="noopener">天地图控制台</a>'
+        + ' 申请一个「浏览器端」应用、把 zeup330.github.io 加进域名白名单，'
+        + '再把 key 填进本页脚本里的 <code>TDT_KEY</code> 就能用了。';
+      btn.disabled = true;
+      return;
+    }
+    btn.disabled = true;
+    btn.textContent = '加载中…';
+    host.hidden = false;
+    Promise.all([
+      asset('link', { rel: 'stylesheet', href: LEAFLET + 'leaflet.css' }),
+      asset('script', { src: LEAFLET + 'leaflet.js' })
+    ]).then(function () {
+      build();
+      btn.hidden = true;
+    }, function () {
+      host.hidden = true;
+      note.hidden = false;
+      note.textContent = '地图组件加载失败，检查网络后刷新页面。';
+      btn.disabled = false;
+      btn.textContent = '加载实景地图';
+    });
+  });
+}());
 </script>
 </body>
 </html>
