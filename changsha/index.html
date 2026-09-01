@@ -73,6 +73,11 @@
   /* Real photographs, hotlinked from Wikimedia Commons. Every one is CC or
      CC0 and the caption carries the author and licence, which is the condition
      of using them. */
+  figure.photo .g3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  figure.photo .g3 a { display: block; aspect-ratio: 3 / 2; border-radius: 10px; overflow: hidden;
+    border: 1px solid var(--line); }
+  figure.photo .g3 img { width: 100%; height: 100%; object-fit: cover; border: 0; border-radius: 0; }
+  @media (max-width: 640px) { figure.photo .g3 { grid-template-columns: 1fr 1fr; } }
   figure.photo { margin: .9rem 0 1.2rem; }
   figure.photo img { width: 100%; height: auto; border-radius: 10px; display: block;
     border: 1px solid var(--line); }
@@ -859,6 +864,10 @@
   </figure>
 
   <h2 id="sec-again">来过两次了，还剩什么</h2>
+  <figure class="photo gal">
+    <div class="g3"><a href="https://commons.wikimedia.org/wiki/File:Young_Mao_Zedong_statue,_2010110301.jpg" rel="noopener"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Young_Mao_Zedong_statue%2C_2010110301.jpg/960px-Young_Mao_Zedong_statue%2C_2010110301.jpg" alt="橘子洲头青年毛泽东雕像" referrerpolicy="no-referrer" onerror="this.closest('a').hidden=true"></a><a href="https://commons.wikimedia.org/wiki/File:Young_Mao_Zedong_statue,_2010110304.jpg" rel="noopener"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Young_Mao_Zedong_statue%2C_2010110304.jpg/960px-Young_Mao_Zedong_statue%2C_2010110304.jpg" alt="雕像侧面" referrerpolicy="no-referrer" onerror="this.closest('a').hidden=true"></a><a href="https://commons.wikimedia.org/wiki/File:Orange_Isle_2021122625.jpg" rel="noopener"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Orange_Isle_2021122625.jpg/960px-Orange_Isle_2021122625.jpg" alt="橘子洲景区" referrerpolicy="no-referrer" onerror="this.closest('a').hidden=true"></a></div>
+    <figcaption>橘子洲头的青年毛泽东雕像。走完全洲要 1.5–2 小时，第三次来可以只在江边看，不进洲。<span class="cred">Li Ming / CC BY 3.0 · Huangdan2060 / CC BY 3.0 · Wikimedia Commons</span></figcaption>
+  </figure>
   <figure class="photo">
     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Taiping_Street_at_night%2C_Changsha.jpg/960px-Taiping_Street_at_night%2C_Changsha.jpg" alt="夜晚的太平街，人流密集" referrerpolicy="no-referrer" onerror="this.closest('figure').hidden=true">
     <figcaption>太平街的夜晚长这样。第一次来值得走一趟，第三次来就是纯人流了 —— 这也是它被排进「直接跳过」那一堆的原因。<span class="cred"><a href="https://commons.wikimedia.org/wiki/File:Taiping_Street_at_night,_Changsha.jpg" rel="noopener">EditQ / CC BY-SA 4.0 · Wikimedia Commons</a></span></figcaption>
@@ -935,9 +944,9 @@
   <p class="hint">这两处票价来自 2023–2024 年的公开资料，可能已调整，去之前查景区公众号。相比之下市区那一列基本免费，这也是我不推荐出城的理由之一。</p>
 
   <h2 id="sec-pool">景点池：按耗时和体力挑</h2>
-  <figure class="photo">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Yuelu_Mountain_1.jpg/960px-Yuelu_Mountain_1.jpg" alt="岳麓山山景" referrerpolicy="no-referrer" onerror="this.closest('figure').hidden=true">
-    <figcaption>岳麓山。图上那一片就是「户外费腿」那一档 —— 爬上去要 3–4 小时，坐索道能砍掉一半。<span class="cred"><a href="https://commons.wikimedia.org/wiki/File:Yuelu_Mountain_1.jpg" rel="noopener">EditQ / CC BY-SA 4.0 · Wikimedia Commons</a></span></figcaption>
+  <figure class="photo gal">
+    <div class="g3"><a href="https://commons.wikimedia.org/wiki/File:Yuelu_Mountain_1.jpg" rel="noopener"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Yuelu_Mountain_1.jpg/960px-Yuelu_Mountain_1.jpg" alt="岳麓山山景" referrerpolicy="no-referrer" onerror="this.closest('a').hidden=true"></a><a href="https://commons.wikimedia.org/wiki/File:Changsha_Yuelu_Shuyuan_2014.03.04_08-09-37_(adjusted).jpg" rel="noopener"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/Changsha_Yuelu_Shuyuan_2014.03.04_08-09-37_%28adjusted%29.jpg/960px-Changsha_Yuelu_Shuyuan_2014.03.04_08-09-37_%28adjusted%29.jpg" alt="岳麓书院庭院" referrerpolicy="no-referrer" onerror="this.closest('a').hidden=true"></a><a href="https://commons.wikimedia.org/wiki/File:Baiquan_Lodge_of_Yuelu_Academy_20251018.jpg" rel="noopener"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Baiquan_Lodge_of_Yuelu_Academy_20251018.jpg/960px-Baiquan_Lodge_of_Yuelu_Academy_20251018.jpg" alt="岳麓书院百泉轩" referrerpolicy="no-referrer" onerror="this.closest('a').hidden=true"></a></div>
+    <figcaption>岳麓山与书院是两次预约、两个入口：山免费，书院 40 元。第三次来可以坐索道上去只坐在爱晚亭附近。<span class="cred">EditQ / CC BY-SA 4.0 · Zhangzhugang / CC BY-SA 4.0 · 颐园居 / CC BY-SA 4.0 · Wikimedia Commons</span></figcaption>
   </figure>
   <p>这张图是给还没去过的人排的，但对你也有用 —— 反过来看：把你去过的那些划掉，剩下的就是这趟的候选。左下角那片人少、省力、能坐，是松弛版的弹药库，也基本就是上面「大概率还没去」那一行。</p>
   <figure>
@@ -1090,9 +1099,9 @@
   <p class="hint">松弛版的答案很干脆：<b>前三家一家都别去</b>。省下的两小时够在江边坐一下午。真想吃，进城第一件事先取号，边逛边等。</p>
 
   <h3>小吃 · 边走边吃</h3>
-  <figure class="photo">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Changsha-style_Stinky_Tofu_at_Huogongdian_%2820180222183104%29.jpg/960px-Changsha-style_Stinky_Tofu_at_Huogongdian_%2820180222183104%29.jpg" alt="火宫殿的长沙臭豆腐" referrerpolicy="no-referrer" onerror="this.closest('figure').hidden=true">
-    <figcaption>火宫殿的臭豆腐。长沙的是黑色的，跟别处的白臭豆腐不是一回事。<span class="cred"><a href="https://commons.wikimedia.org/wiki/File:Changsha-style_Stinky_Tofu_at_Huogongdian_(20180222183104).jpg" rel="noopener">N509FZ / CC BY-SA 4.0 · Wikimedia Commons</a></span></figcaption>
+  <figure class="photo gal">
+    <div class="g3"><a href="https://commons.wikimedia.org/wiki/File:Changsha-style_Stinky_Tofu_at_Huogongdian_(20180222183104).jpg" rel="noopener"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Changsha-style_Stinky_Tofu_at_Huogongdian_%2820180222183104%29.jpg/960px-Changsha-style_Stinky_Tofu_at_Huogongdian_%2820180222183104%29.jpg" alt="火宫殿的长沙臭豆腐" referrerpolicy="no-referrer" onerror="this.closest('a').hidden=true"></a><a href="https://commons.wikimedia.org/wiki/File:Gate_of_Huogongdian_(20180222180148).jpg" rel="noopener"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Gate_of_Huogongdian_%2820180222180148%29.jpg/960px-Gate_of_Huogongdian_%2820180222180148%29.jpg" alt="火宫殿大门" referrerpolicy="no-referrer" onerror="this.closest('a').hidden=true"></a><a href="https://commons.wikimedia.org/wiki/File:Taiping_Street_at_night,_Changsha.jpg" rel="noopener"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Taiping_Street_at_night%2C_Changsha.jpg/960px-Taiping_Street_at_night%2C_Changsha.jpg" alt="太平街夜晚的人流" referrerpolicy="no-referrer" onerror="this.closest('a').hidden=true"></a></div>
+    <figcaption>长沙臭豆腐是黑的，跟别处的白臭豆腐不是一回事。火宫殿是老字号，也是最挤的 —— 拐进黄兴路支巷，同样的东西便宜三成。<span class="cred">N509FZ / CC BY-SA 4.0 · EditQ / CC BY-SA 4.0 · Wikimedia Commons</span></figcaption>
   </figure>
   <p>臭豆腐（黑色经典是连锁，火宫殿是老字号）、糖油粑粑、姊妹团子、葱油粑粑、刮凉粉。坡子街和太平街密度最高，但也最贵最挤；拐进黄兴路的支巷，同样的东西便宜三成。</p>
 
@@ -1101,9 +1110,17 @@
   <p>本地人的夜宵散在这些片区，不在游客动线上：<b>五一新村</b>（芙蓉区，入夜才热闹，本地吃货的夜宵据点）、<b>砂子塘</b>、<b>四方坪</b>、<b>东瓜山</b>、<b>学院街</b>、<b>麓山南路</b>。第三次来的话，这一行比坡子街值得走。</p>
 
   <h3>喝的</h3>
+  <figure class="photo gal">
+    <div class="g3"><a href="https://commons.wikimedia.org/wiki/File:Sexy_Tea.jpg" rel="noopener"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/27/Sexy_Tea.jpg/960px-Sexy_Tea.jpg" alt="茶颜悦色门店" referrerpolicy="no-referrer" onerror="this.closest('a').hidden=true"></a><a href="https://commons.wikimedia.org/wiki/File:20230127_Cha_Yan_Yue_Se_at_Juzizhou.jpg" rel="noopener"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/20230127_Cha_Yan_Yue_Se_at_Juzizhou.jpg/960px-20230127_Cha_Yan_Yue_Se_at_Juzizhou.jpg" alt="橘子洲的茶颜悦色门店" referrerpolicy="no-referrer" onerror="this.closest('a').hidden=true"></a><a href="https://commons.wikimedia.org/wiki/File:Cha_Yan_Yue_Se,_Changsha,_China_2021122603.jpg" rel="noopener"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/bb/Cha_Yan_Yue_Se%2C_Changsha%2C_China_2021122603.jpg/960px-Cha_Yan_Yue_Se%2C_Changsha%2C_China_2021122603.jpg" alt="茶颜悦色排队的人群" referrerpolicy="no-referrer" onerror="this.closest('a').hidden=true"></a></div>
+    <figcaption>茶颜悦色。市区几百家店，看到就进 —— 排一小时的都是网红打卡点，隔两百米那家往往没人。<span class="cred">Dqwyy / CC0 · Windmemories / CC BY-SA 4.0 · Huangdan2060 / CC BY 3.0 · Wikimedia Commons</span></figcaption>
+  </figure>
   <p>茶颜悦色市区几百家店，<b>永远不需要为它排队</b>，看到就进，幽兰拿铁是招牌。而且它早就出省了，广东也有门店 —— 如果你那边能买到，专程在长沙排一小时更没道理。果呀呀、柠季是本地水果茶。咖啡则去潮宗街、都正街、后湖艺术区，独立咖啡馆密度高、人少 —— 那才是松弛版真正该待的地方。</p>
 
   <h3>文和友：当景点逛不用排队，当饭馆吃才要</h3>
+  <figure class="photo gal">
+    <div class="g3"><a href="https://commons.wikimedia.org/wiki/File:Changsha_Wenheyou,_21_May_2021C.jpg" rel="noopener"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Changsha_Wenheyou%2C_21_May_2021C.jpg/960px-Changsha_Wenheyou%2C_21_May_2021C.jpg" alt="超级文和友外观" referrerpolicy="no-referrer" onerror="this.closest('a').hidden=true"></a><a href="https://commons.wikimedia.org/wiki/File:Interior_of_Changsha_Wenheyou_2021052113.jpg" rel="noopener"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Interior_of_Changsha_Wenheyou_2021052113.jpg/960px-Interior_of_Changsha_Wenheyou_2021052113.jpg" alt="文和友内部仿老长沙街景" referrerpolicy="no-referrer" onerror="this.closest('a').hidden=true"></a><a href="https://commons.wikimedia.org/wiki/File:Interior_of_Changsha_Wenheyou_2021052120.jpg" rel="noopener"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Interior_of_Changsha_Wenheyou_2021052120.jpg/960px-Interior_of_Changsha_Wenheyou_2021052120.jpg" alt="文和友内部楼层" referrerpolicy="no-referrer" onerror="this.closest('a').hidden=true"></a></div>
+    <figcaption>超级文和友。它的价值全在这个场景 —— 一楼进去扫码买小吃不用排队，几千桌的队是「落座点菜」那条。<span class="cred">Huangdan2060 / CC BY 3.0 · Wikimedia Commons</span></figcaption>
+  </figure>
   <p>这是最容易踩的一个坑，而且解法很具体：<b>只想进去拍照、吃点小吃的话，直接从一楼进，沿内部街道扫码买，完全不用领桌号</b>。传说中几千桌的队伍是「落座点菜」那条队，跟逛街那条不是一回事。</p>
   <p>真要坐下吃，用微信「文和友排队」小程序线上取号：A 是小桌、C 是大桌，小桌可提前 100 桌取、大桌提前 10 桌，<b>叫到号后 10 分钟内有效，过期作废要重排</b>。所以取了号别走远。</p>
   <p class="hint">补充一个判断背景：文和友出省后接连收缩，广州店开业不久就水土不服，深圳店半年内两次转型。它的价值一直在「场景」不在「菜」—— 按景点标准去，会满意；按餐厅标准去，容易失望。</p>
