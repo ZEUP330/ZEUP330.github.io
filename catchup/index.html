@@ -5,78 +5,44 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>被追赶的经济体：辜朝明的两个拐点，用数据看</title>
 <meta name="description" content="辜朝明《被追赶的经济体》的三阶段框架，配世界银行数据：谁在追谁、什么时候被超过，以及「储蓄照旧、投资无处可去」这个特征是否真的出现。">
+<link rel="stylesheet" href="/assets/theme.css">
 <style>
-  :root {
-    --bg: #fcfcfb; --card: #ffffff; --ink: #0b0b0b; --ink-2: #52514e; --ink-3: #898781;
-    --line: #e1e0d9; --accent: #2a78d6; --warn: #eda100;
-  }
+  :root { --warn: #eda100; }
   @media (prefers-color-scheme: dark) {
-    :root { --bg: #1a1a19; --card: #222221; --ink: #f0efec; --ink-2: #c3c2b7; --ink-3: #898781;
-            --line: #2c2c2a; --accent: #3987e5; --warn: #fac775; }
+    :root { --warn: #fac775; }
   }
-  * { box-sizing: border-box; }
-  [hidden] { display: none !important; }
-  body {
-    margin: 0; padding: 2rem 1.25rem 4rem; background: var(--bg); color: var(--ink);
-    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-    line-height: 1.7; -webkit-font-smoothing: antialiased; -webkit-text-size-adjust: 100%;
-  }
+
   main { max-width: 800px; margin: 0 auto; }
-  h1 { font-size: 26px; font-weight: 500; margin: 0 0 .5rem; letter-spacing: -.01em; }
-  h2 { font-size: 18px; font-weight: 500; margin: 2.75rem 0 .75rem; }
-  h3 { font-size: 15px; font-weight: 500; margin: 1.5rem 0 .5rem; }
-  p { color: var(--ink-2); margin: 0 0 1rem; }
-  .back { font-size: 14px; margin: 0 0 1rem; }
-  .back a { color: var(--ink-3); text-decoration: none; }
-  .back a:hover { color: var(--accent); }
-  a { color: var(--accent); }
-  .hint { font-size: 12px; color: var(--ink-3); margin: 0 0 1rem; }
-  .note { background: var(--card); border: 1px solid var(--line); border-left: 3px solid var(--warn);
-    border-radius: 0 8px 8px 0; padding: .8rem 1rem; margin: 0 0 1.25rem; font-size: 13px; color: var(--ink-2); }
-  .note strong { color: var(--ink); }
 
   figure { margin: 1.25rem 0; }
   figure svg { width: 100%; height: auto; display: block; }
   figcaption { font-size: 12px; color: var(--ink-3); margin-top: .5rem; }
 
-  select, button { font: inherit; font-size: 14px; color: var(--ink); background: var(--card);
-    border: 1px solid var(--line); border-radius: 8px; padding: 7px 12px; cursor: pointer; }
-  select:hover, button:hover { border-color: var(--ink-3); }
   .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 0 0 .75rem; }
   .toolbar label { font-size: 13px; color: var(--ink-3); display: inline-flex; align-items: center; gap: 6px; }
 
   .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin: 1rem 0; }
-  .stat { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: .7rem .9rem; }
-  .stat .k { font-size: 12px; color: var(--ink-3); }
-  .stat .v { font-size: 21px; font-weight: 500; font-variant-numeric: tabular-nums; margin-top: 2px; }
 
   .legend { display: flex; flex-wrap: wrap; gap: 16px; font-size: 12px; color: var(--ink-2); margin-bottom: 8px; }
   .legend span { display: inline-flex; align-items: center; gap: 6px; }
   .swatch { width: 16px; height: 2px; background: var(--accent); }
   .chart { position: relative; height: 300px; }
 
-  .scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-  table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  th, td { padding: 7px 6px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
-  th { color: var(--ink-3); font-weight: 400; font-size: 12px; }
   td.n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
   ul.links { padding-left: 1.1rem; margin: 0; }
   ul.links li { color: var(--ink-3); font-size: 14px; margin-bottom: .5rem; }
-  footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--line);
-    font-size: 13px; color: var(--ink-3); }
 
   @media (max-width: 640px) {
-    body { padding: 1.5rem .9rem 3rem; }
-    h1 { font-size: 21px; }
-    h2 { font-size: 17px; margin: 2rem 0 .6rem; }
+
     .stats { grid-template-columns: repeat(2, 1fr); }
-    .stat .v { font-size: 18px; }
+
     .chart { height: 250px; }
     th, td { padding: 6px 4px; font-size: 12px; }
   }
 </style>
 <link rel="stylesheet" href="/assets/statusbar.css">
 <script src="/assets/statusbar.js" defer></script>
+<script src="/assets/theme.js" defer></script>
 </head>
 <body>
 <main>

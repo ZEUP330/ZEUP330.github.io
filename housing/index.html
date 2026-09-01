@@ -5,43 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>全国房价走势地图：2006 年至今，逐月</title>
 <meta name="description" content="国家统计局 70 城房价指数做成的省级地图：拖进度条看 2006 年以来每个月的同比涨跌，点省份看下面各城市的走势。">
+<link rel="stylesheet" href="/assets/theme.css">
 <style>
-  :root {
-    --bg: #fcfcfb; --card: #ffffff; --ink: #0b0b0b; --ink-2: #52514e; --ink-3: #898781;
-    --line: #e1e0d9; --accent: #2a78d6;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root { --bg: #1a1a19; --card: #222221; --ink: #f0efec; --ink-2: #c3c2b7; --ink-3: #898781;
-            --line: #2c2c2a; --accent: #3987e5; }
-  }
-  * { box-sizing: border-box; }
-  [hidden] { display: none !important; }
-  body {
-    margin: 0; padding: 2rem 1.25rem 4rem; background: var(--bg); color: var(--ink);
-    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-    line-height: 1.7; -webkit-font-smoothing: antialiased; -webkit-text-size-adjust: 100%;
-  }
+  
+
+  
   main { max-width: 820px; margin: 0 auto; }
-  h1 { font-size: 26px; font-weight: 500; margin: 0 0 .5rem; letter-spacing: -.01em; }
-  h2 { font-size: 18px; font-weight: 500; margin: 2.5rem 0 .75rem; }
-  h3 { font-size: 15px; font-weight: 500; margin: 1.5rem 0 .5rem; }
-  p { color: var(--ink-2); margin: 0 0 1rem; }
-  .back { font-size: 14px; margin: 0 0 1rem; }
-  .back a { color: var(--ink-3); text-decoration: none; }
-  .back a:hover { color: var(--accent); }
-  .hint { font-size: 12px; color: var(--ink-3); margin: 0 0 1rem; }
-  .alert-note { background: var(--card); border: 1px solid var(--line); border-left: 3px solid #eda100;
-    border-radius: 0 8px 8px 0; padding: .8rem 1rem; margin: 0 0 1.25rem; font-size: 13px; color: var(--ink-2); }
-  .alert-note strong { color: var(--ink); }
-  button, select { font: inherit; font-size: 14px; color: var(--ink); background: var(--card);
-    border: 1px solid var(--line); border-radius: 8px; padding: 7px 14px; cursor: pointer; }
-  button:hover, select:hover { border-color: var(--ink-3); }
+
   .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 1.5rem 0 .75rem; }
   .pick { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-3); }
   .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin: 1rem 0; }
-  .stat { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: .7rem .9rem; }
-  .stat .k { font-size: 12px; color: var(--ink-3); }
-  .stat .v { font-size: 21px; font-weight: 500; font-variant-numeric: tabular-nums; margin-top: 2px; }
+
   .legend { display: flex; flex-wrap: wrap; gap: 16px; font-size: 12px; color: var(--ink-2); margin-bottom: 8px; }
   .legend span { display: inline-flex; align-items: center; gap: 6px; }
   .swatch { width: 16px; height: 2px; background: var(--accent); }
@@ -63,22 +37,18 @@
   ul.links li { color: var(--ink-3); font-size: 14px; margin-bottom: .5rem; }
   ul.links a { color: var(--accent); text-decoration: none; }
   ul.links a:hover { text-decoration: underline; }
-  code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .92em;
-    background: var(--card); border: 1px solid var(--line); border-radius: 4px; padding: 1px 5px; }
-  footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--line);
-    font-size: 13px; color: var(--ink-3); }
+
   @media (max-width: 640px) {
-    body { padding: 1.5rem .9rem 3rem; }
-    h1 { font-size: 21px; }
-    h2 { font-size: 17px; margin: 2rem 0 .6rem; }
+
     .stats { grid-template-columns: repeat(2, 1fr); }
-    .stat .v { font-size: 18px; }
+
     .chart { height: 240px; }
     .chart.map { height: 340px; }
   }
 </style>
 <link rel="stylesheet" href="/assets/statusbar.css">
 <script src="/assets/statusbar.js" defer></script>
+<script src="/assets/theme.js" defer></script>
 </head>
 <body>
 <main>

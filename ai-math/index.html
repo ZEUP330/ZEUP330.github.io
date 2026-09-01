@@ -5,39 +5,23 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>生成便宜之后：读陶哲轩《AI 时代的数学》</title>
 <meta name="description" content="陶哲轩把解题拆成五段流水线，只有第一段被 AI 拿走。用这条链回看这个站的搭建过程：生成只要几分钟，消化占掉了几乎全部时间。">
+<link rel="stylesheet" href="/assets/theme.css">
 <style>
-  :root {
-    --bg: #fcfcfb; --card: #ffffff; --ink: #0b0b0b; --ink-2: #52514e; --ink-3: #898781;
-    --line: #e1e0d9; --accent: #2a78d6; --ai: #eb6834; --human: #1baf7a;
-  }
+  :root { --ai: #eb6834; --human: #1baf7a; }
   @media (prefers-color-scheme: dark) {
-    :root { --bg: #1a1a19; --card: #222221; --ink: #f0efec; --ink-2: #c3c2b7; --ink-3: #898781;
-            --line: #2c2c2a; --accent: #3987e5; --ai: #d95926; --human: #199e70; }
+    :root { --ai: #d95926; --human: #199e70; }
   }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0; padding: 2rem 1.25rem 4rem; background: var(--bg); color: var(--ink);
-    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-    line-height: 1.8; -webkit-font-smoothing: antialiased; -webkit-text-size-adjust: 100%;
-  }
+
   main { max-width: 720px; margin: 0 auto; }
-  h1 { font-size: 27px; font-weight: 500; margin: 0 0 .5rem; letter-spacing: -.01em; line-height: 1.35; }
-  h2 { font-size: 19px; font-weight: 500; margin: 2.75rem 0 .75rem; }
-  h3 { font-size: 16px; font-weight: 500; margin: 1.75rem 0 .5rem; }
-  p { color: var(--ink-2); margin: 0 0 1.1rem; }
-  .back { font-size: 14px; margin: 0 0 1rem; }
-  .back a { color: var(--ink-3); text-decoration: none; }
-  .back a:hover { color: var(--accent); }
-  .lede { font-size: 17.5px; color: var(--ink); }
+
   .meta { font-size: 13px; color: var(--ink-3); margin: 0 0 1.75rem; }
-  a { color: var(--accent); }
-  strong { font-weight: 500; color: var(--ink); }
+
   blockquote { margin: 1.25rem 0; padding: .2rem 0 .2rem 1rem; border-left: 2px solid var(--line);
     color: var(--ink-2); font-size: 15px; }
   blockquote cite { display: block; margin-top: .4rem; font-size: 13px; color: var(--ink-3); font-style: normal; }
   .stages { display: grid; gap: 8px; margin: 1.5rem 0; }
-  .stage { background: var(--card); border: 1px solid var(--line); border-radius: 10px;
-    padding: .75rem .95rem; display: grid; grid-template-columns: 1.5rem 1fr auto; gap: 4px 12px; align-items: baseline; }
+  .stage { background: var(--card); border: 1px solid var(--line); border-radius: var(--r-sm);
+    padding: .75rem .95rem; display: grid; grid-template-columns: 1.5rem 1fr auto; gap: 4px 12px; align-items: baseline; box-shadow: var(--shadow-1); }
   .stage .n { color: var(--ink-3); font-size: 13px; font-variant-numeric: tabular-nums; }
   .stage .t { font-size: 15px; font-weight: 500; }
   .stage .who { font-size: 12px; padding: 1px 9px; border-radius: 999px; white-space: nowrap; }
@@ -60,25 +44,20 @@
     display: flex; align-items: center; padding-left: 8px; color: #fff; font-size: 11.5px; }
   .barkey { display: flex; gap: 16px; font-size: 12px; color: var(--ink-3); margin: 0 0 1.25rem; }
   .barkey i { display: inline-block; width: 11px; height: 11px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
-  table { width: 100%; border-collapse: collapse; font-size: 14px; margin: 1.25rem 0; }
-  th, td { padding: 9px 8px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
-  th { color: var(--ink-3); font-weight: 400; font-size: 12.5px; }
+
   td:first-child { color: var(--ink); }
   /* The stage column is two characters wide; without this it wraps to one
      character per line on a phone. */
   td:nth-child(2), th:nth-child(2) { white-space: nowrap; width: 3.5em; }
-  .scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
   ul.src { padding-left: 1.1rem; margin: 0; }
   ul.src li { color: var(--ink-3); font-size: 14px; margin-bottom: .6rem; }
   ul.src a { text-decoration: none; }
   ul.src a:hover { text-decoration: underline; }
-  footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--line);
-    font-size: 13px; color: var(--ink-3); }
+
   @media (max-width: 640px) {
-    body { padding: 1.5rem .9rem 3rem; }
-    h1 { font-size: 22px; }
-    h2 { font-size: 17.5px; margin: 2.25rem 0 .6rem; }
-    .lede { font-size: 16.5px; }
+
+    
     .stage { grid-template-columns: 1.3rem 1fr; }
     .stage .who { grid-row: 1; grid-column: 2; justify-self: end; }
     th, td { padding: 7px 5px; font-size: 13px; }
@@ -86,6 +65,7 @@
 </style>
 <link rel="stylesheet" href="/assets/statusbar.css">
 <script src="/assets/statusbar.js" defer></script>
+<script src="/assets/theme.js" defer></script>
 </head>
 <body>
 <main>

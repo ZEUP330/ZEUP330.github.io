@@ -5,37 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>三大指数回撤：现在离高点有多远</title>
 <meta name="description" content="标普 500、道琼斯、纳斯达克的历史回撤水下图，-10% / -20% / -30% 关注线，以及每次跌破之后实际发生了什么。每日更新。">
+<link rel="stylesheet" href="/assets/theme.css">
 <style>
-  :root {
-    --bg: #fcfcfb; --card: #ffffff; --ink: #0b0b0b; --ink-2: #52514e; --ink-3: #898781;
-    --line: #e1e0d9; --accent: #2a78d6; --warn: #eda100; --danger: #e34948; --ok: #1baf7a;
-  }
+  :root { --warn: #eda100; --danger: #e34948; --ok: #1baf7a; }
   @media (prefers-color-scheme: dark) {
-    :root { --bg: #1a1a19; --card: #222221; --ink: #f0efec; --ink-2: #c3c2b7; --ink-3: #898781;
-            --line: #2c2c2a; --accent: #3987e5; --warn: #fac775; --danger: #e66767; --ok: #199e70; }
+    :root { --warn: #fac775; --danger: #e66767; --ok: #199e70; }
   }
-  * { box-sizing: border-box; }
-  [hidden] { display: none !important; }
-  body {
-    margin: 0; padding: 2rem 1.25rem 4rem; background: var(--bg); color: var(--ink);
-    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-    line-height: 1.7; -webkit-font-smoothing: antialiased; -webkit-text-size-adjust: 100%;
-  }
+
   main { max-width: 820px; margin: 0 auto; }
-  h1 { font-size: 26px; font-weight: 500; margin: 0 0 .5rem; letter-spacing: -.01em; }
-  h2 { font-size: 18px; font-weight: 500; margin: 2.5rem 0 .75rem; }
-  h3 { font-size: 15px; font-weight: 500; margin: 1.5rem 0 .5rem; }
-  p { color: var(--ink-2); margin: 0 0 1rem; }
-  .back { font-size: 14px; margin: 0 0 1rem; }
-  .back a { color: var(--ink-3); text-decoration: none; }
-  .back a:hover { color: var(--accent); }
-  .hint { font-size: 12px; color: var(--ink-3); margin: 0 0 1rem; }
-  a { color: var(--accent); }
-  .note { background: var(--card); border: 1px solid var(--line); border-left: 3px solid var(--warn);
-    border-radius: 0 8px 8px 0; padding: .8rem 1rem; font-size: 13px; color: var(--ink-2); margin: 0 0 1.25rem; }
 
   .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; margin: 1.5rem 0; }
-  .c { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: .9rem 1.05rem; }
+  .c { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: .9rem 1.05rem; box-shadow: var(--shadow-1); }
   .c .n { font-size: 14px; color: var(--ink-3); }
   .c .dd { font-size: 30px; font-weight: 500; font-variant-numeric: tabular-nums; margin: 2px 0 .3rem; }
   .c .sub { font-size: 12px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
@@ -44,11 +24,10 @@
   .bar i.warn { background: var(--warn); } .bar i.deep { background: var(--danger); }
 
   .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 0 0 .75rem; }
-  select, button { font: inherit; font-size: 14px; color: var(--ink); background: var(--card);
-    border: 1px solid var(--line); border-radius: 8px; padding: 7px 12px; cursor: pointer; }
+
   .chips { display: flex; flex-wrap: wrap; gap: 8px; }
   .chip { font: inherit; font-size: 13px; color: var(--ink-2); background: var(--card);
-    border: 1px solid var(--line); border-radius: 999px; padding: 5px 13px; cursor: pointer; }
+    border: 1px solid var(--line); border-radius: 999px; padding: 5px 13px; cursor: pointer; box-shadow: var(--shadow-1); }
   .chip[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
   .legend { display: flex; flex-wrap: wrap; gap: 16px; font-size: 12px; color: var(--ink-2); margin-bottom: 8px; }
   .legend span { display: inline-flex; align-items: center; gap: 6px; }
@@ -56,25 +35,17 @@
   .sw.dash { background: none; border-top: 2px dashed var(--ink-3); }
   .chart { position: relative; height: 320px; }
 
-  .scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-  table { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
-  th, td { padding: 7px 6px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap; }
-  th { color: var(--ink-3); font-weight: 400; font-size: 12px; }
-  th:first-child, td:first-child { text-align: left; }
   .up { color: var(--ok); } .down { color: var(--danger); }
   .pager { display: flex; align-items: center; justify-content: center; gap: 12px; margin: .75rem 0 1rem; }
   .pager button { font-size: 13px; padding: 5px 12px; }
   .pager button:disabled { opacity: .4; cursor: default; }
   .pageinfo { font-size: 13px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
-  footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--line);
-    font-size: 13px; color: var(--ink-3); }
+
   .placeholder { background: var(--card); border: 1px dashed var(--line); border-radius: 12px;
     padding: 2rem 1.25rem; text-align: center; color: var(--ink-3); font-size: 14px; }
 
   @media (max-width: 640px) {
-    body { padding: 1.5rem .9rem 3rem; }
-    h1 { font-size: 21px; }
-    h2 { font-size: 17px; margin: 2rem 0 .6rem; }
+
     .cards { grid-template-columns: 1fr; }
     .c .dd { font-size: 26px; }
     .chart { height: 260px; }
@@ -84,6 +55,7 @@
 </style>
 <link rel="stylesheet" href="/assets/statusbar.css">
 <script src="/assets/statusbar.js" defer></script>
+<script src="/assets/theme.js" defer></script>
 </head>
 <body>
 <main>

@@ -5,41 +5,23 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>长沙 41 小时：松弛版 / 暴走版</title>
 <meta name="description" content="按周五 23:28 抵达、周日 18:00 离开排的长沙行程：时间预算、地理关系图、住哪、两种节奏的时间表与避坑。">
+<link rel="stylesheet" href="/assets/theme.css">
 <style>
-  :root {
-    --bg: #fcfcfb; --card: #ffffff; --ink: #0b0b0b; --ink-2: #52514e; --ink-3: #898781;
-    --line: #e1e0d9; --accent: #2a78d6; --warn: #eda100; --danger: #e34948; --ok: #1baf7a;
-    --river: #b5d4f4;
-  }
+  :root { --warn: #eda100; --danger: #e34948; --ok: #1baf7a; --river: #b5d4f4; }
   @media (prefers-color-scheme: dark) {
-    :root { --bg: #1a1a19; --card: #222221; --ink: #f0efec; --ink-2: #c3c2b7; --ink-3: #898781;
-            --line: #2c2c2a; --accent: #3987e5; --warn: #fac775; --danger: #e66767; --ok: #199e70;
-            --river: #185fa5; }
+    :root { --warn: #fac775; --danger: #e66767; --ok: #199e70; --river: #185fa5; }
   }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0; padding: 2rem 1.25rem 4rem; background: var(--bg); color: var(--ink);
-    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-    line-height: 1.7; -webkit-font-smoothing: antialiased; -webkit-text-size-adjust: 100%;
-  }
+
   main { max-width: 760px; margin: 0 auto; }
-  h1 { font-size: 26px; font-weight: 500; margin: 0 0 .5rem; letter-spacing: -.01em; }
-  h2 { font-size: 18px; font-weight: 500; margin: 2.5rem 0 .75rem; }
-  h3 { font-size: 15px; font-weight: 500; margin: 1.5rem 0 .4rem; }
-  p { color: var(--ink-2); margin: 0 0 1rem; }
-  .back { font-size: 14px; margin: 0 0 1rem; }
-  .back a { color: var(--ink-3); text-decoration: none; }
-  .back a:hover { color: var(--accent); }
-  .hint { font-size: 12px; color: var(--ink-3); margin: 0 0 1rem; }
-  a { color: var(--accent); }
+
   figure { margin: 1.25rem 0; }
   figure svg { width: 100%; height: auto; display: block; }
   figcaption { font-size: 12px; color: var(--ink-3); margin-top: .5rem; }
 
   /* The one block worth screenshotting: everything with a fixed time or a
      hard consequence, nothing that can be looked up on the spot. */
-  .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px;
-    padding: 1rem 1.2rem; margin: 1.5rem 0; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--r);
+    padding: 1rem 1.2rem; margin: 1.5rem 0; box-shadow: var(--shadow-1); }
   .card-h { font-size: 14px; color: var(--ink-3); margin: 0 0 .75rem;
     text-transform: none; letter-spacing: normal; font-weight: 500; }
   dl.kv { display: grid; grid-template-columns: 4.5em 1fr; gap: .5rem 14px; margin: 0; font-size: 14px; }
@@ -87,12 +69,12 @@
 
   .chips { display: flex; flex-wrap: wrap; gap: 7px; margin: 1.25rem 0 .75rem; }
   .chip { font: inherit; font-size: 13px; color: var(--ink-2); background: var(--card);
-    border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; cursor: pointer; }
+    border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; cursor: pointer; box-shadow: var(--shadow-1); }
   .chip[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
   .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 0 0 1rem; }
   .toolbar label { font-size: 13px; color: var(--ink-3); display: inline-flex; align-items: center; gap: 6px; }
   select { font: inherit; font-size: 14px; color: var(--ink); background: var(--card);
-    border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; cursor: pointer; }
+    border: 1px solid var(--line); border-radius: var(--r-sm); padding: 6px 10px; cursor: pointer; box-shadow: var(--shadow-1); }
   .tag { display: inline-block; font-size: 11px; line-height: 1.6; padding: 0 7px; border-radius: 999px;
     border: 1px solid currentColor; margin: 0 3px 3px 0; white-space: nowrap; color: var(--ink-3); }
   .tag.view { color: var(--accent); } .tag.walk { color: var(--ok); }
@@ -100,8 +82,8 @@
   .tag.lux { color: var(--good, var(--warn)); }
   .rec { font-weight: 500; }
   .grp td { background: var(--card); font-size: 12px; color: var(--ink-3); font-weight: 500; }
-  details.how { background: var(--card); border: 1px solid var(--line); border-radius: 10px;
-    padding: .7rem .95rem; margin: 0 0 1rem; font-size: 14px; }
+  details.how { background: var(--card); border: 1px solid var(--line); border-radius: var(--r-sm);
+    padding: .7rem .95rem; margin: 0 0 1rem; font-size: 14px; box-shadow: var(--shadow-1); }
   details.how summary { cursor: pointer; color: var(--ink-2); font-size: 13px; }
   details.how ul { margin: .6rem 0; padding-left: 1.2rem; color: var(--ink-2); }
   details.how li { margin-bottom: .25rem; }
@@ -129,19 +111,19 @@
   h2[id], details.sec[id] { scroll-margin-top: 4rem; }
 
   .alert { background: var(--card); border: 1px solid var(--line); border-left: 3px solid var(--danger);
-    border-radius: 0 8px 8px 0; padding: .8rem 1rem; margin: 0 0 1rem; font-size: 14px; color: var(--ink-2); }
+    border-radius: 0 8px 8px 0; padding: .8rem 1rem; margin: 0 0 1rem; font-size: 14px; color: var(--ink-2); box-shadow: var(--shadow-1); }
   .alert strong { color: var(--ink); }
   .alert.warn { border-left-color: var(--warn); }
   .alert.ok { border-left-color: var(--ok); }
 
   .modes { display: flex; gap: 8px; margin: 1.25rem 0 .5rem; flex-wrap: wrap; }
   .mode { font: inherit; font-size: 14px; color: var(--ink-2); background: var(--card);
-    border: 1px solid var(--line); border-radius: 999px; padding: 6px 16px; cursor: pointer; }
+    border: 1px solid var(--line); border-radius: 999px; padding: 6px 16px; cursor: pointer; box-shadow: var(--shadow-1); }
   .mode[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
 
   ul.todo { list-style: none; padding: 0; margin: 0 0 1rem; }
-  ul.todo li { background: var(--card); border: 1px solid var(--line); border-radius: 10px;
-    padding: .6rem .8rem; margin-bottom: 8px; display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: start; }
+  ul.todo li { background: var(--card); border: 1px solid var(--line); border-radius: var(--r-sm);
+    padding: .6rem .8rem; margin-bottom: 8px; display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: start; box-shadow: var(--shadow-1); }
   ul.todo input { width: 18px; height: 18px; margin: 5px 0 0; accent-color: var(--accent); }
   ul.todo .task { font-size: 14px; }
   ul.todo .why { font-size: 12px; color: var(--ink-3); display: block; }
@@ -160,18 +142,10 @@
   .slot .w em { font-style: normal; color: var(--ink-3); font-size: 12px; display: block; }
   .slot.fix .t { color: var(--accent); font-weight: 500; }
 
-  .scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-  table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  th, td { padding: 7px 6px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
-  th { color: var(--ink-3); font-weight: 400; font-size: 12px; }
   td.n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
-  footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--line);
-    font-size: 13px; color: var(--ink-3); }
 
   @media (max-width: 640px) {
-    body { padding: 1.5rem .9rem 3rem; }
-    h1 { font-size: 21px; }
-    h2 { font-size: 17px; margin: 2rem 0 .6rem; }
+
     .slot { grid-template-columns: 4em 1fr; gap: 10px; }
     .day { padding-left: .8rem; }
     th, td { padding: 6px 4px; font-size: 12px; }
@@ -189,6 +163,7 @@
 </style>
 <link rel="stylesheet" href="/assets/statusbar.css">
 <script src="/assets/statusbar.js" defer></script>
+<script src="/assets/theme.js" defer></script>
 </head>
 <body>
 <main>
