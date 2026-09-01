@@ -629,7 +629,7 @@
   var picked = -1;
   var regWrap = document.getElementById('regimes');
 
-  REGIMES.forEach(function (g, idx) {
+  if (regWrap) REGIMES.forEach(function (g, idx) {
     var b = document.createElement('button');
     b.type = 'button';
     b.className = 'regime';
@@ -642,6 +642,7 @@
   });
 
   function paintPicks() {
+    if (!regWrap) return;
     Array.prototype.forEach.call(regWrap.children, function (b, i) {
       b.setAttribute('aria-pressed', i === picked ? 'true' : 'false');
     });
@@ -670,6 +671,7 @@
   }
 
   function compare(m) {
+    if (!document.getElementById('cmp-body')) return;
     var amt = m.principal, rows = '';
     REGIMES.forEach(function (g) {
       var i = (g.rate / 100) / 12, n = g.years * 12;
@@ -920,7 +922,8 @@
       ? '贷到约 ' + cross + ' 年，付出的利息就追平了本金 —— 房子买了两次，一次给自己，一次给银行。'
       : '在这个利率下，100 年内利息都追不平本金。';
 
-    document.getElementById('policy-delta').textContent =
+    var pd = document.getElementById('policy-delta');
+    if (pd) pd.textContent =
       '当前参数下月供从 ' + fmt(p30) + ' 降到 ' + fmt(p40) + '，每月少还 ' + fmt(p30 - p40)
       + '；代价是总利息从 ' + wan(i30) + '涨到 ' + wan(i40) + '，多付 ' + wan(i40 - i30);
 
