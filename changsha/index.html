@@ -47,6 +47,11 @@
   dl.kv dd { margin: 0; color: var(--ink-2); }
   dl.kv dd b { color: var(--ink); font-weight: 500; }
 
+  .rules { display: flex; flex-wrap: wrap; gap: 7px; margin: 0 0 1rem; }
+  .rule { font-size: 12px; border: 1px solid currentColor; border-radius: 999px; padding: 2px 11px; }
+  .rule.ok { color: var(--ok); }
+  .rule.warn { color: var(--warn); }
+
   .chips { display: flex; flex-wrap: wrap; gap: 7px; margin: 1.25rem 0 .75rem; }
   .chip { font: inherit; font-size: 13px; color: var(--ink-2); background: var(--card);
     border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; cursor: pointer; }
@@ -474,45 +479,59 @@
   <p class="hint">不管选哪个片区，订房时都确认三件事：24 小时前台（你到店已过零点）、行李寄存到 16:30、以及江景是「侧江」还是「正江」—— 很多房型写江景，实际要探头才看得见。</p>
 
   <h2 id="sec-list">具体住哪家</h2>
-  <p>下面是 Trip.com 列表页上抓到的实际评分与评论数，<b>不是我编的，也不是二手文章里的数字</b>。价格是它显示的「起价」（美元，含税前），只能用来比档次，实际以你订的时候为准。</p>
+  <p>按你的四个条件筛完的结果。评分和评论数抓自 Trip.com 列表页（2026-08-31），价格是它的「起价」按 1 : 7.15 折算成人民币，只能比档次。</p>
 
-  <div class="chips" id="hotel-tags"></div>
-  <div class="toolbar">
-    <label>排序
-      <select id="hotel-sort">
-        <option value="rec">推荐指数（按这趟的情况算）</option>
-        <option value="score">评分</option>
-        <option value="reviews">评论数</option>
-        <option value="price">价格由低到高</option>
-      </select>
-    </label>
-    <label><input type="checkbox" id="hotel-group" style="width:16px;height:16px;accent-color:var(--accent);margin-right:4px"> 按标签分组</label>
+  <div class="rules">
+    <span class="rule ok">≤ ¥700 / 晚</span>
+    <span class="rule ok">五一广场步行圈</span>
+    <span class="rule ok">走得到笨萝卜太平街店</span>
+    <span class="rule warn">楼层 ≤ 18F（订房时选）</span>
   </div>
 
   <div class="scroll">
-    <table id="hotel-table">
+    <table>
       <thead><tr>
-        <th>酒店</th><th class="n">推荐</th><th class="n">评分</th><th class="n">评论数</th><th class="n">起价</th><th>标签</th>
+        <th>酒店</th><th class="n">评分</th><th class="n">评论数</th><th class="n">起价</th><th class="n">到笨萝卜</th><th>为什么选它</th>
       </tr></thead>
-      <tbody id="hotel-body"></tbody>
+      <tbody>
+        <tr><td><b>Hampton by Hilton 五一广场</b></td><td class="n">9.7</td><td class="n">16,544</td><td class="n">¥420</td><td class="n">10 分</td><td>分高且样本大，最没有惊喜也最不会翻车</td></tr>
+        <tr><td><b>异国印象（五一广场 IFS）</b></td><td class="n">9.4</td><td class="n">22,006</td><td class="n">¥360</td><td class="n">10 分</td><td>两万条评论，江景房型，<b>明确写了退房后可寄存行李</b> —— 直接解决周日那四个半小时</td></tr>
+        <tr><td><b>Xi Hotel（五一广场 IFS）</b></td><td class="n">9.7</td><td class="n">5,955</td><td class="n">¥360</td><td class="n">10 分</td><td>同价位里唯一有泳池的</td></tr>
+        <tr><td><b>FUNGEE（黄兴广场站）</b></td><td class="n">9.7</td><td class="n">10,411</td><td class="n">¥240</td><td class="n">8 分</td><td>最便宜的高分选项，离笨萝卜也最近</td></tr>
+        <tr><td>Single Hotel（五一广场 IFS）</td><td class="n">9.6</td><td class="n">5,904</td><td class="n">¥240</td><td class="n">10 分</td><td>和上面同价，备选</td></tr>
+        <tr><td>桔子水晶（五一大道）</td><td class="n">9.6</td><td class="n">3,822</td><td class="n">¥420</td><td class="n">12 分</td><td>连锁里房间质感稍好</td></tr>
+        <tr><td>亚朵（长沙 IFS）</td><td class="n">9.5</td><td class="n">2,831</td><td class="n">¥470</td><td class="n">10 分</td><td>同上，看当天价差</td></tr>
+        <tr><td>Neyar 富广（五一广场）</td><td class="n">9.5</td><td class="n">5,864</td><td class="n">¥170</td><td class="n">12 分</td><td>预算优先时的选择</td></tr>
+      </tbody>
     </table>
   </div>
-  <p class="hint" id="hotel-count"></p>
+
+  <div class="alert ok">
+    <strong>要一句话的话：异国印象。</strong>两万条评论摆在那里，江景房型能选，价格在你线内的一半，而且它是这批里唯一明确写了「退房后可寄存行李」的——周日 12:00 退房到 16:30 出发那四个半小时，这一条比多半颗星有用。想要更稳就 Hampton，想省钱就 FUNGEE。
+  </div>
+
+  <p class="hint"><b>楼层这条我给不了数据。</b>Trip.com 列表页只有酒店信息，没有房间在几层——那是订房时选房型的事。上面这批本身都不是高塔，订的时候在备注里写「低楼层，18 层以下」，或者直接打酒店电话确认，比在列表里筛靠谱。</p>
 
   <details class="how">
-    <summary>推荐指数是怎么算的</summary>
-    <p>评分是平台的，<b>推荐指数是我按你这趟的约束加权算的</b>，公式写在这里，不服可以自己重排：</p>
-    <ul>
-      <li>底分 = 平台评分</li>
-      <li><b>+1.2</b> 江景（第三次来，这是少数还没看腻的东西）</li>
-      <li><b>+0.8</b> 在五一广场／潮宗街步行圈内（这趟主线是吃）</li>
-      <li><b>+0.3</b> 有泳池或属于高端线（房间本身是这趟的目的地）</li>
-      <li><b>−1.5</b> 长沙南站片区（下车就到，但晚上无处可去，第三次来更没必要）</li>
-      <li><b>−1.0</b> 梅溪湖（环境最好，但周日回程 40 分钟以上，会把退房后那段空窗变成赶路）</li>
-      <li><b>−1.2</b> 评论数不足 1000（分数再高也可能是样本噪音）</li>
-    </ul>
-    <p class="hint">推荐指数是加权结果，<b>不是另一个满分 10 的评分</b>，超过 10 很正常 —— 江景加成本身就有 1.2 分。它只能用来跟同一张表里的其他行比，不能拿去跟平台评分比。</p>
-    <p class="hint">评论数那一条最容易被忽略：按评分排，第二名是 9.8 分但只有 50 条评论。样本这么小，9.8 和 9.1 没有区别，所以推荐指数把它扣掉 1.2 分压下去了。</p>
+    <summary>被排除的，和排除的理由</summary>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>酒店</th><th class="n">评分</th><th class="n">起价</th><th>为什么排除</th></tr></thead>
+        <tbody>
+          <tr><td>Grand Hyatt 长沙君悦</td><td class="n">9.5</td><td class="n">¥910</td><td><b>超预算</b>，而且在海信广场塔楼，江景房本来就在高层，跟你 18 层的线冲突</td></tr>
+          <tr><td>SEYA Panoramic 五一广场旗舰</td><td class="n">9.6</td><td class="n">¥750</td><td><b>超预算</b>；名字里的 Panoramic 就是卖高层全景的，同样冲突</td></tr>
+          <tr><td>FUNGEE S（IFS 潮宗街）</td><td class="n">9.6</td><td class="n">¥190</td><td>分和价都好，但在潮宗街，走到笨萝卜太平街店要 20 分钟以上</td></tr>
+          <tr><td>Siman 思漫江景（潮宗街）</td><td class="n">9.5</td><td class="n">¥90</td><td>同上，江景+便宜很诱人，但离笨萝卜远</td></tr>
+          <tr><td>JI 全季（IFS 橘子洲店）</td><td class="n">9.7</td><td class="n">¥460</td><td>位置合格，但只有 542 条评论，<b>样本不足</b></td></tr>
+          <tr><td>长沙笨一酒店</td><td class="n">9.8</td><td class="n">¥280</td><td>全表最高分，但<b>只有 50 条评论</b> —— 这个样本量下 9.8 和 9.1 没有区别</td></tr>
+          <tr><td>Yiju Chinese Inn</td><td class="n">9.3</td><td class="n">¥90</td><td>964 条，同样在样本不足线下</td></tr>
+          <tr><td>三家长沙南站酒店</td><td class="n">9.5–9.6</td><td class="n">¥210–390</td><td>离五一广场太远，晚上无处可去，也走不到笨萝卜</td></tr>
+          <tr><td>Microtel 梅溪湖</td><td class="n">9.5</td><td class="n">¥290</td><td>环境最好，但周日回长沙南 40 分钟以上，会把退房后的空窗变成赶路</td></tr>
+          <tr><td>JOLLY / 浦京 / Mcsrh</td><td class="n">9.1–9.8</td><td class="n">¥120–260</td><td>分不低，但都不在五一广场步行圈</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="hint">「样本不足」这条线画在 1000 条评论。低于这个数，平台分的小数点没有意义 —— 全表最高的 9.8 分只有 50 条评论就是例子。</p>
   </details>
 
   <h2 id="sec-todo">出发前要做完的</h2>
@@ -759,7 +778,7 @@
       <tbody>
         <tr><td>费大厨</td><td>辣椒炒肉</td><td>1–2 小时</td><td>最出名也最难等，小程序可提前取号</td></tr>
         <tr><td>炊烟时代</td><td>小炒黄牛肉</td><td>1–2 小时</td><td>与费大厨风格接近，二选一即可</td></tr>
-        <tr><td>笨萝卜</td><td>辣椒炒肉</td><td>1 小时上下</td><td>价格更亲民</td></tr>
+        <tr><td><b>笨萝卜浏阳菜馆</b></td><td>浏阳菜，人均 40 上下</td><td>1 小时上下</td><td>离你最近的是<b>太平街店</b>（天心区西牌楼街 55 号，太平街 28 号东北 120 米，店在 2 楼）。全城八家，太平街／育英街／麻园湾这三家队最长</td></tr>
         <tr><td>盛香亭</td><td>转转热卤</td><td>基本不等</td><td>快餐形式，一个人也好点</td></tr>
         <tr><td>新长福</td><td>老式湘菜</td><td>较少</td><td>本地老店路线，不做网红生意</td></tr>
       </tbody>
@@ -1044,117 +1063,6 @@
     window.addEventListener('hashchange', openTarget);
     openTarget();
     sync();
-  })();
-
-  // Ratings, review counts and "from" prices read off Trip.com listing pages on
-  // 2026-08-31. Numbers are copied verbatim; nothing here is estimated. Prices
-  // are USD start-from figures and move constantly - use them for tier, not
-  // for budgeting.
-  var HOTELS = [
-    { n: 'SEYA Panoramic Hotel · 五一广场旗舰', s: 9.6, r: 3723, p: 105, t: ['江景', '步行圈', '高端'] },
-    { n: 'Grand Hyatt 长沙君悦', s: 9.5, r: 11584, p: 127, t: ['江景', '步行圈', '高端', '有泳池'] },
-    { n: 'JI Hotel · 全季（IFS 橘子洲店）', s: 9.7, r: 542, p: 64, t: ['江景', '步行圈', '样本小'] },
-    { n: '异国印象酒店（五一广场 IFS）', s: 9.4, r: 22006, p: 50, t: ['江景', '步行圈', '退房可寄存'] },
-    { n: 'Siman 思漫江景（潮宗街店）', s: 9.5, r: 1321, p: 12, t: ['江景', '潮宗街', '步行圈', '性价比'] },
-    { n: 'Yiju Chinese Inn（五一广场 IFS）', s: 9.3, r: 964, p: 12, t: ['江景', '步行圈', '性价比', '样本小'] },
-    { n: 'Xi Hotel（五一广场 IFS）', s: 9.7, r: 5955, p: 50, t: ['步行圈', '有泳池'] },
-    { n: 'Hampton by Hilton 五一广场', s: 9.7, r: 16544, p: 59, t: ['步行圈'] },
-    { n: 'FUNGEE 酒店（五一广场黄兴广场站）', s: 9.7, r: 10411, p: 34, t: ['步行圈', '性价比'] },
-    { n: 'FUNGEE S 酒店（IFS 潮宗街）', s: 9.6, r: 12726, p: 27, t: ['潮宗街', '步行圈', '性价比'] },
-    { n: 'Single Hotel（五一广场 IFS）', s: 9.6, r: 5904, p: 33, t: ['步行圈', '性价比'] },
-    { n: '桔子水晶（五一大道）', s: 9.6, r: 3822, p: 59, t: ['步行圈'] },
-    { n: '亚朵酒店（长沙 IFS）', s: 9.5, r: 2831, p: 66, t: ['步行圈'] },
-    { n: 'Neyar 富广酒店（五一广场）', s: 9.5, r: 5864, p: 24, t: ['步行圈', '性价比'] },
-    { n: '长沙笨一酒店（五一广场 IFS）', s: 9.8, r: 50, p: 39, t: ['步行圈', '样本小'] },
-    { n: 'JOLLY · LANDSCAPE HOTEL', s: 9.8, r: 11306, p: 36, t: ['性价比'] },
-    { n: '长沙浦京酒店（万家丽夜市）', s: 9.7, r: 10949, p: 35, t: ['性价比'] },
-    { n: 'Microtel by Wyndham（梅溪湖）', s: 9.5, r: 10882, p: 41, t: ['梅溪湖'] },
-    { n: 'Howard Johnson Club 长沙南站', s: 9.6, r: 4971, p: 54, t: ['长沙南'] },
-    { n: 'Hampton by Hilton 长沙南站西广场', s: 9.5, r: 9533, p: 49, t: ['长沙南'] },
-    { n: 'Holiday Inn Express 长沙南站', s: 9.5, r: 4891, p: 29, t: ['长沙南', '性价比'] },
-    { n: 'Mcsrh 酒店（迎宾路口地铁站）', s: 9.1, r: 1789, p: 17, t: ['性价比'] }
-  ];
-
-  // Weighted for this specific trip, not a general ranking. Every term is
-  // published in the <details> block next to the table.
-  function rec(h) {
-    var v = h.s;
-    if (h.t.indexOf('江景') > -1) v += 1.2;
-    if (h.t.indexOf('步行圈') > -1) v += 0.8;
-    if (h.t.indexOf('高端') > -1 || h.t.indexOf('有泳池') > -1) v += 0.3;
-    if (h.t.indexOf('长沙南') > -1) v -= 1.5;
-    if (h.t.indexOf('梅溪湖') > -1) v -= 1.0;
-    if (h.r < 1000) v -= 1.2;
-    return v;
-  }
-
-  var TAG_CLASS = { '江景': 'view', '步行圈': 'walk', '潮宗街': 'walk', '长沙南': 'far',
-    '梅溪湖': 'far', '样本小': 'thin', '高端': 'lux', '有泳池': 'lux' };
-  var hotelTag = 'all';
-
-  function renderHotels() {
-    var sortBy = document.getElementById('hotel-sort').value;
-    var grouped = document.getElementById('hotel-group').checked;
-    var list = HOTELS.filter(function (h) { return hotelTag === 'all' || h.t.indexOf(hotelTag) > -1; });
-    list.sort(function (a, b) {
-      if (sortBy === 'score') return b.s - a.s || b.r - a.r;
-      if (sortBy === 'reviews') return b.r - a.r;
-      if (sortBy === 'price') return a.p - b.p;
-      return rec(b) - rec(a);
-    });
-
-    var row = function (h) {
-      return '<tr><td>' + h.n + '</td>'
-        + '<td class="n rec">' + rec(h).toFixed(1) + '</td>'
-        + '<td class="n">' + h.s.toFixed(1) + '</td>'
-        + '<td class="n">' + h.r.toLocaleString('en-US') + '</td>'
-        + '<td class="n">$' + h.p + '</td>'
-        + '<td>' + h.t.map(function (t) {
-            return '<span class="tag ' + (TAG_CLASS[t] || '') + '">' + t + '</span>';
-          }).join('') + '</td></tr>';
-    };
-
-    var html = '';
-    if (grouped) {
-      // A hotel carries several tags, so it shows up under each group it
-      // belongs to. That is the point of grouping here - seeing every
-      // riverside option together matters more than counting each row once.
-      var order = ['江景', '潮宗街', '步行圈', '高端', '有泳池', '性价比', '梅溪湖', '长沙南', '样本小', '退房可寄存'];
-      order.forEach(function (tag) {
-        var g = list.filter(function (h) { return h.t.indexOf(tag) > -1; });
-        if (!g.length) return;
-        html += '<tr class="grp"><td colspan="6">' + tag + ' · ' + g.length + ' 家</td></tr>';
-        html += g.map(row).join('');
-      });
-    } else {
-      html = list.map(row).join('');
-    }
-    document.getElementById('hotel-body').innerHTML = html;
-    document.getElementById('hotel-count').textContent =
-      '共 ' + list.length + ' 家 · 评分与评论数抓取于 2026-08-31 的 Trip.com 列表页 · 起价为美元含税前，仅供比档次'
-      + (grouped ? ' · 分组模式下同一家会出现在它的每个标签下' : '');
-  }
-
-  (function initHotels() {
-    var wrap = document.getElementById('hotel-tags');
-    if (!wrap) return;
-    var tags = ['all'];
-    HOTELS.forEach(function (h) { h.t.forEach(function (t) { if (tags.indexOf(t) < 0) tags.push(t); }); });
-    tags.forEach(function (t) {
-      var b = document.createElement('button');
-      b.className = 'chip'; b.type = 'button';
-      b.textContent = t === 'all' ? '全部' : t;
-      b.setAttribute('aria-pressed', String(t === hotelTag));
-      b.addEventListener('click', function () {
-        hotelTag = t;
-        [].forEach.call(wrap.children, function (c) { c.setAttribute('aria-pressed', String(c === b)); });
-        renderHotels();
-      });
-      wrap.appendChild(b);
-    });
-    document.getElementById('hotel-sort').addEventListener('change', renderHotels);
-    document.getElementById('hotel-group').addEventListener('change', renderHotels);
-    renderHotels();
   })();
 
   var KEY = 'changsha-todo', MKEY = 'changsha-mode';
