@@ -64,6 +64,17 @@ const now = Date.now();
 const out = { t: now, source: 'yahoo-chart', ownLabels: OWN_LABEL, firms: [] };
 const failures = [];
 
+// A delisted company stops returning bars, and dropping it would quietly shrink
+// the page - Evergrande was force-delisted in 2025 and vanished from the set,
+// leaving the prose claiming 22 firms while the data held 21. Its last traded
+// price is the endpoint of the story, not a gap, so carry the previous record
+// forward and mark it.
+let prevFirms = new Map();
+try {
+  const prev = JSON.parse(readFileSync('developers/data/developers.json', 'utf8'));
+  prevFirms = new Map((prev.firms || []).map((f) => [f.sym, f]));
+} catch { /* first run */ }
+
 for (const f of FIRMS) {
   try {
     const { rows, currency } = await history(f.sym);
@@ -103,6 +114,12 @@ for (const f of FIRMS) {
     console.log(`${f.sym.padEnd(10)} ${f.name.padEnd(12)} dd=${(last.dd * 100).toFixed(1).padStart(6)}%`
       + ` peak=${iso(peakT)} last=${iso(last.t)}${halted ? ' HALTED/DELISTED' : ''}`);
   } catch (err) {
+    const kept = prevFirms.get(f.sym);
+    if (kept) {
+      out.firms.push({ ...kept, stale: true, staleReason: err.message });
+      failures.push(`${f.sym} ${f.name}: ${err.message} (carried forward from ${kept.lastDate})`);
+      continue;
+    }
     failures.push(`${f.sym} ${f.name}: ${err.message}`);
     console.log(`${f.sym.padEnd(10)} ${f.name.padEnd(12)} FAILED ${err.message}`);
   }

@@ -87,6 +87,7 @@
 <main>
   <p class="back"><a href="../">← 首页</a></p>
   <h1>美股期权 Wheel 筛选器</h1>
+  <p class="lede">Wheel 的两条腿：先卖现金担保看跌，被指派后卖备兑看涨。这页从 22 个标的里筛出候选，附年化、Delta、缓冲与流动性。<span class="hl">按年化排序，榜首永远是杠杆 ETF —— 那是风险的标价，不是白捡的收益</span>。</p>
   <p>覆盖七姐妹、指数与行业 ETF、杠杆 ETF。GitHub Actions 在美股交易时段定时抓 Cboe 延迟行情，在 runner 里筛完再把结果提交进仓库 —— 页面只读静态 JSON，没有后端。</p>
 
   <div class="warn" id="stale">
@@ -270,6 +271,9 @@
     <dd>(卖价−买价)÷中间价。越宽越难按理想价格成交。盘后快照的价差普遍虚高，盘中再看一次。</dd>
   </dl>
 
+  <h2 id="close">收尾：这张表能替你做什么</h2>
+  <p><b>能做的</b>：把「同样卖 0.25 Delta 的看跌，各标的分别给多少年化」这个横向比较自动化，并把流动性（未平仓、成交量、买卖价差）摆在同一行里，让不可成交的高年化露出原形。</p>
+  <p><b>不能做的</b>：替你判断愿不愿意接这只股票。Wheel 的前提是<b>跌下来你愿意持有</b>，这一条任何排序都算不出来。按年化排，榜首恒定是杠杆 ETF；换成「年化 ÷ IV30」，排序立刻变成 AAPL、QQQ 在前。<span class="hl">高年化不是找到了便宜，是市场给这段波动开的价。</span></p>
   <h2>数据与口径</h2>
   <ul class="links">
     <li><a href="https://www.cboe.com/delayed_quotes/" rel="noopener">Cboe 延迟行情</a> — 用的是公开的 <code>delayed_quotes/options</code> 接口，IV 与希腊字母取交易所计算值，不是自己反解</li>

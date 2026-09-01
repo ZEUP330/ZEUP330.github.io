@@ -88,7 +88,8 @@
 <main>
   <p class="back"><a href="../">← 首页</a> · <a href="../housing/">全国房价走势地图</a></p>
   <h1>中国房企：谁在什么时候暴的</h1>
-  <p>22 家上市房企距各自历史最高收盘价还剩多少。用股价，是因为它是这件事里<b class="hl">唯一权威、带日期、且可以自动更新</b>的记录 —— 交易所每天都在给每家公司定价，停牌和退市也会直接写进这条曲线。</p>
+  <p class="lede">这页只用一个客观量：<span class="hl">每家公司距自己历史最高股价还剩多少</span>。不依赖任何人对「暴雷」的定义。逐家核对公告后能确认：股价通常比违约公告早，但它<b>不等于</b>违约 —— 万科跌破 −90% 至今没有发生公开市场违约。</p>
+  <p><span id="n-firms">22</span> 家上市房企距各自历史最高收盘价还剩多少。用股价，是因为它是这件事里<b class="hl">唯一权威、带日期、且可以自动更新</b>的记录 —— 交易所每天都在给每家公司定价，停牌和退市也会直接写进这条曲线。</p>
 
   <div class="note">
     你要的<b>项目点位</b>和<b>区县级均价分布</b>我找不到能用的权威来源，没有硬做。理由写在页面最下面「为什么没有地图」一节，包括我查了哪些官方渠道、各自卡在哪里。
@@ -101,8 +102,9 @@
     <div class="owns" id="owns"></div>
     <p class="hint" id="own-note"></p>
 
-    <details class="fold">
-      <summary><h2>逐家回撤</h2><span class="cnt" id="firms-count"></span></summary>
+  <p class="alert-note" id="stale-note" hidden></p>
+
+  <h2>逐家回撤<span class="cnt" id="firms-count"></span></h2>
       <div class="legend">
         <span><i class="sw" style="background:var(--private)"></i>民营</span>
         <span><i class="sw" style="background:var(--mixed)"></i>混合 / 地方国资</span>
@@ -110,7 +112,6 @@
         <span>条越长跌得越多</span>
       </div>
       <ul class="firms" id="firms"></ul>
-    </details>
 
     <h2>暴雷时间轴</h2>
     <div class="legend">
@@ -122,7 +123,7 @@
     <div id="timeline"></div>
     <p class="hint">每行一家公司：左端是跌破 −50%、右端是跌破 −90% 的月份，横条长度就是从「腰斩」滑到「几乎归零」用掉的时间。按暴雷先后排序。<b>两个日期都从各自的历史最高点之后算起</b> —— 有几家在 2015 年也曾腰斩过，但后来创了新高，那次不属于这一轮。</p>
 
-    <h2>22 家，同一把尺子</h2>
+    <h2><span id="n-firms2">22</span> 家，同一把尺子</h2>
     <div id="smalls"></div>
     <p class="hint">每格是一家公司的回撤路径，纵轴统一 0 到 −100%，虚线是 −90%。不用读数字，看形状就知道哪一类塌了。</p>
 
@@ -150,14 +151,12 @@
     <div class="citymap" id="citymap"></div>
     <p class="hint">点越大跌得越多，颜色同理。房价指数由 70 城同比逐月累乘还原，衡量的是各城市距<b>自己</b>指数最高点的距离，不是绝对房价。</p>
 
-    <details class="fold">
-      <summary><h2>逐城明细</h2><span class="cnt" id="cities-count"></span></summary>
+  <h2>逐城明细<span class="cnt" id="cities-count"></span></h2>
       <div class="legend">
         <span><i class="sw" style="background:var(--private)"></i>跌幅最大的 10 个</span>
         <span><i class="sw" style="background:var(--soe)"></i>最抗跌的 10 个</span>
       </div>
       <ul class="firms" id="cities"></ul>
-    </details>
     <p class="hint" id="city-note"></p>
   </div>
 
@@ -174,13 +173,11 @@
       <tbody id="verify"></tbody>
     </table>
   </div>
-  <p class="hint">「差」为正表示股价先到，负表示公告先到。核对于 2026-08-31，覆盖 22 家中的 12 家 —— 其余 10 家没有查到足够权威的单一时点事件，留白而不是猜。</p>
+  <p class="hint">「差」为正表示股价先到，负表示公告先到。核对于 2026-08-31，覆盖 <span id="n-firms3">22</span> 家中的 12 家 —— 其余 10 家没有查到足够权威的单一时点事件，留白而不是猜。</p>
 
-  <details class="fold">
-    <summary><h2>附录：逐条参考来源</h2><span class="cnt" id="ref-count"></span></summary>
+  <h2>附录：逐条参考来源<span class="cnt" id="ref-count"></span></h2>
     <ol class="refs" id="refs"></ol>
     <p class="hint">来源为公司公告、上市公司受托管理报告与财经媒体报道。评级机构对「违约」的认定（惠誉 RD、标普 SD）与公司自己公告的口径可能差几天，表中取较早的公开时点并在条目里注明。</p>
-  </details>
 
   <h2>为什么没有地图</h2>
   <p>你要的是「房企在各城市的项目点 + 暴雷点 + 区县均价分布」。我按权威来源逐个查过，卡在这几处：</p>
@@ -191,6 +188,9 @@
   </ul>
   <p>所以这一页退回到能站住的那部分：<b>交易所价格</b>。它不能告诉你某个楼盘停没停工，但能准确告诉你市场在哪一天给这家公司判了刑，而且明天还会自动更新。</p>
 
+  <h2 id="close">收尾：股价能说什么，不能说什么</h2>
+  <p><b>能说的</b>：市场比公告快。核对的 10 家里 9 家是股价先到，中位领先 4 个月，碧桂园早 13 个月、雅居乐早 19 个月。在没有统一违约名单可下载的情况下，这是唯一每天自动更新、且不依赖任何人主观判断的信号。</p>
+  <p><b>不能说的</b>：它不是判决。万科跌破 −90% 至今没有违约，富力那次是展期不是违约；反过来，佳兆业停牌期间价格根本没机会反应，公告反而比股价早 3 个月。<span class="hl">−90% 是一个早期预警，把它当成违约事实会同时误伤和漏判。</span></p>
   <h2>数据与口径</h2>
   <ul>
     <li>收盘价来自 Yahoo Finance 公开 chart 接口，港股与 A 股均取 2015 年起的日频</li>
@@ -357,6 +357,21 @@
     drawSmalls();
     drawVerify();
     document.getElementById('firms-count').textContent = data.firms.length + ' 家';
+    ['n-firms', 'n-firms2', 'n-firms3'].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.textContent = data.firms.length;
+    });
+    // A carried-forward firm is still in the set but its price stopped moving;
+    // say so rather than letting a frozen number read as current.
+    var stale = data.firms.filter(function (f) { return f.stale; });
+    var sn = document.getElementById('stale-note');
+    if (sn) {
+      sn.hidden = !stale.length;
+      if (stale.length) sn.innerHTML = '<b>' + stale.map(function (f) { return f.name; }).join('、')
+        + '</b> 已退市，行情源不再返回数据。这里保留它最后一个交易日（'
+        + stale.map(function (f) { return f.lastDate; }).join('、')
+        + '）的记录 —— 退市不是数据缺失，那就是这条曲线的终点。';
+    }
 
     var priv = data.byOwn.filter(function (b) { return b.own === 'private'; })[0];
     var soe = data.byOwn.filter(function (b) { return b.own === 'soe'; })[0];
