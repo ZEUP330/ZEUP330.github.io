@@ -43,6 +43,12 @@
       // Built by housing.yml, same schedule: '20 3 18,20,24 * *'
       cron: { monthDays: [18, 20, 24], times: [[3, 20]] },
       note: 'BIS 季度发布，随房价流水线每月核一次'
+    },
+    {
+      id: 'income', name: '工资与房价', url: '/income/data/status.json', page: '/income/',
+      // Built by housing.yml after the two datasets it reads, same schedule.
+      cron: { monthDays: [18, 20, 24], times: [[3, 20]] },
+      note: '统计局季度收入发布，随房价流水线每月核一次'
     }
   ];
 
