@@ -65,6 +65,9 @@
   .cmp-rows dd.small { font-size: 11px; color: var(--ink-3); line-height: 1.5; }
   .cmp-rows dd.ok { color: var(--ok); font-weight: 500; }
   .cmp-rows dd.warn { color: var(--warn); font-weight: 500; }
+  .fresh { border-left: 3px solid var(--ok); padding-left: .6rem; }
+  .fresh.stale { border-left-color: var(--warn); }
+  .fresh.old { border-left-color: var(--danger); }
   .per { font-size: 11px; color: var(--ink-3); }
 
   .shots { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
@@ -591,7 +594,7 @@
 
   <div class="cmp-wrap">
     <div class="cmp">
-      <div class="cmp-col">
+      <div class="cmp-col" data-h="luxury">
         <a class="cmp-shot" href="https://us.trip.com/hotels/detail/?cityId=206&amp;hotelId=116989879" rel="noopener"><img src="https://ak-d.tripcdn.com/images/1mc2w12000h6972lfB564_R_960_660_R5_D.jpg" alt="五一广场异国印象·奢酒店 照片" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('dead')"></a>
         <p class="cmp-tag">最贴合你的四条</p>
         <h4 class="cmp-name">五一广场异国印象·奢酒店</h4>
@@ -613,7 +616,7 @@
           <dt>已知房型</dt><dd class="small">Dusk Double Bed Room<br>1 张大床 · 含早 · 免费取消</dd>
         </dl>
       </div>
-      <div class="cmp-col">
+      <div class="cmp-col" data-h="xi">
         <a class="cmp-shot" href="https://us.trip.com/hotels/changsha-hotel-detail-112342483/xi-hotel/" rel="noopener"><img src="https://ak-d.tripcdn.com/images/1mc6w12000c77rymq86BE_R_960_660_R5_D.jpg" alt="Xi Hotel（五一广场 IFS） 照片" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('dead')"></a>
         <p class="cmp-tag">楼层最低</p>
         <h4 class="cmp-name">Xi Hotel（五一广场 IFS）</h4>
@@ -635,7 +638,7 @@
           <dt>已知房型</dt><dd class="small">未取到房型明细</dd>
         </dl>
       </div>
-      <div class="cmp-col">
+      <div class="cmp-col" data-h="fungee">
         <a class="cmp-shot" href="https://us.trip.com/hotels/changsha-hotel-detail-92349369/fungee-hotel/" rel="noopener"><img src="https://ak-d.tripcdn.com/images/1mc4a12000dexyvr4CB77_R_960_660_R5_D.jpg" alt="FUNGEE（黄兴广场站） 照片" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('dead')"></a>
         <p class="cmp-tag">最便宜</p>
         <h4 class="cmp-name">FUNGEE（黄兴广场站）</h4>
@@ -657,7 +660,7 @@
           <dt>已知房型</dt><dd class="small">未取到房型明细</dd>
         </dl>
       </div>
-      <div class="cmp-col">
+      <div class="cmp-col" data-h="hampton">
         <a class="cmp-shot" href="https://us.trip.com/hotels/changsha-hotel-detail-117841238/hampton-by-hilton-changsha-wuyi-square/" rel="noopener"><img src="https://ak-d.tripcdn.com/images/0201p12000dg5nmn10AF9_R_960_660_R5_D.jpg" alt="Hampton by Hilton 五一广场 照片" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('dead')"></a>
         <p class="cmp-tag">样本最大</p>
         <h4 class="cmp-name">Hampton by Hilton 五一广场</h4>
@@ -681,6 +684,7 @@
       </div>
     </div>
   </div>
+  <p class="hint" id="price-fresh" hidden></p>
   <p class="hint">价格为 2026-09-04 入住、09-06 退房两晚的实际含税总价（Trip.com，1 : 7.15 折算），随时会变。楼层绿色表示整段都在你 18 层的线内，黄色表示压线。手机上左右滑动比较。</p>
 
   <div class="scroll">
@@ -1476,6 +1480,58 @@
     openTarget();
     sync();
     pick();
+  })();
+
+  // Live prices, written hourly by the Playwright job. Everything here is
+  // additive: with the file missing the page keeps the hand-checked numbers
+  // that are already in the HTML.
+  (function livePrices() {
+    var fresh = document.getElementById('price-fresh');
+    if (!fresh) return;
+    fetch('./data/prices.json', { cache: 'no-cache' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .catch(function () { return null; })
+      .then(function (d) {
+        if (!d || !d.hotels) return;
+        var okCount = 0, total = 0;
+        Object.keys(d.hotels).forEach(function (k) {
+          var h = d.hotels[k];
+          total++;
+          if (!h.ok) return;
+          okCount++;
+          var col = document.querySelector('.cmp-col[data-h="' + k + '"]');
+          if (!col || h.totalCny == null) return;
+          var b = col.querySelector('.cmp-price b');
+          var sub = col.querySelector('.cmp-price span');
+          if (b) b.textContent = '¥' + h.totalCny.toLocaleString('en-US');
+          if (sub) {
+            sub.textContent = '两晚含税 · ¥' + h.nightCny.toLocaleString('en-US') + '/晚'
+              + (h.roomsLeft ? ' · 仅剩 ' + h.roomsLeft + ' 间' : '')
+              + (h.soldOut ? ' · 已售罄' : '');
+          }
+          var dd = col.querySelector('.cmp-rows dd.small');
+          if (dd && h.room) {
+            dd.innerHTML = h.room + (h.bed ? '<br>' + h.bed : '')
+              + (h.breakfast ? ' · 含早' : '') + (h.freeCancel ? ' · 免费取消' : '');
+          }
+        });
+
+        // Age matters more than the number here: a stale price shown as if it
+        // were current is worse than no live price at all.
+        var ageH = (Date.now() - d.t) / 3600000;
+        var ageTxt = ageH < 1 ? Math.max(1, Math.round(ageH * 60)) + ' 分钟前'
+                   : ageH < 48 ? Math.round(ageH) + ' 小时前'
+                   : Math.round(ageH / 24) + ' 天前';
+        var state = ageH < 3 ? 'live' : (ageH < 26 ? 'stale' : 'old');
+        fresh.className = 'hint fresh ' + state;
+        fresh.textContent =
+          '价格实时抓取：' + ageTxt + '更新（' + okCount + '/' + total + ' 家成功）· '
+          + d.checkIn + ' 至 ' + d.checkOut + ' 两晚含税，按 1 : ' + d.rate + ' 折算'
+          + (state === 'live' ? '' : state === 'stale'
+              ? ' · 超过 3 小时没刷新了，抓取可能被拦，下单前自己核一次'
+              : ' · 已经很久没更新，把它当历史价看');
+        fresh.hidden = false;
+      });
   })();
 
   var KEY = 'changsha-todo', MKEY = 'changsha-mode';
