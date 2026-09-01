@@ -49,6 +49,12 @@
       // Built by housing.yml after the two datasets it reads, same schedule.
       cron: { monthDays: [18, 20, 24], times: [[3, 20]] },
       note: '统计局季度收入发布，随房价流水线每月核一次'
+    },
+    {
+      id: 'district', name: '区级房价与各省工资', url: '/district/data/status.json', page: '/district/',
+      // district.yml: '10 5 6,16,26 * *'
+      cron: { monthDays: [6, 16, 26], times: [[5, 10]] },
+      note: '房天下挂牌口径，每月 3 次；省级收入随抓随补'
     }
   ];
 

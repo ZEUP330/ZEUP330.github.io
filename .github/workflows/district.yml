@@ -1,0 +1,65 @@
+name: district prices
+
+on:
+  schedule:
+    # The listing average moves daily but the page only ever shows one month's
+    # figure, so three runs a month is plenty and keeps the crawl light on a
+    # third-party site. The city loop is ~200 requests at 1.2s apart.
+    - cron: '10 5 6,16,26 * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: district-prices
+  cancel-in-progress: false
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    # 200 city pages plus 31 provincial bureaus, all paced; the default 6h cap
+    # would hide a hang for far too long.
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # Runs on a US IP. 房天下 was verified to serve the same data to a
+      # non-mainland address, which is why it is the source rather than the
+      # richer but geo/rate-gated alternatives.
+      - name: Crawl city and district prices
+        run: node scripts/fetch-district-price.mjs
+
+      # Provincial gazettes are published once and never revised, so this is
+      # incremental: it only fetches years not already in the file. A province
+      # whose site is down keeps whatever was collected before.
+      - name: Crawl provincial urban income
+        run: node scripts/fetch-province-income.mjs
+        continue-on-error: true
+
+      - name: Commit snapshot
+        run: |
+          set -euo pipefail
+          git config user.name 'ZEUP330'
+          git config user.email '37589028+ZEUP330@users.noreply.github.com'
+          git add district/data
+          if git diff --cached --quiet; then
+            echo 'no change'
+            exit 0
+          fi
+          # Same squash rule as the other pipelines: amend onto the previous
+          # district commit so the repo does not carry one blob per run, and
+          # only when HEAD is itself a district commit.
+          if git log -1 --pretty=%s | grep -q '^data: district prices$'; then
+            git commit --amend --no-edit --date=now
+            git push --force-with-lease origin HEAD:main
+          else
+            git commit -m 'data: district prices'
+            git push origin HEAD:main
+          fi
