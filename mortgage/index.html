@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>中日韩房价与房贷年限：中国站在日本的第几年</title>
-<meta name="description" content="用 BIS 实际房价指数把中日韩三国按各自峰值对齐：中国现在的位置，日本和韩国当年在哪，以及三国 30/40/50 年贷款上限背后的取舍。">
+<title>中日韩房贷对比：三国规格表</title>
+<meta name="description" content="像看产品规格一样对比中日韩的房价与房贷：见顶时间、跌幅、年限上限、利率形态、准入门槛与偿债约束，逐项用图对照。">
 <link rel="stylesheet" href="/assets/theme.css">
 <style>
   :root { --ok: #12855c; --danger: #cf3520; }
@@ -138,6 +138,45 @@
   .stage .sv { font-size: 1.35rem; font-weight: 600; font-variant-numeric: tabular-nums; margin-top: 2px; }
   .stage .sd { font-size: 12px; color: var(--ink-3); margin-top: 2px; }
   .cn .sv { color: var(--danger); } .jp .sv { color: var(--accent); } .kr .sv { color: var(--warn); }
+
+  /* Spec sheet. Four columns on desktop: dimension plus three countries. Each
+     cell carries a bar or a flag, so the sheet is read by comparing shapes
+     rather than by reading three sentences per row. */
+  .sheet { margin: 1.25rem 0 .5rem; }
+  .srow { display: grid; grid-template-columns: 8.5rem repeat(3, 1fr); gap: 0 10px;
+    padding: .7rem 0; border-top: 1px solid var(--line); align-items: start; }
+  .srow.head { border-top: 0; position: sticky; top: calc(var(--rail-top,0px) + var(--rail-h,44px));
+    z-index: 12; background: var(--material); -webkit-backdrop-filter: blur(18px);
+    backdrop-filter: blur(18px); padding: .55rem 0; border-bottom: 1px solid var(--line); }
+  .srow.head .cty { font-weight: 600; font-size: .95rem; display: flex; align-items: baseline; gap: 6px; }
+  .srow.head .cty i { width: 10px; height: 10px; border-radius: 3px; flex: none; }
+  .sdim { font-size: 13px; color: var(--ink-3); padding-top: 2px; }
+  .sdim b { display: block; color: var(--ink-2); font-weight: 500; font-size: 13.5px; }
+  .cell { min-width: 0; }
+  .cval { font-size: .95rem; font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1.35; }
+  .csub { font-size: 11.5px; color: var(--ink-3); line-height: 1.45; margin-top: 1px; }
+  .bar { height: 6px; border-radius: 3px; background: var(--bg-2); margin: 5px 0 3px; overflow: hidden; }
+  .bar i { display: block; height: 100%; border-radius: 3px; }
+  .flag { display: inline-flex; align-items: center; gap: 5px; font-size: .9rem; font-weight: 600; }
+  .flag .g { width: 16px; height: 16px; border-radius: 50%; display: inline-grid; place-items: center;
+    font-size: 11px; color: #fff; flex: none; }
+  .g.yes { background: var(--ok); } .g.no { background: var(--danger); } .g.mid { background: var(--warn); }
+  .g.na { background: var(--ink-3); }
+  .spark { display: block; width: 100%; height: 34px; }
+  @media (max-width: 700px) {
+    .srow { grid-template-columns: 1fr 1fr 1fr; gap: 0 8px; padding: .6rem 0; }
+    .sdim { grid-column: 1 / -1; padding: 0 0 .3rem; }
+    .cval { font-size: .88rem; } .csub { font-size: 11px; }
+    .srow.head .cty { font-size: .86rem; }
+  }
+  details.fold { border-top: 1px solid var(--line); margin: 1.5rem 0 0; }
+  details.fold > summary { display: flex; align-items: baseline; gap: 10px; cursor: pointer;
+    list-style: none; padding: .8rem 0; font-size: 1rem; font-weight: 500; }
+  details.fold > summary::-webkit-details-marker { display: none; }
+  details.fold > summary::after { content: '展开'; margin-left: auto; font-size: 13px; color: var(--accent); font-weight: 400; }
+  details.fold[open] > summary::after { content: '收起'; }
+  details.fold > summary:hover { color: var(--accent); }
+  details.fold h2 { margin: 0; font-size: 1rem; font-weight: 500; }
 </style>
 <link rel="stylesheet" href="/assets/statusbar.css">
 <script src="/assets/statusbar.js" defer></script>
@@ -146,17 +185,23 @@
 <body>
 <main>
   <p class="back"><a href="../">← 首页</a> · <a href="../loan/">房贷计算器</a> · <a href="../housing/">全国房价走势地图</a></p>
-  <h1 id="top">中国站在日本的第几年</h1>
-  <p class="lede">日本和韩国的房价<span class="hl">在同一个季度见顶：1991 年</span>。中国是 2021 年三季度。把三国按各自的峰值对齐，就能问一个具体的问题 —— 中国现在这个位置，当年的日本和韩国分别跌到哪了？答案不是「差不多」。</p>
+  <h1 id="top">中日韩房贷：三国规格表</h1>
+  <p class="lede">同一件事，三种做法。<span class="hl">日韩房价都在 1991 年见顶，中国是 2021 年</span> —— 下面按维度逐项对照，能画的都画出来。</p>
 
-  <h2 id="now">三国对齐：中国现在的位置</h2>
+  <h2 id="now">现在各自在哪</h2>
   <div class="stage" id="stage"></div>
-  <p>下面这张图把三条曲线的<strong class="hl">横轴换成了「距各自峰值多少年」</strong>，而不是日历年份。1991 年的日本、1991 年的韩国、2021 年的中国，起点都被拉到 0。</p>
   <div class="legend" id="align-legend"></div>
   <div class="chart"><canvas id="align" role="img" aria-label="折线图：中日韩实际房价指数距各自峰值的跌幅，横轴为距峰年数。">按峰值对齐的三国房价回撤。</canvas></div>
   <p class="hint" id="align-note"></p>
 
-  <h2 id="jp">日本：跌了三十四年，还没回来</h2>
+  <h2 id="spec">规格对比</h2>
+  <p class="hint">条形在每一行内部各自归一，比的是同一维度上的相对位置；✓／✗ 表示有无该项设计。数字口径与出处见页尾来源。</p>
+  <div class="sheet" id="sheet"></div>
+
+  <h2 id="detail">逐项细节</h2>
+  <p class="hint">上表每一行的来龙去脉。默认收起，需要时展开。</p>
+  <details class="fold" id="jp">
+    <summary><h2>日本：50 年配给能活 100 年的房子</h2></summary>
   <p>日本的这条线从 1955 年开始，是这三国里唯一一条长到能看见「一整代人」的序列。它在 1991 年一季度见顶，然后连跌到 2009 年 —— <strong class="hl">十八年</strong>。</p>
   <div class="chart"><canvas id="jp-chart" role="img" aria-label="折线图：日本实际住宅价格指数 1955 至 2025，1991 年见顶后长期下跌。">日本实际房价 1955–2025。</canvas></div>
   <p class="hint" id="jp-note"></p>
@@ -218,8 +263,10 @@
   <p>最特别的一条是<strong>金利引継特約</strong>：还款期间卖房，买方可以<strong>按卖方原来的利率承接这笔贷款</strong>，房子作为「带贷款的住宅」出售。「贷 50 年、其实只住 15 年」这个矛盾，被制度直接消掉了 —— 贷款跟着房子走，不跟着人走。</p>
   <p>代价现在非常直接。フラット35 2026 年 9 月的最低利率是 <strong>3.46%</strong>，比上月涨 0.17 个百分点，创下 2017 年 10 月现行制度以来的最高；8 月是 3.290%，7 月 3.140%，一路在破纪录。フラット50 2026 年 7 月的最频利率（融资率 9 成以下）是 3.32%。背景是日本央行 2026 年 6 月把政策利率加到 <strong>1.00%</strong>，长端国债收益率升到三十年高位。</p>
   <p>于是出现一个反差：<strong class="hl">日本人自己并不买这个长期固定</strong>。国土交通省《民间住宅贷款实态调查》令和 6 年度口径，新发放里 <strong>84.3% 选浮动利率</strong>（2026 年 8 月主要行浮动型中位数约 1.2%）。他们签 35 年，然后靠<strong>繰上返済</strong>（提前还款，不收违约金）在十几年里还完 —— 合同年限买的是「月供地板」这份保险，不是真打算还到最后一期。住宅贷款减税（年末余额 × 0.7%、最长 13 年，已延长至 2030 年）把补贴堆在前 13 年，也在劝人前期别急着还本金。</p>
+  </details>
 
-  <h2 id="kr">韩国：跌得更狠，但收复了</h2>
+  <details class="fold" id="kr">
+    <summary><h2>韩国：50 年成了绕开 DSR 的路，两年就收回</h2></summary>
   <p>韩国和日本同年见顶，跌得更急。区别在后面 —— 它<strong class="hl">收复了失地，然后又吹起一轮</strong>，2021 年再次见顶。这是理解韩国为什么两年就收回 50 年贷款的前提。</p>
   <div class="chart"><canvas id="kr-chart" role="img" aria-label="折线图：韩国实际住宅价格指数 1975 至 2026，1991 年见顶、1998 年触底后收复并于 2021 年再度见顶。">韩国实际房价 1975–2026。</canvas></div>
   <p class="hint" id="kr-note"></p>
@@ -261,8 +308,10 @@
   <p>监管的反制是逐级加码的：2023 年 9 月，把 50 年期贷款在 <strong>DSR 计算里的期限上限压到 40 年</strong>（你可以真还 50 年，但算 DSR 时按 40 年算，可借额度被打回去），同时讨论把 50 年期限死在 34 岁以下。2025 年 6 月 27 日直接收口：首都圈与调控区域的银行房贷<strong>期限一律不超过 30 年</strong>，官方给出的理由原文就是<strong class="hl hl--warn">防止绕开 DSR</strong>；同时按房价分档限额（15 亿韩元以下 6 亿、15–25 亿 4 亿、25 亿以上 2 亿），首次购房 LTV 从 80% 降到 70%，次日 6 月 28 日起施行。2026 年 6 月 30 日又把华城东滩、龙仁器兴、九里追加为调控区域。</p>
   <p>但韩国并没有把 50 年一刀切掉，它只是<strong>换了个地方放</strong>：政策性贷款「보금자리론」是全期间固定利率，期限可选 10/15/20/30/40/50 年，用年龄定向 —— <strong>40 年限 39 岁以下</strong>（新婚家庭放宽到 49 岁）、<strong>50 年限 34 岁以下</strong>（新婚 39 岁）；符合条件的，即便在首都圈也仍可用 40、50 年。</p>
   <p>结果是家庭债务/GDP 从 2024 年三季度之前的 90% 以上，降到 <strong>2026 年一季度的 85.3%</strong>，官方目标是 2030 年降到 80% 以下。</p>
+  </details>
 
-  <h2 id="cn">中国：刚从 30 年放到 40 年</h2>
+  <details class="fold" id="cn">
+    <summary><h2>中国：刚从 30 年放到 40 年</h2></summary>
   <div class="chart"><canvas id="cn-chart" role="img" aria-label="折线图：中国实际住宅价格指数 2005 至 2026，2021 年三季度见顶后持续下跌。">中国实际房价 2005–2026。</canvas></div>
   <p class="hint" id="cn-note"></p>
 
@@ -286,8 +335,10 @@
   <p>能不能真贷到 40 年，卡点不在这条政策，在<strong>年龄</strong>：主流商业银行执行「借款人年龄 + 贷款期限 ≤ 65 或 70 周岁」，个别放宽到 75。按 70 算，30 岁才勉强够到 40 年，35 岁就只剩 35 年。公积金更严，一般不超过 30 年且与法定退休年龄挂钩。此外还有房龄约束（常见「房龄 + 贷款年限 ≤ 40 或 50 年」）。</p>
 
   <p>这条新政的真实效果，按 100 万本金、当前 5 年期以上 LPR 3.5% 计：<span id="policy-delta">月供与总利息的变化</span>。<a href="../loan/?p=100&r=3.5&n=40">换成你自己的数字算 →</a></p>
+  </details>
 
-  <h2 id="caps">三国的上限，各自走到哪一步</h2>
+  <details class="fold" id="caps">
+    <summary><h2>三国的上限，各自走到哪一步</h2></summary>
   <p class="asof">数据核对日期：2026-09-01。利率与政策随时会变，用之前请点开原文复核。</p>
 
   <p>把上限从 30 年推到 40 年，中国是 2026 年 8 月才做的事。日本和韩国都走在前面：日本的上限是 50 年，韩国也曾经是 50 年 —— 然后在 2025 年 6 月，亲手把首都圈的上限收回到 30 年。同一个工具，两种结局。</p>
@@ -373,8 +424,10 @@
     </div>
     <figcaption>韩国那条线在 2021 年之前没有画 —— 我没有找到可靠的统一口径，不猜。日本的 50 年一直是虚线：它不是普遍上限，只对拿到长期优良住宅认定的房子开放。</figcaption>
   </figure>
+  </details>
 
-  <h2 id="cmp">三国对照</h2>
+  <details class="fold" id="cmp">
+    <summary><h2>同一笔 100 万，在三国的档位上分别是什么样</h2></summary>
 
   <h3>把滑块调到各国的档位</h3>
   <p class="hint">点一下，上面的年利率与年限滑块就切到该口径；本金保持你自己设的数。下表按同一笔本金重算，只比「利率 × 年限」这一个组合，不含各国的税费、保险、补贴与首付要求。</p>
@@ -441,8 +494,10 @@
   </figure>
 
   <p>把这张表读一遍会发现，日韩的共同点不是「拉长年限」，而是<strong class="hl">拉长年限必须配一个约束</strong>：日本配的是房子的寿命认定加全期间固定利率，韩国配的是 DSR 加年龄门槛。一旦长期限脱离约束、跑进普通的浮动利率贷款里，韩国的反应是立刻收回。</p>
+  </details>
 
-  <h2 id="why">年限不是重点，约束才是</h2>
+  <details class="fold" id="why">
+    <summary><h2>结论：年限不是重点，约束才是</h2></summary>
   <p>三条好处，都能在这页上半部分的曲线里看到：</p>
   <p><strong>一、月供的准入效应。</strong>从 20 年到 30 年，月供降幅最大；这一段是实打实把「买得起／买不起」的门槛往下推。曲线陡的那一段，是有意义的那一段。</p>
   <p><strong>二、现金流前移。</strong>年轻家庭的收入曲线是上升的，长期限把还款压力从收入最低的头十年挪到后面。韩国用年龄门槛、日本用親子リレー，都是在把这个好处<strong>定向</strong>给它该给的人，而不是普发。</p>
@@ -501,6 +556,7 @@
   <p><strong>抄不了的第三条：我们缺一个能随时收回它的开关。</strong>韩国之所以敢放 50 年，是因为它有 DSR，一旦发现被用来加杠杆，改一个口径就能立刻收紧。中国没有全国统一的家庭级偿债比指标，能用的开关是首付比例和限购 —— 这两个开关调的是「能不能买」，不是「能背多重」。放长期限之前，先有这个开关，顺序上更稳。</p>
 
   <p class="hint">以上是把公开政策口径放在一起做的比较，不是对任何一国房价或利率走向的预测，也不构成任何贷款或投资建议。</p>
+  </details>
 
   <h2 id="src">信息来源</h2>
   <ul class="links">
@@ -536,191 +592,229 @@
 
   <footer>房价为 BIS 实际（剔除通胀）住宅价格指数，2010 = 100，经 FRED 转发；利率与政策以各国监管机构公告为准。仅作数据可视化演示，不构成任何购房、投资或贷款建议。</footer>
 </main>
-
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script>
 (function () {
-  // This page compares countries; the calculator lives at /loan/. Everything
-  // here is evaluated at one stated set of assumptions rather than from
-  // sliders, so the numbers in the prose and in the tables cannot drift apart.
-  var BASE = { principal: 1000000, rate: 3.5 };
   var GRAY = '#8a8a8a';
-  var CC = { cn: '#e34948', jp: '#2a78d6', kr: '#eda100' };
+  var C = { cn: '#e34948', jp: '#2a78d6', kr: '#eda100' };
+  var NAME = { cn: '中国', jp: '日本', kr: '韩国' };
+  var ORDER = ['cn', 'jp', 'kr'];
 
   var fmt = function (v) { return Math.round(v).toLocaleString('en-US'); };
   var wan = function (v) { return (v / 10000).toFixed(v < 100000 ? 1 : 0) + ' 万'; };
-  var pctTxt = function (v) { return (v > 0 ? '+' : '') + v.toFixed(1) + '%'; };
+  var pctTxt = function (v, d) { return (v > 0 ? '+' : '') + v.toFixed(d == null ? 1 : d) + '%'; };
   var qLabel = function (d) { var x = d.split('-'); return x[0] + 'Q' + (Math.floor((+x[1] - 1) / 3) + 1); };
   var pay = function (amt, ratePct, years) {
     var i = (ratePct / 100) / 12, n = years * 12;
     return amt * i / (1 - Math.pow(1 + i, -n));
   };
-  var balanceAfter = function (amt, i, m, k) {
-    var g = Math.pow(1 + i, k);
-    return amt * g - m * (g - 1) / i;
+  var repaidAfter = function (amt, ratePct, years, k) {
+    var i = (ratePct / 100) / 12, m = pay(amt, ratePct, years), g = Math.pow(1 + i, k);
+    return 1 - (amt * g - m * (g - 1) / i) / amt;
   };
 
-  var REGIMES = [
-    { cc: '中国', name: '商贷首套（新政上限）', years: 40, rate: 3.50, note: '2026-08-28 起，30→40 年' },
-    { cc: '中国', name: '公积金首套',        years: 30, rate: 2.60, note: '2025-05-08 起执行' },
-    { cc: '日本', name: '変動型（主流）',     years: 35, rate: 1.20, note: '2026-08 主要行中位数' },
-    { cc: '日本', name: 'フラット35 固定', years: 35, rate: 3.46, note: '2026-09 最低金利' },
-    { cc: '日本', name: 'フラット50 固定', years: 50, rate: 3.32, note: '2026-07 最频金利' },
-    { cc: '韩国', name: '首都圈 30 年上限',   years: 30, rate: 3.18, note: '2026-07 新规 COFIX' },
-    { cc: '韩国', name: '보금자리론 50 年',   years: 50, rate: 3.60, note: '2026-06 最低档 · 限 34 岁以下' }
-  ];
-
-  // Regime cards link into the calculator with the figures prefilled, rather
-  // than duplicating a calculator here.
-  var regWrap = document.getElementById('regimes');
-  if (regWrap) {
-    regWrap.innerHTML = REGIMES.map(function (g) {
-      return '<a class="regime" href="../loan/?p=' + (BASE.principal / 10000) + '&r=' + g.rate + '&n=' + g.years + '">'
-        + '<span class="rn"><span class="cc">' + g.cc + '</span> ' + g.name + '</span>'
-        + '<span class="rv">' + g.years + ' 年 · ' + g.rate.toFixed(2) + '%</span>'
-        + '<span class="rd">' + g.note + '</span></a>';
-    }).join('');
-  }
-
-  var cmp = document.getElementById('cmp-body');
-  if (cmp) {
-    var amt = BASE.principal;
-    cmp.innerHTML = REGIMES.map(function (g) {
-      var i = (g.rate / 100) / 12, m = pay(amt, g.rate, g.years);
-      var total = m * 12 * g.years;
-      var repaid5 = 1 - balanceAfter(amt, i, m, 60) / amt;
-      return '<tr><td>' + g.cc + ' · ' + g.name + '</td><td>' + g.years + '</td>'
-        + '<td>' + g.rate.toFixed(2) + '%</td><td>' + fmt(m) + '</td>'
-        + '<td>' + wan(total - amt) + '</td><td>' + (repaid5 * 100).toFixed(1) + '%</td></tr>';
-    }).join('');
-    var note = document.getElementById('cmp-note');
-    if (note) note.textContent = '统一按 ' + wan(amt) + '本金计算，各行利率取上表所列。最后一列是还满 5 年后已归还的本金比例 —— 同样还了五年，30 年期还掉的本金份额大约是 50 年期的两倍。';
-  }
-
-  var pd = document.getElementById('policy-delta');
-  if (pd) {
-    var p30 = pay(BASE.principal, BASE.rate, 30), p40 = pay(BASE.principal, BASE.rate, 40);
-    var i30 = p30 * 360 - BASE.principal, i40 = p40 * 480 - BASE.principal;
-    pd.textContent = '月供从 ' + fmt(p30) + ' 降到 ' + fmt(p40) + '，每月少还 ' + fmt(p30 - p40)
-      + '；代价是总利息从 ' + wan(i30) + '涨到 ' + wan(i40) + '，多付 ' + wan(i40 - i30);
-  }
-
-  var shock = document.getElementById('shock');
-  if (shock) {
-    var up = 1;
-    var a = pay(BASE.principal, BASE.rate, 40), b = pay(BASE.principal, BASE.rate + up, 40);
-    shock.textContent = '按 ' + wan(BASE.principal) + '、40 年算，利率每上行 1 个百分点，月供从 '
-      + fmt(a) + ' 变成 ' + fmt(b) + '（+' + ((b / a - 1) * 100).toFixed(1) + '%）。';
-  }
-
-  // ---- 中日韩实际房价 ----
-  var lineScales = function (xTitle, yTitle, extraX) {
-    return {
-      x: Object.assign({ type: 'linear', title: { display: true, text: xTitle, color: GRAY },
-                         ticks: { color: GRAY, maxTicksLimit: 9 }, grid: { display: false } }, extraX || {}),
-      y: { title: { display: true, text: yTitle, color: GRAY },
-           ticks: { color: GRAY }, grid: { color: 'rgba(138,138,138,.22)' } }
-    };
-  };
+  // Everything the sheet asserts, in one place. Figures carry their as-of in
+  // the sub line so a stale number is visible rather than implied.
+  var BASE = 1000000;
+  var FLAG = { flagship: { cn: { years: 40, rate: 3.10 }, jp: { years: 35, rate: 3.46 }, kr: { years: 30, rate: 3.18 } } };
 
   fetch('./data/cnjpkr.json', { cache: 'no-cache' })
     .then(function (r) { return r.ok ? r.json() : null; })
     .catch(function () { return null; })
-    .then(function (d) { if (d) drawPrices(d); });
+    .then(function (d) { if (d) { drawTop(d); drawSheet(d); } });
 
-  function drawPrices(d) {
-    var by = {};
-    d.countries.forEach(function (c) { by[c.key] = c; });
+  function drawTop(d) {
+    var by = {}; d.countries.forEach(function (c) { by[c.key] = c; });
     var cn = by.cn, jp = by.jp, kr = by.kr;
     var age = +(cn.quartersSincePeak / 4).toFixed(1);
 
     document.getElementById('stage').innerHTML = [
       ['cn', '中国 · 今天', cn.last.dd, '峰值 ' + qLabel(cn.peak.d) + ' · 已过 ' + age + ' 年'],
-      ['jp', '日本 · 同龄时', jp.atChinasAge && jp.atChinasAge.dd, '即 ' + qLabel(jp.atChinasAge.d) + '，最终最低 ' + jp.trough.dd.toFixed(1) + '%'],
-      ['kr', '韩国 · 同龄时', kr.atChinasAge && kr.atChinasAge.dd, '即 ' + qLabel(kr.atChinasAge.d) + '，最终最低 ' + kr.trough.dd.toFixed(1) + '%']
+      ['jp', '日本 · 同龄时', jp.atChinasAge.dd, '即 ' + qLabel(jp.atChinasAge.d) + '，最终最低 ' + jp.trough.dd.toFixed(1) + '%'],
+      ['kr', '韩国 · 同龄时', kr.atChinasAge.dd, '即 ' + qLabel(kr.atChinasAge.d) + '，最终最低 ' + kr.trough.dd.toFixed(1) + '%']
     ].map(function (x) {
       return '<div class="s ' + x[0] + '"><div class="sk">' + x[1] + '</div>'
-        + '<div class="sv">' + (x[2] == null ? '—' : pctTxt(x[2])) + '</div>'
-        + '<div class="sd">' + x[3] + '</div></div>';
+        + '<div class="sv">' + pctTxt(x[2]) + '</div><div class="sd">' + x[3] + '</div></div>';
     }).join('');
 
     document.getElementById('align-legend').innerHTML = d.countries.map(function (c) {
-      return '<span><i class="swatch" style="background:' + CC[c.key] + '"></i>' + c.name
+      return '<span><i class="swatch" style="background:' + C[c.key] + '"></i>' + c.name
         + '（峰值 ' + qLabel(c.peak.d) + '）</span>';
     }).join('') + '<span><i class="swatch dash"></i>中国当前位置</span>';
 
     var sets = d.countries.map(function (c) {
-      return { label: c.name, borderColor: CC[c.key], borderWidth: c.key === 'cn' ? 2.6 : 1.8,
+      return { label: c.name, borderColor: C[c.key], borderWidth: c.key === 'cn' ? 2.6 : 1.8,
         tension: .2, pointRadius: 0, spanGaps: true,
         data: c.since.map(function (q) { return { x: q.y, y: q.dd, d: q.d }; }) };
     });
     sets.push({ label: '中国当前', borderColor: GRAY, borderWidth: 1.5, borderDash: [5, 3],
       pointRadius: 0, __marker: true, data: [{ x: age, y: 4 }, { x: age, y: -55 }] });
 
-    var tip = {
-      filter: function (c) { return !c.dataset.__marker; },
-      callbacks: {
-        title: function (t) { return '峰值后 ' + t[0].parsed.x.toFixed(1) + ' 年'; },
-        label: function (c) { return c.dataset.label + '：' + pctTxt(c.parsed.y)
-          + (c.raw && c.raw.d ? '（' + qLabel(c.raw.d) + '）' : ''); }
-      }
-    };
     new Chart(document.getElementById('align'), {
       type: 'line', data: { datasets: sets },
       options: { responsive: true, maintainAspectRatio: false, animation: { duration: 200 },
         interaction: { mode: 'index', intersect: false },
-        plugins: { legend: { display: false }, tooltip: tip },
-        scales: lineScales('距各自峰值（年）', '距峰跌幅（%）', { min: 0, max: 35 }) }
+        plugins: { legend: { display: false }, tooltip: {
+          filter: function (c) { return !c.dataset.__marker; },
+          callbacks: {
+            title: function (t) { return '峰值后 ' + t[0].parsed.x.toFixed(1) + ' 年'; },
+            label: function (c) { return c.dataset.label + '：' + pctTxt(c.parsed.y)
+              + (c.raw && c.raw.d ? '（' + qLabel(c.raw.d) + '）' : ''); } } } },
+        scales: {
+          x: { type: 'linear', min: 0, max: 35, title: { display: true, text: '距各自峰值（年）', color: GRAY },
+               ticks: { color: GRAY }, grid: { display: false } },
+          y: { title: { display: true, text: '距峰跌幅（%）', color: GRAY },
+               ticks: { color: GRAY, callback: function (v) { return v + '%'; } },
+               grid: { color: 'rgba(138,138,138,.22)' } } } }
     });
 
     document.getElementById('align-note').textContent =
-      '峰值后 ' + age + ' 年这个时点：中国 ' + pctTxt(cn.last.dd)
-      + '，当年的日本 ' + pctTxt(jp.atChinasAge.dd) + '，当年的韩国 ' + pctTxt(kr.atChinasAge.dd)
-      + '。中国跌得比日本当年快、比韩国当年慢 —— 而韩国后来收复了，日本没有。'
-      + '曲线只从各自峰值画起：涨上去那一段是另一个问题，混在同一张图上会看不清。';
+      '峰值后 ' + age + ' 年这个时点：中国 ' + pctTxt(cn.last.dd) + '，当年的日本 '
+      + pctTxt(jp.atChinasAge.dd) + '，当年的韩国 ' + pctTxt(kr.atChinasAge.dd)
+      + '。中国跌得比日本当年快、比韩国当年慢 —— 而韩国后来收复了，日本没有。';
+  }
 
-    var single = function (canvasId, c, noteId, note) {
-      var pts = c.series.map(function (r) {
-        return { x: +r.d.slice(0, 4) + (+r.d.slice(5, 7) - 1) / 12, y: r.v, d: r.d };
-      });
-      new Chart(document.getElementById(canvasId), {
-        type: 'line',
-        data: { datasets: [
-          { label: c.name, borderColor: CC[c.key], borderWidth: 2, tension: .2, pointRadius: 0, data: pts },
-          { label: '峰值', borderColor: GRAY, borderWidth: 1.5, borderDash: [5, 3], pointRadius: 0,
-            __marker: true, data: [{ x: +c.peak.d.slice(0, 4), y: 0 }, { x: +c.peak.d.slice(0, 4), y: c.peak.v * 1.06 }] }
-        ] },
-        options: { responsive: true, maintainAspectRatio: false, animation: { duration: 200 },
-          interaction: { mode: 'index', intersect: false },
-          plugins: { legend: { display: false }, tooltip: {
-            filter: function (x) { return !x.dataset.__marker; },
-            callbacks: {
-              title: function (t) { return t[0].raw && t[0].raw.d ? qLabel(t[0].raw.d) : ''; },
-              label: function (x) { return c.name + '：' + x.parsed.y.toFixed(1)
-                + '（距峰 ' + pctTxt(x.parsed.y / c.peak.v * 100 - 100) + '）'; }
-            } } },
-          scales: lineScales('年份', '实际房价指数（2010 = 100）',
-            { ticks: { color: GRAY, maxTicksLimit: 9, callback: function (v) { return Math.round(v); } } }) }
-      });
-      document.getElementById(noteId).textContent = note;
-    };
+  // --- spec sheet ---
+  function bar(frac, color) {
+    var w = Math.max(2, Math.min(100, frac * 100));
+    return '<div class="bar"><i style="width:' + w.toFixed(1) + '%;background:' + color + '"></i></div>';
+  }
+  function flag(kind, text) {
+    var g = { yes: '✓', no: '✗', mid: '~', na: '—' }[kind];
+    return '<div class="flag"><span class="g ' + kind + '">' + g + '</span>' + text + '</div>';
+  }
+  // A shared 1950-2030 track with a dot at the peak, so "1991 vs 2021" is a
+  // position rather than two numbers the reader has to subtract.
+  function whenBar(year, color) {
+    var lo = 1950, hi = 2030;
+    var x = Math.max(0, Math.min(100, (year - lo) / (hi - lo) * 100));
+    return '<svg class="spark" style="height:16px" viewBox="0 0 100 16" preserveAspectRatio="none" aria-hidden="true">'
+      + '<line x1="0" y1="8" x2="100" y2="8" stroke="' + GRAY + '" stroke-opacity=".35" stroke-width="1" vector-effect="non-scaling-stroke"/>'
+      + '<circle cx="' + x.toFixed(1) + '" cy="8" r="3.4" fill="' + color + '" vector-effect="non-scaling-stroke"/>'
+      + '</svg>';
+  }
 
-    single('jp-chart', jp, 'jp-note',
-      '峰值 ' + jp.peak.v.toFixed(0) + '（' + qLabel(jp.peak.d) + '），最低 ' + jp.trough.dd.toFixed(1)
-      + '%（' + qLabel(jp.trough.d) + '，峰后 ' + jp.trough.y.toFixed(1) + ' 年），今天仍在 '
-      + pctTxt(jp.last.dd) + '：三十四年没有回到 1991 年的水平。');
-    single('kr-chart', kr, 'kr-note',
-      '峰值 ' + kr.peak.v.toFixed(0) + '（' + qLabel(kr.peak.d) + '），最低 ' + kr.trough.dd.toFixed(1)
-      + '%（' + qLabel(kr.trough.d) + '），今天 ' + pctTxt(kr.last.dd)
-      + '。这条线在 2000 年后重新站起来 —— 三国里唯一收复过失地的。');
-    single('cn-chart', cn, 'cn-note',
-      '峰值 ' + cn.peak.v.toFixed(0) + '（' + qLabel(cn.peak.d) + '），今天 ' + cn.last.v.toFixed(0)
-      + '，距峰 ' + pctTxt(cn.last.dd) + '。序列自 ' + qLabel(cn.from) + ' 起，涨上去那一段只有一半在图上。');
+  function spark(c) {
+    var v = c.series.map(function (r) { return r.v; });
+    var lo = Math.min.apply(null, v), hi = Math.max.apply(null, v), W = 100, H = 30;
+    var pts = v.map(function (y, i) {
+      return (i / (v.length - 1) * W).toFixed(1) + ',' + (H - (y - lo) / (hi - lo) * H).toFixed(1);
+    }).join(' ');
+    var pi = c.series.findIndex(function (r) { return r.d === c.peak.d; });
+    var px = (pi / (v.length - 1) * W).toFixed(1);
+    return '<svg class="spark" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" aria-hidden="true">'
+      + '<line x1="' + px + '" y1="0" x2="' + px + '" y2="' + H + '" stroke="' + GRAY + '" stroke-opacity=".5" stroke-dasharray="2 2" stroke-width="1" vector-effect="non-scaling-stroke"/>'
+      + '<polyline points="' + pts + '" fill="none" stroke="' + C[c.key] + '" stroke-width="1.6" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></svg>';
+  }
+
+  function drawSheet(d) {
+    var by = {}; d.countries.forEach(function (c) { by[c.key] = c; });
+    var age = +(by.cn.quartersSincePeak / 4).toFixed(1);
+
+    var ROWS = [
+      { dim: '房价走势', sub: '实际指数，虚线为各自峰值',
+        cell: function (k) { return { html: spark(by[k]), val: '', sub: qLabel(by[k].from) + ' 起' }; } },
+      { dim: '见顶时间', sub: '同一条 1950—2030 轴上的位置',
+        cell: function (k) {
+          return { html: '<div class="cval">' + qLabel(by[k].peak.d) + '</div>'
+            + whenBar(+by[k].peak.d.slice(0, 4), C[k]),
+            sub: '峰值指数 ' + by[k].peak.v.toFixed(0) };
+        } },
+      { dim: '距峰已过', sub: '到最新一期为止', num: function (k) { return by[k].quartersSincePeak / 4; },
+        cell: function (k) { var y = by[k].quartersSincePeak / 4; return { val: y.toFixed(1) + ' 年', sub: '至 ' + qLabel(by[k].to) }; } },
+      { dim: '当前距峰', sub: '越长跌得越多', num: function (k) { return Math.abs(by[k].last.dd); },
+        cell: function (k) { return { val: pctTxt(by[k].last.dd), sub: '指数 ' + by[k].last.v.toFixed(0) }; } },
+      { dim: '史上最深', sub: '峰后曾经跌到的最低点', num: function (k) { return Math.abs(by[k].trough.dd); },
+        cell: function (k) { return { val: pctTxt(by[k].trough.dd), sub: qLabel(by[k].trough.d) + '，峰后 ' + by[k].trough.y.toFixed(1) + ' 年' }; } },
+      { dim: '同龄时跌幅', sub: '各国在「峰后 ' + age + ' 年」这个时点',
+        num: function (k) { return Math.abs(k === 'cn' ? by.cn.last.dd : by[k].atChinasAge.dd); },
+        cell: function (k) {
+          var v = k === 'cn' ? by.cn.last.dd : by[k].atChinasAge.dd;
+          var when = k === 'cn' ? '就是今天' : qLabel(by[k].atChinasAge.d);
+          return { val: pctTxt(v), sub: when };
+        } },
+      { dim: '是否收复过', sub: '峰后是否回到过原水平',
+        cell: function (k) {
+          if (k === 'kr') return { html: flag('yes', '收复过'), sub: '2000 年代重新站起' };
+          if (k === 'jp') return { html: flag('no', '从未'), sub: '34 年仍在 ' + pctTxt(by.jp.last.dd) };
+          return { html: flag('na', '未知'), sub: '峰后仅 ' + age + ' 年' };
+        } },
+
+      { dim: '期限上限', sub: '监管允许的最长年限', num: function (k) { return ({ cn: 40, jp: 50, kr: 50 })[k]; },
+        cell: function (k) { return ({
+          cn: { val: '40 年', sub: '2026-08-28 起，此前 30 年' },
+          jp: { val: '50 年', sub: '限长期优良住宅认定；普通 35 年' },
+          kr: { val: '50 年', sub: '仅政策贷；首都圈银行贷 30 年' } })[k]; } },
+      { dim: '利率形态', sub: '长期限是保险还是敞口',
+        cell: function (k) { return ({
+          cn: { html: flag('no', '浮动'), sub: 'LPR 逐年重定价' },
+          jp: { html: flag('yes', '可全期固定'), sub: 'フラット 全期间固定；84.3% 仍选浮动' },
+          kr: { html: flag('mid', '以浮动为主'), sub: '银行 COFIX 变动；政策贷固定' } })[k]; } },
+      { dim: '当前利率', sub: '各自的旗舰口径', num: function (k) { return FLAG.flagship[k].rate; },
+        cell: function (k) { return ({
+          cn: { val: '3.10%', sub: '新发放加权平均，2026-07' },
+          jp: { val: '3.46%', sub: 'フラット35 最低金利，2026-09' },
+          kr: { val: '3.18%', sub: '新规 COFIX，2026-07' } })[k]; } },
+      { dim: '谁能拿长期限', sub: '准入门槛',
+        cell: function (k) { return ({
+          cn: { html: flag('mid', '按年龄'), sub: '年龄 + 期限 ≤ 65 或 70（银行内规）' },
+          jp: { html: flag('mid', '按完済年龄'), sub: '完済须未满 80 岁；親子リレー按子女算' },
+          kr: { html: flag('yes', '按年龄分档'), sub: '50 年限 34 岁以下，40 年限 39 岁以下' } })[k]; } },
+      { dim: '抵押物寿命约束', sub: '房子能不能撑到还完',
+        cell: function (k) { return ({
+          cn: { html: flag('mid', '有，但是土地'), sub: '70 年使用权；房龄 + 年限 ≤ 40 或 50' },
+          jp: { html: flag('yes', '有，是结构'), sub: '长期优良住宅认定：结构体百年量级' },
+          kr: { html: flag('no', '无对应设计'), sub: '' } })[k]; } },
+      { dim: '贷款可否承接', sub: '卖房时买家能否接原利率',
+        cell: function (k) { return ({
+          cn: { html: flag('no', '否'), sub: '带押过户已推开，但利率不承接' },
+          jp: { html: flag('yes', '可'), sub: 'フラット50 金利引継特約' },
+          kr: { html: flag('no', '否'), sub: '' } })[k]; } },
+      { dim: '家庭偿债约束', sub: '拉长年限会不会被借更多吃掉',
+        cell: function (k) { return ({
+          cn: { html: flag('no', '无统一 DSR'), sub: '靠首付比例与限购' },
+          jp: { html: flag('mid', '无硬指标'), sub: '靠固定利率封住风险' },
+          kr: { html: flag('yes', 'DSR 40%'), sub: '另有压力 DSR' } })[k]; } },
+      { dim: '居民杠杆率', sub: '住户部门债务／GDP', num: function (k) { return ({ cn: 59.0, jp: 0, kr: 85.3 })[k]; },
+        cell: function (k) { return ({
+          cn: { val: '59.0%', sub: '2026 年一季度' },
+          jp: { val: '—', sub: '本页未取该口径' },
+          kr: { val: '85.3%', sub: '2026 年一季度' } })[k]; } },
+
+      { dim: '月供 @100 万', sub: '按各自旗舰口径试算', num: function (k) { var f = FLAG.flagship[k]; return pay(BASE, f.rate, f.years); },
+        cell: function (k) { var f = FLAG.flagship[k];
+          return { val: fmt(pay(BASE, f.rate, f.years)), sub: f.years + ' 年 · ' + f.rate.toFixed(2) + '%' }; } },
+      { dim: '总利息 @100 万', sub: '同上口径，全期累计', num: function (k) { var f = FLAG.flagship[k]; return pay(BASE, f.rate, f.years) * 12 * f.years - BASE; },
+        cell: function (k) { var f = FLAG.flagship[k];
+          return { val: wan(pay(BASE, f.rate, f.years) * 12 * f.years - BASE), sub: '占本金 '
+            + ((pay(BASE, f.rate, f.years) * 12 * f.years - BASE) / BASE * 100).toFixed(0) + '%' }; } },
+      { dim: '还满 5 年已还本金', sub: '越低说明净值积累越慢', num: function (k) { var f = FLAG.flagship[k]; return repaidAfter(BASE, f.rate, f.years, 60); },
+        cell: function (k) { var f = FLAG.flagship[k];
+          return { val: (repaidAfter(BASE, f.rate, f.years, 60) * 100).toFixed(1) + '%', sub: '' }; } }
+    ];
+
+    var html = ['<div class="srow head"><div class="sdim"></div>'
+      + ORDER.map(function (k) { return '<div class="cty"><i style="background:' + C[k] + '"></i>' + NAME[k] + '</div>'; }).join('')
+      + '</div>'];
+
+    ROWS.forEach(function (r) {
+      var max = 0;
+      if (r.num) ORDER.forEach(function (k) { max = Math.max(max, Math.abs(r.num(k)) || 0); });
+      html.push('<div class="srow"><div class="sdim"><b>' + r.dim + '</b>' + (r.sub || '') + '</div>'
+        + ORDER.map(function (k) {
+            var c = r.cell(k);
+            var body = c.html || ('<div class="cval">' + c.val + '</div>');
+            var b = (r.num && max) ? bar(Math.abs(r.num(k)) / max, C[k]) : '';
+            return '<div class="cell">' + body + b + (c.sub ? '<div class="csub">' + c.sub + '</div>' : '') + '</div>';
+          }).join('')
+        + '</div>');
+    });
+
+    document.getElementById('sheet').innerHTML = html.join('');
   }
 
   // ---- sticky rail ----
-  var SEC = [['now', '对齐'], ['jp', '日本'], ['kr', '韩国'], ['cn', '中国'],
-             ['caps', '上限'], ['cmp', '对照'], ['why', '结论'], ['src', '来源']];
+  var SEC = [['now', '现状'], ['spec', '规格'], ['detail', '细节'], ['src', '来源']];
   var live = SEC.map(function (x) { return { key: x[0], label: x[1], el: document.getElementById(x[0]) }; })
                 .filter(function (g) { return g.el; });
   if (live.length) {
@@ -737,9 +831,6 @@
     });
     rail.appendChild(inner);
     main.parentNode.insertBefore(rail, main);
-
-    // The status bar above is injected by a deferred script, so its height is
-    // measured rather than hard-coded; otherwise the two sticky bars overlap.
     var railTop = 0, railH = 44;
     var setTop = function () {
       var bar = document.querySelector('.zb') || document.querySelector('.statusbar');
@@ -748,8 +839,6 @@
       document.documentElement.style.setProperty('--rail-top', railTop + 'px');
       document.documentElement.style.setProperty('--rail-h', railH + 'px');
     };
-    // Geometry rather than scroll events: this page is read inside embedded
-    // panes that do not reliably dispatch window scroll.
     var pick = function () {
       var edge = railTop + railH + 12, cur = live[0];
       live.forEach(function (g) { if (g.el.getBoundingClientRect().top <= edge) cur = g; });
