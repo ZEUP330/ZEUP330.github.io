@@ -405,13 +405,13 @@
     <figcaption>一切都围着湘江排。住东岸的五一广场，两天里去西岸一次就够，别来回过江。</figcaption>
   </figure>
 
-  <p>上面那张是示意图，比例是排版排出来的。下面这张是真的 —— 底图走<a href="https://www.tianditu.gov.cn/" rel="noopener">天地图</a>官方瓦片服务。</p>
+  <p>上面那张是示意图，比例是排版排出来的。下面这张是真的 —— 卫星影像来自 Esri，矢量底图来自 OpenStreetMap / CARTO，都不需要注册。</p>
 
   <div class="toolbar">
     <button id="tdt-load" type="button">加载实景地图</button>
     <span class="chips" id="tdt-layers" hidden>
-      <button type="button" class="chip" data-layer="img" aria-pressed="true">卫星影像</button>
-      <button type="button" class="chip" data-layer="vec" aria-pressed="false">矢量地图</button>
+      <button type="button" class="chip" data-layer="sat" aria-pressed="true">卫星影像</button>
+      <button type="button" class="chip" data-layer="map" aria-pressed="false">矢量地图</button>
     </span>
   </div>
   <div class="tdt" id="tdt" hidden></div>
@@ -1240,29 +1240,42 @@
 </script>
 
 <script>
-/* Real basemap for the geography section, on 天地图's official tile service.
+/* Real basemap for the geography section.
  *
- * It needs a key. Register at https://console.tianditu.gov.cn/ , create an
- * application of type "浏览器端", and whitelist the domain this is served from
- * (zeup330.github.io). Then paste the key below - nothing else has to change.
- * The key is public by design for browser-side use; the domain whitelist is
- * what protects it, so keep that list tight.
+ * Keyless on purpose. 天地图 would be the better-licensed choice for a Chinese
+ * map, but it needs a browser key with a domain whitelist, and a key nobody
+ * maintains is a map that silently dies. These two tile sets need no account:
  *
- * Chosen over a third-party satellite viewer because it is the one Chinese
- * basemap with a documented endpoint, a stated licence and a stable URL.
- * _w is Web Mercator, which is what Leaflet already speaks; the coordinates
- * are CGCS2000, close enough to WGS84 that plain lat/lng lands correctly
- * (do NOT feed it GCJ-02 coordinates from Amap or Baidu - they sit ~500m off).
+ *   卫星  Esri World Imagery
+ *   地图  CARTO Positron / Dark Matter, drawn from OpenStreetMap data
+ *
+ * Both are free for this kind of use and both want attribution, which the
+ * control at the bottom right carries. Both are WGS84, which is what the pin
+ * coordinates below are - do NOT swap in GCJ-02 coordinates from Amap or
+ * Baidu, they sit a few hundred metres off.
  */
 (function () {
-  var TDT_KEY = '';
-
   var LEAFLET = 'https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/';
   var btn = document.getElementById('tdt-load');
   var host = document.getElementById('tdt');
   var note = document.getElementById('tdt-note');
   var chips = document.getElementById('tdt-layers');
   if (!btn) return;
+
+  var OSM = '© <a href="https://www.openstreetmap.org/copyright" rel="noopener">OpenStreetMap</a> 贡献者';
+  var TILES = {
+    sat: {
+      url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+      attr: '影像 © Esri · Maxar · Earthstar Geographics'
+    },
+    map: {
+      // Positron in daylight, Dark Matter after dark, so the map does not
+      // glare white inside an otherwise dark page.
+      url: 'https://{s}.basemaps.cartocdn.com/' + (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark_all' : 'light_all') + '/{z}/{x}/{y}{r}.png',
+      attr: OSM + ' · © <a href="https://carto.com/attributions" rel="noopener">CARTO</a>',
+      sub: 'abcd'
+    }
+  };
 
   // Approximate positions, good to a few hundred metres - enough to see which
   // side of the river something is on, which is the whole point of this
@@ -1287,30 +1300,22 @@
     });
   }
 
-  function layer(kind) {
-    // img_w = 影像, vec_w = 矢量; cia_w / cva_w are the matching label layers,
-    // which are separate tiles - without them the satellite view has no names.
-    return L.layerGroup([
-      L.tileLayer('https://t{s}.tianditu.gov.cn/DataServer?T=' + kind + '_w&x={x}&y={y}&l={z}&tk=' + TDT_KEY,
-        { subdomains: ['0','1','2','3','4','5','6','7'], minZoom: 5, maxZoom: 17 }),
-      L.tileLayer('https://t{s}.tianditu.gov.cn/DataServer?T=' + (kind === 'img' ? 'cia' : 'cva') + '_w&x={x}&y={y}&l={z}&tk=' + TDT_KEY,
-        { subdomains: ['0','1','2','3','4','5','6','7'], minZoom: 5, maxZoom: 17 })
-    ]);
-  }
-
-  var map = null, layers = {}, active = 'img';
+  var map = null, layers = {}, active = 'sat';
 
   function build() {
     map = L.map(host, {
       center: [28.175, 112.975], zoom: 12, minZoom: 10, maxZoom: 17,
-      scrollWheelZoom: false,     // the page is long; don't hijack the scroll
-      attributionControl: true
+      scrollWheelZoom: false      // the page is long; don't hijack the scroll
     });
     map.attributionControl.setPrefix('');
-    layers.img = layer('img');
-    layers.vec = layer('vec');
+
+    Object.keys(TILES).forEach(function (k) {
+      var t = TILES[k];
+      layers[k] = L.tileLayer(t.url, {
+        subdomains: t.sub || 'abc', maxZoom: 17, attribution: t.attr
+      });
+    });
     layers[active].addTo(map);
-    map.attributionControl.addAttribution('底图 © <a href="https://www.tianditu.gov.cn/" rel="noopener">天地图</a>');
 
     PLACES.forEach(function (p) {
       L.marker(p.at, {
@@ -1352,15 +1357,6 @@
 
   btn.addEventListener('click', function () {
     if (map) return;
-    if (!TDT_KEY) {
-      // Say what is missing rather than showing a grid of broken tiles.
-      note.hidden = false;
-      note.innerHTML = '还没有填天地图的 key。到 <a href="https://console.tianditu.gov.cn/" rel="noopener">天地图控制台</a>'
-        + ' 申请一个「浏览器端」应用、把 zeup330.github.io 加进域名白名单，'
-        + '再把 key 填进本页脚本里的 <code>TDT_KEY</code> 就能用了。';
-      btn.disabled = true;
-      return;
-    }
     btn.disabled = true;
     btn.textContent = '加载中…';
     host.hidden = false;

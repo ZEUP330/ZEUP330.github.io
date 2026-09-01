@@ -61,12 +61,11 @@ scripts/            两个采集脚本，在 Actions runner 里跑
   页尾时中间那几个元素从未相交，会永久停在 opacity 0。theme.js 改成按 rect 位置扫，
   并且 `.rise` 由 JS 加上 —— 关掉 JS 时内容必须是直接可见的。
 - **本机连不上 Deribit**（公司网），但 Cboe 可以。采集脚本能不能本地跑要先测。
-- **长沙页的实景底图走天地图**，`changsha/index.html` 末尾那个脚本里的 `TDT_KEY` 要自己填
-  （console.tianditu.gov.cn 申请「浏览器端」应用，把 zeup330.github.io 加进域名白名单）。
-  空着时按钮会说明怎么办，不会去请求瓦片、不会渲染一片灰格子。两个坑：瓦片走 `_w`
-  （Web 墨卡托）才对得上 Leaflet；坐标是 CGCS2000≈WGS84，**不要拿高德/百度的 GCJ-02 坐标**，
-  会偏几百米。另外分节是 JS 包成 `<details>` 的，地图在收起状态下量不到尺寸，
-  重新展开要 `invalidateSize()`。
+- **长沙页的实景底图必须免 key**。天地图授权更合适，但要申请浏览器端 key 并维护域名白名单，
+  没人维护的 key 就是一张会静默失效的地图。现在用 Esri World Imagery（卫星）
+  和 CARTO Positron/Dark Matter（矢量，跟随深浅色），两个都不用注册，attribution 挂在右下角。
+  两个坑：坐标是 WGS84，**不要拿高德/百度的 GCJ-02 坐标**，会偏几百米；
+  分节是 JS 包成 `<details>` 的，地图在收起状态下量不到尺寸，重新展开要 `invalidateSize()`。
 
 ## 数据与口径
 
