@@ -37,6 +37,12 @@
       // catchup.yml: '40 4 5 * *'
       cron: { monthDays: [5], times: [[4, 40]] },
       note: '世界银行年度数据，每月核一次'
+    },
+    {
+      id: 'mortgage', name: '中日韩房价', url: '/mortgage/data/status.json', page: '/mortgage/',
+      // Built by housing.yml, same schedule: '20 3 18,20,24 * *'
+      cron: { monthDays: [18, 20, 24], times: [[3, 20]] },
+      note: 'BIS 季度发布，随房价流水线每月核一次'
     }
   ];
 

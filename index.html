@@ -42,6 +42,7 @@
     letter-spacing: .01em; }
   .tag.calc { background: none; border-style: dashed; border-color: var(--line); }
 
+  .gnote { font-size: 13px; color: var(--ink-3); margin: -.4rem 0 .9rem; }
   ul.repos { list-style: none; padding: 0; margin: 0; }
   ul.repos li { padding: .75rem 0; border-bottom: 1px solid var(--line-2); display: grid;
     grid-template-columns: 1fr auto; gap: 4px 16px; align-items: baseline; }
@@ -62,64 +63,62 @@
 
 
   <h2>房子</h2>
+  <p class="gnote">四页连起来是一条线：现在什么情况 → 会走向哪 → 谁已经倒了 → 算你自己那笔。</p>
 
-  <a class="feature" data-rise="0" href="./mortgage/">
-    <h3>房贷年限 × 月供<span class="tag calc">纯计算</span></h3>
-    <p>等额本息的月供有下限，等于本金 × 月利率 —— 也就是纯利息，年限拉到 1000 年也降不下去。三个滑块随便调，图上标着 30 年旧上限和 40 年新上限。另加日本フラット50（50 年）与韩国把 50 年收回到 30 年的对照：为什么他们敢放、为什么又收回、中国差在哪。</p>
-    <span class="go">打开</span>
-  </a>
-
-  <a class="feature" data-rise="1" href="./loan/">
-    <h3>房贷计算器<span class="tag calc">纯计算</span></h3>
-    <p>三个滑块看月供、总利息和剩余本金。月供有下限 —— 等于本金 × 月利率的纯利息，年限拉到 1000 年也降不下去。另有年限 × 利率的 3D 曲面。</p>
-    <span class="go">打开</span>
-  </a>
-
-  <a class="feature" data-rise="2" href="./housing/">
+  <a class="feature" href="./housing/" data-rise="0">
     <h3>全国房价走势地图<span class="tag">每月更新</span></h3>
     <p>统计局 70 城指数做成的省级地图，进度条拖 2006 年至今 247 个月，双击省份放大到市级。另有大区口径的真实均价（元/㎡）—— 为什么细不到省，页面里说明了。</p>
     <span class="go">打开</span>
   </a>
 
-  <a class="feature" data-rise="3" href="./developers/">
+  <a class="feature" href="./mortgage/" data-rise="1">
+    <h3>中国站在日本的第几年<span class="tag">季度数据</span></h3>
+    <p>日韩房价都在 1991 年见顶，中国是 2021 年。按各自峰值对齐后：峰后 4.5 年，中国 −24.7%，当年的日本 −16.1%、韩国 −31.1%。日本后来跌到 −49% 再没回来，韩国跌到 −47% 却收复了。三国 30/40/50 年的贷款上限，是在各自这条曲线上做的选择。</p>
+    <span class="go">打开</span>
+  </a>
+
+  <a class="feature" href="./developers/" data-rise="2">
     <h3>中国房企：谁在什么时候暴的<span class="tag">每个交易日</span></h3>
     <p>22 家上市房企距各自最高股价还剩多少。逐家核对了违约公告：股价通常比公告早，碧桂园早 13 个月、雅居乐早 19 个月 —— 但万科跌破 −90% 至今没违约，所以它是预警不是判决。</p>
     <span class="go">打开</span>
   </a>
 
-  <h2>市场</h2>
+  <a class="feature" href="./loan/" data-rise="3">
+    <h3>房贷计算器<span class="tag calc">纯计算</span></h3>
+    <p>三个滑块看月供、总利息和剩余本金。月供有下限 —— 等于本金 × 月利率的纯利息，年限拉到 1000 年也降不下去。另有年限 × 利率的 3D 曲面。</p>
+    <span class="go">打开</span>
+  </a>
 
-  <a class="feature" data-rise="4" href="./drawdown/">
+  <h2>市场与经济</h2>
+
+  <a class="feature" href="./drawdown/" data-rise="4">
     <h3>三大指数回撤<span class="tag">每个交易日</span></h3>
     <p>标普、道指、纳指距历史最高收盘还差多少，每个交易日收盘后更新。带 −10% / −20% / −30% 关注线，以及历史上每次跌破之后实际发生了什么 —— 包括触线后还继续跌了多少。</p>
     <span class="go">打开</span>
   </a>
 
-  <a class="feature" data-rise="5" href="./options/">
+  <a class="feature" href="./options/" data-rise="5">
     <h3>美股期权 Wheel 筛选器<span class="tag">交易时段每日 4 次</span></h3>
     <p>七姐妹、指数与行业 ETF、杠杆 ETF 共 22 个标的。GitHub Actions 抓 Cboe 延迟行情，筛出现金担保看跌与备兑看涨的候选，附年化、Delta、缓冲与流动性。</p>
     <span class="go">打开</span>
   </a>
 
-  <h2>经济</h2>
-
-  <a class="feature" data-rise="6" href="./catchup/">
+  <a class="feature" href="./catchup/" data-rise="6">
     <h3>被追赶的经济体<span class="tag">每周</span></h3>
     <p>辜朝明那套「三阶段两拐点」，用世界银行数据跑一遍：谁在追谁、哪一年被超过，以及「钱存下来却投不出去」这个特征在日德美中各自长什么样。附上这套框架被质疑的地方。</p>
     <span class="go">打开</span>
   </a>
 
-  <h2>读与写</h2>
+  <h2>写的</h2>
+  <p class="gnote">这两页没有数据管线，是坐下来写出来的。</p>
 
-  <a class="feature" data-rise="7" href="./ai-math/">
+  <a class="feature" href="./ai-math/" data-rise="7">
     <h3>生成便宜之后</h3>
     <p>读陶哲轩《AI 时代的数学》。他把解题拆成五段流水线，只有第一段被 AI 拿走；稀缺没有消失，整体搬去了下游。顺便拿这条链解剖了一遍这个站是怎么做出来的。</p>
     <span class="go">打开</span>
   </a>
 
-  <h2>生活</h2>
-
-  <a class="feature" data-rise="8" href="./changsha/">
+  <a class="feature" href="./changsha/" data-rise="8">
     <h3>长沙 41 小时</h3>
     <p>周五深夜落地、周日傍晚就走的行程。松弛版与暴走版一键切换，配时间预算、两岸地理关系图（另有一张可切卫星影像的实景地图）和住宿选址对比，外加几条会让老攻略翻车的事实。</p>
     <span class="go">打开</span>

@@ -61,6 +61,15 @@ for (const p of pages) {
   if (!workflows.includes(`${p}/data`)) note(`/${p}/ has data but no workflow commits ${p}/data`);
 }
 
+// The shared status bar lists datasets by hand. A page can ship data, have a
+// workflow, and still be missing from the bar - which is how it ended up
+// reporting "5 datasets" while six existed.
+const bar = existsSync('assets/statusbar.js') ? readFileSync('assets/statusbar.js', 'utf8') : '';
+for (const p of pages) {
+  if (!existsSync(join(p, 'data', 'status.json'))) continue;
+  if (!bar.includes(`/${p}/data/status.json`)) note(`/${p}/ publishes status.json but the status bar does not list it`);
+}
+
 console.log(`${pages.length} pages: ${pages.join(', ')}`);
 console.log(`${htmlFiles.length} html files checked`);
 

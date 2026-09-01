@@ -181,6 +181,10 @@
   .tdt { height: 440px; border: 1px solid var(--line); border-radius: var(--r);
     overflow: hidden; box-shadow: var(--shadow-1); margin: 1rem 0 .5rem;
     background: var(--bg-2); }
+  .tdt-pin.c-sleep .pin { border-color: var(--accent); color: var(--accent); }
+  .tdt-pin.c-eat .pin { border-color: #eda100; color: #b9770e; }
+  .tdt-pin.c-spa .pin { border-color: #1baf7a; color: #0f6e56; }
+  .tdt-pin.c-move .pin { border-color: var(--ink-3); }
   .tdt .leaflet-container { font: inherit; background: var(--bg-2); }
   /* Leaflet paints its own chrome; pull it back onto the site's surfaces. */
   .tdt .leaflet-control-attribution { font-size: 11px; background: var(--material);
@@ -498,6 +502,15 @@
     </span>
   </div>
   <div class="tdt" id="tdt" hidden></div>
+  <div class="chips" id="tdt-filters" hidden>
+    <button class="chip" type="button" data-cat="sleep" aria-pressed="true">住</button>
+    <button class="chip" type="button" data-cat="eat" aria-pressed="true">吃</button>
+    <button class="chip" type="button" data-cat="see" aria-pressed="true">玩</button>
+    <button class="chip" type="button" data-cat="spa" aria-pressed="true">泡脚</button>
+    <button class="chip" type="button" data-cat="move" aria-pressed="true">车站</button>
+    <button class="chip" type="button" data-route="sat" aria-pressed="false">画周六路线</button>
+    <button class="chip" type="button" data-route="sun" aria-pressed="false">画周日路线</button>
+  </div>
   <p class="hint" id="tdt-note" hidden></p>
 
   <h2 id="sec-hotel">酒店怎么办</h2>
@@ -1722,15 +1735,43 @@
   // Approximate positions, good to a few hundred metres - enough to see which
   // side of the river something is on, which is the whole point of this
   // section. Not enough to navigate by, and the note under the map says so.
+  // Approximate positions, good to a few hundred metres - enough to see which
+  // side of the river something is on and how the two days string together,
+  // which is the whole point. Not enough to navigate by, and the note says so.
   var PLACES = [
-    { n: '长沙南站',        at: [28.150, 113.062] },
-    { n: '五一广场 · 住这里', at: [28.196, 112.978], stay: true },
-    { n: '橘子洲',          at: [28.187, 112.963] },
-    { n: '岳麓山 · 岳麓书院', at: [28.182, 112.936] },
-    { n: '湖南博物院',      at: [28.218, 112.999] },
-    { n: '后湖 · 大学城',    at: [28.163, 112.934] },
-    { n: '洋湖 · 两座美术馆', at: [28.125, 112.938] }
+    { n: '长沙南站',          at: [28.150, 113.062], c: 'move' },
+    { n: '五一广场',          at: [28.196, 112.978], c: 'move', stay: true },
+    { n: '奢酒店',            at: [28.197, 112.982], c: 'sleep' },
+    { n: 'Xi Hotel',          at: [28.194, 112.978], c: 'sleep' },
+    { n: 'FUNGEE',            at: [28.192, 112.977], c: 'sleep' },
+    { n: 'Hampton',           at: [28.197, 112.980], c: 'sleep' },
+    { n: '笨萝卜 · 太平街店',  at: [28.193, 112.974], c: 'eat' },
+    { n: '火宫殿 · 坡子街',    at: [28.193, 112.975], c: 'eat' },
+    { n: '超级文和友',        at: [28.194, 112.977], c: 'eat' },
+    { n: '冬瓜山夜宵',        at: [28.202, 112.989], c: 'eat' },
+    { n: '五一新村夜宵',      at: [28.198, 112.985], c: 'eat' },
+    { n: '足浴 · 供销大厦',    at: [28.197, 112.979], c: 'spa' },
+    { n: '太平街',            at: [28.194, 112.974], c: 'see' },
+    { n: '潮宗街',            at: [28.203, 112.973], c: 'see' },
+    { n: '都正街',            at: [28.192, 112.984], c: 'see' },
+    { n: '天心阁 · 简牍馆',    at: [28.186, 112.985], c: 'see' },
+    { n: '滨江文化园',        at: [28.216, 112.965], c: 'see' },
+    { n: '橘子洲',            at: [28.187, 112.963], c: 'see' },
+    { n: '岳麓山 · 岳麓书院',  at: [28.182, 112.936], c: 'see' },
+    { n: '湖南博物院',        at: [28.218, 112.999], c: 'see' },
+    { n: '后湖 · 大学城',      at: [28.163, 112.934], c: 'see' },
+    { n: '洋湖 · 两座美术馆',  at: [28.125, 112.938], c: 'see' }
   ];
+
+  // The two days as drawn lines. Same content as the schedule, but a route
+  // shows the one thing a table cannot: how far apart the stops are and how
+  // much of a day goes on crossing the river.
+  var ROUTES = {
+    sat: { color: '#2a78d6',
+           at: [[28.196, 112.978], [28.125, 112.938], [28.187, 112.963], [28.196, 112.978]] },
+    sun: { color: '#eda100',
+           at: [[28.196, 112.978], [28.203, 112.973], [28.192, 112.984], [28.197, 112.979], [28.150, 113.062]] }
+  };
 
   function asset(tag, attrs) {
     return new Promise(function (ok, fail) {
@@ -1760,12 +1801,36 @@
     layers[active].addTo(map);
 
     PLACES.forEach(function (p) {
-      L.marker(p.at, {
-        // iconSize null: Leaflet then leaves the box unsized and the label
-        // sizes to its own text, which is what centres it on the point.
-        icon: L.divIcon({ className: 'tdt-pin', html: '<span class="pin' + (p.stay ? ' stay' : '') + '">' + p.n + '</span>', iconSize: null })
+      // iconSize null: Leaflet then leaves the box unsized and the label
+      // sizes to its own text, which is what centres it on the point.
+      p.mk = L.marker(p.at, {
+        icon: L.divIcon({ className: 'tdt-pin c-' + p.c, html: '<span class="pin' + (p.stay ? ' stay' : '') + '">' + p.n + '</span>', iconSize: null })
       }).addTo(map);
     });
+
+    Object.keys(ROUTES).forEach(function (k) {
+      ROUTES[k].line = L.polyline(ROUTES[k].at,
+        { color: ROUTES[k].color, weight: 3, opacity: .85, dashArray: '7 6' });
+    });
+
+    // Filters sit under the map, not on it: on a phone a control on the canvas
+    // fights with panning.
+    var bar = document.getElementById('tdt-filters');
+    if (bar) {
+      bar.hidden = false;
+      bar.addEventListener('click', function (e) {
+        var b = e.target.closest('button');
+        if (!b) return;
+        var on = b.getAttribute('aria-pressed') !== 'true';
+        b.setAttribute('aria-pressed', String(on));
+        var cat = b.getAttribute('data-cat'), route = b.getAttribute('data-route');
+        if (cat) {
+          PLACES.filter(function (p) { return p.c === cat; })
+            .forEach(function (p) { on ? p.mk.addTo(map) : map.removeLayer(p.mk); });
+        }
+        if (route) { on ? ROUTES[route].line.addTo(map) : map.removeLayer(ROUTES[route].line); }
+      });
+    }
 
     // A map that eats the scroll wheel in the middle of a long page is a
     // trap; click to take control, and it lets go again on mouse-out.
