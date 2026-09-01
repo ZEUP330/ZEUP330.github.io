@@ -90,9 +90,24 @@ for (const h of HOTELS) {
       `room=${r.room || '-'} left=${r.roomsLeft ?? '-'} soldOut=${r.soldOut}`
     );
   } catch (err) {
+    // Say what the page actually was. A timeout alone cannot distinguish "slow"
+    // from "bot wall" from "redirected to another site", and those need
+    // different fixes.
+    let diag = {};
+    try {
+      diag = await page.evaluate(() => ({
+        url: location.href,
+        title: document.title,
+        head: document.body.innerText.replace(/\s+/g, ' ').slice(0, 300),
+        len: document.body.innerText.length
+      }));
+    } catch { /* page already gone */ }
     out.hotels[h.key] = { id: h.id, name: h.name, ok: false, error: String(err.message || err).slice(0, 120) };
     out.failures.push(`${h.key}: ${String(err.message || err).slice(0, 80)}`);
     console.log(`${h.key.padEnd(8)} FAILED ${err.message}`);
+    console.log(`         url=${diag.url || '?'}`);
+    console.log(`         title=${diag.title || '?'}`);
+    console.log(`         len=${diag.len} text="${diag.head || ''}"`);
   } finally {
     await page.close();
   }
