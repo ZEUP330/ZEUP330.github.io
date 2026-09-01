@@ -52,9 +52,11 @@ scripts/            两个采集脚本，在 Actions runner 里跑
 - **`assets/theme.css` 必须排在页面自己的 `<style>` 之前**。顺序反了页面就再也覆盖不了它。
   它只管 token 和基础元素（body / h1-h3 / p / a / table / button / range / .card 一类），
   页面各自的 `main { max-width }` 和额外 token（`--warn`、`--call`…）仍留在页内。
-- **不要在 theme.css 里写 `button[aria-pressed="true"]` 这种通选器**。options、drawdown、
-  changsha 都有自己的 chip 选中样式，通选器会只盖住它们的文字色、留下自己的背景色，
-  于是变成蓝底蓝字。要填充选中态就用 `.btn.on` 显式加。
+- **theme.css 里的选择器不能用通名**。踩过三次，都是同一个原因：
+  `button[aria-pressed="true"]` 会盖住 options/drawdown/changsha 自己的 chip 选中样式的
+  文字色、留下它们的背景色，变成蓝底蓝字；`.warn` 同时是块级提示框和修饰词，
+  于是 `<b class="hl warn">` 继承了提示框的 padding/border，变成一个压在下一行文字上的方块。
+  修饰类一律带前缀（`.key--cost`、`.hl--warn`），填充选中态用 `.btn.on`。
 - **入场动画不能靠 IntersectionObserver 判可见**。观察器只报「跨过阈值」，用户一次跳到
   页尾时中间那几个元素从未相交，会永久停在 opacity 0。theme.js 改成按 rect 位置扫，
   并且 `.rise` 由 JS 加上 —— 关掉 JS 时内容必须是直接可见的。

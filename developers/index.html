@@ -17,7 +17,7 @@
   .owns { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin: 1.5rem 0; }
   .own { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: .9rem 1.05rem; box-shadow: var(--shadow-1); }
   .own .k { font-size: 13px; color: var(--ink-3); }
-  .own .v { font-size: 28px; font-weight: 500; font-variant-numeric: tabular-nums; margin: 2px 0 .2rem; }
+  .own .v { margin: 2px 0 .2rem; }
   .own.private .v { color: var(--private); } .own.mixed .v { color: var(--mixed); } .own.soe .v { color: var(--soe); }
   .own .s { font-size: 12px; color: var(--ink-3); }
 
@@ -88,7 +88,7 @@
 <main>
   <p class="back"><a href="../">← 首页</a> · <a href="../housing/">全国房价走势地图</a></p>
   <h1>中国房企：谁在什么时候暴的</h1>
-  <p>22 家上市房企距各自历史最高收盘价还剩多少。用股价，是因为它是这件事里<b>唯一权威、带日期、且可以自动更新</b>的记录 —— 交易所每天都在给每家公司定价，停牌和退市也会直接写进这条曲线。</p>
+  <p>22 家上市房企距各自历史最高收盘价还剩多少。用股价，是因为它是这件事里<b class="hl">唯一权威、带日期、且可以自动更新</b>的记录 —— 交易所每天都在给每家公司定价，停牌和退市也会直接写进这条曲线。</p>
 
   <div class="note">
     你要的<b>项目点位</b>和<b>区县级均价分布</b>我找不到能用的权威来源，没有硬做。理由写在页面最下面「为什么没有地图」一节，包括我查了哪些官方渠道、各自卡在哪里。
@@ -141,7 +141,7 @@
         <tbody id="dates"></tbody>
       </table>
     </div>
-    <p class="hint">跌破 −90% 的日期不依赖任何人对「暴雷」的定义，只看市场把这家公司定到了什么价。但它<b>不等于违约</b> —— 我逐家核对过公告，方向上股价通常先到，可万科跌破了却至今没违约。见下面的<a href="#" onclick="document.querySelector('#verdict').scrollIntoView({block:'center'});return false;">核对结果</a>。</p>
+    <p class="hint">跌破 −90% 的日期不依赖任何人对「暴雷」的定义，只看市场把这家公司定到了什么价。但它<b class="hl hl--warn">不等于违约</b> —— 我逐家核对过公告，方向上股价通常先到，可万科跌破了却至今没违约。见下面的<a href="#" onclick="document.querySelector('#verdict').scrollIntoView({block:'center'});return false;">核对结果</a>。</p>
   </div>
 
   <div id="cityblock" hidden>

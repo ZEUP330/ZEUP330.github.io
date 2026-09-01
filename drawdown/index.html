@@ -17,7 +17,7 @@
   .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; margin: 1.5rem 0; }
   .c { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: .9rem 1.05rem; box-shadow: var(--shadow-1); }
   .c .n { font-size: 14px; color: var(--ink-3); }
-  .c .dd { font-size: 30px; font-weight: 500; font-variant-numeric: tabular-nums; margin: 2px 0 .3rem; }
+  .c .dd { margin: 2px 0 .3rem; }
   .c .sub { font-size: 12px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
   .bar { height: 6px; border-radius: 3px; background: var(--line); margin: .55rem 0 .4rem; position: relative; overflow: hidden; }
   .bar i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 3px; background: var(--accent); }
@@ -47,7 +47,6 @@
   @media (max-width: 640px) {
 
     .cards { grid-template-columns: 1fr; }
-    .c .dd { font-size: 26px; }
     .chart { height: 260px; }
     th, td { padding: 6px 4px; font-size: 12px; }
     .hide-sm { display: none; }
@@ -64,7 +63,7 @@
   <p>回撤 = 收盘价距<b>历史最高收盘</b>还差多少。每个交易日收盘后更新。标普和纳指的日线可回溯到 1970 年，道指到 1992 年。</p>
 
   <div class="note">
-    页面上的 −10% / −20% / −30% 是你设定的<b>关注线</b>，不是买入信号，我也不会把它们标成买入建议 —— 我不是持牌投资顾问，也没法知道你的仓位、期限和承受能力。下面给的是这些线在历史上被跌破后<b>实际发生了什么</b>，包括中位回报、为正的比例，以及跌破之后<b>还继续跌了多少</b>。结论自己下。
+    页面上的 −10% / −20% / −30% 是你设定的<b class="hl">关注线</b>，不是买入信号，我也不会把它们标成买入建议 —— 我不是持牌投资顾问，也没法知道你的仓位、期限和承受能力。下面给的是这些线在历史上被跌破后<b>实际发生了什么</b>，包括中位回报、为正的比例，以及跌破之后<b class="hl hl--warn">还继续跌了多少</b>。结论自己下。
   </div>
 
   <div id="empty" class="placeholder" hidden>还没有数据。等 <code>drawdown</code> 工作流跑完后刷新。</div>
@@ -126,7 +125,7 @@
   </div>
 
   <h2>这些数字的局限</h2>
-  <p><b>样本极小。</b>标普跌破 30% 在半个多世纪里只有 5 次，道指 3 次。5 个样本的「中位数」和「胜率」统计意义很弱，看看可以，别当概率用。</p>
+  <p><b class="hl hl--warn">样本极小。</b>标普跌破 30% 在半个多世纪里只有 5 次，道指 3 次。5 个样本的「中位数」和「胜率」统计意义很弱，看看可以，别当概率用。</p>
   <p><b>中位数藏起了过程。</b>跌破 −30% 之后一年中位是正的，但那一年里可能先再跌 20% 再涨回来。「触线后还跌了」那一列就是给这个的：它是从第一次触线到本轮最低点又跌掉的幅度。2008 年标普跌破 30% 之后又跌了将近 27%。</p>
   <p><b>更深不等于更好。</b>标普跌破 30% 之后 1 年中位 <span id="quirk">—</span>，反而低于跌破 20% 的。深跌往往意味着危机还在展开，反弹来得更晚。</p>
   <p><b>指数不是你的持仓。</b>指数会换成分股、剔除退市公司，个股没有这个待遇。同样跌 30%，指数能回来，单一股票未必。</p>
