@@ -1,0 +1,62 @@
+name: hotel prices
+
+on:
+  schedule:
+    # Hourly, as asked. Worth knowing what this is up against: these are
+    # datacenter IPs hitting a booking site, so blocks and rate limits are
+    # expected rather than surprising. The job is fail-soft - a blocked run
+    # keeps the previous snapshot and the page shows how old it is.
+    - cron: '21 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hotel-prices
+  cancel-in-progress: false
+
+jobs:
+  prices:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Playwright Chromium
+        run: |
+          npm init -y >/dev/null 2>&1 || true
+          npm i -D playwright@1.49.1
+          npx playwright install --with-deps chromium
+
+      - name: Scrape prices
+        run: node scripts/fetch-hotel-prices.mjs
+
+      - name: Commit snapshot
+        run: |
+          set -euo pipefail
+          git config user.name 'ZEUP330'
+          git config user.email '37589028+ZEUP330@users.noreply.github.com'
+          # package.json/lock and the browser cache are build artefacts, not content
+          rm -f package.json package-lock.json
+          git add changsha/data || true
+          if git diff --cached --quiet; then
+            echo 'no change'
+            exit 0
+          fi
+          # Squash onto the previous price commit. Hourly commits would other-
+          # wise add 24 blobs a day forever; only amend when HEAD is itself a
+          # price commit so a hand-written commit is never rewritten.
+          if git log -1 --pretty=%s | grep -q '^data: hotel prices$'; then
+            git commit --amend --no-edit --date=now
+            git push --force-with-lease origin HEAD:main
+          else
+            git commit -m 'data: hotel prices'
+            git push origin HEAD:main
+          fi
