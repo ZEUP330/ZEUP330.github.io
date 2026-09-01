@@ -108,6 +108,23 @@
   details.how ul { margin: .6rem 0; padding-left: 1.2rem; color: var(--ink-2); }
   details.how li { margin-bottom: .25rem; }
 
+  /* Sticky group rail, parked under the shared status bar. */
+  .rail { position: sticky; top: var(--rail-top, 0px); z-index: 15;
+    background: var(--bg); border-bottom: 1px solid var(--line); }
+  .rail-in { max-width: 760px; margin: 0 auto; display: flex; gap: 4px;
+    overflow-x: auto; scrollbar-width: none; padding: 6px 1.25rem; }
+  .rail-in::-webkit-scrollbar { display: none; }
+  .rail a { flex: none; font-size: 13px; color: var(--ink-3); text-decoration: none;
+    padding: 4px 12px; border-radius: 999px; white-space: nowrap; }
+  .rail a:hover { color: var(--ink); text-decoration: none; }
+  .rail a[aria-current="true"] { background: var(--accent); color: #fff; }
+
+  section.grp { margin: 2.5rem 0 0; scroll-margin-top: calc(var(--rail-top, 0px) + var(--rail-h, 44px) + 8px); }
+  .grp-h { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
+    margin: 0 0 .25rem; padding-bottom: .4rem; border-bottom: 2px solid var(--ink); }
+  .grp-t { font-size: 20px; font-weight: 500; }
+  .grp-n { font-size: 12px; color: var(--ink-3); font-weight: 400; }
+
   details.sec { border-top: 1px solid var(--line); padding: 0; margin: 0; }
   details.sec > summary { font-size: 18px; font-weight: 500; color: var(--ink);
     padding: 1rem 0; cursor: pointer; list-style: none; display: flex;
@@ -128,7 +145,7 @@
     border: 1px solid var(--line); border-radius: 999px; padding: 3px 11px; }
   .toc a:hover { border-color: var(--accent); color: var(--accent); text-decoration: none; }
   /* The shared status bar is sticky, so anchor jumps would land under it. */
-  h2[id], details.sec[id] { scroll-margin-top: 4rem; }
+  h2[id], details.sec[id] { scroll-margin-top: calc(var(--rail-top, 0px) + var(--rail-h, 44px) + 12px); }
 
   .alert { background: var(--card); border: 1px solid var(--line); border-left: 3px solid var(--danger);
     border-radius: 0 8px 8px 0; padding: .8rem 1rem; margin: 0 0 1rem; font-size: 14px; color: var(--ink-2); }
@@ -1142,11 +1159,22 @@
     { id: 'queue', t: '存好费大厨／炊烟的小程序', w: '到市区先取号，边逛边等', due: '出发前', soft: 1, modes: ['packed'] }
   ];
 
-  // Fold every top-level section into a <details>. Done in JS on purpose: with
-  // scripting off the page still renders as plain prose with every section
-  // visible, which is the right fallback for a page you might open on hotel
-  // wifi. The h2's id moves onto the <details> so existing anchors keep working.
-  (function collapseSections() {
+  // Group the sections the way printed travel guides do - Wikivoyage's
+  // Understand / Get around / See / Eat / Sleep / Cope order - instead of the
+  // flat pile they were written in. Grouping and folding both happen in JS so
+  // that with scripting off the page is still plain readable prose.
+  (function structureSections() {
+    var GROUPS = [
+      { key: 'g-know', label: '概况', hint: '这趟有多少时间、城市怎么摆', ids: ['sec-time', 'sec-geo'] },
+      { key: 'g-plan', label: '行程', hint: '两种节奏的逐时段安排', ids: ['sec-plan', 'sec-rules'] },
+      { key: 'g-sleep', label: '住', hint: '选址标准与具体哪一家', ids: ['sec-hotel', 'sec-list'] },
+      { key: 'g-eat', label: '吃', hint: '按一天的进食节奏排', ids: ['sec-food'] },
+      { key: 'g-do', label: '玩', hint: '来过两次之后还剩什么', ids: ['sec-again', 'sec-more', 'sec-pool', 'sec-spa'] },
+      { key: 'g-move', label: '行', hint: '步行圈与地铁耗时', ids: ['sec-walk', 'sec-traffic'] },
+      { key: 'g-prep', label: '行前', hint: '预约、预算、带什么', ids: ['sec-todo', 'sec-cost', 'sec-pack'] },
+      { key: 'g-care', label: '当心', hint: '避坑与下雨的退路', ids: ['sec-trap', 'sec-rain'] },
+      { key: 'g-src', label: '来源', hint: '官方入口与核对日期', ids: ['sec-src'] }
+    ];
     var OPEN_BY_DEFAULT = ['sec-plan'];
     var main = document.querySelector('main');
     var heads = [].slice.call(main.querySelectorAll(':scope > h2[id]'));
@@ -1160,12 +1188,30 @@
       var sum = document.createElement('summary');
       sum.textContent = h.textContent;
       det.appendChild(sum);
-
       var move = [], n = h.nextSibling;
       while (n && !(n.nodeType === 1 && n.tagName === 'H2')) { move.push(n); n = n.nextSibling; }
       h.parentNode.insertBefore(det, h);
       move.forEach(function (x) { det.appendChild(x); });
       h.parentNode.removeChild(h);
+    });
+
+    // Anchor the groups where the sections already are, then move each section
+    // under its group. Anything not listed above keeps its place rather than
+    // silently disappearing.
+    var firstSec = main.querySelector('details.sec');
+    GROUPS.forEach(function (g) {
+      var members = g.ids.map(function (id) { return document.getElementById(id); }).filter(Boolean);
+      if (!members.length) { g.el = null; return; }
+      var wrap = document.createElement('section');
+      wrap.className = 'grp';
+      wrap.id = g.key;
+      var h = document.createElement('h2');
+      h.className = 'grp-h';
+      h.innerHTML = '<span class="grp-t">' + g.label + '</span><span class="grp-n">' + g.hint + '</span>';
+      wrap.appendChild(h);
+      firstSec.parentNode.insertBefore(wrap, firstSec);
+      members.forEach(function (m) { wrap.appendChild(m); });
+      g.el = wrap;
     });
 
     var all = [].slice.call(main.querySelectorAll('details.sec'));
@@ -1184,15 +1230,103 @@
       all.forEach(function (d) { d.open = false; });
     });
 
-    // A link into a collapsed section would otherwise scroll to a closed box.
     var openTarget = function () {
       if (!location.hash) return;
       var t = document.getElementById(location.hash.slice(1));
       if (t && t.tagName === 'DETAILS') { t.open = true; t.scrollIntoView(); }
     };
     window.addEventListener('hashchange', openTarget);
+
+    // Sticky group rail. It sits under the shared status bar, whose height is
+    // measured rather than hard-coded so the two never overlap.
+    var live = GROUPS.filter(function (g) { return g.el; });
+    var rail = document.createElement('nav');
+    rail.className = 'rail';
+    rail.setAttribute('aria-label', '章节导航');
+    var inner = document.createElement('div');
+    inner.className = 'rail-in';
+    live.forEach(function (g) {
+      var a = document.createElement('a');
+      a.href = '#' + g.key;
+      a.textContent = g.label;
+      a.dataset.k = g.key;
+      inner.appendChild(a);
+      g.link = a;
+    });
+    rail.appendChild(inner);
+    main.parentNode.insertBefore(rail, main);
+
+    // The status bar above is injected by a deferred script, so its height is
+    // not measurable when this runs. Re-measure on load and whenever it resizes
+    // rather than hard-coding an offset the two bars would fight over.
+    var railTop = 0, railH = 44;
+    var setTop = function () {
+      var bar = document.querySelector('.zb') || document.querySelector('.statusbar');
+      railTop = bar ? Math.round(bar.getBoundingClientRect().height) : 0;
+      railH = Math.round(rail.getBoundingClientRect().height) || 44;
+      document.documentElement.style.setProperty('--rail-top', railTop + 'px');
+      document.documentElement.style.setProperty('--rail-h', railH + 'px');
+      observe();
+    };
+
+    var setCurrent = function (g) {
+      live.forEach(function (x) {
+        x.link.setAttribute('aria-current', x === g ? 'true' : 'false');
+      });
+      var a = inner.querySelector('[aria-current="true"]');
+      if (!a) return;
+      var l = a.offsetLeft, w = a.offsetWidth, sw = inner.clientWidth;
+      if (l < inner.scrollLeft || l + w > inner.scrollLeft + sw) {
+        inner.scrollTo({ left: Math.max(0, l - sw / 2 + w / 2), behavior: 'smooth' });
+      }
+    };
+
+    // Geometry rather than scroll events: this page is read inside embedded
+    // panes that do not always dispatch window scroll, and sections expand and
+    // collapse under any cached offsets.
+    var pick = function () {
+      var edge = railTop + railH + 12;
+      var cur = live[0];
+      live.forEach(function (g) {
+        if (g.el.getBoundingClientRect().top <= edge) cur = g;
+      });
+      // At the foot of the page the last groups never reach the edge line, so
+      // they could never be marked current. Once scrolled to the bottom, take
+      // the last group that is visible at all.
+      var se = document.scrollingElement || document.documentElement;
+      if (se.scrollTop + window.innerHeight >= se.scrollHeight - 4) {
+        live.forEach(function (g) {
+          if (g.el.getBoundingClientRect().top < window.innerHeight) cur = g;
+        });
+      }
+      setCurrent(cur);
+    };
+
+    // No IntersectionObserver and no requestAnimationFrame throttle here. Both
+    // are suspended in hidden/embedded panes and in background tabs: an rAF
+    // throttle latches its guard and the highlight then dies permanently. A
+    // timestamp throttle plus a slow poll costs nine getBoundingClientRect
+    // calls a few times a second and works everywhere.
+    var observe = function () {};
+    var last = 0;
+    var onScroll = function () {
+      var now = Date.now();
+      if (now - last < 100) return;
+      last = now;
+      pick();
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    document.addEventListener('scroll', onScroll, { passive: true, capture: true });
+    window.addEventListener('resize', setTop);
+    window.addEventListener('load', setTop);
+    all.forEach(function (d) { d.addEventListener('toggle', pick); });
+    [0, 200, 600, 1500].forEach(function (t) { setTimeout(setTop, t); });
+    setInterval(pick, 400);
+
+    setTop();
     openTarget();
     sync();
+    pick();
   })();
 
   var KEY = 'changsha-todo', MKEY = 'changsha-mode';
