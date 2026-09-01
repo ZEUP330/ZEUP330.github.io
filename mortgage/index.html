@@ -31,6 +31,8 @@
   /* One tile per lending regime. Each is a button that drives the same two
      sliders, so the comparison is the page you are already looking at rather
      than a second chart. */
+  #topkeys { grid-template-columns: repeat(auto-fit, minmax(166px, 1fr)); }
+
   .regimes { display: grid; grid-template-columns: repeat(auto-fit, minmax(205px, 1fr));
     gap: 10px; margin: 1rem 0 1.4rem; }
   .regime { display: block; text-align: left; padding: .7rem .9rem; border-radius: var(--r-sm);
@@ -72,7 +74,7 @@
     .row { grid-template-columns: 4.5em 1fr 5em; gap: 8px; }
     .row label, .row output { font-size: 13px; }
     .stats { grid-template-columns: repeat(2, 1fr); }
-    .regimes { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .regimes, #topkeys { grid-template-columns: repeat(2, 1fr); gap: 8px; }
     .chart { height: 250px; }
     .chart3d { height: 330px; }
     table { font-size: 13px; }
@@ -109,11 +111,27 @@
     </div>
   </div>
 
-  <div class="stats">
-    <div class="stat"><div class="k">月供</div><div class="v" id="s-pay">5,368</div></div>
-    <div class="stat"><div class="k">总还款</div><div class="v" id="s-total">193 万</div></div>
-    <div class="stat"><div class="k">总利息</div><div class="v" id="s-int">93 万</div></div>
-    <div class="stat"><div class="k">月供下限（纯利息）</div><div class="v" id="s-floor">4,167</div></div>
+  <div class="keys" id="topkeys">
+    <div class="key key--lead">
+      <span class="kk">月供</span>
+      <span class="kv" id="s-pay">5,368<span class="ku">元/月</span></span>
+      <p class="kd" id="d-pay">总还款 193 万。</p>
+    </div>
+    <div class="key">
+      <span class="kk">月供下限</span>
+      <span class="kv" id="s-floor">4,167<span class="ku">元/月</span></span>
+      <p class="kd">本金 × 月利率，纯利息。年限拉到多长，月供都过不去这条线。</p>
+    </div>
+    <div class="key">
+      <span class="kk">总利息</span>
+      <span class="kv" id="s-int">93<span class="ku">万</span></span>
+      <p class="kd" id="d-int">占总还款的 48%。</p>
+    </div>
+    <div class="key key--cost">
+      <span class="kk">30 → 40 年每月少</span>
+      <span class="kv" id="s-save">732<span class="ku">元/月</span></span>
+      <p class="kd" id="d-save">代价是总利息多付 40 万。</p>
+    </div>
   </div>
 
   <div class="toolbar">
@@ -186,7 +204,25 @@
   <h2>日本与韩国：同一个工具，两种结局</h2>
   <p class="asof">数据核对日期：2026-09-01。利率与政策随时会变，用之前请点开原文复核。</p>
 
-  <p>把上限从 30 年推到 40 年，中国是 2026 年 8 月才做的事。日本和韩国都走在前面：日本的上限是 <strong>50 年</strong>，韩国也曾经是 50 年 —— 然后在 2025 年 6 月，亲手把首都圈的上限收回到 <strong>30 年</strong>。同一个工具，两种结局，原因值得看清楚。</p>
+  <p>把上限从 30 年推到 40 年，中国是 2026 年 8 月才做的事。日本和韩国都走在前面：日本的上限是 50 年，韩国也曾经是 50 年 —— 然后在 2025 年 6 月，亲手把首都圈的上限收回到 30 年。同一个工具，两种结局，原因值得看清楚。</p>
+
+  <div class="keys" data-rise="0">
+    <div class="key">
+      <span class="kk">日本 · 上限</span>
+      <span class="kv">50<span class="ku">年</span></span>
+      <p class="kd">只给认定能撑百年的房子，且全期间固定利率、卖房时可由买家按原利率承接。</p>
+    </div>
+    <div class="key key--risk">
+      <span class="kk">韩国 · 首都圈上限</span>
+      <span class="kv">30<span class="ku">年</span></span>
+      <p class="kd">2025-06-27 从 40／50 年收回，官方理由是防止绕开 DSR。政策贷仍按年龄给 40／50 年。</p>
+    </div>
+    <div class="key key--lead">
+      <span class="kk">中国 · 新上限</span>
+      <span class="kv">40<span class="ku">年</span></span>
+      <p class="kd">2026-08-28 起可与银行协商。LPR 浮动，逐年重定价，没有对应的约束条件。</p>
+    </div>
+  </div>
 
   <h3>先把滑块调到各国的档位</h3>
   <p class="hint">点一下，上面的年利率与年限滑块就切到该口径；本金保持你自己设的数。下表按同一笔本金重算，只比「利率 × 年限」这一个组合，不含各国的税费、保险、补贴与首付要求。</p>
@@ -202,16 +238,16 @@
 
   <h3>日本：50 年是配给「能活 100 年的房子」的</h3>
   <p>日本的长期贷款主力是住宅金融支援机构与民间银行合办的<strong>全期间固定</strong>利率贷款。【フラット35】最长 35 年；【フラット50】最长 50 年 —— 但它有一条别处没有的入口条件：<strong>房子必须先拿到「长期优良住宅」认定</strong>（2025 年 10 月起把「管理计划认定公寓」也放了进来）。</p>
-  <p>这条认定的核心是「劣化对策等级 3」：在通常维护条件下，结构主体的可使用期限要达到<strong>百年量级</strong>。翻译成一句话就是：<strong>先证明房子能活 100 年，才允许贷 50 年</strong>。抵押物的寿命必须长过贷款，这个顺序在日本是写进产品准入的。</p>
+  <p>这条认定的核心是「劣化对策等级 3」：在通常维护条件下，结构主体的可使用期限要达到<strong>百年量级</strong>。翻译成一句话就是：<strong class="hl">先证明房子能活 100 年，才允许贷 50 年</strong>。抵押物的寿命必须长过贷款，这个顺序在日本是写进产品准入的。</p>
   <p>年龄这一关也没绕开：フラット50 申请时须未满 44 岁、完済时须未满 80 岁，期限取「80 − 申请时年龄」与 50 年里较短的那个。真要用满 50 年，通常得走<strong>親子リレー返済</strong>（父子接力）—— 期限按后继者（子女）的年龄算，等于把贷款摊到两代人身上。</p>
   <p>最特别的一条是<strong>金利引継特約</strong>：还款期间卖房，买方可以<strong>按卖方原来的利率承接这笔贷款</strong>，房子作为「带贷款的住宅」出售。「贷 50 年、其实只住 15 年」这个矛盾，被制度直接消掉了 —— 贷款跟着房子走，不跟着人走。</p>
   <p>代价现在非常直接。フラット35 2026 年 9 月的最低利率是 <strong>3.46%</strong>，比上月涨 0.17 个百分点，创下 2017 年 10 月现行制度以来的最高；8 月是 3.290%，7 月 3.140%，一路在破纪录。フラット50 2026 年 7 月的最频利率（融资率 9 成以下）是 3.32%。背景是日本央行 2026 年 6 月把政策利率加到 <strong>1.00%</strong>，长端国债收益率升到三十年高位。</p>
-  <p>于是出现一个反差：<strong>日本人自己并不买这个长期固定</strong>。国土交通省《民间住宅贷款实态调查》令和 6 年度口径，新发放里 <strong>84.3% 选浮动利率</strong>（2026 年 8 月主要行浮动型中位数约 1.2%）。他们签 35 年，然后靠<strong>繰上返済</strong>（提前还款，不收违约金）在十几年里还完 —— 合同年限买的是「月供地板」这份保险，不是真打算还到最后一期。住宅贷款减税（年末余额 × 0.7%、最长 13 年，已延长至 2030 年）把补贴堆在前 13 年，也在劝人前期别急着还本金。</p>
+  <p>于是出现一个反差：<strong class="hl">日本人自己并不买这个长期固定</strong>。国土交通省《民间住宅贷款实态调查》令和 6 年度口径，新发放里 <strong>84.3% 选浮动利率</strong>（2026 年 8 月主要行浮动型中位数约 1.2%）。他们签 35 年，然后靠<strong>繰上返済</strong>（提前还款，不收违约金）在十几年里还完 —— 合同年限买的是「月供地板」这份保险，不是真打算还到最后一期。住宅贷款减税（年末余额 × 0.7%、最长 13 年，已延长至 2030 年）把补贴堆在前 13 年，也在劝人前期别急着还本金。</p>
 
   <h3>韩国：50 年被当成 DSR 的绕行道，两年就被堵上</h3>
   <p>2023 年 1 月，Sh 水协银行首推 50 年期房贷，7 月各大行跟进。热闹了半年，监管就出手了。</p>
-  <p>原因是韩国有一条中国没有的硬约束：<strong>DSR（总负债本息偿还比率）</strong>，银行口径 40%。DSR 的分子是<strong>一年要还的本息</strong>，分母是年收入。把期限从 30 年拉到 50 年，年还本息下降，<strong>同一份收入能借到的钱直接变多</strong>。在这个约束下，延长期限根本不是减负工具，而是<strong>加杠杆的旋钮</strong>：省下来的月供不会留在口袋里，会变成买更贵的房子。</p>
-  <p>监管的反制是逐级加码的：2023 年 9 月，把 50 年期贷款在 <strong>DSR 计算里的期限上限压到 40 年</strong>（你可以真还 50 年，但算 DSR 时按 40 年算，可借额度被打回去），同时讨论把 50 年期限死在 34 岁以下。2025 年 6 月 27 日直接收口：首都圈与调控区域的银行房贷<strong>期限一律不超过 30 年</strong>，官方给出的理由原文就是<strong>防止绕开 DSR</strong>；同时按房价分档限额（15 亿韩元以下 6 亿、15–25 亿 4 亿、25 亿以上 2 亿），首次购房 LTV 从 80% 降到 70%，次日 6 月 28 日起施行。2026 年 6 月 30 日又把华城东滩、龙仁器兴、九里追加为调控区域。</p>
+  <p>原因是韩国有一条中国没有的硬约束：<strong>DSR（总负债本息偿还比率）</strong>，银行口径 40%。DSR 的分子是<strong>一年要还的本息</strong>，分母是年收入。把期限从 30 年拉到 50 年，年还本息下降，<strong class="hl warn">同一份收入能借到的钱直接变多</strong>。在这个约束下，延长期限根本不是减负工具，而是<strong class="hl warn">加杠杆的旋钮</strong>：省下来的月供不会留在口袋里，会变成买更贵的房子。</p>
+  <p>监管的反制是逐级加码的：2023 年 9 月，把 50 年期贷款在 <strong>DSR 计算里的期限上限压到 40 年</strong>（你可以真还 50 年，但算 DSR 时按 40 年算，可借额度被打回去），同时讨论把 50 年期限死在 34 岁以下。2025 年 6 月 27 日直接收口：首都圈与调控区域的银行房贷<strong>期限一律不超过 30 年</strong>，官方给出的理由原文就是<strong class="hl warn">防止绕开 DSR</strong>；同时按房价分档限额（15 亿韩元以下 6 亿、15–25 亿 4 亿、25 亿以上 2 亿），首次购房 LTV 从 80% 降到 70%，次日 6 月 28 日起施行。2026 年 6 月 30 日又把华城东滩、龙仁器兴、九里追加为调控区域。</p>
   <p>但韩国并没有把 50 年一刀切掉，它只是<strong>换了个地方放</strong>：政策性贷款「보금자리론」是全期间固定利率，期限可选 10/15/20/30/40/50 年，用年龄定向 —— <strong>40 年限 39 岁以下</strong>（新婚家庭放宽到 49 岁）、<strong>50 年限 34 岁以下</strong>（新婚 39 岁）；符合条件的，即便在首都圈也仍可用 40、50 年。</p>
   <p>结果是家庭债务/GDP 从 2024 年三季度之前的 90% 以上，降到 <strong>2026 年一季度的 85.3%</strong>，官方目标是 2030 年降到 80% 以下。</p>
 
@@ -221,9 +257,50 @@
   <p><strong>二、现金流前移。</strong>年轻家庭的收入曲线是上升的，长期限把还款压力从收入最低的头十年挪到后面。韩国用年龄门槛、日本用親子リレー，都是在把这个好处<strong>定向</strong>给它该给的人，而不是普发。</p>
   <p><strong>三、只有在利率固定时，长期限才是「锁定」。</strong>日本的 50 年是全期间固定，签下去那天，五十年的资金成本就封死了 —— 这才叫把住房成本平滑到整个生命周期。</p>
   <p>三条坏处，同样在图上：</p>
-  <p><strong>一、总利息接近线性增长。</strong>月供的下降是几何衰减，利息的上升是线性的。30 年之后再往后加，几乎只剩付利息。</p>
+  <p><strong class="hl">一、总利息接近线性增长。</strong>月供的下降是几何衰减，利息的上升是线性的。30 年之后再往后加，几乎只剩付利息。</p>
   <p><strong>二、本金归还极慢，净值积累不了。</strong>看上表最后一列：同样还了 5 年，30 年期还掉的本金份额，是 50 年期的两倍上下。房价一旦回调，长期限的借款人更容易先掉进负资产。</p>
   <p><strong>三、在有偿债比约束的市场里，它会被吃掉。</strong>韩国已经把这一条演完了：给多少年限，就借多少更多的钱，房价接住，购房者的负担没变轻。</p>
+
+  <h3>真正决定结果的七个因素</h3>
+  <p>把三国放在一起之后，能看出来「几年」本身其实排不到最前面。真正决定一笔长期贷是保险还是陷阱的，按影响从大到小是这七条：</p>
+
+  <ul class="factors">
+    <li class="factor high" data-rise="0">
+      <span class="fw">高</span>
+      <span class="fn">利率是不是固定的</span>
+      <span class="fd">日本的 50 年是全期间固定，签下那天五十年的资金成本就封死了；中国的 40 年是 LPR 浮动、逐年重定价。同一个年限，一个是把风险关起来，一个是把风险摊长 —— 这一条单独就能决定成败。</span>
+    </li>
+    <li class="factor high" data-rise="1">
+      <span class="fw">高</span>
+      <span class="fn">有没有家庭级偿债比约束</span>
+      <span class="fd">韩国的 DSR 按「年还本息 ÷ 年收入」算，期限一拉长，同样收入能借到的钱就变多，于是长期限被拿去买更贵的房子。有这条约束才谈得上「发现被滥用就立刻收回」；没有，就既没有刹车也没有仪表盘。</span>
+    </li>
+    <li class="factor high" data-rise="2">
+      <span class="fw">高</span>
+      <span class="fn">抵押物的剩余寿命</span>
+      <span class="fd">日本先做「长期优良住宅」认定 —— 结构体百年量级 —— 再给 50 年。中国这边是 70 年土地使用权，加上银行内规「房龄 + 贷款年限 ≤ 40 或 50 年」，二手房实际够不到 40 年。房子活不过贷款，年限就是纸面数字。</span>
+    </li>
+    <li class="factor mid" data-rise="3">
+      <span class="fw">中</span>
+      <span class="fn">完贷年龄的天花板</span>
+      <span class="fd">它决定谁真能拿到长期限。日本按「完済须未满 80 岁」算，不够就用親子リレー按子女年龄算；韩国把 40／50 年明写成 39 岁／34 岁以下的产品；中国的「年龄 + 期限 ≤ 65 或 70」是银行内规，没写进政策，于是宣传按 40 年讲、35 岁的人只拿得到 35 年。</span>
+    </li>
+    <li class="factor mid" data-rise="4">
+      <span class="fw">中</span>
+      <span class="fn">卖房时贷款能不能跟着走</span>
+      <span class="fd">フラット50 的金利引継特約让买家按卖方原利率承接，「贷 50 年只住 15 年」这个矛盾就不存在了。不能承接时，长期限的账面好处在卖房那天全部清零 —— 而中国人的实际持有期远短于 30 年。</span>
+    </li>
+    <li class="factor mid" data-rise="5">
+      <span class="fw">中</span>
+      <span class="fn">提前还款的成本</span>
+      <span class="fd">日本提前还款不收违约金，所以大家签 35 年、十几年还完，长期限只是一份不用的保险。有罚息或还款额度限制时，签下去的年限就是真年限，那条几乎全是利息的尾巴得一期一期还完。</span>
+    </li>
+    <li class="factor low" data-rise="6">
+      <span class="fw">低</span>
+      <span class="fn">名义利率的高低</span>
+      <span class="fd">反直觉，但它确实排在最后：フラット35 现在 3.46%，比中国新发放的 3.10% 还贵，日本照样敢放到 50 年。因为前面六条都到位了。利率决定这笔账多少钱，前六条决定这笔账会不会出事。</span>
+    </li>
+  </ul>
 
   <h3>中国能借鉴吗：三条能抄，三条抄不了</h3>
   <div class="scroll">
@@ -242,13 +319,13 @@
     </table>
   </div>
 
-  <p>把这张表读一遍会发现，日韩的共同点不是「拉长年限」，而是<strong>拉长年限必须配一个约束</strong>：日本配的是房子的寿命认定加全期间固定利率，韩国配的是 DSR 加年龄门槛。一旦长期限脱离约束、跑进普通的浮动利率贷款里，韩国的反应是立刻收回。</p>
+  <p>把这张表读一遍会发现，日韩的共同点不是「拉长年限」，而是<strong class="hl">拉长年限必须配一个约束</strong>：日本配的是房子的寿命认定加全期间固定利率，韩国配的是 DSR 加年龄门槛。一旦长期限脱离约束、跑进普通的浮动利率贷款里，韩国的反应是立刻收回。</p>
 
   <p><strong>能借鉴的第一条：把年限和「房子活得比贷款久」绑在一起。</strong>中国的 40 年落在 70 年土地使用权和银行内规「房龄 + 贷款年限 ≤ 40 或 50 年」上 —— 意味着二手房基本用不上 40 年，而政策宣传是按 40 年讲的。日本的顺序反过来：先做认定，再给年限。中国已经有绿色建筑与住宅性能评价体系，把它和贷款期限挂钩是现成的做法。</p>
   <p><strong>能借鉴的第二条：定向，而不是普发。</strong>中国的 40 年实际也被年龄卡住，但那是银行风控的副产品，不是政策设计 —— 结果是 35 岁的人只剩 35 年，可没人在政策里说明这件事。韩国把 40/50 年明确写成年轻人和新婚家庭的产品，是把同一个限制变成了看得懂的规则。</p>
   <p><strong>能借鉴的第三条：让贷款跟着房子走。</strong>フラット50 的金利引継特約解决的正是「贷款期限远长于持有期限」这个结构性矛盾。中国的「带押过户」已经在推，但转移的是抵押登记，不是那笔利率。在存量房贷利率与新发放利率差得远的时候，可承接的价值会非常大。</p>
 
-  <p><strong>抄不了的第一条：利率形态不同，风险方向就不同。</strong>日本的 50 年是全期间固定，把利率风险从借款人身上拿走了；中国的 40 年是 LPR 浮动、逐年重定价，年限越长，暴露在利率上的久期越长。别人的长期限是保险，我们的长期限是敞口 —— 这不是同一件事。<span id="shock"></span></p>
+  <p><strong>抄不了的第一条：利率形态不同，风险方向就不同。</strong>日本的 50 年是全期间固定，把利率风险从借款人身上拿走了；中国的 40 年是 LPR 浮动、逐年重定价，年限越长，暴露在利率上的久期越长。<span class="hl neg">别人的长期限是保险，我们的长期限是敞口</span> —— 这不是同一件事。<span id="shock"></span></p>
   <p><strong>抄不了的第二条：所处的信贷周期是反的。</strong>韩国收回 50 年，是在家庭债务 90% 以上、房价往上跑的时候。中国现在是居民杠杆率 59.0%、房贷余额连续 12 个季度负增长，主动去杠杆。同一个工具在扩张期会被用来加杠杆，在收缩期则可能根本没人用 —— 延长期限降低的是月供，改变不了「房价还会不会跌」这个判断，而后者才是当下的约束。</p>
   <p><strong>抄不了的第三条：我们缺一个能随时收回它的开关。</strong>韩国之所以敢放 50 年，是因为它有 DSR，一旦发现被用来加杠杆，改一个口径就能立刻收紧。中国没有全国统一的家庭级偿债比指标，能用的开关是首付比例和限购 —— 这两个开关调的是「能不能买」，不是「能背多重」。放长期限之前，先有这个开关，顺序上更稳。</p>
 
@@ -429,24 +506,24 @@
         ctx.fillText(pair[1], pair[0] + (i ? 5 : -5), y.top + 12);
         ctx.setLineDash([5, 4]);
       });
-      // Japan's two ceilings, drawn lighter and labelled along the bottom so
-      // they never collide with the 30/40 labels sitting at the top.
+      // Japan's two ceilings. Short ticks rising off the axis rather than full
+      // height lines: 35 falls inside the 30-40 band, and a third full line
+      // through it turns that band into noise. Labels sit above the tick, clear
+      // of both the axis and the asymptote running along the bottom.
       if (c.width >= 560) {
-        ctx.globalAlpha = .5;
-        ctx.setLineDash([2, 4]);
+        ctx.globalAlpha = .62;
+        ctx.setLineDash([]);
+        ctx.strokeStyle = ink3;
+        ctx.fillStyle = ink3;
+        ctx.font = '11px -apple-system, sans-serif';
+        ctx.textAlign = 'center';
         [[35, '日本 35'], [50, '日本 50']].forEach(function (pair) {
           var px = x.getPixelForValue(pair[0]);
-          ctx.strokeStyle = ink3;
           ctx.beginPath();
-          ctx.moveTo(px, y.top);
-          ctx.lineTo(px, y.bottom);
+          ctx.moveTo(px, y.bottom);
+          ctx.lineTo(px, y.bottom - 26);
           ctx.stroke();
-          ctx.setLineDash([]);
-          ctx.fillStyle = ink3;
-          ctx.font = '11px -apple-system, sans-serif';
-          ctx.textAlign = 'left';
-          ctx.fillText(pair[1], px + 4, y.bottom - 6);
-          ctx.setLineDash([2, 4]);
+          ctx.fillText(pair[1], px, y.bottom - 33);
         });
       }
       ctx.restore();
@@ -534,10 +611,26 @@
     R.nextElementSibling.textContent = (+R.value).toFixed(2) + '%';
     N.nextElementSibling.textContent = years + ' 年';
 
-    document.getElementById('s-pay').textContent = fmt(pay);
-    document.getElementById('s-total').textContent = wan(total);
-    document.getElementById('s-int').textContent = wan(total - m.principal);
-    document.getElementById('s-floor').textContent = fmt(m.floor);
+    // The number and its unit are separate spans: the unit stays at text size
+    // while the figure runs at display size, so only the digits get big.
+    var num = function (id, v, unit) {
+      document.getElementById(id).innerHTML = v + '<span class="ku">' + unit + '</span>';
+    };
+    var p30 = m.pay(30), p40 = m.pay(40);
+    var i30 = p30 * 12 * 30 - m.principal, i40 = p40 * 12 * 40 - m.principal;
+
+    num('s-pay', fmt(pay), '元/月');
+    num('s-floor', fmt(m.floor), '元/月');
+    num('s-int', wan(total - m.principal).replace(' 万', ''), '万');
+    num('s-save', fmt(p30 - p40), '元/月');
+    document.getElementById('d-pay').textContent =
+      '总还款 ' + wan(total) + '，其中利息 ' + wan(total - m.principal) + '。';
+    document.getElementById('d-int').textContent =
+      '占总还款的 ' + ((total - m.principal) / total * 100).toFixed(0) + '%。'
+      + (pay - m.floor < m.floor * 0.12 ? '月供已经贴着纯利息，本金几乎不动。' : '');
+    document.getElementById('d-save').textContent =
+      '这是 40 年新上限的全部好处。代价是总利息从 ' + wan(i30) + '涨到 ' + wan(i40)
+      + '，多付 ' + wan(i40 - i30) + '。';
     document.getElementById('lede-floor').textContent = fmt(m.floor);
 
     chart.data.datasets[0].data = YEARS.map(m.pay);
@@ -557,8 +650,6 @@
       ? '贷到约 ' + cross + ' 年，付出的利息就追平了本金 —— 房子买了两次，一次给自己，一次给银行。'
       : '在这个利率下，100 年内利息都追不平本金。';
 
-    var p30 = m.pay(30), p40 = m.pay(40);
-    var i30 = p30 * 12 * 30 - m.principal, i40 = p40 * 12 * 40 - m.principal;
     document.getElementById('policy-delta').textContent =
       '当前参数下月供从 ' + fmt(p30) + ' 降到 ' + fmt(p40) + '，每月少还 ' + fmt(p30 - p40)
       + '；代价是总利息从 ' + wan(i30) + '涨到 ' + wan(i40) + '，多付 ' + wan(i40 - i30);
