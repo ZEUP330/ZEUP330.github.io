@@ -863,7 +863,9 @@
       { key: 'g-care', label: '当心', hint: '会让老攻略翻车的事实', ids: ['sec-trap'] },
       { key: 'g-src', label: '来源', hint: '官方入口与核对日期', ids: ['sec-src'] }
     ];
-    var OPEN_BY_DEFAULT = ['sec-plan'];
+    // Everything open. The folding existed because the page had grown to
+    // 22,000 characters; at a third of that it just hides content behind a
+    // click. The collapse controls stay for anyone who wants them.
     var main = document.querySelector('main');
     var heads = [].slice.call(main.querySelectorAll(':scope > h2[id]'));
     if (!heads.length) return;
@@ -872,7 +874,7 @@
       var det = document.createElement('details');
       det.className = 'sec';
       det.id = h.id;
-      det.open = OPEN_BY_DEFAULT.indexOf(h.id) > -1;
+      det.open = true;
       var sum = document.createElement('summary');
       sum.textContent = h.textContent;
       det.appendChild(sum);
