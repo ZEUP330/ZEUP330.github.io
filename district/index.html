@@ -195,8 +195,8 @@
     }).join('');
 
     var setN = function (id, v) { var e = document.getElementById(id); if (e) e.textContent = v; };
-    setN(n-cities, good.length); setN(n-districts, flat.length); setN(n-districts2, flat.length);
-    setN(n-prov, inc ? new Set(inc.rows.map(function (r) { return r.province; })).size : 0);
+    setN('n-cities', good.length); setN('n-districts', flat.length); setN('n-districts2', flat.length);
+    setN('n-prov', inc ? new Set(inc.rows.map(function (r) { return r.province; })).size : 0);
 
     // --- 1. city distribution, log scale ---
     var sorted = good.slice().sort(function (a, b) { return b.price - a.price; });

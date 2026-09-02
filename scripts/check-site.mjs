@@ -91,6 +91,30 @@ for (const file of htmlFiles) {
   for (const [id, n] of seen) if (n > 1) note(`${file}: duplicate id "${id}" (${n}x)`);
 }
 
+// Every chart on these pages is drawn by an inline <script>, and a single bad
+// character there takes out the whole page silently: the HTML still renders,
+// the canvases stay blank.
+//
+// This catches syntax errors only. It does NOT catch the bug that prompted it -
+// a shell quoting slip shipped setN(n-cities, ...) instead of
+// setN('n-cities', ...), which parses fine as a subtraction and only throws
+// ReferenceError when it runs. Catching that statically needs scope analysis;
+// instead assets/theme.js now shows a banner when a page throws at run time.
+for (const file of htmlFiles) {
+  const html = readFileSync(file, 'utf8');
+  for (const m of html.matchAll(/<script(?![^>]*\ssrc=)[^>]*>([\s\S]*?)<\/script>/g)) {
+    const body = m[1];
+    if (!body.trim()) continue;
+    try {
+      // Function() compiles without executing, so this is a parse check only.
+      new Function(body);
+    } catch (err) {
+      const line = html.slice(0, m.index).split('\n').length;
+      note(`${file}: inline <script> at line ~${line} does not parse - ${err.message}`);
+    }
+  }
+}
+
 console.log(`${pages.length} pages: ${pages.join(', ')}`);
 console.log(`${htmlFiles.length} html files checked`);
 

@@ -92,3 +92,35 @@
   // actually transitions in rather than snapping.
   requestAnimationFrame(sweep);
 }());
+
+/* A page-killing script error used to be completely silent: the HTML renders,
+   the charts just never appear, and nothing says why. That is how a broken
+   /district/ shipped - the canvases sat blank and CI was green, because the
+   fault was a ReferenceError at run time, not a syntax error a parser could
+   see. So say it out loud, on every page. */
+(function () {
+  'use strict';
+  var shown = false;
+
+  function banner(what) {
+    if (shown) return;
+    shown = true;
+    var el = document.createElement('div');
+    el.setAttribute('role', 'alert');
+    el.style.cssText = 'position:fixed;left:0;right:0;bottom:0;z-index:9999;'
+      + 'background:#b3261e;color:#fff;font:13px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;'
+      + 'padding:9px 14px;box-shadow:0 -2px 10px rgba(0,0,0,.28)';
+    el.textContent = '页面脚本出错，图表可能没画出来：' + what;
+    (document.body || document.documentElement).appendChild(el);
+  }
+
+  window.addEventListener('error', function (e) {
+    // A failed <img>/<script> fires this too, with no .error object; those are
+    // worth ignoring here so a blocked CDN font does not cry wolf.
+    if (e && e.message) banner(e.message);
+  });
+  window.addEventListener('unhandledrejection', function (e) {
+    var r = e && e.reason;
+    if (r) banner(r.message || String(r));
+  });
+}());
