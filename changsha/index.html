@@ -43,6 +43,20 @@
   .subs b { font-size: 13px; font-variant-numeric: tabular-nums; }
   .facts { font-size: 12px; color: var(--ink-3); margin: 0 0 .6rem; }
   /* Apple-compare style: one column per hotel, rows aligned across columns. */
+  .booked { display: grid; grid-template-columns: 200px 1fr; gap: 16px; align-items: start;
+    background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 1rem; margin: 0 0 1rem; }
+  .bk-shot img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 8px; display: block; }
+  .bk-tag { font-size: 11px; color: var(--ok); border: 1px solid currentColor; border-radius: 999px;
+    padding: 1px 9px; display: inline-block; margin: 0 0 .4rem; }
+  .bk-name { font-size: 17px; font-weight: 500; margin: 0 0 .2rem; }
+  .bk-addr { font-size: 12px; color: var(--ink-3); margin: 0 0 .7rem; }
+  .bk-kv { display: grid; grid-template-columns: 5.5em 1fr; gap: .4rem 12px; margin: 0; font-size: 13px; }
+  .bk-kv dt { color: var(--ink-3); }
+  .bk-kv dd { margin: 0; color: var(--ink-2); }
+  @media (max-width: 640px) {
+    .booked { grid-template-columns: 1fr; }
+    .bk-kv { grid-template-columns: 4.5em 1fr; }
+  }
   .cmp-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 0 1rem; }
   .cmp { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(190px, 1fr); gap: 0; min-width: 100%; }
   .cmp-col { padding: 0 14px; border-left: 1px solid var(--line); text-align: center; }
@@ -362,7 +376,7 @@
     <dl class="kv">
       <dt>去程</dt><dd>周五 9/4 · 20:15 虎门 → <b>23:28 长沙南</b> · G6026</dd>
       <dt>回程</dt><dd>周日 9/6 · <b>18:00 长沙南</b> → 20:25 虎门 · G6007</dd>
-      <dt>住</dt><dd>五一广场 / 黄兴路一带。确认 24 小时前台、周日行李寄存到 16:00</dd>
+      <dt>住</dt><dd><b>异国印象·奢酒店</b> · 芙蓉区五一大道 127 号 · 24h 前台 · 行李可寄存到 16:30</dd>
       <dt>落地</dt><dd><b>直接打车</b>，约 40 元 20 分钟。往市区的地铁末班 23:03，你到站时已停运</dd>
       <dt>回站</dt><dd>周日 <b>16:30 出发</b>，2 号线直达 25 分 + 安检，留足 1.5 小时</dd>
       <dt>要预约</dt><dd>李自健美术馆（免费领票）· 谢子龙（看展是否收费）· 走暴走版还要博物院、岳麓书院、岳麓山、橘子洲</dd>
@@ -617,7 +631,37 @@
   </div>
   <p class="hint">不管选哪个片区，订房时都确认三件事：24 小时前台（你到店已过零点）、行李寄存到 16:30、以及江景是「侧江」还是「正江」—— 很多房型写江景，实际要探头才看得见。</p>
 
-  <h2 id="sec-list">具体住哪家</h2>
+  <h2 id="sec-list">住哪 · 已定</h2>
+
+  <div class="booked">
+    <div class="bk-shot">
+      <img src="https://ak-d.tripcdn.com/images/1mc2w12000h6972lfB564_R_960_660_R5_D.jpg" alt="五一广场异国印象·奢酒店" referrerpolicy="no-referrer" onerror="this.closest('.bk-shot').hidden=true">
+    </div>
+    <div class="bk-body">
+      <p class="bk-tag">已预订</p>
+      <h3 class="bk-name">长沙五一广场异国印象·奢酒店</h3>
+      <p class="bk-addr">芙蓉区五一大道 127 号 · 出门即五一广场地铁站</p>
+      <dl class="bk-kv">
+        <dt>入住</dt><dd>周五 9/4 · 14:00 后（你实际是次日零点到店，<b>24 小时前台</b>）</dd>
+        <dt>退房</dt><dd>周日 9/6 · 12:00，<b>行李免费寄存</b>到 16:30 出发</dd>
+        <dt>楼层</dt><dd>房间在 4–9 层</dd>
+        <dt>两晚</dt><dd>¥1,294 含税 · Dusk Double Bed Room · 1 张大床 · 含早 · 免费取消</dd>
+        <dt>楼里有</dt><dd>SPA · 空中花园 · 4 楼免费洗衣房</dd>
+        <dt>走到笨萝卜</dt><dd>太平街店 10 分钟</dd>
+      </dl>
+    </div>
+  </div>
+
+  <div class="alert warn">
+    <strong>到店前确认一件事：房型的卫生间是不是透明门。</strong>这家有住客专门为此打了 8.5 分 ——「不是每个人都能接受透明的马桶和浴室门」。设计感酒店里不少见，介意就提前问客服换非透明的房型。
+  </div>
+
+  <div class="alert ok">
+    <strong>免费取消意味着还能捡漏。</strong>这两晚订的是可免费取消的房型，所以出发前价格若跌下来，退了重订即可。<a href="https://us.trip.com/hotels/detail/?cityId=206&amp;hotelId=116989879&amp;checkIn=2026-09-04&amp;checkOut=2026-09-06&amp;adult=1" rel="noopener">点这里看这两晚的实时价</a> —— 现在这个 ¥1,294 是 2026-08-31 核对的。
+  </div>
+
+  <details class="how">
+    <summary>当时是怎么从 22 家筛到它的</summary>
   <p>按你的四个条件筛完的结果。评分和评论数抓自 Trip.com 列表页（2026-08-31），价格是 <b>2026-09-04 入住、09-06 退房两晚的实际含税总价</b>（Trip.com，按 1 : 7.15 折算），不是列表页那个「起价」。</p>
 
   <div class="rules">
@@ -831,6 +875,7 @@
       </table>
     </div>
     <p class="hint">「样本不足」这条线画在 1000 条评论。低于这个数，平台分的小数点没有意义 —— 全表最高的 9.8 分只有 50 条评论就是例子。</p>
+  </details>
   </details>
 
   <h2 id="sec-todo">出发前要做完的</h2>
@@ -1855,11 +1900,8 @@
   // which is the whole point. Not enough to navigate by, and the note says so.
   var PLACES = [
     { n: '长沙南站',          at: [28.150, 113.062], c: 'move' },
-    { n: '五一广场',          at: [28.196, 112.978], c: 'move', stay: true },
-    { n: '奢酒店',            at: [28.197, 112.982], c: 'sleep' },
-    { n: 'Xi Hotel',          at: [28.194, 112.978], c: 'sleep' },
-    { n: 'FUNGEE',            at: [28.192, 112.977], c: 'sleep' },
-    { n: 'Hampton',           at: [28.197, 112.980], c: 'sleep' },
+    { n: '五一广场',          at: [28.196, 112.978], c: 'move' },
+    { n: '奢酒店 · 已定',      at: [28.197, 112.982], c: 'sleep', stay: true },
     { n: '笨萝卜 · 太平街店',  at: [28.193, 112.974], c: 'eat' },
     { n: '火宫殿 · 坡子街',    at: [28.193, 112.975], c: 'eat' },
     { n: '超级文和友',        at: [28.194, 112.977], c: 'eat' },
@@ -1883,9 +1925,9 @@
   // much of a day goes on crossing the river.
   var ROUTES = {
     sat: { color: '#2a78d6',
-           at: [[28.196, 112.978], [28.125, 112.938], [28.187, 112.963], [28.196, 112.978]] },
+           at: [[28.197, 112.982], [28.125, 112.938], [28.187, 112.963], [28.197, 112.982]] },
     sun: { color: '#eda100',
-           at: [[28.196, 112.978], [28.203, 112.973], [28.192, 112.984], [28.197, 112.979], [28.150, 113.062]] }
+           at: [[28.197, 112.982], [28.203, 112.973], [28.192, 112.984], [28.197, 112.979], [28.150, 113.062]] }
   };
 
   function asset(tag, attrs) {
