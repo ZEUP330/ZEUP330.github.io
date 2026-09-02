@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>电鸡五城规格表：北京 · 上海 · 广州 · 深圳 · 香港</title>
+<meta name="description" content="把电动自行车当成一件产品，五座城市逐项对照：保有量、上牌、限行、外卖专用号牌、载娃年龄、头盔、电池进楼、天气、地铁替代度。用 START 五段拆开看，同一件铁皮车在五座城市是五种东西。">
+<link rel="stylesheet" href="/assets/theme.css">
+<style>
+  :root { --warn: #eda100; --ok: #12855c; --danger: #cf3520; }
+  @media (prefers-color-scheme: dark) {
+    :root { --warn: #fac775; --ok: #34c48a; --danger: #ff6b57; }
+  }
+
+  main { max-width: 820px; margin: 0 auto; }
+
+  figure { margin: 1.4rem 0; }
+  figure svg { width: 100%; height: auto; display: block; }
+  /* Presentation attributes cannot read CSS variables, so the family is set
+     here and every <text> inherits it. */
+  figure svg text { font-family: var(--sans); }
+  figcaption { font-size: 12px; color: var(--ink-3); margin-top: .55rem; line-height: 1.65; }
+
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(148px, 1fr)); gap: 10px; margin: 1.1rem 0; }
+
+  /* START rail: the five segments are the spine of the page, so they get a
+     visible marker rather than just a heading. */
+  .seg { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; color: var(--ink-3);
+    letter-spacing: .1em; text-transform: uppercase; margin: 2.4rem 0 .2rem; }
+  .seg b { width: 22px; height: 22px; border-radius: 7px; display: grid; place-items: center;
+    background: var(--accent); color: #fff; font-size: 12px; letter-spacing: 0; }
+  .seg.s2 b { background: var(--warn); } .seg.s3 b { background: var(--ok); }
+  .seg.s4 b { background: var(--danger); } .seg.s5 b { background: #7c5cd6; }
+  h2 { scroll-margin-top: 70px; }
+
+  /* Spec sheet: one row per dimension, one column per city, every cell
+     carrying a bar or a flag instead of a paragraph. Same shape as the
+     four-economy sheet on the catchup page. */
+  .sheet { margin: 1rem 0 .5rem; }
+  .srow { display: grid; grid-template-columns: 8.5rem repeat(5, 1fr); gap: 0 9px;
+    padding: .7rem 0; border-top: 1px solid var(--line); align-items: start; }
+  .srow.head { border-top: 0; position: sticky; top: var(--sheet-top, 0px); z-index: 12;
+    background: var(--material); -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px);
+    padding: .55rem 0; border-bottom: 1px solid var(--line); }
+  .srow.head .cty { font-weight: 600; font-size: .95rem; display: flex; align-items: baseline; gap: 6px; }
+  .srow.head .cty i { width: 10px; height: 10px; border-radius: 3px; flex: none; }
+  .srow.off { display: none; }
+  .sdim { font-size: 13px; color: var(--ink-3); padding-top: 2px; }
+  .sdim b { display: block; color: var(--ink-2); font-weight: 500; font-size: 13.5px; }
+  .cell { min-width: 0; }
+  .cval { font-size: .92rem; font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1.35; }
+  .csub { font-size: 11.5px; color: var(--ink-3); line-height: 1.45; margin-top: 1px; }
+  .bar { height: 6px; border-radius: 3px; background: var(--bg-2); margin: 5px 0 3px; position: relative; }
+  .bar i { position: absolute; top: 0; left: 0; height: 100%; border-radius: 3px; }
+  .flag { display: inline-flex; align-items: center; gap: 5px; font-size: .9rem; font-weight: 600; }
+  .flag .g { width: 16px; height: 16px; border-radius: 50%; display: inline-grid; place-items: center;
+    font-size: 11px; color: #fff; flex: none; }
+  .g.yes { background: var(--ok); } .g.no { background: var(--danger); }
+  .g.mid { background: var(--warn); } .g.na { background: var(--ink-3); }
+
+  /* Persona chips filter the sheet down to the rows that person actually
+     feels. Filtering beats writing five separate tables. */
+  .chips { display: flex; flex-wrap: wrap; gap: 7px; margin: .9rem 0 .2rem; }
+  .chip { font: inherit; font-size: 12.5px; color: var(--ink-2); background: var(--bg-2);
+    border: 1px solid var(--line-2); border-radius: 999px; padding: 4px 13px; cursor: pointer;
+    transition: color var(--t) var(--ease), border-color var(--t) var(--ease), background var(--t) var(--ease); }
+  .chip:hover { border-color: var(--ink-3); }
+  .chip.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  ul.links { padding-left: 1.1rem; margin: 0; }
+  ul.links li { color: var(--ink-3); font-size: 14px; margin-bottom: .55rem; }
+  ul.links a { text-decoration: none; }
+  ul.links a:hover { text-decoration: underline; }
+  td.n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+  @media (max-width: 760px) {
+    .srow { grid-template-columns: repeat(5, 1fr); gap: 0 5px; padding: .6rem 0; }
+    .sdim { grid-column: 1 / -1; padding: 0 0 .3rem; }
+    .cval { font-size: .78rem; } .csub { font-size: 10.5px; }
+    .srow.head .cty { font-size: .78rem; gap: 4px; }
+    .srow.head .cty i { width: 8px; height: 8px; }
+    .grid2 { grid-template-columns: 1fr; }
+    .stats { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+<link rel="stylesheet" href="/assets/statusbar.css">
+<link rel="stylesheet" href="/assets/rail.css">
+<script src="/assets/statusbar.js" defer></script>
+<script src="/assets/theme.js" defer></script>
+<script src="/assets/rail.js" defer></script>
+</head>
+<body>
+<main>
+  <p class="back"><a href="../">← 首页</a></p>
+  <h1 id="top">电鸡五城规格表</h1>
+  <p class="lede">「电鸡」是粤语里对电动自行车的叫法。把它当成一件产品来看，<span class="hl">北京、上海、广州、深圳、香港卖的其实不是同一件东西</span> —— 同一辆铁皮车，在上海是一千一百万分之一的日常，在香港是一台法律意义上的「汽车」，上路即违法。这页按 START 五段拆开：情境、目标、行动、结果、启示。</p>
+  <p class="hint">全文数字均标注来源与口径，核对日期 2026-09-02。政策是活的，页面不是；有效期已过或进展未取到的，正文里直接写明。</p>
+
+  <h2 id="sheet-h" data-rail="规格表">五城 × 十六项</h2>
+  <p class="hint">条形在每行内归一，比的是同一维度上的相对位置。下面的身份切一下，表会只留跟这个人有关的那几行 —— 同一张表，外卖骑手和接娃的祖父母读到的是两份说明书。</p>
+  <div class="chips" id="chips"></div>
+  <div class="sheet" id="sheet"></div>
+  <p class="hint">✓／✗／△ 是「这件事在这座城市成不成立」，不是好坏评价。香港那一列大量出现 ✗，不是因为管得严，是因为这类车在香港根本没有进入民用交通体系。</p>
+
+  <p class="seg"><b>S</b>Situation · 情境</p>
+  <h2 id="s" data-rail="S 情境">一千一百万辆，和零</h2>
+  <p>先看总量。工信部 2025 年 7 月说，全国电动自行车社会保有量约 3.8 亿辆，14 个省超过 1000 万辆；到 2025 年 9 月这个数字是 3.813 亿。这不是一个小众品类，是中国保有量最大的机动出行工具。</p>
+  <p>落到五座城市，差距不是倍数级，是「有没有」级。上海注册登记 1150 余万辆，全国第一；香港合法上路的数量是零。</p>
+
+  <figure>
+    <div id="f-stock"></div>
+    <figcaption>口径不齐，这里必须说清：上海是「注册登记量」（市应急管理局，截至 2024 年 7 月底），广州、深圳、北京是各自的登记／保有量口径（2024 年前后），香港是「合法上路数量」。上海另有 1060 万、1200 万、「实际使用约 800 万」等多个口径同时在流通，差了 400 万辆。</figcaption>
+  </figure>
+
+  <p>总量会被城市大小带偏，所以再看密度。按各市常住人口折成每千人保有量，上海 464 辆、广州 345 辆、深圳 309 辆、北京 229 辆 —— 北京的电鸡密度只有上海的一半。</p>
+
+  <figure>
+    <div id="f-dens"></div>
+    <figcaption>常住人口取各市 2024 年统计公报量级（北京 2183 万、上海 2480 万、广州 1883 万、深圳 1779 万、香港约 753 万）。分子的口径见上一张图，因此这条密度线只适合看相对高低，不适合当作精确值引用。</figcaption>
+  </figure>
+
+  <p>深圳这一格值得单拎出来：交警的说法是电动自行车保有量已经超过全市机动车保有量。一座以汽车密度著称的城市，两轮已经比四轮多了。这是后面所有限行动作的起点。</p>
+
+  <div class="stats">
+    <div class="stat"><div class="k">全国保有量</div><div class="v">3.81 亿</div></div>
+    <div class="stat"><div class="k">上海登记量</div><div class="v">1150 万</div></div>
+    <div class="stat"><div class="k">香港合法上路</div><div class="v">0</div></div>
+    <div class="stat"><div class="k">全国骑手</div><div class="v">1000 万+</div></div>
+  </div>
+
+  <p class="seg s2"><b>T</b>Target · 目标</p>
+  <h2 id="t1" data-rail="T 目标">五座城要解决的不是同一个问题</h2>
+  <p>把政策文件的立法说明摊开看，五座城市按下的痛点各不相同。上海和北京先被火烧到 —— 楼道充电、电池进电梯、锂电池热失控；广州和深圳先被路挤到 —— 路权、事故、总量。香港的问题最原始：这东西到底算什么车。</p>
+
+  <figure>
+    <svg viewBox="0 0 760 250" role="img" aria-label="五城主要治理目标矩阵：北京上海偏火灾与充电安全，广州深圳偏路权与总量，香港是法律定性。">
+      <title>五城的第一痛点</title>
+      <g font-size="12">
+        <line x1="60" y1="205" x2="740" y2="205" stroke="var(--line)"/>
+        <line x1="60" y1="25" x2="60" y2="205" stroke="var(--line)"/>
+        <text x="740" y="228" text-anchor="end" fill="var(--ink-3)" font-size="11">路权 / 秩序压力 →</text>
+        <text x="52" y="34" text-anchor="end" fill="var(--ink-3)" font-size="11">火灾</text>
+        <text x="52" y="200" text-anchor="end" fill="var(--ink-3)" font-size="11">压力小</text>
+
+        <circle cx="230" cy="70" r="30" fill="#e34948" opacity=".16"/>
+        <text x="230" y="68" text-anchor="middle" fill="var(--ink)" font-weight="600">北京</text>
+        <text x="230" y="84" text-anchor="middle" fill="var(--ink-3)" font-size="10.5">电池进楼 / 拼改装</text>
+
+        <circle cx="330" cy="52" r="34" fill="#2a78d6" opacity=".16"/>
+        <text x="330" y="50" text-anchor="middle" fill="var(--ink)" font-weight="600">上海</text>
+        <text x="330" y="66" text-anchor="middle" fill="var(--ink-3)" font-size="10.5">电梯 / 楼道充电</text>
+
+        <circle cx="600" cy="120" r="34" fill="#eda100" opacity=".2"/>
+        <text x="600" y="118" text-anchor="middle" fill="var(--ink)" font-weight="600">广州</text>
+        <text x="600" y="134" text-anchor="middle" fill="var(--ink-3)" font-size="10.5">总量控制 / 分路段</text>
+
+        <circle cx="640" cy="62" r="32" fill="#1baf7a" opacity=".18"/>
+        <text x="640" y="60" text-anchor="middle" fill="var(--ink)" font-weight="600">深圳</text>
+        <text x="640" y="76" text-anchor="middle" fill="var(--ink-3)" font-size="10.5">三级限行 / 校园周边</text>
+
+        <circle cx="120" cy="175" r="28" fill="#7c5cd6" opacity=".18"/>
+        <text x="120" y="173" text-anchor="middle" fill="var(--ink)" font-weight="600">香港</text>
+        <text x="120" y="189" text-anchor="middle" fill="var(--ink-3)" font-size="10.5">法律定性</text>
+
+        <text x="150" y="243" fill="var(--ink-3)" font-size="10.5">位置按各地立法说明与通告里排在最前面的问题主观放置，不是量化坐标。</text>
+      </g>
+    </svg>
+    <figcaption>北京修订条例的说明里列的是「违法拼改装、违规充电、即时配送用车不规范、暴骑团」；深圳三级限行通告的落点是学校周边与中心区道路；香港运输署的整份文件都在回答「电动可移动工具属不属于《道路交通条例》里的汽车」。</figcaption>
+  </figure>
+
+  <p>目标不同，工具就不同。火灾问题的工具是罚则、充电桩和电梯里的摄像头；路权问题的工具是号牌、限行区和总量控制；定性问题的工具只有一个 —— 修法。</p>
+
+  <p class="seg s3"><b>A</b>Action · 行动</p>
+  <h2 id="a" data-rail="A 行动">五条并行的时间线</h2>
+  <p>2021 到 2026 这五年，五座城市几乎同时在动，但节奏和方向不一样。上海最早给外卖车发专用号牌（2021 年底），深圳最早做分级限行（2024 年 9 月，全国率先），广州把「总量控制」写进了地方性法规，北京刚在 2026 年 5 月完成条例的首次全面修订。</p>
+
+  <figure>
+    <svg viewBox="0 0 760 300" role="img" aria-label="五城 2021 至 2026 年电动自行车政策时间线，五条泳道。">
+      <title>2021—2026 政策时间线</title>
+      <g font-size="11">
+        <g fill="var(--ink-3)" font-size="10.5" text-anchor="middle">
+          <text x="110" y="18">2021</text><text x="235" y="18">2022</text><text x="360" y="18">2023</text>
+          <text x="485" y="18">2024</text><text x="610" y="18">2025</text><text x="720" y="18">2026</text>
+        </g>
+        <g stroke="var(--line-2)">
+          <line x1="110" y1="24" x2="110" y2="272"/><line x1="235" y1="24" x2="235" y2="272"/>
+          <line x1="360" y1="24" x2="360" y2="272"/><line x1="485" y1="24" x2="485" y2="272"/>
+          <line x1="610" y1="24" x2="610" y2="272"/><line x1="720" y1="24" x2="720" y2="272"/>
+        </g>
+
+        <g font-size="12" font-weight="600">
+          <text x="0" y="52" fill="#e34948">北京</text>
+          <text x="0" y="102" fill="#2a78d6">上海</text>
+          <text x="0" y="152" fill="#eda100">广州</text>
+          <text x="0" y="202" fill="#1baf7a">深圳</text>
+          <text x="0" y="252" fill="#7c5cd6">香港</text>
+        </g>
+        <g stroke="var(--line)" stroke-dasharray="2 3">
+          <line x1="46" y1="48" x2="750" y2="48"/><line x1="46" y1="98" x2="750" y2="98"/>
+          <line x1="46" y1="148" x2="750" y2="148"/><line x1="46" y1="198" x2="750" y2="198"/>
+          <line x1="46" y1="248" x2="750" y2="248"/>
+        </g>
+
+        <g font-size="10.5" fill="var(--ink-2)">
+          <circle cx="500" cy="48" r="4.5" fill="#e34948"/><text x="510" y="44">全链条整治方案</text>
+          <circle cx="672" cy="48" r="4.5" fill="#e34948"/><text x="664" y="44" text-anchor="end">条例修订通过</text>
+          <circle cx="734" cy="48" r="5.5" fill="#e34948"/><text x="750" y="68" text-anchor="end" font-weight="600" fill="#e34948">5·1 施行</text>
+
+          <circle cx="128" cy="98" r="5.5" fill="#2a78d6"/><text x="138" y="94" font-weight="600" fill="#2a78d6">外卖专用号牌（全国最早）</text>
+          <circle cx="500" cy="98" r="4.5" fill="#2a78d6"/><text x="510" y="94">条例修正：电池进电梯罚 200–500 元</text>
+          <circle cx="628" cy="98" r="4.5" fill="#2a78d6"/><text x="638" y="116">充电桩电网直供电</text>
+
+          <circle cx="118" cy="148" r="4.5" fill="#eda100"/><text x="128" y="144">登记上牌</text>
+          <circle cx="390" cy="148" r="4.5" fill="#eda100"/><text x="400" y="144">分路段分时段限行</text>
+          <circle cx="530" cy="148" r="5.5" fill="#eda100"/><text x="540" y="144" font-weight="600" fill="#eda100">管理规定：授权总量控制</text>
+          <circle cx="628" cy="148" r="4.5" fill="#eda100"/><text x="560" y="166">专用号牌 W/X/Y/Z 四号段</text>
+
+          <circle cx="500" cy="198" r="5.5" fill="#1baf7a"/><text x="510" y="194" font-weight="600" fill="#1baf7a">三级限行（全国率先）</text>
+          <circle cx="600" cy="198" r="4.5" fill="#1baf7a"/><text x="750" y="216" text-anchor="end">通告换版，有效期至 2026-03-31</text>
+
+          <circle cx="560" cy="248" r="4.5" fill="#7c5cd6"/><text x="570" y="244">白石角共享电动辅助单车试验</text>
+          <circle cx="655" cy="248" r="4.5" fill="#7c5cd6"/><text x="500" y="266">拟修《道路交通条例》，二维码认证</text>
+        </g>
+      </g>
+    </svg>
+    <figcaption>时间点取自各地政府门户与运输署公告；横轴按年份等距放置，同一年内的先后不严格。香港那条泳道到今天为止只有试验和草拟，没有生效节点。</figcaption>
+  </figure>
+
+  <p>深圳的招最有辨识度：一张图上把全市切成三级。一级限行区 24 小时禁止所有非机动车通行，二级区 24 小时禁止民生行业以外的电动自行车，三级区专门圈在学校周边、分时段禁止非接送学生的车。</p>
+
+  <figure>
+    <svg viewBox="0 0 760 210" role="img" aria-label="深圳三级限行示意：一级区全天禁所有非机动车，二级区全天禁非民生行业电动车，三级区学校周边分时段。">
+      <title>深圳三级限行</title>
+      <g font-size="12">
+        <rect x="20" y="30" width="220" height="150" rx="14" fill="var(--danger)" opacity=".12"/>
+        <rect x="270" y="30" width="220" height="150" rx="14" fill="var(--warn)" opacity=".16"/>
+        <rect x="520" y="30" width="220" height="150" rx="14" fill="var(--accent)" opacity=".12"/>
+
+        <text x="130" y="60" text-anchor="middle" font-weight="600" fill="var(--ink)">一级限行区</text>
+        <text x="130" y="86" text-anchor="middle" fill="var(--ink-2)" font-size="11.5">24 小时</text>
+        <text x="130" y="106" text-anchor="middle" fill="var(--ink-2)" font-size="11.5">禁止所有非机动车</text>
+        <text x="130" y="134" text-anchor="middle" fill="var(--ink-3)" font-size="10.5">中心区主干道</text>
+        <text x="130" y="150" text-anchor="middle" fill="var(--ink-3)" font-size="10.5">外卖也不行</text>
+
+        <text x="380" y="60" text-anchor="middle" font-weight="600" fill="var(--ink)">二级限行区</text>
+        <text x="380" y="86" text-anchor="middle" fill="var(--ink-2)" font-size="11.5">24 小时</text>
+        <text x="380" y="106" text-anchor="middle" fill="var(--ink-2)" font-size="11.5">禁民生行业以外的车</text>
+        <text x="380" y="134" text-anchor="middle" fill="var(--ink-3)" font-size="10.5">通勤族禁行</text>
+        <text x="380" y="150" text-anchor="middle" fill="var(--ink-3)" font-size="10.5">外卖快递可以走</text>
+
+        <text x="630" y="60" text-anchor="middle" font-weight="600" fill="var(--ink)">三级限行区</text>
+        <text x="630" y="86" text-anchor="middle" fill="var(--ink-2)" font-size="11.5">上下学时段</text>
+        <text x="630" y="106" text-anchor="middle" fill="var(--ink-2)" font-size="11.5">禁非接送学生的车</text>
+        <text x="630" y="134" text-anchor="middle" fill="var(--ink-3)" font-size="10.5">学校周边道路</text>
+        <text x="630" y="150" text-anchor="middle" fill="var(--ink-3)" font-size="10.5">接娃的放行</text>
+
+        <text x="20" y="200" fill="var(--ink-3)" font-size="10.5">同一辆车、同一个人，在三种区里是三种合法性 —— 这是全国第一个把「你是谁、你去干嘛」写进限行规则的城市。</text>
+      </g>
+    </svg>
+    <figcaption>2024 年 9 月 1 日起实施，原定 2025 年 2 月 28 日到期，两次延期后由深公交规〔2025〕4 号接续，有效期 2025-09-01 至 2026-03-31 —— <b>该有效期到今天已经过了</b>，现行版本以深圳交警最新通告为准，本页不替它猜。</figcaption>
+  </figure>
+
+  <p>广州的招是号牌。2025 年 9 月起施行的两份办法，把外卖、快递等七类民生服务行业的车单独发牌 —— 黄底黑字，分「广州 W／X／Y／Z」四个号段；原来的蓝底白字网约配送牌，要在 2026 年 3 月 1 日前换掉。</p>
+
+  <figure>
+    <svg viewBox="0 0 760 170" role="img" aria-label="广州专用号牌四个号段示意，黄底黑字。">
+      <title>广州专用号牌四号段</title>
+      <g font-size="12">
+        <g>
+          <rect x="20" y="30" width="150" height="56" rx="8" fill="#f2c200" stroke="rgba(0,0,0,.25)"/>
+          <text x="95" y="68" text-anchor="middle" font-size="24" font-weight="700" fill="#1a1a1a">广州W</text>
+          <text x="95" y="106" text-anchor="middle" fill="var(--ink-2)" font-size="11.5">即时配送 / 外卖</text>
+        </g>
+        <g>
+          <rect x="200" y="30" width="150" height="56" rx="8" fill="#f2c200" stroke="rgba(0,0,0,.25)"/>
+          <text x="275" y="68" text-anchor="middle" font-size="24" font-weight="700" fill="#1a1a1a">广州X</text>
+          <text x="275" y="106" text-anchor="middle" fill="var(--ink-2)" font-size="11.5">其余民生服务行业</text>
+        </g>
+        <g>
+          <rect x="380" y="30" width="150" height="56" rx="8" fill="#f2c200" stroke="rgba(0,0,0,.25)"/>
+          <text x="455" y="68" text-anchor="middle" font-size="24" font-weight="700" fill="#1a1a1a">广州Y</text>
+          <text x="455" y="106" text-anchor="middle" fill="var(--ink-2)" font-size="11.5">按号段分类管理</text>
+        </g>
+        <g>
+          <rect x="560" y="30" width="150" height="56" rx="8" fill="#f2c200" stroke="rgba(0,0,0,.25)"/>
+          <text x="635" y="68" text-anchor="middle" font-size="24" font-weight="700" fill="#1a1a1a">广州Z</text>
+          <text x="635" y="106" text-anchor="middle" fill="var(--ink-2)" font-size="11.5">共 7 类行业</text>
+        </g>
+        <text x="20" y="140" fill="var(--ink-2)" font-size="11.5">配套要求：每一单配送的驾驶人、车辆、时限、距离、实际行驶路线、实时位置，全量实时接入市级管理系统。</text>
+        <text x="20" y="158" fill="var(--ink-3)" font-size="10.5">牌照配色为示意，非官方色值；四个号段的具体行业划分以《广州市专用号牌电动自行车管理办法》为准。</text>
+      </g>
+    </svg>
+    <figcaption>这一条比号牌本身重要：广州要的不是「看见一块黄牌」，是把外卖车的实时轨迹接进政府系统。号牌只是接入的钥匙。</figcaption>
+  </figure>
+
+  <p>香港的招是重新定义。电动可移动工具由机械驱动，符合《道路交通条例》里「汽车」的定义 —— 于是它需要登记、需要驾照、需要验车，而实际上一辆电动单车通不过任何一关。结论就是：合法路径存在，但走不通。</p>
+
+  <figure>
+    <svg viewBox="0 0 760 200" role="img" aria-label="香港电动单车法律链条：机械驱动落入汽车定义，需登记验车领牌，实际无法通过，因此上路即违法。">
+      <title>香港：一条走不通的合法路径</title>
+      <g font-size="12">
+        <g>
+          <rect x="10" y="40" width="150" height="62" rx="10" fill="var(--card)" stroke="var(--line)"/>
+          <text x="85" y="66" text-anchor="middle" fill="var(--ink)">电动单车</text>
+          <text x="85" y="86" text-anchor="middle" fill="var(--ink-3)" font-size="10.5">由机械驱动</text>
+        </g>
+        <path d="M165 71 L195 71" stroke="var(--ink-3)" stroke-width="1.5" marker-end="url(#ar)"/>
+        <g>
+          <rect x="200" y="40" width="160" height="62" rx="10" fill="var(--card)" stroke="var(--line)"/>
+          <text x="280" y="66" text-anchor="middle" fill="var(--ink)">落入「汽车」定义</text>
+          <text x="280" y="86" text-anchor="middle" fill="var(--ink-3)" font-size="10.5">《道路交通条例》第 374 章</text>
+        </g>
+        <path d="M365 71 L395 71" stroke="var(--ink-3)" stroke-width="1.5" marker-end="url(#ar)"/>
+        <g>
+          <rect x="400" y="40" width="160" height="62" rx="10" fill="var(--card)" stroke="var(--line)"/>
+          <text x="480" y="66" text-anchor="middle" fill="var(--ink)">须登记、验车、领牌</text>
+          <text x="480" y="86" text-anchor="middle" fill="var(--ink-3)" font-size="10.5">与私家车同一套程序</text>
+        </g>
+        <path d="M565 71 L595 71" stroke="var(--danger)" stroke-width="1.5" marker-end="url(#ard)"/>
+        <g>
+          <rect x="600" y="40" width="150" height="62" rx="10" fill="var(--danger)" opacity=".12"/>
+          <rect x="600" y="40" width="150" height="62" rx="10" fill="none" stroke="var(--danger)" opacity=".5"/>
+          <text x="675" y="66" text-anchor="middle" font-weight="600" fill="var(--danger)">实际通不过</text>
+          <text x="675" y="86" text-anchor="middle" fill="var(--ink-2)" font-size="10.5">上路即违法，可拘捕检控</text>
+        </g>
+        <defs>
+          <marker id="ar" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+            <path d="M0,0 L7,3.5 L0,7 z" fill="var(--ink-3)"/></marker>
+          <marker id="ard" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+            <path d="M0,0 L7,3.5 L0,7 z" fill="var(--danger)"/></marker>
+        </defs>
+        <text x="10" y="140" fill="var(--ink-2)" font-size="11.5">拟议中的新框架：拆成「电动个人移动工具」与「电动辅助单车」两类，限速 25km/h 以下、须戴头盔、装车头灯反光板</text>
+        <text x="10" y="158" fill="var(--ink-2)" font-size="11.5">与刹车、贴二维码认证标签；电动辅助单车拟准许上所有单车径，个人移动工具先开放宽 3.5 米以上的路段试行。</text>
+        <text x="10" y="182" fill="var(--ink-3)" font-size="10.5">由油门按钮推进（不用踩踏板）的电动单车不在放宽之列 —— 那类按电单车法例管，等于继续挡在门外。</text>
+      </g>
+    </svg>
+    <figcaption>据 2025 年 7 月 30 日立法会书面答复，政府争取「明年」把修订条例草案提交立法会。截至本页核对日（2026-09-02）未取到草案的最新审议进展，这一格保持空白而不是猜一个结论。</figcaption>
+  </figure>
+
+  <p class="seg s4"><b>R</b>Result · 结果</p>
+  <h2 id="r" data-rail="R 结果">数字上真的动了</h2>
+  <p>先说最漂亮的一条：火。2022 年全国接报电动自行车火灾 1.8 万起，2023 年涨到 2.1 万起；到 2025 年前 9 个月是 6135 起、亡 11 人，同比降 55.1% 和 84.9%。按「每月每百万辆」折算，从 5.6 起降到 2 起。</p>
+
+  <figure>
+    <div id="f-fire"></div>
+    <figcaption>2022、2023 为全年数，2025 为 1—9 月累计，柱子不同口径，看趋势不看等比。同一场发布会另给过「2025 上半年 7048 起」，与 1—9 月的 6135 起互相矛盾，引用前需回原始通报核对 —— 本页把这个矛盾摆出来，不替它挑一个好看的。</figcaption>
+  </figure>
+
+  <p>降幅背后是三件同时发生的事：新国标 GB 17761—2024 在 2025 年 9 月落地（塑料占比不超过整车 5.5%、一车一池一充一码、超 25km/h 断电）；旧标车 2025 年 11 月 30 日停售；以旧换新累计 1200 余万辆，报废回收锂电池 86 万块，全国设了 5139 个老旧锂电池检测回收站点。</p>
+  <p>其次是室内那一段 —— 全链条整治以来室内场所的电动自行车火灾降幅达 81.3%。上海把「带电池进电梯轿厢」明确写成 200 到 500 元罚款，是这类条款里最硬的一条；私拉电线充电罚 50 到 200 元。</p>
+
+  <figure>
+    <div id="f-fine"></div>
+    <figcaption>罚则金额只列了上海条例里两条有明确数额的。北京新条例把电池进居住建筑写成禁止性条款并设了法律责任，广深两地也有对应规定，但金额区间与执法主体不同，无法与上海并排比数额，故留白。</figcaption>
+  </figure>
+
+  <p>但执行层面没那么干净。截至 2025 年 12 月，北京街头仍有 5% 的无牌车、3% 的号牌污损车，外卖骑手群体存在故意折损、遮挡号牌的现象，当年通过非现场执法查处 3500 余起。号牌能不能被看见，是所有「按牌管人」政策的地基。</p>
+
+  <figure>
+    <div id="f-plate"></div>
+    <figcaption>北京 2025 年 12 月口径。5% + 3% 意味着每 12 辆车里就有一辆在管理系统外，而这套系统正是压实平台企业责任的唯一抓手。</figcaption>
+  </figure>
+
+  <p>香港的数字往反方向走。涉电动可移动工具的交通意外 2024 年 3 宗、2025 年 8 宗；火警 12 宗、17 宗；因非法使用被捕的人数从 647 人升到 760 人。合法化没落地，使用量却在长 —— 这是「禁而不止」最标准的形状。</p>
+
+  <figure>
+    <div id="f-hk"></div>
+    <figcaption>香港运输及物流局 2025 年 7 月 30 日立法会答复。三组数都是小基数，但方向一致：一年之内三项全升。</figcaption>
+  </figure>
+
+  <p class="seg s5"><b>T</b>Takeaway · 启示</p>
+  <h2 id="t2" data-rail="T 启示">换成人来看</h2>
+  <p>规格表是给产品经理看的，人不是这么活的。下面五个人分别站在这五座城市里，读同一份政策会读出完全不同的东西。</p>
+
+  <h3>① 外卖骑手</h3>
+  <p>全国外卖骑手超 1000 万人，美团一家 745 万，饿了么活跃骑手超 400 万；把快递并进来，QuestMobile 口径下 2025 年 7 月已达约 2000 万人。这是电鸡政策真正的压力测试对象。</p>
+
+  <figure>
+    <div id="f-rider"></div>
+    <figcaption>三个数字口径不同：745 万与 400 万是平台年度活跃骑手（会重复计算兼职多平台的人），2000 万是快递外卖行业从业者规模。相加没有意义，这里只做量级对照。</figcaption>
+  </figure>
+
+  <p>对骑手来说，五座城市的差别不是罚多少钱，是「你被当成谁」。深圳二级限行区里，民生行业车辆可以走、通勤族不能走 —— 骑手在这里是被优待的一类；广州给他们发黄牌，代价是每一单的实时位置都进政府系统；上海最早发牌，管得早也管得久。</p>
+  <p>香港最极端：这里的骑手没有电鸡可用。Deliveroo 于 2025 年 4 月 7 日停运撤港后只剩 foodpanda 和 Keeta，「步兵」日均暴走二十公里，2025 年 5 月起中环、荃湾、红磡接连有数百名车手因单价被削而罢工。同样是送一份饭，广州骑手的成本是一块电池，香港步兵的成本是一双腿。</p>
+
+  <figure>
+    <svg viewBox="0 0 760 190" role="img" aria-label="五城外卖骑手的交通工具与身份对照。">
+      <title>骑手在五座城市里的身份</title>
+      <g font-size="11.5">
+        <g>
+          <rect x="8" y="26" width="140" height="118" rx="12" fill="var(--card)" stroke="var(--line)"/>
+          <text x="78" y="50" text-anchor="middle" font-weight="600" fill="#e34948">北京</text>
+          <text x="78" y="74" text-anchor="middle" fill="var(--ink-2)">专用号牌</text>
+          <text x="78" y="94" text-anchor="middle" fill="var(--ink-2)">企业担责</text>
+          <text x="78" y="120" text-anchor="middle" fill="var(--ink-3)" font-size="10.5">「不能只派单不管人」</text>
+        </g>
+        <g>
+          <rect x="158" y="26" width="140" height="118" rx="12" fill="var(--card)" stroke="var(--line)"/>
+          <text x="228" y="50" text-anchor="middle" font-weight="600" fill="#2a78d6">上海</text>
+          <text x="228" y="74" text-anchor="middle" fill="var(--ink-2)">最早发专用牌</text>
+          <text x="228" y="94" text-anchor="middle" fill="var(--ink-2)">2021 年底</text>
+          <text x="228" y="120" text-anchor="middle" fill="var(--ink-3)" font-size="10.5">管了五年</text>
+        </g>
+        <g>
+          <rect x="308" y="26" width="140" height="118" rx="12" fill="var(--card)" stroke="var(--line)"/>
+          <text x="378" y="50" text-anchor="middle" font-weight="600" fill="#eda100">广州</text>
+          <text x="378" y="74" text-anchor="middle" fill="var(--ink-2)">黄牌 + 全量轨迹</text>
+          <text x="378" y="94" text-anchor="middle" fill="var(--ink-2)">接入市级系统</text>
+          <text x="378" y="120" text-anchor="middle" fill="var(--ink-3)" font-size="10.5">管得最细</text>
+        </g>
+        <g>
+          <rect x="458" y="26" width="140" height="118" rx="12" fill="var(--card)" stroke="var(--line)"/>
+          <text x="528" y="50" text-anchor="middle" font-weight="600" fill="#1baf7a">深圳</text>
+          <text x="528" y="74" text-anchor="middle" fill="var(--ink-2)">二级区可通行</text>
+          <text x="528" y="94" text-anchor="middle" fill="var(--ink-2)">通勤族不可</text>
+          <text x="528" y="120" text-anchor="middle" fill="var(--ink-3)" font-size="10.5">身份换路权</text>
+        </g>
+        <g>
+          <rect x="608" y="26" width="144" height="118" rx="12" fill="var(--danger)" opacity=".08"/>
+          <rect x="608" y="26" width="144" height="118" rx="12" fill="none" stroke="var(--line)"/>
+          <text x="680" y="50" text-anchor="middle" font-weight="600" fill="#7c5cd6">香港</text>
+          <text x="680" y="74" text-anchor="middle" fill="var(--ink-2)">没有电鸡</text>
+          <text x="680" y="94" text-anchor="middle" fill="var(--ink-2)">步兵 / 单车 / 电单车</text>
+          <text x="680" y="120" text-anchor="middle" fill="var(--ink-3)" font-size="10.5">日均走 20 公里</text>
+        </g>
+        <text x="8" y="176" fill="var(--ink-3)" font-size="10.5">深圳一格是最有意思的：同一条路，送外卖的能走，下班回家的不能走 —— 路权跟着职业走，不跟着车走。</text>
+      </g>
+    </svg>
+    <figcaption>「日均走 20 公里」出自香港文汇报记者体验外卖步兵的报道，是记者个人的一天，不是行业平均。</figcaption>
+  </figure>
+
+  <h3>② 接娃的家长和祖父母</h3>
+  <p>这一维在 2026 年发生了一个真实的松动：北京新条例把后座允许搭乘的未成年人年龄上限从 12 周岁提到 16 周岁，理由是修法过程中有人反映「12 到 16 岁既不能自己骑、也不能坐」，出行卡死了。全国基准仍是 1 名 12 周岁以下未成年人，搭载 6 周岁以下的必须装 3C 认证儿童座椅，不许抱、不许站踏板。</p>
+
+  <figure>
+    <svg viewBox="0 0 760 210" role="img" aria-label="载娃年龄规定对照：全国基准 12 岁，北京 2026 年起放宽到 16 岁，6 岁以下需固定座椅。">
+      <title>后座上的年龄线</title>
+      <g font-size="11.5">
+        <line x1="60" y1="60" x2="700" y2="60" stroke="var(--line)" stroke-width="2"/>
+        <g fill="var(--ink-3)" font-size="10.5" text-anchor="middle">
+          <text x="60" y="82">0 岁</text><text x="220" y="82">6 岁</text>
+          <text x="433" y="82">12 岁</text><text x="700" y="82">16 岁</text>
+        </g>
+        <g stroke="var(--ink-3)"><line x1="60" y1="54" x2="60" y2="66"/><line x1="220" y1="54" x2="220" y2="66"/>
+          <line x1="433" y1="54" x2="433" y2="66"/><line x1="700" y1="54" x2="700" y2="66"/></g>
+
+        <rect x="60" y="30" width="160" height="18" rx="5" fill="var(--warn)" opacity=".85"/>
+        <text x="140" y="44" text-anchor="middle" font-size="10.5" fill="#1a1a1a">须用 3C 儿童座椅</text>
+
+        <rect x="60" y="106" width="373" height="20" rx="6" fill="var(--accent)" opacity=".8"/>
+        <text x="246" y="121" text-anchor="middle" font-size="11" fill="#fff">全国基准 · 上海 · 广东（广州 / 深圳）：限 1 名 12 周岁以下</text>
+
+        <rect x="60" y="136" width="640" height="20" rx="6" fill="#e34948" opacity=".85"/>
+        <text x="380" y="151" text-anchor="middle" font-size="11" fill="#fff">北京 2026-05-01 起：放宽到 16 周岁</text>
+
+        <text x="60" y="184" fill="var(--ink-3)" font-size="10.5">香港不适用 —— 车本身不能上路，后座坐谁都一样。</text>
+        <text x="60" y="200" fill="var(--ink-3)" font-size="10.5">广深两地是否已跟进 16 岁，本页未取到广东省及两市交警的官方文本，按 12 周岁列示。</text>
+      </g>
+    </svg>
+    <figcaption>驾驶人年龄门槛全国统一：满 16 周岁才能骑电动自行车上路（《道路交通安全法实施条例》第七十二条）。所以 12–16 岁这一段曾经既不能骑也不能坐，北京补的就是这个洞。</figcaption>
+  </figure>
+
+  <p>校门口是另一件事。深圳把学校周边单独划成三级限行区、上下学时段禁止非接送学生的车辆通行 —— 这是五座城市里唯一一个把「校门口那半小时」写进限行规则的。背后是 2020—2023 年学校周边电动自行车事故警情高发的统计。</p>
+
+  <figure>
+    <svg viewBox="0 0 760 160" role="img" aria-label="学校周边分时段限行示意：上下学两个时段禁止非接送车辆。">
+      <title>校门口的那两个时段</title>
+      <g font-size="11">
+        <rect x="60" y="46" width="640" height="26" rx="6" fill="var(--bg-2)"/>
+        <rect x="112" y="46" width="70" height="26" rx="6" fill="var(--danger)" opacity=".75"/>
+        <rect x="468" y="46" width="86" height="26" rx="6" fill="var(--danger)" opacity=".75"/>
+        <g fill="var(--ink-3)" font-size="10.5" text-anchor="middle">
+          <text x="60" y="92">6:00</text><text x="220" y="92">9:00</text><text x="380" y="92">12:00</text>
+          <text x="540" y="92">17:00</text><text x="700" y="92">22:00</text>
+        </g>
+        <text x="147" y="36" text-anchor="middle" fill="var(--danger)" font-size="10.5">上学时段</text>
+        <text x="511" y="36" text-anchor="middle" fill="var(--danger)" font-size="10.5">放学时段</text>
+        <text x="60" y="122" fill="var(--ink-2)" font-size="11.5">红色时段内：接送学生的车放行，其余电动自行车禁行。这等于给「祖父母骑车接孙子」这件事发了一张定向通行证。</text>
+        <text x="60" y="144" fill="var(--ink-3)" font-size="10.5">时段位置为示意，具体路段与钟点以深圳交警通告为准。</text>
+      </g>
+    </svg>
+    <figcaption>把限行规则做成「按用途放行」而不是「一刀切禁行」，成本是执法要判断车主的目的 —— 这也是这类规则最容易在现场吵起来的地方。</figcaption>
+  </figure>
+
+  <h3>③ 老人</h3>
+  <p>对老人来说，最要命的一维不是限行，是那块电池要不要提上楼。北京新条例严禁携带电池进入居住建筑，上海对进电梯罚 200 到 500 元 —— 规则本身是对的，但它把「充电」这件事从家里推到了楼下，前提是楼下真有充电桩。</p>
+  <p>上海因此在做一件不显眼但关键的事：按《全链条整治行动实施方案》的时间表，2024 年底前小区充电设施运营单位申请直供电改造，2025 年 6 月底前电网企业实现直接供电，避免转供电推高充电价格。人大代表建议里更进一步：按电量计费、试点居民合表电价、不设服务费，让户内户外同价。</p>
+
+  <figure>
+    <svg viewBox="0 0 760 220" role="img" aria-label="老人视角的三道关：提电池上楼被禁、楼下充电桩是否够、充电价格是否与家里同价。">
+      <title>老人的三道关</title>
+      <g font-size="11.5">
+        <g>
+          <rect x="10" y="30" width="230" height="120" rx="12" fill="var(--danger)" opacity=".1"/>
+          <rect x="10" y="30" width="230" height="120" rx="12" fill="none" stroke="var(--line)"/>
+          <text x="125" y="58" text-anchor="middle" font-weight="600" fill="var(--ink)">① 电池不能进楼</text>
+          <text x="125" y="82" text-anchor="middle" fill="var(--ink-2)">北京：禁止进居住建筑</text>
+          <text x="125" y="102" text-anchor="middle" fill="var(--ink-2)">上海：进电梯罚 200–500 元</text>
+          <text x="125" y="130" text-anchor="middle" fill="var(--ink-3)" font-size="10.5">老楼没电梯，本来就靠手提</text>
+        </g>
+        <g>
+          <rect x="265" y="30" width="230" height="120" rx="12" fill="var(--warn)" opacity=".14"/>
+          <rect x="265" y="30" width="230" height="120" rx="12" fill="none" stroke="var(--line)"/>
+          <text x="380" y="58" text-anchor="middle" font-weight="600" fill="var(--ink)">② 楼下要有桩</text>
+          <text x="380" y="82" text-anchor="middle" fill="var(--ink-2)">集中停放充电场所</text>
+          <text x="380" y="102" text-anchor="middle" fill="var(--ink-2)">物业日常巡查</text>
+          <text x="380" y="130" text-anchor="middle" fill="var(--ink-3)" font-size="10.5">桩不够，规则就变成罚款</text>
+        </g>
+        <g>
+          <rect x="520" y="30" width="230" height="120" rx="12" fill="var(--ok)" opacity=".12"/>
+          <rect x="520" y="30" width="230" height="120" rx="12" fill="none" stroke="var(--line)"/>
+          <text x="635" y="58" text-anchor="middle" font-weight="600" fill="var(--ink)">③ 价格要同价</text>
+          <text x="635" y="82" text-anchor="middle" fill="var(--ink-2)">上海：2025-06 底前直供电</text>
+          <text x="635" y="102" text-anchor="middle" fill="var(--ink-2)">转供电会推高电价</text>
+          <text x="635" y="130" text-anchor="middle" fill="var(--ink-3)" font-size="10.5">贵了，人就偷偷提回家</text>
+        </g>
+        <text x="10" y="180" fill="var(--ink-2)" font-size="11.5">三道关是一条链：只做第一关是罚款，做到第三关才是治理。上海是唯一把电价这一环写进时间表的。</text>
+        <text x="10" y="204" fill="var(--ink-3)" font-size="10.5">另一项对老人友好的变化来自新国标：最高车速锁定 25km/h、超速断电，最大刹车距离降低约一半。</text>
+      </g>
+    </svg>
+    <figcaption>「80% 的电动自行车火灾发生在充电时，其中超过一半在夜间充电过程中」—— 这条统计解释了为什么所有城市都盯着充电这一环，而不是行驶那一环。</figcaption>
+  </figure>
+
+  <h3>④ 天气：一件被低估的规格</h3>
+  <p>电鸡是敞篷的。这意味着降水和低温直接换算成「这天骑不骑」。五座城市在这一维上的差距，比政策差距还大：香港年雨量 2431.2 毫米，北京只有 644 毫米，差 3.8 倍。</p>
+
+  <figure>
+    <div id="f-rain"></div>
+    <figcaption>口径不齐，逐条标注：香港为天文台 1991—2020 年平均（2431.2 毫米）；深圳为市气象局 1991—2020 年平均（1932.9 毫米）；广州为市政府自然地理页的平均年降水量（1923 毫米）；北京为市政府概况页的年降水量（644 毫米）。上海未取到官方年均值，故留白 —— 常见引用在 1100–1200 毫米量级，本页不把它画成柱子。</figcaption>
+  </figure>
+
+  <p>雨日比雨量更贴近骑车体验：广州年均 150.3 天下雨，上海 132.0 天，北京只有 73.9 天。广州一年有 41% 的日子在下雨，北京只有 20%。同一辆车在两座城里的可用天数差了整整两个月。</p>
+
+  <figure>
+    <div id="f-rday"></div>
+    <figcaption>大陆三城为中国天气网的年平均雨日；香港为天文台 1991—2020 年「日雨量 ≥0.1 毫米」的日数 139.90 天，门槛比大陆口径低，偏高一些。深圳未取到同口径雨日，留白。</figcaption>
+  </figure>
+
+  <p>冬天则反过来。1 月平均气温香港 16.5℃、深圳 15.7℃，广州 13℃ 上下，上海 4℃ 上下，北京平原地区 −4 到 −5℃。在北京，1 月骑电鸡是一件需要装备的事；在深圳，那是一年里最舒服的骑行季。</p>
+
+  <figure>
+    <div id="f-temp"></div>
+    <figcaption>香港（16.5℃）、深圳（15.7℃）为官方 1991—2020 年 1 月平均值；北京为中国天气网口径「平原地区 −4～−5℃」，此处取 −4.5℃ 画柱；上海、广州为区间参考值（上海 3.8–4.8℃，取 4.3℃；广州取 13.5℃），未取到统一口径的官方 1 月均值，仅作量级示意。</figcaption>
+  </figure>
+
+  <h3>⑤ 通勤者：为什么香港不需要电鸡</h3>
+  <p>香港这一列之所以能一直空着，不是因为管得住，是因为有替代。港铁网络约 271 公里覆盖 750 万人，密度远高于内地任何一座城市；轨道能到的地方，两轮的需求就弱。</p>
+
+  <figure>
+    <div id="f-metro"></div>
+    <figcaption>北京 909 公里（2025 年 12 月三条线开通后）、上海突破 900 公里、广州 780 公里，均为含市域快轨的总里程口径；深圳 2025 年 11 月排名全国第五，未取到年末公里数，故留白。香港为运输署口径的港铁网络约 271 公里（另一口径含轻铁与昂坪 360 为 262.2 公里）。不同口径不可混用。</figcaption>
+  </figure>
+
+  <p>把两个数摆在一起就清楚了：内地四城的轨道里程都在往 900 公里冲，电鸡保有量同时在涨 —— 轨道和两轮不是替代关系，是接驳关系。地铁解决十公里，电鸡解决最后三公里，这三公里没有第二个便宜的解法。</p>
+  <p>香港的差别在于它的最后三公里被步行、巴士和电梯扶手梯吃掉了。人口密度足够高的时候，「最后三公里」根本不存在 —— 所以修不修法，对香港通勤者的影响远小于对香港外卖步兵的影响。</p>
+
+  <h2 id="close" data-rail="收束">START 收束</h2>
+  <figure>
+    <svg viewBox="0 0 760 320" role="img" aria-label="START 五段收束图：情境、目标、行动、结果、启示各一句话。">
+      <title>五段收束</title>
+      <g font-size="12">
+        <g>
+          <rect x="10" y="18" width="740" height="50" rx="10" fill="var(--accent)" opacity=".1"/>
+          <circle cx="42" cy="43" r="14" fill="var(--accent)"/><text x="42" y="48" text-anchor="middle" fill="#fff" font-weight="700">S</text>
+          <text x="72" y="40" fill="var(--ink)" font-weight="600">情境</text>
+          <text x="72" y="58" fill="var(--ink-2)" font-size="11.5">全国 3.81 亿辆，上海一城 1150 万，香港合法数量为零 —— 同一件产品，五个市场。</text>
+        </g>
+        <g>
+          <rect x="10" y="78" width="740" height="50" rx="10" fill="var(--warn)" opacity=".14"/>
+          <circle cx="42" cy="103" r="14" fill="var(--warn)"/><text x="42" y="108" text-anchor="middle" fill="#1a1a1a" font-weight="700">T</text>
+          <text x="72" y="100" fill="var(--ink)" font-weight="600">目标</text>
+          <text x="72" y="118" fill="var(--ink-2)" font-size="11.5">京沪先治火，广深先治路，香港先定性。第一痛点不同，后面的工具就必然不同。</text>
+        </g>
+        <g>
+          <rect x="10" y="138" width="740" height="50" rx="10" fill="var(--ok)" opacity=".12"/>
+          <circle cx="42" cy="163" r="14" fill="var(--ok)"/><text x="42" y="168" text-anchor="middle" fill="#fff" font-weight="700">A</text>
+          <text x="72" y="160" fill="var(--ink)" font-weight="600">行动</text>
+          <text x="72" y="178" fill="var(--ink-2)" font-size="11.5">上海最早发牌，深圳首创三级限行，广州把轨迹接进系统，北京刚完成条例首次全面修订。</text>
+        </g>
+        <g>
+          <rect x="10" y="198" width="740" height="50" rx="10" fill="var(--danger)" opacity=".1"/>
+          <circle cx="42" cy="223" r="14" fill="var(--danger)"/><text x="42" y="228" text-anchor="middle" fill="#fff" font-weight="700">R</text>
+          <text x="72" y="220" fill="var(--ink)" font-weight="600">结果</text>
+          <text x="72" y="238" fill="var(--ink-2)" font-size="11.5">火灾 1—9 月同比降 55.1%、亡人降 84.9%；但北京仍有 8% 的车牌看不清，香港被捕人数 647 → 760。</text>
+        </g>
+        <g>
+          <rect x="10" y="258" width="740" height="52" rx="10" fill="#7c5cd6" opacity=".12"/>
+          <circle cx="42" cy="284" r="14" fill="#7c5cd6"/><text x="42" y="289" text-anchor="middle" fill="#fff" font-weight="700">T</text>
+          <text x="72" y="280" fill="var(--ink)" font-weight="600">启示</text>
+          <text x="72" y="298" fill="var(--ink-2)" font-size="11.5">管得住的前提是有替代：港铁替掉了香港的最后三公里，充电桩替掉了提电池上楼。没有替代的禁令，只会长出 760 这个数字。</text>
+        </g>
+      </g>
+    </svg>
+    <figcaption>一句话版本：<b>电鸡不是交通工具问题，是最后三公里的定价问题</b>。谁能用别的东西把这三公里做得更便宜，谁才有资格谈禁。</figcaption>
+  </figure>
+
+  <h2 id="src" data-rail="来源">数据来源</h2>
+  <ul class="links">
+    <li><a href="https://www.sz.gov.cn/zfgb/zcjd/content/post_12700953.html" rel="noopener">深圳市公安局交通管理局关于对电动自行车等非机动车实施通行管理措施的通告 · 政策解读</a> — 三级限行区、通告有效期与调整背景</li>
+    <li><a href="https://www.sz.gov.cn/zfgb/zcjd/content/post_12303097.html" rel="noopener">深圳市电动自行车登记实施办法 · 政策解读</a> — 保有量超 500 万辆、已超机动车保有量；登记条件与流程</li>
+    <li><a href="https://www.gz.gov.cn/zwfw/zxfw/jtfw/content/post_10012259.html" rel="noopener">《广州市电动自行车管理规定》12 月 30 日起施行</a> — 总量控制授权、八章框架</li>
+    <li><a href="https://www.gz.gov.cn/zwfw/zxfw/jtfw/content/post_10424630.html" rel="noopener">《广州市电动自行车登记办法》9 月起施行</a> — 黄底黑字四号段、蓝牌换牌截止 2026-03-01、全量实时接入</li>
+    <li><a href="https://www.bjrd.gov.cn/zyfb/202509/t20250929_4214010.html" rel="noopener">关于《北京市非机动车管理条例（修订草案）》的说明</a> — 修订背景、7 章 35 条扩为 8 章 55 条</li>
+    <li><a href="https://www.bjfsh.gov.cn/zhxw/bmdt/202601/t20260115_40110513_fs.shtml" rel="noopener">北京：电动自行车新规，16 周岁及以下未成年人可搭乘</a> — 载人年龄由 12 放宽至 16、头盔升为法定义务</li>
+    <li><a href="https://cgzf.sh.gov.cn/cmsres/37/378ea9f177434b468ebf0b8c3dfdffc3/d65c0271f0cc744a10cc3a2ea3a68c78.pdf" rel="noopener">上海市非机动车安全管理条例（2024 年 5 月 10 日修正）</a> — 电梯罚 200–500 元、私拉电线罚 50–200 元</li>
+    <li><a href="https://www.jingan.gov.cn/rmtzx/003008/003008003/20240226/2a6e9981-7441-465f-bb28-708f7f90aab6.html" rel="noopener">上海保有量 1000 万、实际使用约 800 万</a>；注册登记 1150 余万辆见 <a href="https://www.sohu.com/a/878736604_483382" rel="noopener">各城市保有量汇总</a>（转引上海市应急管理局，截至 2024 年 7 月底）</li>
+    <li><a href="https://www.info.gov.hk/gia/general/202507/30/P2025073000231.htm" rel="noopener">立法会十五题：电动可移动工具（2025-07-30）</a> — 汽车定义、拟议框架、意外／火警／被捕人数、单车径 3.5 米</li>
+    <li><a href="https://www.td.gov.hk/tc/road_safety/electric_mobility_devices/index.html" rel="noopener">香港运输署 · 电动可移动工具</a> — 现行法律状况</li>
+    <li><a href="https://finance.people.com.cn/n1/2025/0724/c1004-40528916.html" rel="noopener">工信部：我国电动自行车社会保有量约 3.8 亿辆</a></li>
+    <li><a href="https://www.chinanews.com.cn/sh/2025/11-26/10521813.shtml" rel="noopener">电动自行车「一升两降」背后：全链条整治</a> — 1—9 月火灾 6135 起、亡 11 人、以旧换新 1200 余万辆</li>
+    <li><a href="https://news.qq.com/rain/a/20250403A0843200" rel="noopener">国家消防救援局：每月每百万辆火灾由 5.6 起降至 2 起</a></li>
+    <li><a href="https://www.stdaily.com/web/gdxw/2025-01/16/content_286904.html" rel="noopener">超 1000 万！飞奔的外卖骑手</a> — 美团 745 万、饿了么 400 万+</li>
+    <li><a href="https://www.hko.gov.hk/tc/cis/normal/1991_2020/normals.htm" rel="noopener">香港天文台 1991—2020 气象要素月平均值</a> — 年雨量 2431.2 毫米、雨日 139.90 天、1 月 16.5℃</li>
+    <li><a href="https://weather.sz.gov.cn/qixiangfuwu/qihoufuwu/qihouguanceyupinggu/qihougaikuang/" rel="noopener">深圳市气候概况</a> — 年降水 1932.9 毫米、1 月 15.7℃</li>
+    <li><a href="https://www.gz.gov.cn/zlgz/gzgk/zrdl/mindex.html" rel="noopener">广州市自然地理</a> — 平均年降水量 1923 毫米、年降水日数 149 天</li>
+    <li><a href="https://www.weather.com.cn/cityintro/101010100.shtml" rel="noopener">中国天气网 · 北京气象数据</a> — 年降水量 644 毫米、1 月平原 −4～−5℃；雨日对比见 <a href="https://www.weather.com.cn/science/qxwq/zz/01/1245089.shtml" rel="noopener">中国哪里雨日最多</a>（广州 150.3 天、上海 132.0 天、北京 73.9 天）</li>
+    <li><a href="https://news.qq.com/rain/a/20251223A03R6T00" rel="noopener">全国城市轨交里程榜（2025-12）</a> — 北京 909 公里、上海破 900、广州 780；香港港铁约 271 公里见 <a href="https://www.td.gov.hk/sc/transport_in_hong_kong/public_transport/railways/index.html" rel="noopener">运输署 · 铁路</a></li>
+    <li><a href="https://www.hk01.com/%E7%A4%BE%E6%9C%83%E6%96%B0%E8%81%9E/60218268/" rel="noopener">Deliveroo 撤出香港</a>（2025-04-07 停运）；车手罢工见 <a href="https://thecollectivehk.com/keeta%E7%BD%B7%E5%B7%A5%E6%9C%AC%E6%9C%88%E7%AC%AC%E4%B8%89%E7%BD%B7%E4%B8%AD%E7%92%B0%E5%8D%80300%E8%BB%8A%E6%89%8B%E5%85%A8%E6%97%A5%E5%81%9C%E5%B7%A5/" rel="noopener">集志社报道</a></li>
+    <li><a href="https://news.qq.com/rain/a/20251205A02PMK00" rel="noopener">北京无牌 5%、号牌污损 3%、非现场执法 3500 余起</a></li>
+  </ul>
+
+  <footer>政策以各地官方最新发布为准，本页只做横向对照，不构成合规意见；限行区、号牌换发与罚则的具体适用请以当地交警／运输署通告为准。有效期已过或未取到最新进展的条目，正文中已逐条标注。</footer>
+</main>
+
+<script>
+(function () {
+  var C = {
+    BJ: { n: '北京', c: '#e34948' }, SH: { n: '上海', c: '#2a78d6' },
+    GZ: { n: '广州', c: '#eda100' }, SZ: { n: '深圳', c: '#1baf7a' },
+    HK: { n: '香港', c: '#7c5cd6' }
+  };
+  var ORDER = ['BJ', 'SH', 'GZ', 'SZ', 'HK'];
+  var esc = function (s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;'); };
+
+  // ---- one bar renderer for every chart on the page ----
+  // Eight charts, one function: labels on the left, a normalised bar, the
+  // formatted value at its tip, an optional caption line underneath.
+  function bars(id, rows, opt) {
+    opt = opt || {};
+    var host = document.getElementById(id);
+    if (!host) return;
+    var vals = rows.map(function (r) { return Math.abs(r.v || 0); });
+    var max = opt.max || Math.max.apply(null, vals) || 1;
+    var W = 760, padL = opt.padL || 52, padR = 12, gap = 96;
+    var rh = rows.some(function (r) { return r.s; }) ? 40 : 30;
+    var track = W - padL - padR - gap;
+    var zero = opt.signed ? padL + track * (opt.negFrac || .22) : padL;
+    var H = rows.length * rh + 10;
+    var out = ['<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + esc(opt.alt || '') + '">'];
+    if (opt.title) out.push('<title>' + esc(opt.title) + '</title>');
+    rows.forEach(function (r, i) {
+      var y = i * rh + 4;
+      out.push('<text x="0" y="' + (y + 15) + '" font-size="13" fill="var(--ink-2)">' + esc(r.name) + '</text>');
+      if (r.v == null) {
+        out.push('<text x="' + (zero + 4) + '" y="' + (y + 16) + '" font-size="12" fill="var(--ink-3)">' + esc(r.t || '未取到官方口径') + '</text>');
+      } else {
+        var w = Math.max(2, (Math.abs(r.v) / max) * (opt.signed ? track * (1 - (opt.negFrac || .22)) : track));
+        var x = (opt.signed && r.v < 0) ? zero - w : zero;
+        out.push('<rect x="' + x + '" y="' + (y + 3) + '" width="' + w + '" height="17" rx="4" fill="' + r.c + '" opacity="' + (r.dim ? .35 : .88) + '"/>');
+        out.push('<text x="' + (x + w + 8) + '" y="' + (y + 17) + '" font-size="12.5" font-weight="600" fill="var(--ink)">' + esc(r.t) + '</text>');
+      }
+      if (r.s) out.push('<text x="' + zero + '" y="' + (y + 34) + '" font-size="11" fill="var(--ink-3)">' + esc(r.s) + '</text>');
+    });
+    if (opt.signed) out.push('<line x1="' + zero + '" y1="0" x2="' + zero + '" y2="' + (H - 8) + '" stroke="var(--line)"/>');
+    out.push('</svg>');
+    host.innerHTML = out.join('');
+  }
+
+  var city = function (k, v, t, s) { return { name: C[k].n, c: C[k].c, v: v, t: t, s: s }; };
+
+  bars('f-stock', [
+    city('SH', 1150, '1150 万辆', '注册登记，2024-07 底，全国第一'),
+    city('GZ', 650, '650 万辆+', '登记上牌；2024 年底为 560 万'),
+    city('SZ', 550, '550 万辆', '已超过全市机动车保有量'),
+    city('BJ', 500, '约 500 万辆', '2024 年口径'),
+    city('HK', 0.01, '≈ 0', '合法上路数量为零，实际使用量无统计')
+  ], { alt: '五城电动自行车保有量对比条形图。', title: '保有量' });
+
+  bars('f-dens', [
+    city('SH', 464, '464 辆 / 千人'),
+    city('GZ', 345, '345 辆 / 千人'),
+    city('SZ', 309, '309 辆 / 千人'),
+    city('BJ', 229, '229 辆 / 千人'),
+    city('HK', 0.5, '≈ 0')
+  ], { alt: '五城每千人电动自行车保有量。', title: '每千人保有量' });
+
+  var GRAY = '#8a8a8a';
+  bars('f-fire', [
+    { name: '2022', c: GRAY, v: 18000, t: '1.8 万起', s: '全年，同比 +23.4%' },
+    { name: '2023', c: '#cf3520', v: 21000, t: '2.1 万起', s: '全年，同比 +17.4%' },
+    { name: '2025', c: '#12855c', v: 6135, t: '6135 起 · 亡 11 人', s: '1—9 月累计，同比 −55.1% / −84.9%' }
+  ], { alt: '全国电动自行车火灾起数：2022、2023 全年与 2025 年前九月。', title: '全国电动自行车火灾' });
+
+  bars('f-fine', [
+    { name: '进电梯', c: '#2a78d6', v: 500, t: '200 – 500 元', s: '上海，城管执法／消防救援机构' },
+    { name: '私拉电线', c: '#2a78d6', v: 200, t: '50 – 200 元', s: '上海，城管责令改正后处罚' }
+  ], { alt: '上海两条充电相关罚则的金额区间。', title: '罚则金额（上海）' });
+
+  bars('f-plate', [
+    { name: '无牌', c: '#cf3520', v: 5, t: '5%', s: '北京街头，2025-12' },
+    { name: '号牌污损', c: '#eda100', v: 3, t: '3%', s: '含故意折损、遮挡' },
+    { name: '非现场执法', c: '#12855c', v: 3.5, t: '3500 余起', s: '2025 年全年查处（柱长不同量纲，仅占位）' }
+  ], { alt: '北京无牌与号牌污损比例，以及非现场执法查处量。', title: '号牌能不能被看见' });
+
+  bars('f-hk', [
+    { name: '交通意外', c: '#c9c9cc', v: 3, t: '3 宗', s: '2024' },
+    { name: '交通意外', c: '#7c5cd6', v: 8, t: '8 宗', s: '2025' },
+    { name: '火警', c: '#c9c9cc', v: 12, t: '12 宗', s: '2024' },
+    { name: '火警', c: '#7c5cd6', v: 17, t: '17 宗', s: '2025' },
+    { name: '非法使用被捕', c: '#c9c9cc', v: 647, t: '647 人', s: '2024' },
+    { name: '非法使用被捕', c: '#7c5cd6', v: 760, t: '760 人', s: '2025' }
+  ], { alt: '香港涉电动可移动工具的意外、火警与被捕人数，2024 与 2025 对比。', title: '香港三组数字' });
+
+  bars('f-rider', [
+    { name: '美团', c: '#eda100', v: 745, t: '745 万', s: '年度活跃骑手' },
+    { name: '饿了么', c: '#2a78d6', v: 400, t: '400 万+', s: '活跃骑手' },
+    { name: '快递外卖', c: '#86868b', v: 2000, t: '约 2000 万', s: '行业从业者，QuestMobile 2025-07' }
+  ], { alt: '外卖与快递从业者规模量级对比。', title: '骑手规模' });
+
+  bars('f-rain', [
+    city('HK', 2431.2, '2431.2 mm', '天文台 1991—2020'),
+    city('SZ', 1932.9, '1932.9 mm', '市气象局 1991—2020'),
+    city('GZ', 1923, '1923 mm', '市政府自然地理页'),
+    city('BJ', 644, '644 mm', '市政府概况页'),
+    city('SH', null, null, '未取到官方年均值，不画')
+  ], { alt: '五城年降水量对比。', title: '年降水量' });
+
+  bars('f-rday', [
+    city('GZ', 150.3, '150.3 天', '一年 41% 的日子在下雨'),
+    city('HK', 139.9, '139.90 天', '日雨量 ≥0.1mm，门槛更低'),
+    city('SH', 132.0, '132.0 天'),
+    city('BJ', 73.9, '73.9 天', '一年 20%'),
+    city('SZ', null, null, '未取到同口径雨日')
+  ], { alt: '五城年平均雨日对比。', title: '年平均雨日' });
+
+  bars('f-temp', [
+    city('HK', 16.5, '16.5 ℃', '官方 1991—2020'),
+    city('SZ', 15.7, '15.7 ℃', '官方 1991—2020'),
+    city('GZ', 13.5, '约 13.5 ℃', '区间参考值'),
+    city('SH', 4.3, '约 4.3 ℃', '区间参考值'),
+    city('BJ', -4.5, '−4～−5 ℃', '平原地区，中国天气网口径')
+  ], { alt: '五城 1 月平均气温对比，北京为负值。', title: '1 月平均气温', signed: true, negFrac: .2 });
+
+  bars('f-metro', [
+    city('BJ', 909, '909 km', '2025-12 三线开通后'),
+    city('SH', 900, '突破 900 km', '18 号线二期开通后'),
+    city('GZ', 780, '780 km', '全国第三'),
+    city('HK', 271, '约 271 km', '港铁网络，运输署口径'),
+    city('SZ', null, null, '全国第五，未取到年末公里数')
+  ], { alt: '五城轨道交通运营里程对比。', title: '轨道里程' });
+
+  // ---- spec sheet ----
+  // tags drive the persona filter; a row with no tag always shows.
+  var F = function (kind, txt) {
+    var g = { yes: '✓', no: '✗', mid: '△', na: '—' }[kind];
+    return '<span class="flag"><i class="g ' + kind + '">' + g + '</i>' + txt + '</span>';
+  };
+  var ROWS = [
+    { dim: '保有量', sub: '登记／保有口径', tags: ['all'], num: { BJ: 500, SH: 1150, GZ: 650, SZ: 550, HK: 0 },
+      c: { BJ: ['500 万', '2024'], SH: ['1150 万', '注册登记，第一'], GZ: ['650 万+', '登记上牌'], SZ: ['550 万', '已超机动车'], HK: ['0', '合法上路为零'] } },
+    { dim: '每千人', sub: '常住人口折算', tags: ['all'], num: { BJ: 229, SH: 464, GZ: 345, SZ: 309, HK: 0 },
+      c: { BJ: ['229', '辆／千人'], SH: ['464', '辆／千人'], GZ: ['345', '辆／千人'], SZ: ['309', '辆／千人'], HK: ['≈0', '—'] } },
+    { dim: '能否合法上路', sub: '公共道路', tags: ['all', 'rider', 'commute', 'tourist'],
+      c: { BJ: [F('yes', '可'), '须登记上牌'], SH: [F('yes', '可'), '须登记上牌'], GZ: [F('yes', '可'), '2021-11 起'], SZ: [F('yes', '可'), '须登记上牌'], HK: [F('no', '不可'), '属「汽车」，上路即违法'] } },
+    { dim: '牌证有效期', sub: '登记制度', tags: ['all', 'commute'],
+      c: { BJ: ['10 年', '2026-05-01 起，可延用'], SH: ['长期', '2021 起专用牌先行'], GZ: ['5 年', '两办法有效期'], SZ: ['按办法', '深公交规〔2025〕3 号'], HK: [F('na', '无'), '无登记路径'] } },
+    { dim: '限行强度', sub: '路权', tags: ['all', 'rider', 'commute'],
+      c: { BJ: [F('mid', '中'), '快速路等禁行'], SH: [F('mid', '中'), '部分道路'], GZ: [F('mid', '中'), '分路段分时段＋总量控制授权'], SZ: [F('no', '强'), '三级限行区，全国率先'], HK: [F('no', '全禁'), '道路／行人路／单车径皆不可'] } },
+    { dim: '外卖专用号牌', sub: '即时配送', tags: ['rider'],
+      c: { BJ: [F('yes', '有'), '压实企业责任'], SH: [F('yes', '最早'), '2021 年底'], GZ: [F('yes', '最细'), '黄牌四号段＋全量轨迹接入'], SZ: [F('mid', '自律为主'), '交通安全联盟公约'], HK: [F('na', '不适用'), '骑手靠步行／单车／电单车'] } },
+    { dim: '骑手替代方案', sub: '没有电鸡时', tags: ['rider'],
+      c: { BJ: ['电鸡', '—'], SH: ['电鸡', '—'], GZ: ['电鸡', '—'], SZ: ['电鸡', '二级区可通行'], HK: ['步兵', '日均暴走约 20 公里'] } },
+    { dim: '载人年龄上限', sub: '后座', tags: ['kid'],
+      c: { BJ: ['16 周岁', '2026-05-01 起放宽'], SH: ['12 周岁', '6 岁以下需固定座椅'], GZ: ['12 周岁', '广东口径'], SZ: ['12 周岁', '广东口径'], HK: [F('na', '不适用'), '车不能上路'] } },
+    { dim: '学校周边', sub: '上下学时段', tags: ['kid'],
+      c: { BJ: [F('na', '无专项'), '—'], SH: [F('na', '无专项'), '—'], GZ: [F('na', '无专项'), '—'], SZ: [F('yes', '三级限行区'), '接送学生的放行'], HK: [F('na', '不适用'), '—'] } },
+    { dim: '头盔', sub: '强制程度', tags: ['all', 'old', 'kid'],
+      c: { BJ: [F('yes', '法定义务'), '2026-05-01 起，含乘车人'], SH: [F('yes', '条例要求'), '—'], GZ: [F('yes', '强制'), '广东条例'], SZ: [F('yes', '强制'), '广东条例'], HK: [F('mid', '拟议'), '框架要求，未生效'] } },
+    { dim: '电池进楼', sub: '充电安全', tags: ['old', 'commute'],
+      c: { BJ: [F('no', '严禁'), '禁入居住建筑'], SH: [F('no', '罚 200–500'), '进电梯轿厢'], GZ: [F('no', '禁止'), '规定第五章'], SZ: [F('no', '禁止'), '—'], HK: [F('na', '无此制度'), '—'] } },
+    { dim: '充电价格治理', sub: '直供电改造', tags: ['old'],
+      c: { BJ: [F('mid', '设施要求'), '集中停放充电场所'], SH: [F('yes', '有时间表'), '2025-06 底前电网直供'], GZ: [F('mid', '有规定'), '—'], SZ: [F('mid', '有规定'), '—'], HK: [F('na', '不适用'), '—'] } },
+    { dim: '年降水量', sub: '骑行体感', tags: ['weather'], num: { BJ: 644, SH: 0, GZ: 1923, SZ: 1932.9, HK: 2431.2 },
+      c: { BJ: ['644 mm', '—'], SH: [F('na', '未取到'), '常见引用 1100–1200'], GZ: ['1923 mm', '年雨日 149 天'], SZ: ['1932.9 mm', '86% 集中在汛期'], HK: ['2431.2 mm', '雨日 139.9 天'] } },
+    { dim: '1 月平均气温', sub: '冬季可用性', tags: ['weather', 'old'], num: { BJ: 4.5, SH: 4.3, GZ: 13.5, SZ: 15.7, HK: 16.5 },
+      c: { BJ: ['−4～−5 ℃', '平原地区'], SH: ['约 4.3 ℃', '参考值'], GZ: ['约 13.5 ℃', '参考值'], SZ: ['15.7 ℃', '官方'], HK: ['16.5 ℃', '官方'] } },
+    { dim: '轨道里程', sub: '替代度', tags: ['commute', 'tourist'], num: { BJ: 909, SH: 900, GZ: 780, SZ: 0, HK: 271 },
+      c: { BJ: ['909 km', '2025-12'], SH: ['900 km+', '2025-12'], GZ: ['780 km', '全国第三'], SZ: [F('na', '未取到'), '全国第五'], HK: ['约 271 km', '覆盖 750 万人'] } },
+    { dim: '执法可见度', sub: '牌照与检控', tags: ['all', 'rider'],
+      c: { BJ: ['无牌 5%', '污损 3%，非现场执法 3500+ 起'], SH: [F('na', '未取到'), '—'], GZ: [F('na', '未取到'), '—'], SZ: [F('na', '未取到'), '—'], HK: ['被捕 760 人', '2025，较 2024 的 647 人上升'] } }
+  ];
+
+  var PERSONAS = [
+    { k: 'all', n: '全部' }, { k: 'rider', n: '外卖骑手' }, { k: 'kid', n: '接娃的家长' },
+    { k: 'old', n: '老人' }, { k: 'weather', n: '看天吃饭' }, { k: 'commute', n: '通勤族' },
+    { k: 'tourist', n: '外地来的' }
+  ];
+
+  function bar(frac, color) {
+    return '<div class="bar"><i style="width:' + Math.max(2, Math.min(100, frac * 100)) + '%;background:' + color + '"></i></div>';
+  }
+
+  function renderSheet() {
+    var html = ['<div class="srow head"><div class="sdim"></div>'
+      + ORDER.map(function (k) { return '<div class="cty"><i style="background:' + C[k].c + '"></i>' + C[k].n + '</div>'; }).join('')
+      + '</div>'];
+    ROWS.forEach(function (r, idx) {
+      var max = 0;
+      if (r.num) ORDER.forEach(function (k) { max = Math.max(max, Math.abs(r.num[k] || 0)); });
+      html.push('<div class="srow" data-tags="' + (r.tags || []).join(' ') + '" data-i="' + idx + '">'
+        + '<div class="sdim"><b>' + r.dim + '</b>' + (r.sub || '') + '</div>'
+        + ORDER.map(function (k) {
+            var cell = r.c[k] || ['—', ''];
+            var b = (r.num && max) ? bar(Math.abs(r.num[k] || 0) / max, C[k].c) : '';
+            return '<div class="cell"><div class="cval">' + cell[0] + '</div>' + b
+              + '<div class="csub">' + (cell[1] || '') + '</div></div>';
+          }).join('')
+        + '</div>');
+    });
+    document.getElementById('sheet').innerHTML = html.join('');
+  }
+
+  function renderChips() {
+    document.getElementById('chips').innerHTML = PERSONAS.map(function (p, i) {
+      return '<button type="button" class="chip' + (i === 0 ? ' on' : '') + '" data-k="' + p.k + '">' + p.n + '</button>';
+    }).join('');
+  }
+
+  function applyFilter(k) {
+    Array.prototype.forEach.call(document.querySelectorAll('.srow[data-tags]'), function (el) {
+      var tags = el.getAttribute('data-tags').split(' ');
+      el.classList.toggle('off', k !== 'all' && tags.indexOf(k) < 0);
+    });
+  }
+
+  renderChips();
+  renderSheet();
+  document.getElementById('chips').addEventListener('click', function (e) {
+    var b = e.target.closest('.chip');
+    if (!b) return;
+    Array.prototype.forEach.call(this.querySelectorAll('.chip'), function (c) { c.classList.remove('on'); });
+    b.classList.add('on');
+    applyFilter(b.getAttribute('data-k'));
+  });
+})();
+</script>
+</body>
+</html>
