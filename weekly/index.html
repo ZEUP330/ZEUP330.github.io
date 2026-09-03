@@ -7,7 +7,11 @@
 <meta name="description" content="一个后端团队 210 期周会纪要的元数据分析：模板八个段落，三个四年半从没被填过；一半字数落在同一段里；207 期开在周五。附 84 条「本周话题」破冰问题全清单，逐条带日期。">
 <link rel="stylesheet" href="/assets/theme.css">
 <style>
-  :root { --warn: #eda100; --ok: #12855c; --danger: #cf3520; --ghost: #9a9aa0; }
+  /* theme.css ships --ease (the drawer curve) but no strong ease-out; entrances
+     and disclosures need one, so the page adds it rather than reusing a curve
+     that was picked for sliding sheets. */
+  :root { --warn: #eda100; --ok: #12855c; --danger: #cf3520; --ghost: #9a9aa0;
+          --ease-out: cubic-bezier(0.23, 1, 0.32, 1); }
   @media (prefers-color-scheme: dark) {
     :root { --warn: #fac775; --ok: #34c48a; --danger: #ff6b57; --ghost: #77777d; }
   }
@@ -43,9 +47,46 @@
   ol.tlist .c { grid-column: 2; font-size: 11.5px; color: var(--ink-3); }
   ol.tlist .c i { font-style: normal; display: inline-block; width: 7px; height: 7px;
     border-radius: 2px; margin-right: 5px; vertical-align: 1px; }
+
+  /* Answers disclosure. height is the one layout-animating property allowed
+     here — it is the accordion case, and there is no transform equivalent.
+     The 0fr→1fr grid trick was tried first and resolves to 0 inside this
+     baseline-aligned row, so the height is measured in JS. 200ms because this
+     costs layout on every frame. */
+  .ans-t { grid-column: 2; justify-self: start; font: inherit; font-size: 11.5px;
+    color: var(--accent); background: none; border: 0; padding: 2px 0 0; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 4px;
+    transition: opacity var(--t-fast) var(--ease-out); }
+  .ans-t::after { content: '▾'; font-size: 9px; transition: transform 200ms var(--ease-out); }
+  li.open .ans-t::after { transform: rotate(180deg); }
+  .ans { grid-column: 2; height: 0; overflow: hidden; opacity: 0;
+    transition: height 200ms var(--ease-out), opacity 200ms var(--ease-out); }
+  li.open .ans { opacity: 1; }
+  .ans dl { margin: .45rem 0 .15rem; display: grid; grid-template-columns: 4.2rem 1fr;
+    gap: 6px 12px; font-size: 13px; }
+  .ans dt { color: var(--ink-3); font-size: 11.5px; white-space: nowrap; padding-top: 1px; }
+  .ans dd { margin: 0; color: var(--ink-2); line-height: 1.65; }
+
+  /* Filter re-entry: the surviving rows fade up rather than snapping in.
+     Stagger caps at the first 8 rows so a 84-row list never blocks reading. */
+  @keyframes tfade { from { opacity: 0; transform: translateY(6px); } }
+  ol.tlist.filtering li:not(.off) { animation: tfade 200ms var(--ease-out) both; }
+
+  .chip { transition: color var(--t) var(--ease), border-color var(--t) var(--ease),
+    background var(--t) var(--ease), transform 120ms var(--ease-out); }
+  .chip:active { transform: scale(.97); }
+
   @media (max-width: 620px) {
     ol.tlist li { grid-template-columns: 1fr; }
-    ol.tlist .c { grid-column: 1; }
+    ol.tlist .c, .ans-t, .ans { grid-column: 1; }
+    .ans dl { grid-template-columns: 1fr; gap: 2px; }
+    .ans dt { padding-top: 4px; }
+  }
+  /* Fewer and gentler, not zero: keep the opacity cues, drop the movement. */
+  @media (prefers-reduced-motion: reduce) {
+    @keyframes tfade { from { opacity: 0; } }
+    .ans-t::after, .chip { transition: none; }
+    .chip:active { transform: none; }
   }
   h2 { scroll-margin-top: 70px; }
 </style>
@@ -62,7 +103,7 @@
   <p class="lede">一个后端团队的周会纪要，2022 年 2 月开到 2026 年 8 月，210 期。前七节不看它们写了什么，只看<span class="hl">它们长什么样</span> —— 模板有几段、哪段最长、哪段从来没人填、断档发生在什么时候。结论有点扎人：八个段落里有三个，四年半一次都没被写过。最后一节是<a href="#topics">84 条「本周话题」</a>，那是开会前先聊五分钟的破冰问题。</p>
 
   <div class="note">
-    <b>关于脱敏。</b>统计部分全是元数据：期数、日期、段落名、字符数、空段率。唯一带原文的是最后那份<a href="#topics">本周话题清单</a> —— 每期开会前先聊五分钟的破冰问题，跟业务无关，逐条核过没有人名、工单号、项目名和内部链接。不写是哪家公司哪个团队。项目进展、技术方案、个人排期这些真正的会议内容全部留在内网。
+    <b>关于脱敏。</b>统计部分全是元数据：期数、日期、段落名、字符数、空段率。唯一带原文的是最后那份<a href="#topics">本周话题清单</a> —— 每期开会前先聊五分钟的破冰问题和当场的回答，跟业务无关，逐条核过没有工单号、项目名和内部链接。回答按人匿名成成员 A 到 H，姓名与邮箱不出现。不写是哪家公司哪个团队。项目进展、技术方案、个人排期这些真正的会议内容全部留在内网。
   </div>
 
   <div class="stats">
@@ -200,7 +241,7 @@
 
   <p>时事政策 16 条、投资理财 12 条，两类加起来占三分之一。一个做交易系统的后端团队，周五下午聊得最多的是宏观和钱，这大概不算巧合。</p>
 
-  <p>下面是全部 84 条，按时间倒序，点类别可以只看一类。</p>
+  <p>下面是全部 84 条，按时间倒序，点类别可以只看一类。其中 45 条当场留下了回答，展开能看到 —— 回答写在同一张表的最后一列，一人一行，这里按人匿名成成员 A 到 H，代号在整份清单里是稳定的，可以顺着看同一个人。</p>
 
   <div class="chips" id="tchips"></div>
   <ol class="tlist" id="tlist"></ol>
@@ -209,7 +250,7 @@
     <b>几条观察。</b>① 2025-07-18 到 09-19 断了两个月，是栏目立住之后唯一一次长空窗。② 只重复过一次 —— 券商被监管点名那条连挂两周（2026-06-05 / 06-12），说明出题的人基本每周都在找新题。③ 2026 年开始出现「投资日常：」「前沿科技：」「日常生活：」这类前缀，有人在给话题分类，但只坚持了半年。
   </div>
 
-  <p class="hint">话题原文照录，只做了两处改写：2023 年那条内部技术话题改成了泛化描述，一条提到同事外号的改成「一位同事」；另外去掉了原文里的外部链接和图片。其余保持原样，包括错别字和标点。</p>
+  <p class="hint">话题原文照录，只做了两处改写：2023 年那条内部技术话题改成了泛化描述，一条提到同事外号的改成「一位同事」；另外去掉了原文里的外部链接和图片。其余保持原样，包括错别字和标点。回答同样照录，去掉了姓名与邮箱，只留代号；纯图片的格子、串进这一列的工作记录、以及整行复制到下一周的重复回答都不计入 —— 所以「N 条回答」是当周实际写了字的人数的下限。</p>
 
   <h2 id="how" data-rail="方法">方法与局限</h2>
   <ul class="links">
@@ -579,6 +620,59 @@
   var TCAT = { '时事政策': '#e34948', '投资理财': '#0071e3', '科技与 AI': '#7c5cd6', '社会现象': '#eda100',
                '生活与消费': '#12855c', '职业与工作': '#eb6834', '个人成长': '#2aa9a0', '其他': '#9a9aa0' };
 
+  // Answers sat in the last column of the same table, one row per person.
+  // Members are aliased A–H (ordered by how often they answered) and the alias
+  // is stable across the whole list, so you can follow one person through.
+  // Image-only cells, work notes that leaked into the column, and rows copied
+  // unchanged into a later week are dropped.
+  var ANSWERS = {
+    "2024-08-09": [["A","人口老龄化，65 是好多发达国家的退休时间"],["B","没办法，遵守；不能完全信任"],["D","宏观：养老金不够了，延后退休来延缓问题。问题：并没有提供足够多的工作岗位，延缓退休仅仅变成延后养老金发放。微观：影响个人生活／工作规划"],["E","我 50% 支持"]],
+    "2024-08-30": [["E","先富带动后富"]],
+    "2024-09-13": [["G","烂问题。特朗普上台 → 国际社会右转 → 孤立主义"],["C","如果川普当选，那肯定是川大智胜啊"],["B","感觉没啥思路叻，等着看方向追"],["E","这是一个假设，不太好说特朗普能当选；感觉怎么都不好使，买中国足球输吧，这个比较稳，属于稳健理财"]],
+    "2024-09-20": [["F","泰国青年讲了一个潮汕故事"],["E","感觉我是幸运的；影片中主人公的家庭背景一言难尽"]],
+    "2024-10-11": [["A","没有负债就不会逆行人生。养猪？"],["E","从小动手能力就比较强，会做一些需要动手的手工活，比方说木匠 —— 可能和父亲本身是木工出身有关"]],
+    "2024-10-18": [["F","勇敢追涨，但是要设置止损"],["E","深证 100、159901 ETF 长期定投"]],
+    "2024-10-25": [["G","得生一个"],["C","先生一个"],["E","以前大家拼命要生，到现在大家不愿意生，只经历了 30 年时间。国家发展得快，大家想法变化也非常快"],["D","生产模式变了：以农耕为主时 1 人口 = 1 生产力，生育成本低、存活性强、容错率高，收益可观；目前进入负债化社会，1 人口 = 1 负债，生育成本高"]],
+    "2024-11-01": [["D","第一次开户买了 B 站，差不多最高点 —— 历史最高 157.6，成本价 156.2，五天以后没了 3000 USD，及时割肉跑了。之后开始逐渐掌握节奏和仓位"]],
+    "2024-11-22": [["A","情感投入持续下降"]],
+    "2024-11-29": [["B","锻炼身体 + 会用工具；少点戾气；眼观六路耳听八方；尽量不待可能危险的地方"],["E","不要去人太多的地方。近期多？我感觉一直都很多，只不过不报道"]],
+    "2024-12-20": [["C","马斯克有点超模，总需要一些精英推动人类科技的进步"],["B","问题起源：雷军的年度演讲；最近在看乔布斯传"],["A","小米粉丝（微氪）。独一档的产品定位 + 口碑"]],
+    "2024-12-27": [["B","感觉话题有点遥远，有点讨论无能"]],
+    "2025-01-17": [["A","快乐记忆：小时候放炮"]],
+    "2025-02-07": [["A","短期的热点应该不能影响长期加密货币的走势，长期趋势取决于政策或者实际应用"],["D","特朗普对加密货币站台，在商人的视角是因为他可以获利。以加密货币不长的历史来看，单个人为某个项目站台最终都是为了收割；是否向好取决于公众认知"]],
+    "2025-02-14": [["A","重活一遍，跟沈腾电影《夏洛特烦恼》一样"],["E","一生下来就是共产主义接班人。什么人？肯定是中国人。说正经的：还是希望成为老师"],["D","决定成为什么人大概率是时机和环境引起的，自己的意愿决定性很小"]],
+    "2025-02-21": [["A","DeepSeek 说医疗健康领域潜力最突出；我觉得是取代所有领域的低端重复性工作"],["E","战争领域，国家暴力机关、军队这种领域会有长足的发展"]],
+    "2025-04-25": [["A","打起来才能吃上便宜的外卖。东子还是挺接地气的"]],
+    "2025-05-09": [["A","我哥刚毕业的时候，天天出去喝"]],
+    "2025-05-15": [["A","我的关注点：这整容整得也太丑了"]],
+    "2025-05-23": [["C","价格 ÷ 使用频次 = 摊薄成本，摊薄成本越低越值"],["A","超值：咸鱼，总能买到超高性价比的产品。超坑：平板、电纸书 —— 闲置"]],
+    "2025-05-30": [["C","性价比"],["A","曾经没钱花，现在有钱了也不咋花"]],
+    "2025-06-27": [["B","1、大公司病 2、阿里味，什么是阿里味？3、为什么是 P8，这说明什么"]],
+    "2025-07-04": [["A","以前的我嗤之以鼻，现在的我逐字学习。开始的动力：腰痛，要减肥！持续的动力：正反馈 —— 每次跑完步看到体重垮垮掉，饥饿都能忍住了"],["B","1、非常好的一个事情 2、想开始，但还没开始 3、和对象有减肥对抗计划"],["F","这是好事啊"],["D","大学毕业 56，目前 58 左右，控制摄入"]],
+    "2025-07-11": [["C","更多是口嗨。身边没有遇到过，网上可能是、现实中不是。对我没啥影响，但教小孩的时候会调整一些策略"],["A","不了解，不招惹"]],
+    "2025-07-18": [["C","之前觉得是骗人的，工作之后才开始了解保险行业。现在会给家里人买百万医疗险，偶尔买门诊医疗险"],["B","了解得比较少。小时候至今家里会买一些基本的保险，身边也有亲戚在卖保险"],["A","给父母买过一些医疗保险。意外险可以都买一下，还有百万医疗"]],
+    "2025-09-19": [["A","可以接受，但一边享受预制菜的方便，一边又本能觉得预制的不太好。现在都在外面吃，食品安全问题也没有办法，除非自己从头到尾做"]],
+    "2025-09-26": [["C","堂主 Lee、小 Lin 说、马督工、硬核的半佛仙人、蓝战非、神奇的老皮"],["B","知乎：观察者；虎扑：温柔的火龙果"],["A","旅游：杜克环游世界；人物纪录片：摩的司机徐师傅"],["D","户晨风、极客湾、硬件茶谈、苏打、bakaTony 大叔、LinusTechTips"]],
+    "2025-10-31": [["C","短期竞争放缓，长期还是竞争比较多"],["D","30 年美债又涨了。中美经济走势：竞争、合作、发展"]],
+    "2025-11-14": [["B","冰可乐、冰啤酒，配合辣口／爽口，再看球就更爽了"],["A","转移注意力，吃饭"]],
+    "2025-11-21": [["C","现在和以前都会"],["B","感觉会呢，工具越来越好用了 —— review 不可缺"]],
+    "2025-11-28": [["C","不是"],["F","不是；AI 底层技术是在革命，模型具备泛化能力"],["D","不是"]],
+    "2025-12-05": [["C","trading + holding"],["B","now：holding；future：trading & holding = 配置"],["A","holding"]],
+    "2025-12-12": [["G","1、做不下去的，所有 APP 都会抵制 2、交互终端未必是手机"],["B","看着很美好，但似乎做不下去。有可能有不被抵制的吗？"],["A","场景不太多，应该关注提醒类的事情：待办事项、通知类、快递取件码"],["D","是一个新的场景"]],
+    "2025-12-19": [["G","1、犯罪是理性的经济行为 2、绑架不是意外，是系统性风险"]],
+    "2026-01-09": [["A","美国不知道，中国没有（三和大神、日结、回农村）"]],
+    "2026-01-16": [["C","整体不看好"]],
+    "2026-01-23": [["G","房、原油"],["C","大 A++、美股 +"],["A","阿特的任期才过去 1 年，还会继续折腾的"],["D","计划没有改变。有消息还是要多关注，订阅好 Truth；年中选举对他比较重要，猜测 NQ 还会冲一次顶"],["H","大 A"]],
+    "2026-01-30": [["D","人是有上限的"],["H","大家多关注身体健康，都平平安安的"]],
+    "2026-02-27": [["A","学习到了一个非常完整的交易系统"]],
+    "2026-04-24": [["C","京东、B 站、iCloud、QQ 音乐，白嫖"]],
+    "2026-05-08": [["D","轻仓试单，等下一个机会"]],
+    "2026-05-15": [["F","期待"]],
+    "2026-07-10": [["A","长隆，珠海"]],
+    "2026-07-24": [["A","深圳地铁工作人员表示，系根据深圳市交通运输局下发的文件执行"]],
+    "2026-08-21": [["A","非常有前景"]]
+  };
+
   (function () {
     var byYear = {}, byCat = {};
     TOPICS.forEach(function (t) {
@@ -601,21 +695,57 @@
         return '<button type="button" class="chip" data-k="' + c + '">' + c + ' ' + byCat[c] + '</button>';
       }).join('');
 
-    document.getElementById('tlist').innerHTML = TOPICS.map(function (t) {
+    var list = document.getElementById('tlist');
+    list.innerHTML = TOPICS.map(function (t) {
+      var a = ANSWERS[t[0]] || [];
       return '<li data-c="' + t[1] + '"><span class="d">' + t[0] + '</span>' +
              '<span class="q">' + esc(t[2]) + '</span>' +
-             '<span class="c"><i style="background:' + (TCAT[t[1]] || GRAY) + '"></i>' + t[1] + '</span></li>';
+             '<span class="c"><i style="background:' + (TCAT[t[1]] || GRAY) + '"></i>' + t[1] + '</span>' +
+             (a.length
+               ? '<button type="button" class="ans-t" aria-expanded="false">' + a.length + ' 条回答</button>' +
+                 '<div class="ans"><div class="ans-in"><dl>' +
+                 a.map(function (r) { return '<dt>成员 ' + r[0] + '</dt><dd>' + esc(r[1]) + '</dd>'; }).join('') +
+                 '</dl></div></div>'
+               : '') +
+             '</li>';
     }).join('');
+
+    // Disclosure. Always animate between two pixel values — going to or from
+    // `auto` does not transition. Opening settles back to auto so a later
+    // reflow (resize, font swap) cannot leave a stale height behind.
+    list.addEventListener('click', function (e) {
+      var b = e.target.closest('.ans-t');
+      if (!b) return;
+      var li = b.closest('li'), box = li.querySelector('.ans');
+      var open = li.classList.toggle('open');
+      b.setAttribute('aria-expanded', String(open));
+      box.style.height = box.getBoundingClientRect().height + 'px';
+      void box.offsetHeight;
+      box.style.height = open ? box.scrollHeight + 'px' : '0px';
+      box.addEventListener('transitionend', function done(ev) {
+        if (ev.propertyName !== 'height') return;
+        box.removeEventListener('transitionend', done);
+        if (li.classList.contains('open')) box.style.height = 'auto';
+      });
+    });
 
     document.getElementById('tchips').addEventListener('click', function (e) {
       var b = e.target.closest('.chip');
       if (!b) return;
       Array.prototype.forEach.call(this.querySelectorAll('.chip'), function (c) { c.classList.remove('on'); });
       b.classList.add('on');
-      var k = b.getAttribute('data-k');
-      Array.prototype.forEach.call(document.querySelectorAll('#tlist li'), function (li) {
-        li.classList.toggle('off', !!k && li.getAttribute('data-c') !== k);
+      var k = b.getAttribute('data-k'), shown = 0;
+      Array.prototype.forEach.call(list.children, function (li) {
+        var off = !!k && li.getAttribute('data-c') !== k;
+        li.classList.toggle('off', off);
+        // Stagger only the first rows in view; past that it is noise the reader
+        // has to wait through.
+        li.style.animationDelay = (!off && shown < 8) ? (shown++ * 30) + 'ms' : '0ms';
       });
+      // Restart the entrance: drop the class, force reflow, put it back.
+      list.classList.remove('filtering');
+      void list.offsetWidth;
+      list.classList.add('filtering');
     });
   })();
 })();
