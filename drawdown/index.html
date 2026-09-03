@@ -66,8 +66,38 @@
   <p>回撤 = 收盘价距<b>历史最高收盘</b>还差多少。每个交易日收盘后更新。标普和纳指的日线可回溯到 1970 年，道指到 1992 年。</p>
 
   <figure class="shot">
-    <a class="fr" href="https://commons.wikimedia.org/wiki/File:NY_stock_exchange_traders_floor_LC-U9-10548-6.jpg" rel="noopener"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/NY_stock_exchange_traders_floor_LC-U9-10548-6.jpg/960px-NY_stock_exchange_traders_floor_LC-U9-10548-6.jpg" alt="纽约证券交易所交易大厅，交易员挤在交易柜台前" loading="lazy" referrerpolicy="no-referrer" onerror="this.closest('figure').hidden=true"></a>
-    <figcaption>纽交所交易大厅。这页只记一件事：离历史最高收盘还差多少，以及跌破关注线之后实际发生了什么。<span class="cred">图：Thomas J. O'Halloran / Wikimedia Commons，公有领域</span></figcaption>
+    <div class="fr">
+      <svg viewBox="0 0 960 540" preserveAspectRatio="xMidYMid meet" role="img" aria-label="水下图示意：指数距历史最高收盘的回撤随时间起伏，标出 −10%、−20%、−30% 三条关注线；线贴着 0 表示在创新高附近，掉得越深离高点越远。">
+        <title>水下图怎么读</title>
+        <g font-family="-apple-system, BlinkMacSystemFont, sans-serif">
+          <text x="40" y="46" fill="var(--ink)" font-size="24" font-weight="600">贴着 0 ＝ 在创新高附近，掉下去 ＝ 离高点多远</text>
+          <text x="40" y="76" fill="var(--ink-3)" font-size="16">示意图，非实测数据；实测三条曲线在下面</text>
+
+          <path d="M80 120 L150 216 L220 132 L286 190 L340 384 L392 300 L450 126 L500 168 L540 184 L620 122
+                   L690 224 L760 320 L820 250 L880 142 L920 128 L920 120 Z"
+                fill="var(--accent)" opacity=".16"/>
+          <polyline fill="none" stroke="var(--accent)" stroke-width="3.5" stroke-linejoin="round"
+            points="80,120 150,216 220,132 286,190 340,384 392,300 450,126 500,168 540,184 620,122 690,224 760,320 820,250 880,142 920,128"/>
+
+          <line x1="80" y1="120" x2="920" y2="120" stroke="var(--ink-3)" stroke-width="2"/>
+          <g stroke="var(--ink-3)" stroke-dasharray="7 6" opacity=".8">
+            <line x1="80" y1="200" x2="920" y2="200"/>
+            <line x1="80" y1="280" x2="920" y2="280"/>
+            <line x1="80" y1="360" x2="920" y2="360"/>
+          </g>
+          <g fill="var(--ink-3)" font-size="16">
+            <text x="86" y="112">0 ＝ 历史最高收盘</text>
+            <text x="806" y="194">−10% 关注线</text>
+            <text x="806" y="274">−20%</text>
+            <text x="806" y="354">−30%</text>
+          </g>
+
+          <text x="40" y="470" fill="var(--ink-2)" font-size="17">关注线不是买入信号。有用的不是当下这个数，是<tspan font-weight="600">跌破之后还继续跌了多少</tspan>。</text>
+          <text x="40" y="502" fill="var(--ink-3)" font-size="16">回到 0 才算收复前高。</text>
+        </g>
+      </svg>
+    </div>
+    <figcaption>下面那张是真数据：标普与纳指可回溯到 1970 年，道指到 1992 年。</figcaption>
   </figure>
 
   <div class="note">

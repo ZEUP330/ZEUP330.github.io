@@ -57,8 +57,31 @@
   <p class="lede">上一页说“区级数据拿不到”。那是我找得不够。这页把能找到的都摆出来：<span class="hl"><b id="n-cities">200</b> 个城市、<b id="n-districts">665</b> 个区县的挂牌均价，和 <b id="n-prov">19</b> 个省的城镇可支配收入</span>。把两边相除，各省的房价收入比差了将近四倍。</p>
 
   <figure class="shot">
-    <a class="fr" href="https://commons.wikimedia.org/wiki/File:Qingdao_-_Drone_view_city_with_skyline_(Unsplash).jpg" rel="noopener"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Qingdao_-_Drone_view_city_with_skyline_%28Unsplash%29.jpg/960px-Qingdao_-_Drone_view_city_with_skyline_%28Unsplash%29.jpg" alt="青岛航拍：新旧城区与天际线连成一片" loading="lazy" referrerpolicy="no-referrer" onerror="this.closest('figure').hidden=true"></a>
-    <figcaption>青岛：一张照片里最贵的区和最便宜的区差 6.5 倍。城市内部的差距比城市之间还大，这页量的就是它。<span class="cred">图：CHO EUNSEONG / Wikimedia Commons，CC0</span></figcaption>
+    <div class="fr">
+      <svg viewBox="0 0 960 540" preserveAspectRatio="xMidYMid meet" role="img" aria-label="区间条形图：一座城市内部最贵的区与最便宜的区的倍数，青岛 6.5 倍、天津 4.9 倍、广州 3.9 倍。">
+        <title>城市内部的价差</title>
+        <g font-family="-apple-system, BlinkMacSystemFont, sans-serif">
+          <text x="40" y="46" fill="var(--ink)" font-size="24" font-weight="600">城市内部的差距，比城市之间还大</text>
+          <text x="40" y="76" fill="var(--ink-3)" font-size="16">条的左端＝该市最便宜的区，右端＝最贵的区（只在公布的 10 个区里比）</text>
+
+          <line x1="317" y1="120" x2="317" y2="430" stroke="var(--line)" stroke-dasharray="6 5"/>
+          <text x="317" y="462" fill="var(--ink-3)" font-size="15" text-anchor="middle">最便宜的区＝1×</text>
+
+          <g fill="var(--ink)" font-size="21" font-weight="600">
+            <text x="40" y="190">青岛</text><text x="40" y="290">天津</text><text x="40" y="390">广州</text>
+          </g>
+          <rect x="317" y="166" width="534" height="30" rx="15" fill="var(--accent)"/>
+          <rect x="317" y="266" width="379" height="30" rx="15" fill="var(--accent)" opacity=".72"/>
+          <rect x="317" y="366" width="282" height="30" rx="15" fill="var(--accent)" opacity=".55"/>
+          <g fill="var(--ink)" font-size="22" font-weight="600">
+            <text x="865" y="190">6.5×</text><text x="710" y="290">4.9×</text><text x="613" y="390">3.9×</text>
+          </g>
+
+          <text x="40" y="500" fill="var(--ink-2)" font-size="17">665 个区县的挂牌均价能拿到；<tspan font-weight="600">工资只到省级</tspan> —— 区级工资没有公开的机器可读来源。</text>
+        </g>
+      </svg>
+    </div>
+    <figcaption>用「某某市房价」做决策，等于把这几倍的差异抹平了。</figcaption>
   </figure>
 
   <div class="keys" id="keys"></div>
