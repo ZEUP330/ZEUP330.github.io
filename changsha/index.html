@@ -126,6 +126,32 @@
   /* Vertical spine, one entry per slot. The strip inside each entry scrolls
      sideways with snap points so photos and detail cards live at the time they
      belong to instead of in a gallery somewhere else on the page. */
+  /* Motion: transform and opacity only, eased rather than linear, and every
+     bit of it off when the reader has asked for less. */
+  @media (prefers-reduced-motion: no-preference) {
+    ol.tl > li { animation: tl-in .5s cubic-bezier(.22, 1, .36, 1) both; }
+    @keyframes tl-in { from { opacity: 0; transform: translateY(10px); } }
+    ol.tl > li:nth-child(-n+8) { animation-delay: calc((var(--i, 0) + 1) * 45ms); }
+
+    ol.tl > li::before { transition: transform .22s cubic-bezier(.22, 1, .36, 1); }
+    ol.tl > li:hover::before { transform: scale(1.35); }
+
+    .strip img, .strip .card {
+      transition: transform .22s cubic-bezier(.22, 1, .36, 1),
+                  box-shadow .22s cubic-bezier(.22, 1, .36, 1);
+    }
+    .strip img:hover, .strip .card:hover { transform: translateY(-2px); box-shadow: var(--shadow-2); }
+    .strip img:active { transform: translateY(0) scale(.99); transition-duration: .09s; }
+
+    /* The fixed times are the ones that can ruin the trip; a slow breath draws
+       the eye without becoming a blinking cursor. */
+    ol.tl > li.fix::before { animation: tl-pulse 2.6s ease-in-out infinite; }
+    @keyframes tl-pulse {
+      0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 45%, transparent); }
+      50% { box-shadow: 0 0 0 5px color-mix(in srgb, var(--accent) 0%, transparent); }
+    }
+  }
+
   ol.tl { list-style: none; margin: 1.25rem 0 0; padding: 0 0 0 1.6rem;
     border-left: 2px solid var(--line); }
   ol.tl > li { position: relative; padding: 0 0 1.9rem; }
@@ -164,7 +190,10 @@
   .tl-more table { font-size: 12px; }
   ol.tl > li.day .tl-more { margin-top: .2rem; }
 
-  .swipe { font-size: 11px; color: var(--ink-3); margin: .3rem 0 0; }
+  .strip.pics { margin-bottom: .2rem; }
+  .strip.facts { margin-top: .5rem; }
+  .swipe { font-size: 11px; color: var(--ink-3); margin: .3rem 0 .1rem; }
+  .swipe + .strip { margin-top: .55rem; }
   @media (max-width: 640px) {
     ol.tl { padding-left: 1.3rem; }
     ol.tl > li::before { left: -1.75rem; }
@@ -902,18 +931,26 @@
     var html = '';
     TL.forEach(function (e, i) {
       if (e.day) { html += '<li class="day" data-i="' + i + '"><p class="tl-day">' + e.day + '</p><div class="tl-more"></div></li>'; return; }
-      var strip = (e.s || []).map(function (x) {
-        if (x.i) return '<img src="' + x.i + '" alt="' + x.a + '" referrerpolicy="no-referrer" onerror="this.hidden=true">';
+      // Photos and fact cards get their own row. Mixed together the eye has to
+      // re-parse what each tile is; separated, one row is "what it looks like"
+      // and the next is "what you need to know".
+      var pics = (e.s || []).filter(function (x) { return x.i; }).map(function (x) {
+        return '<img src="' + x.i + '" alt="' + x.a + '" referrerpolicy="no-referrer" onerror="this.hidden=true">';
+      }).join('');
+      var facts = (e.s || []).filter(function (x) { return !x.i; }).map(function (x) {
         return '<div class="card ' + (x.c || '') + '"><b>' + x.b + '</b>'
              + (x.big ? '<span class="big">' + x.big + '</span>' : '')
              + '<span>' + x.x + '</span></div>';
       }).join('');
-      html += '<li class="' + (e.fix ? 'fix' : '') + '" data-i="' + i + '">'
+      var row = function (cls, inner) {
+        return inner ? '<div class="strip ' + cls + '">' + inner + '</div>'
+                     + '<p class="swipe" hidden>← 左右滑动看更多</p>' : '';
+      };
+      html += '<li class="' + (e.fix ? 'fix' : '') + '" data-i="' + i + '" style="--i:' + i + '">'
             + '<p class="tl-t">' + e.t + '</p>'
             + '<p class="tl-h">' + e.h + '</p>'
             + '<p class="tl-d">' + e.d + '</p>'
-            + (strip ? '<div class="strip">' + strip + '</div>'
-                     + '<p class="swipe" hidden>← 左右滑动看更多</p>' : '')
+            + row('pics', pics) + row('facts', facts)
             + '<div class="tl-more"></div>'
             + '</li>';
     });
@@ -922,9 +959,11 @@
     // Only claim it swipes when it actually does: at desktop width three cards
     // fit and the hint would be a lie.
     var sync = function () {
-      [].forEach.call(ol.querySelectorAll('li'), function (li) {
-        var st = li.querySelector('.strip'), tip = li.querySelector('.swipe');
-        if (st && tip) tip.hidden = st.scrollWidth <= st.clientWidth + 4;
+      [].forEach.call(ol.querySelectorAll('.strip'), function (st) {
+        var tip = st.nextElementSibling;
+        if (tip && tip.classList.contains('swipe')) {
+          tip.hidden = st.scrollWidth <= st.clientWidth + 4;
+        }
       });
     };
     sync();
@@ -1149,6 +1188,13 @@
     ['.rail', '.toc', '#sec-ctl'].forEach(function (sel) {
       var n = document.querySelector(sel); if (n) n.remove();
     });
+
+    // The swipe hints were measured while the strips were still inside closed
+    // <details>: clientWidth 0 against a real scrollWidth reads as "overflows"
+    // and every hint lit up. Re-measure now that they have layout. sync() is
+    // bound to resize, so this is the whole fix.
+    window.dispatchEvent(new Event('resize'));
+    setTimeout(function () { window.dispatchEvent(new Event('resize')); }, 600);
 
   })();
 
