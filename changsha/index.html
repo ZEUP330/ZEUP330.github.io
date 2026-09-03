@@ -190,6 +190,26 @@
   .tl-more table { font-size: 12px; }
   ol.tl > li.day .tl-more { margin-top: .2rem; }
 
+  .card.has-more { cursor: pointer; text-align: left; font: inherit; }
+  .card.has-more:hover { border-color: var(--accent); }
+  .card.has-more[aria-expanded="true"] { border-color: var(--accent);
+    box-shadow: inset 0 0 0 1px var(--accent); }
+  .more-cue { margin-top: auto; padding-top: .35rem; font-size: 11px; color: var(--accent); }
+  .card.has-more[aria-expanded="true"] .more-cue { color: var(--accent); }
+  .card.has-more[aria-expanded="true"] .more-cue::after { content: ' ▾'; }
+  .note { margin: .7rem 0 0; padding: .8rem .95rem; border-radius: 10px;
+    background: var(--card); border: 1px solid var(--accent); font-size: 13px;
+    color: var(--ink-2); line-height: 1.75; }
+  .note b { display: block; color: var(--ink); font-size: 14px; margin-bottom: .4rem; }
+  .note p { margin: 0 0 .5rem; font-size: 13px; }
+  .note p:last-child { margin-bottom: 0; }
+  .note ul { margin: .3rem 0 .5rem; padding-left: 1.1rem; }
+  .note li { margin-bottom: .2rem; }
+  @media (prefers-reduced-motion: no-preference) {
+    .note { animation: note-in .24s cubic-bezier(.22, 1, .36, 1) both; }
+    @keyframes note-in { from { opacity: 0; transform: translateY(-4px); } }
+  }
+
   .strip.pics { margin-bottom: .2rem; }
   .strip.facts { margin-top: .5rem; }
   .swipe { font-size: 11px; color: var(--ink-3); margin: .3rem 0 .1rem; }
@@ -870,18 +890,23 @@
            { i: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Sign_of_Changsha_Metro.jpg/960px-Sign_of_Changsha_Metro.jpg', a: 'Sign of Changsha Metro' },
            { i: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fb/Single_Journey_Ticket_of_Changsha_Metro_%2829116312704%29.jpg/960px-Single_Journey_Ticket_of_Changsha_Metro_%2829116312704%29.jpg', a: 'Single Journey Ticket of Changsha Me' },
            { i: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Single_Journey_Ticket_of_Changsha_Metro_%2829116315234%29.jpg/960px-Single_Journey_Ticket_of_Changsha_Metro_%2829116315234%29.jpg', a: 'Single Journey Ticket of Changsha Me' },
-           { c: 'warn', b: '地铁已停', x: '往市区（梅溪湖西方向）末班 <b>23:03</b>，你到站时已开走 25 分钟' },
+           { c: 'warn', b: '地铁已停', x: '往市区（梅溪湖西方向）末班 <b>23:03</b>，你到站时已开走 25 分钟',
+             m: '<p>长沙地铁 23:00 左右发末班车，旺季周五周六可能延长 1 小时，但不要指望。第二张图里车头写的「梅溪湖西」就是往市区的方向。</p><p><b>各段耗时与费用：</b></p><ul><li>长沙南 → 五一广场（深夜）网约车，约 20 分，约 ¥40</li><li>长沙南 → 五一广场（白天）地铁 2 号线直达，约 25 分，¥4</li><li>五一广场 → 橘子洲 地铁 2 号线，约 15 分，¥3</li><li>五一广场 → 岳麓山 地铁 2 号线溁湾镇 / 4 号线湖南大学，约 30 分，¥4</li><li>五一广场 → 洋湖两馆 地铁 3 号线洋湖湿地，约 30 分</li></ul>' },
            { c: '', b: '打车', big: '约 ¥40', x: '20 分钟到酒店' }] },
     { t: '00:10', h: '入住奢酒店', d: '24 小时前台，零点后到店没问题',
       grab: ['#sec-list .booked', '#sec-list .alert'],
       s: [{ i: T + '1mc2w12000h6972lfB564_R_960_660_R5_D.jpg', a: '异国印象·奢酒店' },
            { i: T + '1mc2012000n02ehek4F5C_R_339_206_R5_D.jpg', a: '酒店公共区域' },
-           { c: '', b: '地址', x: '芙蓉区五一大道 127 号<br>出门即五一广场地铁站' },
+           { c: '', b: '地址', x: '芙蓉区五一大道 127 号<br>出门即五一广场地铁站',
+             m: '<p>住五一广场最大的好处：这些地方彼此都在走路范围内，不用查地铁。</p><ul><li><b>5 分钟</b>：黄兴路步行街、IFS 国金中心</li><li><b>10 分钟</b>：太平街、坡子街 · 火宫殿、超级文和友</li><li><b>20 分钟</b>：潮宗街、都正街、湘江风光带</li></ul><p>真正需要坐车的只有四个：岳麓山（地铁 30 分）、橘子洲（15 分）、洋湖两馆（30 分）、长沙南站（25 分）。金色印象在八一路，打车 10 分钟，是第五个。</p>' },
            { c: 'ok', b: '房间', x: 'Dusk Double Bed Room<br>4–9 层 · 1 张大床 · 含早' }] },
 
     { day: '周六 9/5 · citywalk + 吃 + 晚上按脚' },
     { t: '10:00', h: '自然醒', d: '不设闹钟。前一晚零点才入住，硬起早会毁掉整个白天',
-      s: [{ c: 'ok', b: '不排任何事', x: '代价是吃不到本地人那些粉店 —— 它们 10 点后码子基本售光' }] },
+      s: [{ c: 'ok', b: '不排任何事', x: '代价是吃不到本地人那些粉店 —— 它们 10 点后码子基本售光',
+             m: '<p><b>41 小时怎么分：</b>睡觉约 14 小时、通勤约 5 小时（含往返车站、市内换乘、进出站安检），真正能玩约 <b>22 小时</b>。</p><p>而且这 22 小时不连续：周五夜 3 小时、周六一整天 12 小时、周日半天 7 小时。周日 16:30 必须往车站走，这条线不能碰。</p><p>结论：重头戏只能放周六，周日排离车站近、随时能撤的。</p>' },
+           { c: '', b: '松弛的规矩', x: '一天只排一个必去；队超 20 分钟换一家；单程车程不超 30 分钟',
+             m: '<p>按这四条走，两天大概只去 3 个地方 —— 这是特意的。</p><p>41 小时里塞 8 个景点，回去只会记得排队和赶路。<b>留白也是行程。</b></p><p>茶颜悦色市区几百家店，永远不用为它排队；隔两百米那家通常没人。</p>' }] },
     { t: '11:00', h: '甘长顺 · 原汤肉丝粉', d: '五一广场站 B 口 · 24 小时营业 · 人均约 ¥12', grab: ['#fig-fen'],
       s: [{ i: C + 'f/f2/Changsha-style_mixed_rice_noodles_before_stirring_at_Baman_%2820211225175333%29.jpg/960px-Changsha-style_mixed_rice_noodles_before_stirring_at_Baman_%2820211225175333%29.jpg', a: '拌之前' },
            { i: C + '4/41/Changsha-style_mixed_rice_noodles_after_stirring_at_Baman_%2820211225175628%29.jpg/960px-Changsha-style_mixed_rice_noodles_after_stirring_at_Baman_%2820211225175628%29.jpg', a: '拌之后' },
@@ -906,11 +931,14 @@
            { c: 'ok', b: '主线全长', big: '6.4 km', x: '西园北里 → 潮宗街 → 太平街 → 坡子街 → 白果园 → 化龙池 → 都正街 → 西文庙坪 → 湖南第一师范' },
            { c: '', b: '今天只走前半', x: '潮宗街 370 年历史，麻石路和公馆；坡子街是火宫殿所在，边逛边吃' },
            { c: 'warn', b: '别贪多', x: '九个街区全走是一整天。后半段留给明天' },
+           { c: '', b: '下雨怎么办', x: '小雨照走，暴雨有地下退路',
+             m: '<p><b>晴 / 多云</b>：按原计划走街区，带水和防晒，9 月日头仍硬。</p><p><b>阵雨 / 小雨</b>：老街咖啡馆泡一下午，或改去洋湖两座美术馆、长沙博物馆，都是室内且免费。</p><p><b>暴雨</b>：IFS + 黄兴路商场 + 超级文和友 —— <b>地下连廊互通，一整天不出地面也能过</b>。这是住五一广场才有的退路。</p>' },
            { c: '', b: '茶颜就在路上', x: '市区几百家店，看到就进，不为它排队' }] },
     { t: '17:00', fix: 1, h: '金色印象取号', d: '这是今天唯一需要提前动作的一步',
       s: [{ c: 'warn', b: '等位', big: '2–4 小时', x: '有人工作日下午四点去仍等这么久。<b>先取号，再去吃饭</b>，叫到号再过来' },
            { c: '', b: '地址', x: '芙蓉区八一路 445-4 号<br>距五一广场 2–3 km，打车约 10 分钟' },
-           { c: '', b: '人均', big: '¥150–250', x: '影院式足道，边看电影边捏脚；号称「足浴界的海底捞」' }] },
+           { c: '', b: '人均', big: '¥150–250', x: '影院式足道，边看电影边捏脚；号称「足浴界的海底捞」',
+             m: '<p>金色印象 2011 年创立，自研「一体式影音播放设备」，主打足体健康管理、HiFi 电影、HiFi 音乐、特色美食、健康检测、书吧阅听、留宿过早、旅行驿站八位一体。</p><p>长沙本来就是「一半人给另一半人洗脚」的城市，足浴密度和夜宵一样高。<b>不想跑八一路</b>的话，五一广场地铁 5 号口楼上的新世界百货供销大厦，11 楼、18 楼、20 楼都是足道店，其中尚悦影视足道 ¥138 也是影院式。</p>' }] },
     { t: '17:30', fix: 1, h: '笨萝卜浏阳菜馆 · 太平街店', d: '天心区西牌楼街 55 号 2 楼 · 人均约 ¥40', grab: ['#fig-wait'],
       s: [
            { i: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Taiping_Street_at_night%2C_Changsha.jpg/960px-Taiping_Street_at_night%2C_Changsha.jpg', a: 'Taiping Street at night, Changsha' },
@@ -928,7 +956,8 @@
            { c: 'ok', b: '走过去', big: '10 分钟', x: '太平街 28 号东北 120 米，从上半段 citywalk 的终点直接过去' }] },
     { t: '19:30', h: '口味虾', d: '9 月是虾季尾声，出门前先打电话确认还有没有货',
       s: [{ i: C + '3/36/Changsha-style_Stinky_Tofu_at_Huogongdian_%2820180222183104%29.jpg/960px-Changsha-style_Stinky_Tofu_at_Huogongdian_%2820180222183104%29.jpg', a: '长沙臭豆腐' },
-           { c: 'warn', b: '先打电话', x: '虾季 5 月起，<b>9 月接近尾声</b>，可能收摊或涨价。按斤还是按份也要先问清' },
+           { c: 'warn', b: '先打电话', x: '虾季 5 月起，<b>9 月接近尾声</b>，可能收摊或涨价。按斤还是按份也要先问清',
+             m: '<p>口味虾（麻辣小龙虾）五一前后进入旺季，<b>9 月已是尾声</b>，出门前先确认还有没有货。</p><p>点单前问清按斤还是按份 —— 这行价格随行就市，同一家不同日子能差不少。</p><p>怕辣可以点蒜蓉虾或咸蛋黄大虾，不用非得挑战麻辣。解放西一带夜宵选择最多也最容易排队。</p>' },
            { c: 'ok', b: '虾忙龙虾', x: '坡子街 / 乐和城 4 楼 —— 离你最近，招牌青春卤虾、大胜虾尾' },
            { c: '', b: '湘江大码头', x: '湘江中路 2 段 36 号海信广场，另有杜甫江阁店、化龙池店。招牌干爆虾' },
            { c: '', b: '文和友老长沙龙虾馆', x: '五一商圈内，CCTV2 上过。<b>下午 5 点就开始排队</b>，怕辣点蒜蓉或咸蛋黄' },
@@ -941,7 +970,12 @@
 
     { day: '周日 9/6 · 继续 citywalk，16:30 必须走' },
     { t: '09:30', h: '起床，行李寄前台', d: '奢酒店免费寄存，寄到 16:30',
-      s: [{ c: 'ok', b: '这一条最关键', x: '12:00 退房到 16:30 出发有四个半小时，行李不寄就得拖着走' }] },
+      s: [{ c: 'ok', b: '这一条最关键', x: '12:00 退房到 16:30 出发有四个半小时，行李不寄就得拖着走',
+             m: '<p>这四个半小时是整趟最尴尬的一段。行李寄前台之后，它就变成了完整的半天：citywalk 下半段 3 小时 + 黄兴路 2 小时，到点直接从五一广场坐 2 号线走。</p><p>奢酒店明确提供免费寄存，入住时确认一句能寄到 16:30 即可。</p>' },
+           { c: '', b: '两天花多少', big: '¥1,050–2,050', x: '人均，不含往返高铁',
+             m: '<ul><li>住宿 2 晚 ¥600–1,200（你已定 ¥1,294）</li><li>吃 ¥300–500</li><li>市内交通 ¥150–250</li><li>门票 ¥0–100</li></ul><p>不去收费景点、不排队也就不为等位买单，门票那项基本是 0。交通含周五深夜打车约 ¥40 和周日回站，其余按地铁 ¥4 一程估。</p>' },
+           { c: '', b: '带什么', x: '折叠伞 · 走惯的鞋 · 薄外套 · 充电宝 · 身份证',
+             m: '<p>9 月长沙白天常在 30 °C 上下，湿度高、闷，早晚略降。可能连着几天阵雨，也可能是秋老虎。</p><ul><li><b>折叠伞</b> —— 既挡雨也挡太阳，9 月的日头还很硬</li><li><b>走惯的鞋</b> —— citywalk 两天，一天一两万步</li><li><b>薄外套</b> —— 不是为室外，是为商场和地铁的冷气</li><li><b>充电宝</b> —— 预约码、乘车码、点单码全在手机上</li><li><b>身份证</b> —— 场馆实名核验，二维码不能替代证件</li><li>纸巾湿巾 —— 嗦粉和吃虾都用得上</li></ul>' }] },
     { t: '10:00', h: '杨裕兴 · 三王街店', d: '「杨裕兴的面、甘长顺的粉」—— 今天吃面',
       s: [{ c: '', b: '点什么', x: '手工擀面，下锅不粘。码子选肉丝 / 杂酱 / 三鲜 / 牛肉 / 酸辣；讲究就点<b>炒码</b>，随到随制' },
            { c: '', b: '人均', big: '¥12–15', x: '清光绪年间的老店，就在五一广场步行圈' }] },
@@ -960,6 +994,8 @@
       s: [{ c: 'ok', b: '在长沙总计', big: '41 小时', x: '扣掉睡觉和通勤，真正玩了约 22 小时' }] }
   ];
 
+  var NOTES = {};
+
   (function timeline() {
     var ol = document.getElementById('tl');
     if (!ol) return;
@@ -972,11 +1008,21 @@
       var pics = (e.s || []).filter(function (x) { return x.i; }).map(function (x) {
         return '<img src="' + x.i + '" alt="' + x.a + '" referrerpolicy="no-referrer" onerror="this.hidden=true">';
       }).join('');
-      var facts = (e.s || []).filter(function (x) { return !x.i; }).map(function (x) {
-        return '<div class="card ' + (x.c || '') + '"><b>' + x.b + '</b>'
+      var facts = (e.s || []).filter(function (x) { return !x.i; }).map(function (x, k) {
+        // A card with a long note becomes a button. The note opens under the
+        // strip rather than inside the 208px tile, which cannot hold prose.
+        var tag = x.m ? 'button' : 'div';
+        var attr = x.m ? ' type="button" aria-expanded="false" data-k="' + i + '-' + k + '"' : '';
+        return '<' + tag + ' class="card ' + (x.c || '') + (x.m ? ' has-more' : '') + '"' + attr + '>'
+             + '<b>' + x.b + '</b>'
              + (x.big ? '<span class="big">' + x.big + '</span>' : '')
-             + '<span>' + x.x + '</span></div>';
+             + '<span>' + x.x + '</span>'
+             + (x.m ? '<span class="more-cue">点开看详情</span>' : '')
+             + '</' + tag + '>';
       }).join('');
+      (e.s || []).filter(function (x) { return !x.i; }).forEach(function (x, k) {
+        if (x.m) NOTES[i + '-' + k] = { t: x.b, h: x.m };
+      });
       var row = function (cls, inner) {
         return inner ? '<div class="strip ' + cls + '">' + inner + '</div>'
                      + '<p class="swipe" hidden>← 左右滑动看更多</p>' : '';
@@ -986,6 +1032,7 @@
             + '<p class="tl-h">' + e.h + '</p>'
             + '<p class="tl-d">' + e.d + '</p>'
             + row('pics', pics) + row('facts', facts)
+            + '<div class="note" hidden></div>'
             + '<div class="tl-more"></div>'
             + '</li>';
     });
@@ -1001,6 +1048,23 @@
         }
       });
     };
+    // One note open per slot: a second click on the same card closes it, a
+    // click on a different card in the same slot swaps the contents.
+    ol.addEventListener('click', function (ev) {
+      var b = ev.target.closest('.card.has-more');
+      if (!b) return;
+      var li = b.closest('li'), note = li.querySelector('.note');
+      var open = b.getAttribute('aria-expanded') === 'true';
+      [].forEach.call(li.querySelectorAll('.card.has-more'), function (o) {
+        o.setAttribute('aria-expanded', 'false');
+      });
+      if (open) { note.hidden = true; return; }
+      b.setAttribute('aria-expanded', 'true');
+      var d = NOTES[b.dataset.k];
+      note.innerHTML = '<b>' + d.t + '</b>' + d.h;
+      note.hidden = false;
+    });
+
     sync();
     window.addEventListener('resize', sync);
     [].forEach.call(ol.querySelectorAll('.strip img'), function (im) {
