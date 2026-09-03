@@ -29,6 +29,39 @@
   .chips { display: flex; flex-wrap: wrap; gap: 6px; }
   /* The city row is the picker: a 362-entry <select> is nobody's idea of a
      control. Chips show the province you are in, the map does the rest. */
+  /* Chart chrome, laid out the way a trading terminal does it: one dense row
+     of segmented controls above the chart, the time range under it, and every
+     optional overlay behind a single 指标 button instead of fifteen loose
+     pills spread over three lines. */
+  .cbar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 1.1rem 0 .5rem; }
+  .cbar-r { margin-left: auto; position: relative; }
+  .seg { display: inline-flex; background: var(--bg-2); border: 1px solid var(--line-2);
+    border-radius: 8px; padding: 2px; gap: 2px; }
+  .seg button { font: inherit; font-size: 12.5px; line-height: 1.6; color: var(--ink-3);
+    background: none; border: 0; border-radius: 6px; padding: 3px 10px; cursor: pointer;
+    white-space: nowrap; transition: color var(--t-fast) var(--ease), background var(--t-fast) var(--ease); }
+  .seg button:hover { color: var(--ink); }
+  .seg button[aria-pressed="true"] { background: var(--card); color: var(--ink); font-weight: 500;
+    box-shadow: var(--shadow-1); }
+  .seg button[disabled] { opacity: .38; cursor: not-allowed; }
+  .seg.range { margin: .45rem 0 .2rem; }
+  .tbtn { font: inherit; font-size: 12.5px; color: var(--ink-2); background: var(--bg-2);
+    border: 1px solid var(--line-2); border-radius: 8px; padding: 4px 11px; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 5px; }
+  .tbtn:hover { color: var(--ink); border-color: var(--ink-3); }
+  .tbtn[aria-expanded="true"] { border-color: var(--accent); color: var(--accent); }
+  .tbtn .cnt { font-size: 11px; color: var(--accent); font-variant-numeric: tabular-nums; }
+  .pop { position: absolute; right: 0; top: calc(100% + 6px); z-index: 20; width: 254px;
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--r-sm);
+    box-shadow: var(--shadow-3); padding: .5rem .35rem; }
+  .pop-h { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3);
+    margin: .35rem .65rem .25rem; }
+  .pop label { display: flex; align-items: baseline; gap: 8px; font-size: 13px; color: var(--ink);
+    padding: .32rem .65rem; border-radius: 7px; cursor: pointer; }
+  .pop label:hover { background: var(--bg-2); }
+  .pop label span { margin-left: auto; font-size: 11px; color: var(--ink-3); }
+  .pop input { accent-color: var(--accent); }
+
   /* One line, scrolled sideways: twenty-four cities wrapped into five rows
      stopped looking like a control and started looking like a word list. */
   .citychips { margin: .2rem 0 1rem; flex-wrap: nowrap; overflow-x: auto;
@@ -203,38 +236,46 @@
   <div class="chart map" id="cp-map" hidden></div>
   <p class="hint" id="cp-map-note" hidden>柱子高度与颜色都是该城市最新一期的挂牌均价（高度按对数缩放，否则深圳一根柱子会把其余全压平）。点柱子选中城市并下钻到它所在的省。</p>
 
-  <div class="toolbar">
-    <div class="chips" id="cp-mode">
-      <button class="chip" data-mode="line" type="button" aria-pressed="true">折线</button>
-      <button class="chip" data-mode="bar" type="button" aria-pressed="false">柱状</button>
-      <button class="chip" data-mode="candle" type="button" aria-pressed="false">K 线 · 季度</button>
-    </div>
-    <div class="chips" id="cp-range">
-      <button class="chip" data-span="12" type="button" aria-pressed="false">近 1 年</button>
-      <button class="chip" data-span="36" type="button" aria-pressed="false">近 3 年</button>
-      <button class="chip" data-span="60" type="button" aria-pressed="true">近 5 年</button>
-      <button class="chip" data-span="120" type="button" aria-pressed="false">近 10 年</button>
-      <button class="chip" data-span="0" type="button" aria-pressed="false">全部</button>
-    </div>
-    <div class="chips" id="cp-overlay">
-      <button class="chip" data-ov="log" type="button" aria-pressed="false">对数轴</button>
-      <button class="chip" data-ov="yoy" type="button" aria-pressed="true">同比副图</button>
-      <button class="chip" data-ov="cmp" type="button" aria-pressed="false">对比中位数</button>
-    </div>
-    <div class="chips" id="cp-ind">
-      <button class="chip" data-ind="ma" type="button" aria-pressed="true">均线</button>
-      <button class="chip" data-ind="gmma" type="button" aria-pressed="false">顾比 GMMA</button>
-      <button class="chip" data-ind="st" type="button" aria-pressed="false">SuperTrend</button>
-      <button class="chip" data-ind="boll" type="button" aria-pressed="false">布林带</button>
-    </div>
-  </div>
-
   <p class="hint" id="cp-pick-label">当前：—</p>
   <div class="chips citychips" id="cp-cities"></div>
 
+  <div class="cbar">
+    <div class="seg" id="cp-period" role="group" aria-label="周期">
+      <button type="button" data-p="m" aria-pressed="true">月</button>
+      <button type="button" data-p="q" aria-pressed="false">季</button>
+    </div>
+    <div class="seg" id="cp-mode" role="group" aria-label="图表类型">
+      <button type="button" data-mode="line" aria-pressed="true">折线</button>
+      <button type="button" data-mode="bar" aria-pressed="false">柱</button>
+      <button type="button" data-mode="candle" aria-pressed="false">K 线</button>
+    </div>
+    <div class="cbar-r">
+      <button type="button" class="tbtn" id="cp-ind-btn" aria-expanded="false" aria-controls="cp-ind-menu">
+        <span aria-hidden="true">ƒ</span> 指标 <span class="cnt" id="cp-ind-n"></span>
+      </button>
+      <div class="pop" id="cp-ind-menu" hidden>
+        <p class="pop-h">叠加指标</p>
+        <label><input type="checkbox" data-ind="ma" checked> 均线 MA<span>一年 / 两年</span></label>
+        <label><input type="checkbox" data-ind="gmma"> 顾比 GMMA<span>短期 3–15 · 长期 30–60</span></label>
+        <label><input type="checkbox" data-ind="st"> SuperTrend<span>ATR(10) × 3</span></label>
+        <label><input type="checkbox" data-ind="boll"> 布林带<span>两年期 ±2σ</span></label>
+        <p class="pop-h">显示</p>
+        <label><input type="checkbox" data-ov="yoy" checked> 同比副图<span>红涨绿跌</span></label>
+        <label><input type="checkbox" data-ov="cmp"> 对比中位数<span>省与全国，左轴</span></label>
+        <label><input type="checkbox" data-ov="log"> 对数轴<span>比较涨幅时用</span></label>
+      </div>
+    </div>
+  </div>
 
   <div class="legend" id="cp-line-legend"></div>
   <div class="lwc" id="cp-line" role="img" aria-label="主图为选中城市的挂牌均价（右轴）与省、全国中位数（左轴），副图为同比涨跌，红涨绿跌。"></div>
+  <div class="seg range" id="cp-range" role="group" aria-label="时间范围">
+    <button type="button" data-span="12" aria-pressed="false">1 年</button>
+    <button type="button" data-span="36" aria-pressed="false">3 年</button>
+    <button type="button" data-span="60" aria-pressed="true">5 年</button>
+    <button type="button" data-span="120" aria-pressed="false">10 年</button>
+    <button type="button" data-span="0" aria-pressed="false">全部</button>
+  </div>
   <p class="hint" id="cp-line-note"></p>
 
   <div class="keys" id="cp-trend"></div>
@@ -877,17 +918,57 @@
         var b = e.target.closest('.chip');
         if (b) selectCity(b.dataset.city, { keepChips: true });
       });
-      bindChips('cp-mode', function (b) { cpMode = b.dataset.mode; });
-      bindChips('cp-range', function (b) { cpSpan = +b.dataset.span; });
-      bindChips('cp-ind', function (b) {
-        cpInd[b.dataset.ind] = b.getAttribute('aria-pressed') === 'true';
+
+      // Segmented controls: one pressed button per group.
+      var seg = function (id, apply) {
+        var box = document.getElementById(id);
+        box.addEventListener('click', function (e) {
+          var b = e.target.closest('button');
+          if (!b || b.disabled) return;
+          Array.prototype.forEach.call(box.querySelectorAll('button'), function (x) {
+            x.setAttribute('aria-pressed', String(x === b));
+          });
+          apply(b);
+          drawLine();
+        });
+      };
+      seg('cp-period', function (b) {
+        cpPeriod = b.dataset.p;
+        if (cpPeriod === 'm' && cpMode === 'candle') setMode('line');
       });
-      bindChips('cp-overlay', function (b) {
-        var on = b.getAttribute('aria-pressed') === 'true';
-        if (b.dataset.ov === 'yoy') cpYoy = on;
-        else if (b.dataset.ov === 'cmp') cpCmp = on;
-        else cpLog = on;
+      seg('cp-mode', function (b) {
+        setMode(b.dataset.mode);
+        // A month has one price, so there is no month with a high and a low:
+        // asking for candles means asking for quarters.
+        if (cpMode === 'candle') setPeriod('q');
       });
+      seg('cp-range', function (b) { cpSpan = +b.dataset.span; });
+
+      // Indicators live behind one button, the way every charting app does it.
+      var btn = document.getElementById('cp-ind-btn');
+      var menu = document.getElementById('cp-ind-menu');
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var open = menu.hidden;
+        menu.hidden = !open;
+        btn.setAttribute('aria-expanded', String(open));
+      });
+      document.addEventListener('click', function (e) {
+        if (!menu.hidden && !menu.contains(e.target) && e.target !== btn) {
+          menu.hidden = true;
+          btn.setAttribute('aria-expanded', 'false');
+        }
+      });
+      menu.addEventListener('change', function (e) {
+        var i = e.target;
+        if (i.dataset.ind) cpInd[i.dataset.ind] = i.checked;
+        else if (i.dataset.ov === 'yoy') cpYoy = i.checked;
+        else if (i.dataset.ov === 'cmp') cpCmp = i.checked;
+        else if (i.dataset.ov === 'log') cpLog = i.checked;
+        indCount();
+        drawLine();
+      });
+      indCount();
       document.getElementById('cp-load').addEventListener('click', loadCityMap);
       document.getElementById('cp-back').addEventListener('click', function () { drill(null); });
     }
@@ -895,7 +976,31 @@
     // --- chart: price on the left axis, YoY on the right ---------------------
     // Everything is monthly. Bar and candle aggregate nothing except the candle's
     // quarter box, because one price per month is all the source has.
-    var cpMode = 'line', cpSpan = 60, cpYoy = true, cpLog = false, cpCmp = false;
+    var cpMode = 'line', cpSpan = 60, cpYoy = true, cpLog = false, cpCmp = false, cpPeriod = 'm';
+
+    function press(id, sel) {
+      Array.prototype.forEach.call(document.querySelectorAll('#' + id + ' button'), function (b) {
+        b.setAttribute('aria-pressed', String(sel(b)));
+      });
+    }
+    function setMode(m) {
+      cpMode = m;
+      press('cp-mode', function (b) { return b.dataset.mode === m; });
+    }
+    function setPeriod(p) {
+      cpPeriod = p;
+      press('cp-period', function (b) { return b.dataset.p === p; });
+    }
+    // The 指标 button carries a count, so the panel does not have to be open to
+    // know something is on.
+    function indCount() {
+      var n = Object.keys(cpInd).filter(function (k) { return cpInd[k]; }).length
+        + (cpYoy ? 1 : 0) + (cpCmp ? 1 : 0);
+      var e = document.getElementById('cp-ind-n');
+      if (e) e.textContent = n ? n : '';
+      var mb = document.querySelector('#cp-period button[data-p="m"]');
+      if (mb) mb.disabled = cpMode === 'candle';
+    }
 
     function selectCity(city, opts) {
       var hit = all.filter(function (c) { return c.city === city; })[0];
@@ -937,23 +1042,6 @@
       });
       document.getElementById('cp-pick-label').textContent =
         '当前：' + cpProv + ' · ' + (cpCity || '—') + '（点地图上的柱子，或点下面的城市）';
-    }
-
-    function bindChips(id, apply) {
-      var box = document.getElementById(id);
-      box.addEventListener('click', function (e) {
-        var b = e.target.closest('.chip');
-        if (!b) return;
-        if (id === 'cp-overlay' || id === 'cp-ind') {
-          b.setAttribute('aria-pressed', String(b.getAttribute('aria-pressed') !== 'true'));
-        } else {
-          Array.prototype.forEach.call(box.querySelectorAll('.chip'), function (x) {
-            x.setAttribute('aria-pressed', String(x === b));
-          });
-        }
-        apply(b);
-        drawLine();
-      });
     }
 
     function seriesOf(c) { return D.months.map(function (_, i) { return val(c, i); }); }
@@ -1085,6 +1173,7 @@
     // Lightweight Charts wants a date; a month is its first day, a quarter its
     // first month.
     function tOf(m) { return m + '-01'; }
+    function per() { return cpPeriod === 'q' ? ' 季度' : ' 逐月'; }
 
     function drawLine() {
       ensureLwc().then(build).catch(function () {
@@ -1127,7 +1216,7 @@
       // One bar series drives both the candles and every overlay, so the
       // indicators are always computed on exactly what is drawn.
       var bars, times;
-      if (cpMode === 'candle') {
+      if (cpPeriod === 'q') {
         var rows = quarters(city);
         bars = rows.map(function (r) { return { o: r.o, h: r.h, l: r.l, c: r.c }; });
         times = rows.map(function (r) {
@@ -1156,7 +1245,7 @@
       };
 
       // --- overlays ---
-      var unit = cpMode === 'candle' ? 4 : 12;           // one year, in bars
+      var unit = cpPeriod === 'q' ? 4 : 12;              // one year, in bars
       if (cpInd.ma) {
         lineAt(sma(closes, unit), '#eda100', 1.6);
         lineAt(sma(closes, unit * 2), css('--accent', '#0071e3'), 1.6);
@@ -1167,7 +1256,7 @@
         // Scaled to the bar size so the monthly and quarterly views agree.
         // 3-15 and 30-60 are bar counts. On quarterly bars they are divided,
         // not multiplied: a 60-quarter EMA would be fifteen years of smoothing.
-        var k = cpMode === 'candle' ? 1 / 3 : 1;
+        var k = cpPeriod === 'q' ? 1 / 3 : 1;
         [3, 5, 8, 10, 12, 15].forEach(function (n) {
           lineAt(ema(closes, Math.max(2, Math.round(n * k))), 'rgba(227,73,72,.5)', 1); });
         [30, 35, 40, 45, 50, 60].forEach(function (n) {
@@ -1182,7 +1271,7 @@
         legend.push(['rgba(138,138,138,.9)', '布林带（' + unit * 2 + ' 期，±2σ）']);
       }
       if (cpInd.st) {
-        var st = superTrend(bars, cpMode === 'candle' ? 7 : 10, 3);
+        var st = superTrend(bars, cpPeriod === 'q' ? 7 : 10, 3);
         // Two series so the flip is visible: red while the trend is up, green
         // while it is down - the same 红涨绿跌 as everything else on this page.
         lineAt(st.line.map(function (v, i) { return st.trend[i] === 1 ? v : null; }), UP, 2);
@@ -1199,19 +1288,19 @@
         s1.setData(bars.map(function (b, i) {
           return { time: times[i], open: b.o, high: b.h, low: b.l, close: b.c };
         }));
-        legend.push([UP, name + ' 季度 K 线 · 红涨绿跌']);
+        legend.push([UP, name + (cpPeriod === 'q' ? ' 季度' : ' 月度') + ' K 线 · 红涨绿跌']);
       } else if (cpMode === 'bar') {
         var s2 = chart.addSeries(LC.HistogramSeries, { priceScaleId: 'right' }, pricePane);
         s2.setData(bars.map(function (b, i) {
           return { time: times[i], value: b.c,
             color: i && b.c < bars[i - 1].c ? 'rgba(27,175,122,.6)' : 'rgba(227,73,72,.6)' };
         }));
-        legend.push([UP, name + ' 月度挂牌均价 · 红涨绿跌']);
+        legend.push([UP, name + per() + '挂牌均价 · 红涨绿跌']);
       } else {
         var s3 = chart.addSeries(LC.AreaSeries, { priceScaleId: 'right', lineColor: UP,
           topColor: 'rgba(227,73,72,.22)', bottomColor: 'rgba(227,73,72,0)', lineWidth: 3 }, pricePane);
         s3.setData(bars.map(function (b, i) { return { time: times[i], value: b.c }; }));
-        legend.push([UP, name + ' 逐月挂牌均价']);
+        legend.push([UP, name + per() + '挂牌均价']);
       }
 
       // Medians sit on the left scale - same unit, different order of magnitude -
@@ -1244,6 +1333,7 @@
       }
 
       // Range chips drive the visible window; the user can still drag and zoom.
+      indCount();
       var lastM = D.months[D.months.length - 1];
       if (cpSpan) {
         var fromIdx = Math.max(0, D.months.length - cpSpan);
@@ -1261,7 +1351,7 @@
         ro = new ResizeObserver(function () { if (chart) chart.applyOptions({ width: host.clientWidth }); });
         ro.observe(host);
       }
-      note(pick, cpMode === 'candle' ? quarters(city) : null);
+      note(pick, cpPeriod === 'q' ? quarters(city) : null);
     }
 
     // --- trend ---------------------------------------------------------------
@@ -1309,8 +1399,10 @@
           + '</div><p class="kd">' + x[2] + '</p></div>';
       }).join('');
 
-      var tail = { line: '折线是价格本身。', bar: '柱子是每个月的挂牌均价，红涨绿跌。',
-        candle: '一根 K 线是一个季度：实体两端是季初与季末，影线是当季最高最低月，红涨绿跌。' }[cpMode];
+      var unitTxt = cpPeriod === 'q' ? '季' : '月';
+      var tail = { line: '折线是价格本身。',
+        bar: '一根柱子是一' + unitTxt + '的挂牌均价，红涨绿跌。',
+        candle: '一根 K 线是一' + unitTxt + '：实体两端是期初与期末，影线是期内最高最低月，红涨绿跌。' }[cpMode];
       document.getElementById('cp-line-note').textContent =
         name + '：' + tail + '右轴是这座城市的真实价格（元/㎡），左轴是 ' + cpProv
         + ' 与全国中位数 —— 五万块的城市和六千块的中位数没法共用一根轴，所以分两边放。'
