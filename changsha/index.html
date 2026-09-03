@@ -155,6 +155,15 @@
     font-variant-numeric: tabular-nums; margin: auto 0 .1rem; }
   .strip .card.warn { border-color: var(--warn); }
   .strip .card.ok { border-color: var(--ok); }
+  .tl-more:empty { display: none; }
+  .tl-more { margin-top: .7rem; }
+  .tl-more > * { margin-left: 0; margin-right: 0; }
+  .tl-more figure { margin: .6rem 0; }
+  .tl-more .booked { margin: 0 0 .7rem; }
+  .tl-more h3 { font-size: 14px; margin: 1rem 0 .35rem; }
+  .tl-more table { font-size: 12px; }
+  ol.tl > li.day .tl-more { margin-top: .2rem; }
+
   .swipe { font-size: 11px; color: var(--ink-3); margin: .3rem 0 0; }
   @media (max-width: 640px) {
     ol.tl { padding-left: 1.3rem; }
@@ -628,7 +637,7 @@
     </div>
     <figcaption>长沙拌粉：上桌是左边那样，码子堆在面上，得自己拌成右边那样再吃。<span class="cred"><a href="https://commons.wikimedia.org/wiki/File:Changsha-style_mixed_rice_noodles_before_stirring_at_Baman_(20211225175333).jpg" rel="noopener">N509FZ / CC BY-SA 4.0 · Wikimedia Commons</a></span></figcaption>
   </figure>
-  <figure>
+  <figure id="fig-fen">
     <svg viewBox="0 0 700 210" role="img" aria-label="长沙嗦粉点单图解：先选圆粉或扁粉，再选码子也就是浇头，最后可选重挑加量或轻挑减量。">
       <title>嗦粉怎么点</title>
       <g font-family="-apple-system, sans-serif" font-size="12">
@@ -664,7 +673,7 @@
     </svg>
   </figure>
 <h3>正餐 · 湘菜</h3>
-  <figure>
+  <figure id="fig-wait">
     <svg viewBox="0 0 700 205" role="img" aria-label="湘菜馆周末等位对比：费大厨与炊烟时代 1 到 2 小时，笨萝卜约 1 小时，新长福较少，盛香亭基本不等。">
       <title>周末等位时长</title>
       <g font-family="-apple-system, sans-serif" font-size="12">
@@ -714,7 +723,7 @@
     <div class="g3"><a href="https://commons.wikimedia.org/wiki/File:Changsha_Wenheyou,_21_May_2021C.jpg" rel="noopener"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Changsha_Wenheyou%2C_21_May_2021C.jpg/960px-Changsha_Wenheyou%2C_21_May_2021C.jpg" alt="超级文和友外观" referrerpolicy="no-referrer" onerror="this.closest('a').hidden=true"></a><a href="https://commons.wikimedia.org/wiki/File:Interior_of_Changsha_Wenheyou_2021052113.jpg" rel="noopener"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Interior_of_Changsha_Wenheyou_2021052113.jpg/960px-Interior_of_Changsha_Wenheyou_2021052113.jpg" alt="文和友内部仿老长沙街景" referrerpolicy="no-referrer" onerror="this.closest('a').hidden=true"></a><a href="https://commons.wikimedia.org/wiki/File:Interior_of_Changsha_Wenheyou_2021052120.jpg" rel="noopener"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Interior_of_Changsha_Wenheyou_2021052120.jpg/960px-Interior_of_Changsha_Wenheyou_2021052120.jpg" alt="文和友内部楼层" referrerpolicy="no-referrer" onerror="this.closest('a').hidden=true"></a></div>
     <figcaption>超级文和友。它的价值全在这个场景 —— 一楼进去扫码买小吃不用排队，几千桌的队是「落座点菜」那条。<span class="cred">Huangdan2060 / CC BY 3.0 · Wikimedia Commons</span></figcaption>
   </figure>
-  <figure>
+  <figure id="fig-whf">
     <svg viewBox="0 0 700 300" role="img" aria-label="文和友两条队的流程图：只逛只吃小吃的话从一楼进、扫码购买，完全不排队；想落座点菜要用小程序取号，A 是小桌可提前 100 桌、C 是大桌提前 10 桌，叫到号后 10 分钟内不到就作废。">
       <title>文和友：两条完全不同的队</title>
       <g font-family="-apple-system, sans-serif" font-size="12">
@@ -747,7 +756,7 @@
   </figure>
   <h2 id="sec-spa">泡脚</h2>
 <h3>五一广场商圈的选择</h3>
-  <figure>
+  <figure id="fig-spa">
     <svg viewBox="0 0 700 255" role="img" aria-label="五一广场足浴店按人均价与评论数分布：足享计划 80 元 1726 条，康毅足道 152 元 1817 条，烨晨 91 元 383 条，尚悦 138 元 218 条，泰么 SPA 209 元 446 条。">
       <title>足浴：价位与评论数</title>
       <g font-family="-apple-system, sans-serif" font-size="11">
@@ -822,6 +831,7 @@
   var C = 'https://upload.wikimedia.org/wikipedia/commons/thumb/';
   var T = 'https://ak-d.tripcdn.com/images/';
   var TL = [
+    { day: '出发前', grab: ['#sec-todo figure', '#sec-todo ul.todo', '#sec-todo p.hint', '#sec-trap table'] },
     { day: '周五 9/4' },
     { t: '20:15', fix: 1, h: '虎门上车', d: 'G6026 · 二等座',
       s: [{ c: 'ok', b: '车程', big: '3 小时 13 分', x: '20:15 → 23:28' }] },
@@ -831,6 +841,7 @@
            { c: 'warn', b: '地铁已停', x: '往市区（梅溪湖西方向）末班 <b>23:03</b>，你到站时已开走 25 分钟' },
            { c: '', b: '打车', big: '约 ¥40', x: '20 分钟到酒店' }] },
     { t: '00:10', h: '入住奢酒店', d: '24 小时前台，零点后到店没问题',
+      grab: ['#sec-list .booked', '#sec-list .alert'],
       s: [{ i: T + '1mc2w12000h6972lfB564_R_960_660_R5_D.jpg', a: '异国印象·奢酒店' },
            { i: T + '1mc2012000n02ehek4F5C_R_339_206_R5_D.jpg', a: '酒店公共区域' },
            { c: '', b: '地址', x: '芙蓉区五一大道 127 号<br>出门即五一广场地铁站' },
@@ -839,7 +850,7 @@
     { day: '周六 9/5 · 唯一完整的一天' },
     { t: '10:00', h: '自然醒', d: '不设闹钟。这是松弛版的前提，不是懒',
       s: [{ c: 'ok', b: '不排任何事', x: '前一晚零点才入住，硬起早会毁掉整个白天' }] },
-    { t: '11:00', h: '楼下嗦粉', d: '长沙人的早饭是米粉',
+    { t: '11:00', h: '楼下嗦粉', d: '长沙人的早饭是米粉', grab: ['#fig-fen'],
       s: [{ i: C + 'f/f2/Changsha-style_mixed_rice_noodles_before_stirring_at_Baman_%2820211225175333%29.jpg/960px-Changsha-style_mixed_rice_noodles_before_stirring_at_Baman_%2820211225175333%29.jpg', a: '拌之前' },
            { i: C + '4/41/Changsha-style_mixed_rice_noodles_after_stirring_at_Baman_%2820211225175628%29.jpg/960px-Changsha-style_mixed_rice_noodles_after_stirring_at_Baman_%2820211225175628%29.jpg', a: '拌之后' },
            { c: '', b: '怎么点', x: '圆粉 / 扁粉 + 码子（浇头）<br>加量说「重挑」，减量「轻挑」' }] },
@@ -848,12 +859,14 @@
            { i: C + 'b/bb/Cha_Yan_Yue_Se%2C_Changsha%2C_China_2021122603.jpg/960px-Cha_Yan_Yue_Se%2C_Changsha%2C_China_2021122603.jpg', a: '排队的人群' },
            { c: 'warn', b: '别排队', x: '市区几百家店，隔两百米那家通常没人。广东也有门店了' }] },
     { t: '13:30', fix: 1, h: '洋湖两座美术馆', d: '李自健免费领票，谢子龙一楼免费',
+      grab: ['#sec-again .scroll', '#sec-again .alert'],
       s: [{ c: 'ok', b: '下雨照去', x: '两馆都是室内，反而是雨天的最优解' },
            { c: '', b: '交通', big: '30 分', x: '地铁 3 号线洋湖湿地站' },
            { c: '', b: '要提前约', x: '李自健免费不免票，公众号领<br>周一闭馆（你是周六，不影响）' }] },
-    { t: '16:30', h: '湖边或咖啡馆坐着', d: '这一格是空的，不安排',
+    { t: '16:30', h: '湖边或咖啡馆坐着', d: '这一格是空的，不安排；真想动，下面是候选',
+      grab: ['#sec-more .scroll', '#sec-more h3', '#sec-more p.hint'],
       s: [{ c: 'ok', b: '留白', x: '两天只去三个地方。第三次来长沙，坐着比再刷一个景点值' }] },
-    { t: '18:30', h: '回城吃晚饭', d: '不排队的本地小馆',
+    { t: '18:30', h: '回城吃晚饭', d: '不排队的本地小馆', grab: ['#fig-wait'],
       s: [{ i: C + '3/36/Changsha-style_Stinky_Tofu_at_Huogongdian_%2820180222183104%29.jpg/960px-Changsha-style_Stinky_Tofu_at_Huogongdian_%2820180222183104%29.jpg', a: '长沙臭豆腐' },
            { c: 'warn', b: '想吃费大厨', x: '周末等 1–2 小时。要去就提前两小时在小程序取号，边逛边等' },
            { c: '', b: '不想等', x: '盛香亭基本不等；笨萝卜太平街店约 1 小时，走过去 10 分钟' }] },
@@ -867,11 +880,12 @@
       s: [{ c: 'ok', b: '这一条最关键', x: '12:00 退房到 16:30 出发有四个半小时，行李不寄就得拖着走' }] },
     { t: '10:30', h: '潮宗街 / 都正街', d: '早午餐加咖啡，老街咖啡馆密度高、人少',
       s: [{ c: '', b: '为什么是这里', x: '不是传统景点，前两次大概率漏掉了；离酒店步行 15 分钟内' }] },
-    { t: '12:30', h: '黄兴路买手信', d: '文和友只逛不吃的话，一楼直接进',
+    { t: '12:30', h: '黄兴路买手信', d: '文和友只逛不吃的话，一楼直接进', grab: ['#fig-whf'],
       s: [{ i: C + '5/5f/Changsha_Wenheyou%2C_21_May_2021C.jpg/960px-Changsha_Wenheyou%2C_21_May_2021C.jpg', a: '超级文和友外观' },
            { i: C + '2/2a/Interior_of_Changsha_Wenheyou_2021052113.jpg/960px-Interior_of_Changsha_Wenheyou_2021052113.jpg', a: '文和友内部' },
            { c: 'ok', b: '0 排队', x: '一楼进去扫码买小吃<b>不用领桌号</b>。几千桌的队是「落座点菜」那条' }] },
     { t: '14:30', h: '泡脚', d: '供销大厦楼上 11 / 18 / 20 层都是足道店',
+      grab: ['#fig-spa', '#sec-spa p.hint'],
       s: [{ c: 'ok', b: '足享计划', big: '¥80', x: '供销大厦 18 楼 · 1,726 条评论 · 地铁 5 号口' },
            { c: '', b: '康毅足道', big: '¥152', x: '评论最多 1,817 条 · 有茶点和影视房' },
            { c: '', b: '为什么排这里', x: '能坐三四小时不赶人，正好填掉退房后的空窗' }] },
@@ -886,20 +900,21 @@
     var ol = document.getElementById('tl');
     if (!ol) return;
     var html = '';
-    TL.forEach(function (e) {
-      if (e.day) { html += '<li class="day"><p class="tl-day">' + e.day + '</p></li>'; return; }
+    TL.forEach(function (e, i) {
+      if (e.day) { html += '<li class="day" data-i="' + i + '"><p class="tl-day">' + e.day + '</p><div class="tl-more"></div></li>'; return; }
       var strip = (e.s || []).map(function (x) {
         if (x.i) return '<img src="' + x.i + '" alt="' + x.a + '" referrerpolicy="no-referrer" onerror="this.hidden=true">';
         return '<div class="card ' + (x.c || '') + '"><b>' + x.b + '</b>'
              + (x.big ? '<span class="big">' + x.big + '</span>' : '')
              + '<span>' + x.x + '</span></div>';
       }).join('');
-      html += '<li class="' + (e.fix ? 'fix' : '') + '">'
+      html += '<li class="' + (e.fix ? 'fix' : '') + '" data-i="' + i + '">'
             + '<p class="tl-t">' + e.t + '</p>'
             + '<p class="tl-h">' + e.h + '</p>'
             + '<p class="tl-d">' + e.d + '</p>'
-            + '<div class="strip">' + strip + '</div>'
-            + '<p class="swipe" hidden>← 左右滑动看更多</p>'
+            + (strip ? '<div class="strip">' + strip + '</div>'
+                     + '<p class="swipe" hidden>← 左右滑动看更多</p>' : '')
+            + '<div class="tl-more"></div>'
             + '</li>';
     });
     ol.innerHTML = html;
@@ -1104,6 +1119,37 @@
     openTarget();
     sync();
     pick();
+  })();
+
+  // Runs after structureSections, not inside the timeline IIFE: until the
+  // sections are wrapped in <details>, "#sec-todo figure" matches nothing
+  // because #sec-todo is still a bare heading with no children.
+  (function absorbIntoTimeline() {
+    var ol = document.getElementById('tl');
+    if (!ol) return;
+    // Move the rest of the page into the slot it belongs to. Moving live nodes
+    // rather than splicing HTML strings: the string surgery broke this file
+    // twice, and appendChild cannot produce a syntax error.
+    TL.forEach(function (e, i) {
+      if (!e.grab) return;
+      var box = ol.querySelector('li[data-i="' + i + '"] .tl-more');
+      if (!box) return;
+      e.grab.forEach(function (sel) {
+        [].forEach.call(document.querySelectorAll(sel), function (n) { box.appendChild(n); });
+      });
+    });
+
+    // Everything now lives on the spine, so the section / group / rail
+    // machinery has nothing left to organise.
+    ['#sec-list', '#sec-food', '#sec-again', '#sec-more', '#sec-spa', '#sec-todo', '#sec-trap']
+      .forEach(function (sel) { var n = document.querySelector(sel); if (n) n.remove(); });
+    [].forEach.call(document.querySelectorAll('section.grp'), function (g) {
+      if (!g.querySelector('details.sec')) g.remove();
+    });
+    ['.rail', '.toc', '#sec-ctl'].forEach(function (sel) {
+      var n = document.querySelector(sel); if (n) n.remove();
+    });
+
   })();
 
   // Live prices, written hourly by the Playwright job. Everything here is
