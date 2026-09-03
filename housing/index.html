@@ -29,8 +29,14 @@
   .chips { display: flex; flex-wrap: wrap; gap: 6px; }
   /* The city row is the picker: a 362-entry <select> is nobody's idea of a
      control. Chips show the province you are in, the map does the rest. */
-  .citychips { margin: .2rem 0 1rem; }
-  .citychips .chip { font-size: 12px; padding: 4px 10px; }
+  /* One line, scrolled sideways: twenty-four cities wrapped into five rows
+     stopped looking like a control and started looking like a word list. */
+  .citychips { margin: .2rem 0 1rem; flex-wrap: nowrap; overflow-x: auto;
+    -webkit-overflow-scrolling: touch; scrollbar-width: thin; padding-bottom: 4px;
+    scroll-snap-type: x proximity; }
+  .citychips::-webkit-scrollbar { height: 5px; }
+  .citychips::-webkit-scrollbar-thumb { background: var(--line); border-radius: 3px; }
+  .citychips .chip { font-size: 12px; padding: 4px 10px; flex: 0 0 auto; scroll-snap-align: start; }
   .chip { font: inherit; font-size: 13px; color: var(--ink-2); background: var(--card);
     border: 1px solid var(--line); border-radius: 999px; padding: 5px 13px; cursor: pointer;
     box-shadow: var(--shadow-1); }
@@ -226,11 +232,13 @@
   <p class="hint" id="cp-pick-label">当前：—</p>
   <div class="chips citychips" id="cp-cities"></div>
 
-  <div class="keys" id="cp-trend"></div>
 
   <div class="legend" id="cp-line-legend"></div>
   <div class="lwc" id="cp-line" role="img" aria-label="主图为选中城市的挂牌均价（右轴）与省、全国中位数（左轴），副图为同比涨跌，红涨绿跌。"></div>
   <p class="hint" id="cp-line-note"></p>
+
+  <div class="keys" id="cp-trend"></div>
+
 
   <h2 id="sec1" data-rail="怎么读">读这张图要知道的三件事</h2>
   <p><b>同比不是房价，是变化速度。</b>连续几个月 −3% 意味着一直在跌，不是跌了 3%。想看累计跌幅要看那条折线走了多久、走了多深。</p>
