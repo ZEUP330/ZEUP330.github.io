@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>长沙 41 小时：松弛版 / 暴走版</title>
+<title>长沙 41 小时：全程时间轴</title>
 <meta name="description" content="按周五 23:28 抵达、周日 18:00 离开排的长沙行程：时间预算、地理关系图、住哪、两种节奏的时间表与避坑。">
 <link rel="stylesheet" href="/assets/theme.css">
 <style>
@@ -123,6 +123,46 @@
   td.up { color: var(--ok); }
   td.down { color: var(--warn); }
 
+  /* Vertical spine, one entry per slot. The strip inside each entry scrolls
+     sideways with snap points so photos and detail cards live at the time they
+     belong to instead of in a gallery somewhere else on the page. */
+  ol.tl { list-style: none; margin: 1.25rem 0 0; padding: 0 0 0 1.6rem;
+    border-left: 2px solid var(--line); }
+  ol.tl > li { position: relative; padding: 0 0 1.9rem; }
+  ol.tl > li::before { content: ''; position: absolute; left: -2.05rem; top: .42rem;
+    width: 11px; height: 11px; border-radius: 50%; background: var(--bg);
+    border: 2px solid var(--ink-3); }
+  ol.tl > li.fix::before { border-color: var(--accent); background: var(--accent); }
+  ol.tl > li.day { padding-top: .3rem; }
+  ol.tl > li.day::before { width: 0; height: 0; border: 0; }
+  .tl-day { font-size: 13px; font-weight: 500; color: var(--ink-3); letter-spacing: .04em;
+    border-bottom: 1px solid var(--line); padding-bottom: .3rem; margin: .5rem 0 1rem; }
+  .tl-t { font-size: 13px; font-variant-numeric: tabular-nums; color: var(--ink-3); }
+  ol.tl > li.fix .tl-t { color: var(--accent); font-weight: 500; }
+  .tl-h { font-size: 15px; font-weight: 500; margin: .1rem 0 .2rem; }
+  .tl-d { font-size: 13px; color: var(--ink-2); margin: 0 0 .6rem; }
+  .strip { display: flex; gap: 8px; overflow-x: auto; scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch; scrollbar-width: none; padding-bottom: 2px; }
+  .strip::-webkit-scrollbar { display: none; }
+  .strip > * { flex: 0 0 auto; scroll-snap-align: start; }
+  .strip img { width: 208px; height: 140px; object-fit: cover; border-radius: 10px;
+    border: 1px solid var(--line); display: block; }
+  .strip .card { width: 208px; min-height: 140px; border-radius: 10px; border: 1px solid var(--line);
+    background: var(--card); padding: .6rem .7rem; font-size: 12px; color: var(--ink-2);
+    line-height: 1.6; display: flex; flex-direction: column; }
+  .strip .card b { color: var(--ink); font-size: 13px; display: block; margin-bottom: .25rem; }
+  .strip .card .big { font-size: 21px; font-weight: 500; color: var(--ink);
+    font-variant-numeric: tabular-nums; margin: auto 0 .1rem; }
+  .strip .card.warn { border-color: var(--warn); }
+  .strip .card.ok { border-color: var(--ok); }
+  .swipe { font-size: 11px; color: var(--ink-3); margin: .3rem 0 0; }
+  @media (max-width: 640px) {
+    ol.tl { padding-left: 1.3rem; }
+    ol.tl > li::before { left: -1.75rem; }
+    .strip img, .strip .card { width: 176px; }
+    .strip img { height: 120px; }
+  }
+
   .rules { display: flex; flex-wrap: wrap; gap: 7px; margin: 0 0 1rem; }
   .rule { font-size: 12px; border: 1px solid currentColor; border-radius: 999px; padding: 2px 11px; }
   .rule.ok { color: var(--ok); }
@@ -233,7 +273,6 @@
   .alert.warn { border-left-color: var(--warn); }
   .alert.ok { border-left-color: var(--ok); }
 
-  .modes { display: flex; gap: 8px; margin: 1.25rem 0 .5rem; flex-wrap: wrap; }
   .mode { font: inherit; font-size: 14px; color: var(--ink-2); background: var(--card);
     border: 1px solid var(--line); border-radius: 999px; padding: 6px 16px; cursor: pointer; box-shadow: var(--shadow-1); }
   .mode[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
@@ -287,7 +326,7 @@
   <p class="back"><a href="../">← 首页</a></p>
   <h1>长沙 41 小时</h1>
   <p class="lede">车票定死了两头：周五 23:28 到，周日 18:00 走。41 小时里扣掉睡觉和通勤，真正能用的<span class="hl">大约 22 小时，而且只有周六是完整的一天</span>。下面全部按这个约束倒推。</p>
-  <p>周五 23:28 到长沙南，周日 18:00 从长沙南走。默认给的是<b>松弛版</b>：一天只排一件必须做的事，其余时间用来坐着。想赶满可以切到暴走版。</p>
+  <p>周五 23:28 到长沙南，周日 18:00 从长沙南走。酒店已定、路线已定 —— 下面是<b>确定的全程时间轴</b>，每一格向左滑看图和细节。</p>
 
   <figure class="overview">
     <svg viewBox="0 0 700 430" role="img" aria-label="全页总览图：上方是从周五 23:28 到周日 18:00 的时间轴，标出深夜打车、周六整天和周日 16:30 死线；中间是住哪家、去哪、吃什么、要预约四张卡；下方是下雨和预算两个备用分支。每张卡可点击跳到对应章节。">
@@ -490,13 +529,9 @@
   <ul class="todo" id="todo"></ul>
   <p class="hint">清单会跟着上面的节奏切换：松弛版不去博物院，就不用熬夜抢预约。勾选状态存在本机浏览器里。</p>
 
-  <h2 id="sec-plan">时间表</h2>
-  <div class="modes" id="modes">
-    <button class="mode" type="button" data-m="chill" aria-pressed="true">松弛版</button>
-    <button class="mode" type="button" data-m="packed" aria-pressed="false">暴走版</button>
-  </div>
-  <p class="hint" id="mode-note"></p>
-  <div id="sched"></div>
+  <h2 id="sec-plan">全程时间轴</h2>
+  <p class="hint">从虎门发车到回到虎门，每一格向左滑可以看图和细节。所有安排已定，不再有备选版本。</p>
+  <ol class="tl" id="tl"></ol>
 
   <h2 id="sec-again">来过两次了，还剩什么</h2>
   <figure class="photo gal">
@@ -781,71 +816,115 @@
 
 <script>
 (function () {
-  var SCHED = {
-    chill: {
-      note: '两天只去三个地方，其余时间用来坐着。周六去洋湖两座美术馆（免费、人少、室内），周日就在住处附近晃。',
-      days: [
-        { h: '周五 9/4 · 落地就睡', rows: [
-          ['23:28', '抵长沙南', 'G6026，虎门 20:15 出发', 1],
-          ['23:35', '网约车直接回酒店', '地铁已停运。别安排夜宵，明天不设闹钟才是重点', 0],
-          ['00:10', '睡', '这一晚不产出任何行程，是松弛版的前提', 0]
-        ] },
-        { h: '周六 9/5 · 一件正事', rows: [
-          ['10:00', '自然醒', '不设闹钟。醒了再说', 0],
-          ['11:00', '楼下嗦碗粉', '肆姐面粉馆、杨裕兴、甘长顺这类，本地人早午饭', 0],
-          ['12:30', '随便一家茶颜悦色', '市区几百家店，看到就进，不为它走路', 0],
-          ['13:30', '洋湖两座美术馆', '李自健免费领票，谢子龙一楼免费，湖边草坪能躺。<b>下雨照去</b>——两馆都是室内，反而是雨天最优解', 1],
-          ['16:30', '湖边或咖啡馆坐着', '这段就是空的，不安排', 0],
-          ['18:30', '回城吃晚饭', '不排队的本地小馆。想吃费大厨就提前两小时取号', 0],
-          ['20:30', '湘江边散步', '江风比太平街的人流舒服。太平街想去就走一段，不必挤到底', 0]
-        ] },
-        { h: '周日 9/6 · 半天，别走远', rows: [
-          ['09:30', '起床，慢慢收拾', '行李寄存前台', 0],
-          ['10:30', '早午餐 + 咖啡', '潮宗街、都正街这类老街，咖啡馆密度高、人不多', 0],
-          ['12:30', '就近逛街买手信', '黄兴路步行街。文和友只逛不吃的话一楼直接进，不用排队', 0],
-          ['14:30', '泡脚 或 找家店坐到走', '行李寄前台。足浴店能坐三四小时不赶人，正好填掉退房后的空窗', 0],
-          ['16:30', '出发去长沙南', '五一广场 2 号线直达约 25 分 + 安检。留足 1.5 小时', 1],
-          ['18:00', 'G6007 发车', '20:25 到虎门', 1]
-        ] }
-      ]
-    },
-    packed: {
-      note: '把能塞的都塞进去。要抢湖南博物院预约、要爬岳麓山、周日还要赶橘子洲。适合体力好且不介意排队的。',
-      days: [
-        { h: '周五 9/4 · 落地', rows: [
-          ['23:28', '抵长沙南', 'G6026，虎门 20:15 出发', 1],
-          ['23:35', '网约车去酒店', '地铁已停运', 0],
-          ['00:00', '放行李，出门吃夜宵', '坡子街、冬瓜山通宵。口味虾、嗦螺', 0]
-        ] },
-        { h: '周六 9/5 · 唯一的整天', rows: [
-          ['09:00', '湖南博物院', '9:00 开馆，16:00 停止入馆。马王堆是主线，2.5–3 小时', 1],
-          ['12:00', '午餐', '费大厨 / 笨萝卜 / 炊烟，先在小程序取号', 0],
-          ['14:00', '岳麓山 + 岳麓书院', '5–10 月书院 17:30 停售、18:00 闭馆，别拖。<b>下雨换洋湖两馆或滨江文化园</b>，都是室内且免费', 1],
-          ['17:00', '爱晚亭 → 下山', '步行 40 分钟或坐索道', 0],
-          ['18:30', '过江回市区晚饭', '江边看落日', 0],
-          ['20:00', '五一广场 · 太平街 · IFS 楼顶', 'KAWS 雕塑在顶楼', 0]
-        ] },
-        { h: '周日 9/6 · 半天且要准时', rows: [
-          ['09:00', '橘子洲', '免费需预约，2 号线直达，来回 1.5–2 小时。<b>下雨改滨江文化园</b>，一个片区四个馆全室内', 1],
-          ['11:30', '坡子街午餐 · 火宫殿', '臭豆腐、糖油粑粑、姊妹团子', 0],
-          ['13:30', '超级文和友 或 黄兴路', '只逛不吃就一楼进、扫码买小吃，不用取号；想坐下吃再用小程序排', 0],
-          ['16:30', '出发去长沙南', '2 号线 25 分 + 安检，留足 1.5 小时', 1],
-          ['18:00', 'G6007 发车', '20:25 到虎门', 1]
-        ] }
-      ]
-    }
-  };
+  // One decided plan on a vertical spine. Each slot owns its own images and
+  // detail cards in a sideways strip, so a photo sits at the time it matters
+  // rather than in a gallery elsewhere on the page.
+  var C = 'https://upload.wikimedia.org/wikipedia/commons/thumb/';
+  var T = 'https://ak-d.tripcdn.com/images/';
+  var TL = [
+    { day: '周五 9/4' },
+    { t: '20:15', fix: 1, h: '虎门上车', d: 'G6026 · 二等座',
+      s: [{ c: 'ok', b: '车程', big: '3 小时 13 分', x: '20:15 → 23:28' }] },
+    { t: '23:28', fix: 1, h: '抵长沙南', d: '出站直接走网约车通道，别下地铁',
+      s: [{ i: C + '7/76/Concourse_of_South_Railway_Station%2C_Changsha_Metro_%28Aug_2%2C_2024%29.jpg/960px-Concourse_of_South_Railway_Station%2C_Changsha_Metro_%28Aug_2%2C_2024%29.jpg', a: '长沙南地铁站厅' },
+           { i: C + '6/6d/Line_2_train_to_West_Meixi_Lake.jpg/960px-Line_2_train_to_West_Meixi_Lake.jpg', a: '2 号线开往梅溪湖西' },
+           { c: 'warn', b: '地铁已停', x: '往市区（梅溪湖西方向）末班 <b>23:03</b>，你到站时已开走 25 分钟' },
+           { c: '', b: '打车', big: '约 ¥40', x: '20 分钟到酒店' }] },
+    { t: '00:10', h: '入住奢酒店', d: '24 小时前台，零点后到店没问题',
+      s: [{ i: T + '1mc2w12000h6972lfB564_R_960_660_R5_D.jpg', a: '异国印象·奢酒店' },
+           { i: T + '1mc2012000n02ehek4F5C_R_339_206_R5_D.jpg', a: '酒店公共区域' },
+           { c: '', b: '地址', x: '芙蓉区五一大道 127 号<br>出门即五一广场地铁站' },
+           { c: 'ok', b: '房间', x: 'Dusk Double Bed Room<br>4–9 层 · 1 张大床 · 含早' }] },
+
+    { day: '周六 9/5 · 唯一完整的一天' },
+    { t: '10:00', h: '自然醒', d: '不设闹钟。这是松弛版的前提，不是懒',
+      s: [{ c: 'ok', b: '不排任何事', x: '前一晚零点才入住，硬起早会毁掉整个白天' }] },
+    { t: '11:00', h: '楼下嗦粉', d: '长沙人的早饭是米粉',
+      s: [{ i: C + 'f/f2/Changsha-style_mixed_rice_noodles_before_stirring_at_Baman_%2820211225175333%29.jpg/960px-Changsha-style_mixed_rice_noodles_before_stirring_at_Baman_%2820211225175333%29.jpg', a: '拌之前' },
+           { i: C + '4/41/Changsha-style_mixed_rice_noodles_after_stirring_at_Baman_%2820211225175628%29.jpg/960px-Changsha-style_mixed_rice_noodles_after_stirring_at_Baman_%2820211225175628%29.jpg', a: '拌之后' },
+           { c: '', b: '怎么点', x: '圆粉 / 扁粉 + 码子（浇头）<br>加量说「重挑」，减量「轻挑」' }] },
+    { t: '12:30', h: '茶颜悦色', d: '看到就进，不为它走路',
+      s: [{ i: C + '2/27/Sexy_Tea.jpg/960px-Sexy_Tea.jpg', a: '茶颜悦色门店' },
+           { i: C + 'b/bb/Cha_Yan_Yue_Se%2C_Changsha%2C_China_2021122603.jpg/960px-Cha_Yan_Yue_Se%2C_Changsha%2C_China_2021122603.jpg', a: '排队的人群' },
+           { c: 'warn', b: '别排队', x: '市区几百家店，隔两百米那家通常没人。广东也有门店了' }] },
+    { t: '13:30', fix: 1, h: '洋湖两座美术馆', d: '李自健免费领票，谢子龙一楼免费',
+      s: [{ c: 'ok', b: '下雨照去', x: '两馆都是室内，反而是雨天的最优解' },
+           { c: '', b: '交通', big: '30 分', x: '地铁 3 号线洋湖湿地站' },
+           { c: '', b: '要提前约', x: '李自健免费不免票，公众号领<br>周一闭馆（你是周六，不影响）' }] },
+    { t: '16:30', h: '湖边或咖啡馆坐着', d: '这一格是空的，不安排',
+      s: [{ c: 'ok', b: '留白', x: '两天只去三个地方。第三次来长沙，坐着比再刷一个景点值' }] },
+    { t: '18:30', h: '回城吃晚饭', d: '不排队的本地小馆',
+      s: [{ i: C + '3/36/Changsha-style_Stinky_Tofu_at_Huogongdian_%2820180222183104%29.jpg/960px-Changsha-style_Stinky_Tofu_at_Huogongdian_%2820180222183104%29.jpg', a: '长沙臭豆腐' },
+           { c: 'warn', b: '想吃费大厨', x: '周末等 1–2 小时。要去就提前两小时在小程序取号，边逛边等' },
+           { c: '', b: '不想等', x: '盛香亭基本不等；笨萝卜太平街店约 1 小时，走过去 10 分钟' }] },
+    { t: '20:30', h: '湘江边散步', d: '不去挤太平街',
+      s: [{ i: C + 'a/ab/Night_view_of_Xiang_River_in_Changsha_2025031305.jpg/960px-Night_view_of_Xiang_River_in_Changsha_2025031305.jpg', a: '湘江夜景' },
+           { i: C + '0/03/Changsha_IFS_at_night.jpg/960px-Changsha_IFS_at_night.jpg', a: 'IFS 夜景' },
+           { c: 'warn', b: '没有烟花', x: '橘子洲周末焰火早已停办，只在元旦除夕国庆这类节日放' }] },
+
+    { day: '周日 9/6 · 半天，且必须准时' },
+    { t: '09:30', h: '起床，行李寄前台', d: '奢酒店免费寄存，寄到 16:30',
+      s: [{ c: 'ok', b: '这一条最关键', x: '12:00 退房到 16:30 出发有四个半小时，行李不寄就得拖着走' }] },
+    { t: '10:30', h: '潮宗街 / 都正街', d: '早午餐加咖啡，老街咖啡馆密度高、人少',
+      s: [{ c: '', b: '为什么是这里', x: '不是传统景点，前两次大概率漏掉了；离酒店步行 15 分钟内' }] },
+    { t: '12:30', h: '黄兴路买手信', d: '文和友只逛不吃的话，一楼直接进',
+      s: [{ i: C + '5/5f/Changsha_Wenheyou%2C_21_May_2021C.jpg/960px-Changsha_Wenheyou%2C_21_May_2021C.jpg', a: '超级文和友外观' },
+           { i: C + '2/2a/Interior_of_Changsha_Wenheyou_2021052113.jpg/960px-Interior_of_Changsha_Wenheyou_2021052113.jpg', a: '文和友内部' },
+           { c: 'ok', b: '0 排队', x: '一楼进去扫码买小吃<b>不用领桌号</b>。几千桌的队是「落座点菜」那条' }] },
+    { t: '14:30', h: '泡脚', d: '供销大厦楼上 11 / 18 / 20 层都是足道店',
+      s: [{ c: 'ok', b: '足享计划', big: '¥80', x: '供销大厦 18 楼 · 1,726 条评论 · 地铁 5 号口' },
+           { c: '', b: '康毅足道', big: '¥152', x: '评论最多 1,817 条 · 有茶点和影视房' },
+           { c: '', b: '为什么排这里', x: '能坐三四小时不赶人，正好填掉退房后的空窗' }] },
+    { t: '16:30', fix: 1, h: '出发去长沙南', d: '2 号线直达 25 分 + 进站安检',
+      s: [{ i: C + '7/70/Entrance_2_of_Wuyi_Square_Station.jpg/960px-Entrance_2_of_Wuyi_Square_Station.jpg', a: '五一广场站出口' },
+           { c: 'warn', b: '留足', big: '1.5 小时', x: '别卡点。这条线是整趟唯一不能碰的' }] },
+    { t: '18:00', fix: 1, h: 'G6007 发车', d: '20:25 回到虎门',
+      s: [{ c: 'ok', b: '在长沙总计', big: '41 小时', x: '扣掉睡觉和通勤，真正玩了约 22 小时' }] }
+  ];
+
+  (function timeline() {
+    var ol = document.getElementById('tl');
+    if (!ol) return;
+    var html = '';
+    TL.forEach(function (e) {
+      if (e.day) { html += '<li class="day"><p class="tl-day">' + e.day + '</p></li>'; return; }
+      var strip = (e.s || []).map(function (x) {
+        if (x.i) return '<img src="' + x.i + '" alt="' + x.a + '" referrerpolicy="no-referrer" onerror="this.hidden=true">';
+        return '<div class="card ' + (x.c || '') + '"><b>' + x.b + '</b>'
+             + (x.big ? '<span class="big">' + x.big + '</span>' : '')
+             + '<span>' + x.x + '</span></div>';
+      }).join('');
+      html += '<li class="' + (e.fix ? 'fix' : '') + '">'
+            + '<p class="tl-t">' + e.t + '</p>'
+            + '<p class="tl-h">' + e.h + '</p>'
+            + '<p class="tl-d">' + e.d + '</p>'
+            + '<div class="strip">' + strip + '</div>'
+            + '<p class="swipe" hidden>← 左右滑动看更多</p>'
+            + '</li>';
+    });
+    ol.innerHTML = html;
+
+    // Only claim it swipes when it actually does: at desktop width three cards
+    // fit and the hint would be a lie.
+    var sync = function () {
+      [].forEach.call(ol.querySelectorAll('li'), function (li) {
+        var st = li.querySelector('.strip'), tip = li.querySelector('.swipe');
+        if (st && tip) tip.hidden = st.scrollWidth <= st.clientWidth + 4;
+      });
+    };
+    sync();
+    window.addEventListener('resize', sync);
+    [].forEach.call(ol.querySelectorAll('.strip img'), function (im) {
+      im.addEventListener('load', sync);
+    });
+  })();
 
   var TASKS = [
-    { id: 'hotel', t: '订五一广场／黄兴路一带的酒店', w: '确认 24 小时前台（你零点后到店）和周日下午的行李寄存', due: '越早越便宜', modes: ['chill', 'packed'] },
-    { id: 'taxi', t: '装好网约车 App 并绑支付', w: '周五 23:28 落地时地铁已停运，出站直接叫车', due: '出发前', modes: ['chill', 'packed'] },
-    { id: 'lzj', t: '领李自健美术馆免费票', w: '公众号预约，免费不免票，周一闭馆', due: '出发前', soft: 1, modes: ['chill'] },
-    { id: 'xzl', t: '看谢子龙当期展览要不要买票', w: '一楼免费，二三楼按展收费，随展览变', due: '出发前', soft: 1, modes: ['chill'] },
-    { id: 'hnm', t: '抢湖南博物院预约', w: '每晚 20:00 放第 7 天的票，热门时段当晚抢空', due: '今晚就查', modes: ['packed'] },
-    { id: 'ylsy', t: '约岳麓书院门票 40 元', w: '微信"岳麓书院"公众号，最多提前 3 天，9/2 起可约周六', due: '9/2 起', modes: ['packed'] },
-    { id: 'ylsn', t: '约岳麓山入园（免费）', w: '与书院是两个独立入口', due: '9/2 起', modes: ['packed'] },
-    { id: 'juzi', t: '约橘子洲入园（免费）', w: '周日上午场', due: '出发前', modes: ['packed'] },
-    { id: 'queue', t: '存好费大厨／炊烟的小程序', w: '到市区先取号，边逛边等', due: '出发前', soft: 1, modes: ['packed'] }
+    { id: 'lzj', t: '领李自健美术馆免费票', w: '公众号预约，免费不免票。周六去，周一闭馆不影响', due: '出发前' },
+    { id: 'xzl', t: '看谢子龙当期展览要不要买票', w: '一楼免费，二三楼按展收费，随展览变', due: '出发前' },
+    { id: 'taxi', t: '确认网约车 App 能用', w: '周五 23:28 落地时地铁已停运，出站直接叫车', due: '出发前' },
+    { id: 'store', t: '跟酒店确认行李寄存到 16:30', w: '周日 12:00 退房到 16:30 出发的四个半小时，全靠这条', due: '入住时问' },
+    { id: 'bath', t: '问清房型卫生间是不是透明门', w: '有住客为此打了 8.5 分，介意就提前换房型', due: '到店前' }
   ];
 
   // Group the sections the way printed travel guides do - Wikivoyage's
@@ -1090,18 +1169,15 @@
       });
   })();
 
-  var KEY = 'changsha-todo', MKEY = 'changsha-mode';
+  var KEY = 'changsha-todo';
   var done = {};
   try { done = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { done = {}; }
-  var mode = 'chill';
-  try { mode = localStorage.getItem(MKEY) || 'chill'; } catch (e) { /* private mode */ }
-  if (!SCHED[mode]) mode = 'chill';
 
   function renderTodo() {
     var ul = document.getElementById('todo');
     ul.innerHTML = '';
     TASKS.forEach(function (task) {
-      var on = task.modes.indexOf(mode) > -1;
+      var on = true;
       var li = document.createElement('li');
       li.className = (done[task.id] ? 'done ' : '') + (on ? '' : 'off');
       var box = document.createElement('input');
@@ -1125,35 +1201,6 @@
     });
   }
 
-  function renderSched() {
-    var s = SCHED[mode];
-    document.getElementById('mode-note').textContent = s.note;
-    var html = '';
-    s.days.forEach(function (d) {
-      html += '<h3>' + d.h + '</h3><div class="day">';
-      d.rows.forEach(function (r) {
-        html += '<div class="slot' + (r[3] ? ' fix' : '') + '"><span class="t">' + r[0] + '</span>'
-          + '<span class="w"><b>' + r[1] + '</b><em>' + r[2] + '</em></span></div>';
-      });
-      html += '</div>';
-    });
-    document.getElementById('sched').innerHTML = html;
-  }
-
-  [].forEach.call(document.querySelectorAll('.mode'), function (b) {
-    b.setAttribute('aria-pressed', String(b.dataset.m === mode));
-    b.addEventListener('click', function () {
-      mode = b.dataset.m;
-      try { localStorage.setItem(MKEY, mode); } catch (e) { /* private mode */ }
-      [].forEach.call(document.querySelectorAll('.mode'), function (o) {
-        o.setAttribute('aria-pressed', String(o.dataset.m === mode));
-      });
-      renderSched();
-      renderTodo();
-    });
-  });
-
-  renderSched();
   renderTodo();
 })();
 </script>
