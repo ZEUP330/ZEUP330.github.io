@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>周会的元数据：210 期，四年半，三个从没被填过的段落</title>
+<meta name="description" content="一个后端团队 210 期周会纪要的元数据分析：模板八个段落，三个四年半从没被填过；一半字数落在同一段里；207 期开在周五。附 84 条「本周话题」破冰问题全清单，逐条带日期。">
+<link rel="stylesheet" href="/assets/theme.css">
+<style>
+  :root { --warn: #eda100; --ok: #12855c; --danger: #cf3520; --ghost: #9a9aa0; }
+  @media (prefers-color-scheme: dark) {
+    :root { --warn: #fac775; --ok: #34c48a; --danger: #ff6b57; --ghost: #77777d; }
+  }
+
+  main { max-width: 780px; margin: 0 auto; }
+
+  figure { margin: 1.4rem 0; }
+  figure svg { width: 100%; height: auto; display: block; }
+  figure svg text { font-family: var(--sans); }
+  figcaption { font-size: 12px; color: var(--ink-3); margin-top: .55rem; line-height: 1.65; }
+
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin: 1.1rem 0; }
+
+  .note { background: var(--card); border: 1px solid var(--line); border-radius: var(--r-sm);
+    padding: .85rem 1rem; font-size: 13.5px; color: var(--ink-2); box-shadow: var(--shadow-1);
+    margin: 1.2rem 0; }
+  .note b { color: var(--ink); }
+
+  ul.links { padding-left: 1.1rem; margin: 0; }
+  ul.links li { color: var(--ink-3); font-size: 14px; margin-bottom: .55rem; }
+  .chips { display: flex; flex-wrap: wrap; gap: 7px; margin: 1rem 0 .6rem; }
+  .chip { font: inherit; font-size: 12.5px; color: var(--ink-2); background: var(--bg-2);
+    border: 1px solid var(--line-2); border-radius: 999px; padding: 4px 13px; cursor: pointer;
+    transition: color var(--t) var(--ease), border-color var(--t) var(--ease), background var(--t) var(--ease); }
+  .chip:hover { border-color: var(--ink-3); }
+  .chip.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+  ol.tlist { list-style: none; padding: 0; margin: .4rem 0 0; counter-reset: t; }
+  ol.tlist li { display: grid; grid-template-columns: 5.6rem 1fr; gap: 2px 14px;
+    padding: .62rem 0; border-top: 1px solid var(--line-2); align-items: baseline; }
+  ol.tlist li.off { display: none; }
+  ol.tlist .d { font-size: 12.5px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+  ol.tlist .q { font-size: 14.5px; color: var(--ink); line-height: 1.6; }
+  ol.tlist .c { grid-column: 2; font-size: 11.5px; color: var(--ink-3); }
+  ol.tlist .c i { font-style: normal; display: inline-block; width: 7px; height: 7px;
+    border-radius: 2px; margin-right: 5px; vertical-align: 1px; }
+  @media (max-width: 620px) {
+    ol.tlist li { grid-template-columns: 1fr; }
+    ol.tlist .c { grid-column: 1; }
+  }
+  h2 { scroll-margin-top: 70px; }
+</style>
+<link rel="stylesheet" href="/assets/statusbar.css">
+<link rel="stylesheet" href="/assets/rail.css">
+<script src="/assets/statusbar.js" defer></script>
+<script src="/assets/theme.js" defer></script>
+<script src="/assets/rail.js" defer></script>
+</head>
+<body>
+<main>
+  <p class="back"><a href="../">← 首页</a></p>
+  <h1 id="top">周会的元数据</h1>
+  <p class="lede">一个后端团队的周会纪要，2022 年 2 月开到 2026 年 8 月，210 期。前七节不看它们写了什么，只看<span class="hl">它们长什么样</span> —— 模板有几段、哪段最长、哪段从来没人填、断档发生在什么时候。结论有点扎人：八个段落里有三个，四年半一次都没被写过。最后一节是<a href="#topics">84 条「本周话题」</a>，那是开会前先聊五分钟的破冰问题。</p>
+
+  <div class="note">
+    <b>关于脱敏。</b>统计部分全是元数据：期数、日期、段落名、字符数、空段率。唯一带原文的是最后那份<a href="#topics">本周话题清单</a> —— 每期开会前先聊五分钟的破冰问题，跟业务无关，逐条核过没有人名、工单号、项目名和内部链接。不写是哪家公司哪个团队。项目进展、技术方案、个人排期这些真正的会议内容全部留在内网。
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="k">期数</div><div class="v">210</div></div>
+    <div class="stat"><div class="k">跨度</div><div class="v">238 周</div></div>
+    <div class="stat"><div class="k">开在周五</div><div class="v">207 期</div></div>
+    <div class="stat"><div class="k">全空的段落</div><div class="v">3 个</div></div>
+  </div>
+
+  <h2 id="rhythm" data-rail="节奏">一、238 周里开了 210 期</h2>
+  <p>首期 2022-02-18，末期 2026-08-28，中间横跨 238 周。这 210 期落在 209 个不同的周里（有一周开了两次），覆盖率 87.8%。</p>
+
+  <figure>
+    <div id="f-dots"></div>
+    <figcaption>每一格是一周，从 2022-02 的那一周开始按周排列，一行 53 周。实心＝这周有纪要，空心＝没有。没有纪要不等于没开会，只等于没留下页面 —— 这条限制贯穿全页。</figcaption>
+  </figure>
+
+  <p>缺的 29 周不是随机掉的。按月拆开：1 月 4 周、2 月 4 周、4 月 4 周、9 月 3 周、10 月 3 周 —— 春节、清明五一、中秋国庆三个假期段吃掉了其中 20 周，占 69%。</p>
+
+  <figure>
+    <div id="f-miss"></div>
+    <figcaption>横轴是月份，纵轴是这个月总共缺了几周（四年半累计）。3 月、8 月、11 月几乎不缺，这三个月里没有长假。</figcaption>
+  </figure>
+
+  <p>把相邻两期的间隔拉出来看，节奏比想象中硬：182 次是标准的 7 天，15 次隔两周，6 次隔三周。三周是这四年半里出现过的最长断档，一次都没有更长的。</p>
+
+  <figure>
+    <div id="f-gap"></div>
+    <figcaption>间隔＝相邻两期纪要的日期差。4 天和 6 天那三次是调会，8 天和 10 天是顺延一天。分布只有两个明显的簇：7 天，和 7 的倍数。</figcaption>
+  </figure>
+
+  <p>那 6 次三周断档全部踩在长假上：四次春节（2023-01、2024-02、2025-01、2026-02），两次中秋国庆连休（2023-09、2025-09）。会没停过，只是跟着法定假日让路。</p>
+
+  <figure>
+    <div id="f-break"></div>
+    <figcaption>六次 21 天断档的起止。四年半里断档的原因只有一个，规律到可以拿它反推假期表。</figcaption>
+  </figure>
+
+  <p>星期分布更极端：210 期里 207 期在周五，2 期周四，1 期周一。一个开了四年半的会，98.6% 的时间没有挪过窝。</p>
+
+  <figure>
+    <div id="f-dow"></div>
+    <figcaption>周五下午的周会是这类团队的默认配置：一周的活干完了，下周的活还没开始，是唯一一个「说完就能散」的时间点。</figcaption>
+  </figure>
+
+  <h2 id="tpl" data-rail="模板">二、模板活了多久</h2>
+  <p>最早三期用的是中文自由格式：日期、参会人、会议日程、个人工作总结、跟进项。从 2022-03-11 起换成固定英文模板，此后四年半基本没动过 —— 只增删了两个段落。</p>
+
+  <figure>
+    <div id="f-switch"></div>
+    <figcaption>切换发生在第 4 期。中文模板按「人」组织（谁总结、谁计划），英文模板按「事」组织（项目、线上问题、技术方案），换的不只是语言。</figcaption>
+  </figure>
+
+  <figure>
+    <div id="f-life"></div>
+    <figcaption>横条＝该段落在纪要里出现的时间跨度，右侧数字是出现期数。两处变动值得看：Current Thinking Points 只活了 19 期，Next week topic 直到 2023-12 才加进来。</figcaption>
+  </figure>
+
+  <p>Current Thinking Points 是个短命段落：2022-03-11 加上，2022-07-29 撤掉，中间出现 19 期。而这 19 期里，它的正文字数<b>全部为 0</b> —— 加了一个段落，从来没人填，半年后删掉。这是本页最短的一个故事。</p>
+
+  <h2 id="share" data-rail="篇幅">三、字都写在哪一段</h2>
+  <p>把 210 期所有段落的字符数加起来，分布极度倾斜：Member's Job Schedule 一段吃掉 48.9%，Ongoing Project Status 31.0%，Next week topic 10.9%，OKR 6.6%。四段占 97.4%，剩下四段分 2.6%。</p>
+
+  <figure>
+    <div id="f-share"></div>
+    <figcaption>字符数含表格标记，所以绝对值不等于「说了多少话」；但段与段之间的比例是可比的，因为它们用同一套表格结构。</figcaption>
+  </figure>
+
+  <p>这个分布说明周会的重心在「谁在做什么、做到哪了」。技术方案、线上问题、跨组同步这三件事加起来不到全部篇幅的 2.2% —— 它们要么在别的场合解决，要么根本没在这个会上发生。</p>
+
+  <h2 id="empty" data-rail="空段">四、三个从没被填过的段落</h2>
+  <p>把「正文少于 120 字符」判为只剩模板表头，空段率就出来了。Sync-Up &amp; Discussion：207 期，207 期空，<b>100%</b>。Live Issue：209 期里 207 期空，99.0%。Follow UP 88.9%，Technical Solutions 44.4%。</p>
+
+  <figure>
+    <div id="f-empty"></div>
+    <figcaption>阈值 120 字符是按空表格的字节数定的：一个只有表头没有行的段落约 51–81 字符。把阈值放到 120 是给「写了一句话」留余量，所以这个空段率是<b>偏低</b>的估计。</figcaption>
+  </figure>
+
+  <p>四个段落常年不填，但每周都在模板里被复制一次，跟着会议一起走了四年半。它们不消耗会议时间，消耗的是「这份纪要看起来完整」这个错觉 —— 打开一份纪要看到八个标题，实际有内容的是四个。</p>
+
+  <div class="note">
+    <b>为什么不直接删。</b>删段落要有人拍板，留段落零成本 —— 这是模板腐化的标准路径：加一段很容易（有人提一句「要不要跟一下线上问题」），删一段要有人承认它没用。Current Thinking Points 是这四年半里唯一被删掉的段落，代价是它连着 19 期完全空白，空到没法辩护。
+  </div>
+
+  <h2 id="copy" data-rail="复制">五、有一段的长度几乎不变</h2>
+  <p>Next week topic 出现了 125 期，字符数分布窄得可疑：最小 2999，四分位 2999，中位 3424，上四分位 3459，最大 3886。四分之一的期数字符数<b>完全相同</b>。</p>
+
+  <figure>
+    <div id="f-nw"></div>
+    <figcaption>一个每周重写的段落，长度应该是散的。挤在 2999–3459 这个 460 字符宽的带子里，更像是上周的清单整段复制过来、改两个字。</figcaption>
+  </figure>
+
+  <p>这不一定是坏事 —— 固定清单本来就该长得一样。但它意味着这一段承载的是「常驻待办」，不是「下周要聊的新话题」，跟段落名字承诺的东西不是一回事。</p>
+
+  <h2 id="year" data-rail="逐年">六、逐年看</h2>
+  <p>期数四年稳定在 42–47 期，2026 年到 8 月底 30 期，节奏没变。单期总字数 2023 年最高（平均 22091），之后一路降到 2025 年的 16265，2026 年回到 17541。</p>
+
+  <figure>
+    <div id="f-year"></div>
+    <figcaption>单期总字数含全部表格标记与模板本身，所以底噪不低；把它当作「这一年纪要写得细不细」的相对指标。</figcaption>
+  </figure>
+
+  <p>拆开看更清楚：Member's Job Schedule 从 2023 年的平均 12065 掉到 2025 年的 5649，砍掉一半还多；同期 Ongoing Project Status 基本没动（5273 → 5923）。缩掉的是「每个人报自己在干嘛」，保住的是「项目进展」。</p>
+
+  <figure>
+    <div id="f-two"></div>
+    <figcaption>2026 年 Member's Job Schedule 又回升到 8648，是这条曲线上唯一一次反弹，原因本页看不出来 —— 元数据能看见变化，看不见原因。</figcaption>
+  </figure>
+
+  <h2 id="end" data-rail="收束">七、能得出什么</h2>
+  <p>三条，都只从结构里来：</p>
+  <p><b>一、会议模板会腐化，而且是单向的。</b>八段里四段常年空着，四年半只删掉过一段，而那一段是因为空到 19 期一个字都没有。加段容易删段难，所以模板只会越来越长。</p>
+  <p><b>二、纪要的完整度是假象。</b>看标题数量以为覆盖了八件事，实际 97.4% 的字落在四段里。要判断一个会在讨论什么，数标题没用，得数字数。</p>
+  <p><b>三、节奏比内容稳定得多。</b>四年半、236 周、207 次周五，中位间隔 7 天。内容的篇幅涨了又跌，段落加了又删，唯一没动过的是「周五开会」这件事本身。</p>
+
+  <figure>
+    <div id="f-final"></div>
+    <figcaption>同一份模板的两种读法：左边是它声称的样子（八个平等的段落），右边是它实际的样子（四段承载内容，四段是仪式）。</figcaption>
+  </figure>
+
+  <h2 id="topics" data-rail="话题清单">八、本周话题：84 条，逐条带日期</h2>
+  <p>前面数的是形状，这一节是内容。每期纪要的第一张表，表头上挂着一句「本周话题」—— 它不是技术议题，是开会前先聊五分钟的那个破冰问题。</p>
+
+  <figure>
+    <div id="f-topicyear"></div>
+    <figcaption>按年统计有话题的期数。2023 年只有 1 次，之后沉寂了 9 个月；2024 年 8 月起才每周固定，2025 年 37 期是完整的一年。</figcaption>
+  </figure>
+
+  <p>栏目是长出来的，不是设计出来的：2023-11-17 冒过一次就没了，直到 2024-08-09 才真正立住。这跟前面那些段落的命运正好相反 —— 模板里加的段落没人填，模板外长出来的栏目反而活了两年。</p>
+
+  <figure>
+    <div id="f-topiccat"></div>
+    <figcaption>类别为按关键词归并后人工校对，边界不严格 —— 「关税对普通人的影响」既是时事也是投资，这里只归一次。</figcaption>
+  </figure>
+
+  <p>时事政策 16 条、投资理财 12 条，两类加起来占三分之一。一个做交易系统的后端团队，周五下午聊得最多的是宏观和钱，这大概不算巧合。</p>
+
+  <p>下面是全部 84 条，按时间倒序，点类别可以只看一类。</p>
+
+  <div class="chips" id="tchips"></div>
+  <ol class="tlist" id="tlist"></ol>
+
+  <div class="note">
+    <b>几条观察。</b>① 2025-07-18 到 09-19 断了两个月，是栏目立住之后唯一一次长空窗。② 只重复过一次 —— 券商被监管点名那条连挂两周（2026-06-05 / 06-12），说明出题的人基本每周都在找新题。③ 2026 年开始出现「投资日常：」「前沿科技：」「日常生活：」这类前缀，有人在给话题分类，但只坚持了半年。
+  </div>
+
+  <p class="hint">话题原文照录，只做了两处改写：2023 年那条内部技术话题改成了泛化描述，一条提到同事外号的改成「一位同事」；另外去掉了原文里的外部链接和图片。其余保持原样，包括错别字和标点。</p>
+
+  <h2 id="how" data-rail="方法">方法与局限</h2>
+  <ul class="links">
+    <li>样本：内网 wiki 上「后端」页面树下的全部年份子页，逐页取标题日期与段落结构，共 210 期，2022-02-18 至 2026-08-28。</li>
+    <li>段落识别按标题文本归一（含两处拼写变体：<code>Technical S olutions</code>、首尾多空格的 <code>Sync-Up &amp; Discussion</code>），OKR 的四个季度变体合并为一段。</li>
+    <li>字符数统计的是段落正文（含表格标记）的长度，不是发言字数；不同段落用同一套表格结构，所以段间可比、跨页面可比，绝对值不可直接理解为「说了多少」。</li>
+    <li>空段阈值取 120 字符，比实测的空表格（51–81 字符）宽，因此空段率是保守估计。</li>
+    <li>局限：没有纪要 ≠ 没开会；纪要是会后补的，篇幅反映记录习惯，不完全反映会议时长。本页不做因果推断。</li>
+    <li>本页只发布上述聚合量，原始页面内容未离开内网。</li>
+  </ul>
+
+  <footer>这是对会议记录形式的统计，不是对任何团队或个人工作的评价。所有数字为元数据聚合，不含会议内容。</footer>
+</main>
+
+<script>
+(function () {
+  var D = {"share":{"Member's Job Schedule":1839777,"Ongoing Project Status":1168347,"Next week topic":410678,"OKR":248040,"Technical Solutions":44811,"Live Issue":19245,"Follow UP":17182,"Sync-Up & Discussion":16767,"Current Thinking Points":0},
+  "empty":{"Member's Job Schedule":[0,207],"Ongoing Project Status":[0,205],"Next week topic":[0,125],"OKR":[0,207],"Technical Solutions":[92,207],"Live Issue":[207,209],"Follow UP":[184,207],"Sync-Up & Discussion":[207,207],"Current Thinking Points":[19,19]},
+  "life":{"Member's Job Schedule":["2022-03","2026-08",207],"Ongoing Project Status":["2022-03","2026-08",205],"Next week topic":["2023-12","2026-08",125],"OKR":["2022-03","2026-08",207],"Technical Solutions":["2022-03","2026-08",207],"Live Issue":["2022-02","2026-08",209],"Follow UP":["2022-03","2026-08",207],"Sync-Up & Discussion":["2022-03","2026-08",207],"Current Thinking Points":["2022-03","2022-07",19]},
+  "gaps":{"4":1,"6":2,"7":182,"8":2,"10":1,"14":15,"21":6},
+  "dow":{"Fri":207,"Thu":2,"Mon":1},
+  "perYearTotal":{"2022":[42,17838],"2023":[46,22091],"2024":[47,17677],"2025":[45,16265],"2026":[30,17541]},
+  "jobByYear":{"2022":[11718,5273],"2023":[12065,6630],"2024":[6684,5597],"2025":[5649,5923],"2026":[8648,4576]},
+  "nextweek":{"n":125,"min":2999,"p25":2999,"med":3424,"p75":3459,"max":3886},
+  "span":{"first":"2022-02-18","last":"2026-08-28","weeks":236,"n":210}};
+
+  // 210 meeting dates, "YY-MM-DD", the only per-meeting data on this page.
+  var ALL_DATES = "22-02-18,22-02-25,22-03-04,22-03-11,22-03-18,22-03-25,22-04-01,22-04-08,22-04-15,22-04-22,22-04-29,22-05-13,22-05-20,22-05-27,22-06-02,22-06-10,22-06-17,22-06-24,22-07-01,22-07-08,22-07-22,22-07-29,22-08-05,22-08-12,22-08-19,22-08-26,22-09-02,22-09-09,22-09-16,22-09-23,22-09-30,22-10-14,22-10-21,22-10-28,22-11-04,22-11-11,22-11-18,22-11-25,22-12-02,22-12-09,22-12-16,22-12-30,23-01-06,23-01-13,23-02-03,23-02-10,23-02-17,23-02-24,23-03-03,23-03-10,23-03-17,23-03-24,23-03-31,23-04-07,23-04-14,23-04-21,23-04-28,23-05-12,23-05-19,23-05-26,23-06-02,23-06-09,23-06-16,23-06-30,23-07-07,23-07-14,23-07-21,23-07-28,23-08-04,23-08-11,23-08-18,23-08-25,23-09-01,23-09-08,23-09-15,23-09-22,23-10-13,23-10-20,23-10-27,23-11-03,23-11-10,23-11-17,23-11-24,23-12-01,23-12-08,23-12-15,23-12-22,23-12-29,24-01-05,24-01-12,24-01-19,24-01-26,24-02-02,24-02-23,24-03-01,24-03-08,24-03-15,24-03-22,24-03-29,24-04-12,24-04-19,24-04-26,24-05-10,24-05-17,24-05-24,24-05-31,24-06-07,24-06-14,24-06-21,24-06-28,24-07-05,24-07-12,24-07-22,24-07-26,24-08-02,24-08-09,24-08-16,24-08-23,24-08-30,24-09-06,24-09-13,24-09-20,24-09-27,24-10-11,24-10-18,24-10-25,24-11-01,24-11-08,24-11-15,24-11-22,24-11-29,24-12-06,24-12-13,24-12-20,24-12-27,25-01-03,25-01-10,25-01-17,25-02-07,25-02-14,25-02-21,25-02-28,25-03-07,25-03-14,25-03-21,25-03-28,25-04-11,25-04-18,25-04-25,25-05-09,25-05-15,25-05-23,25-05-30,25-06-06,25-06-20,25-06-27,25-07-04,25-07-11,25-07-18,25-07-25,25-08-01,25-08-08,25-08-15,25-08-22,25-08-29,25-09-05,25-09-12,25-09-19,25-09-26,25-10-17,25-10-24,25-10-31,25-11-07,25-11-14,25-11-21,25-11-28,25-12-05,25-12-12,25-12-19,25-12-26,26-01-09,26-01-16,26-01-23,26-01-30,26-02-06,26-02-27,26-03-06,26-03-13,26-03-20,26-03-27,26-04-03,26-04-10,26-04-17,26-04-24,26-05-08,26-05-15,26-05-22,26-05-29,26-06-05,26-06-12,26-06-26,26-07-03,26-07-10,26-07-17,26-07-24,26-07-31,26-08-07,26-08-14,26-08-21,26-08-28".split(',').map(function (d) { return '20' + d; });
+
+  var esc = function (s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;'); };
+
+  // One horizontal-bar renderer for the whole page.
+  function bars(id, rows, opt) {
+    opt = opt || {};
+    var host = document.getElementById(id); if (!host) return;
+    var max = opt.max || Math.max.apply(null, rows.map(function (r) { return Math.abs(r.v || 0); })) || 1;
+    var W = 760, padL = opt.padL || 200, padR = 12, tip = opt.tip || 96;
+    var rh = rows.some(function (r) { return r.s; }) ? 40 : 30;
+    var track = W - padL - padR - tip;
+    var H = rows.length * rh + 8;
+    var o = ['<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + esc(opt.alt || '') + '">'];
+    if (opt.title) o.push('<title>' + esc(opt.title) + '</title>');
+    rows.forEach(function (r, i) {
+      var y = i * rh + 4;
+      o.push('<text x="0" y="' + (y + 15) + '" font-size="12.5" fill="' + (r.mute ? 'var(--ink-3)' : 'var(--ink-2)') + '">' + esc(r.name) + '</text>');
+      var w = Math.max(1.5, (Math.abs(r.v) / max) * track);
+      o.push('<rect x="' + padL + '" y="' + (y + 3) + '" width="' + w + '" height="17" rx="4" fill="' + r.c + '" opacity="' + (r.dim ? .35 : .88) + '"/>');
+      o.push('<text x="' + (padL + w + 8) + '" y="' + (y + 17) + '" font-size="12.5" font-weight="600" fill="var(--ink)">' + esc(r.t) + '</text>');
+      if (r.s) o.push('<text x="' + padL + '" y="' + (y + 34) + '" font-size="11" fill="var(--ink-3)">' + esc(r.s) + '</text>');
+    });
+    o.push('</svg>');
+    host.innerHTML = o.join('');
+  }
+
+  var ACC = '#0071e3', GRAY = '#9a9aa0';
+
+  // ---- week dot grid ----
+  (function () {
+    var have = {};
+    // rebuild the full date list from the compact per-year run below
+    ALL_DATES.forEach(function (d) { have[d] = 1; });
+    var start = new Date('2022-02-14T00:00:00');       // Monday of the first meeting week
+    var end = new Date('2026-08-31T00:00:00');
+    var weeks = Math.round((end - start) / 6048e5);
+    var perRow = 53, cell = 13, r = 4.2;
+    var rows = Math.ceil(weeks / perRow);
+    var W = 760, x0 = 46, H = rows * (cell + 10) + 34;
+    var o = ['<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="每周是否有周会纪要的点阵图。">' +
+             '<title>236 周，210 期</title>'];
+    var seen = {};
+    ALL_DATES.forEach(function (d) {
+      var t = new Date(d + 'T00:00:00');
+      seen[Math.floor((t - start) / 6048e5)] = 1;
+    });
+    for (var w = 0; w <= weeks; w++) {
+      var row = Math.floor(w / perRow), col = w % perRow;
+      var cx = x0 + col * cell + 5, cy = row * (cell + 10) + 16;
+      var on = seen[w];
+      o.push('<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="' + (on ? ACC : 'none') +
+             '" stroke="' + (on ? ACC : 'var(--line)') + '" stroke-width="1"/>');
+    }
+    for (var rr = 0; rr < rows; rr++) {
+      var d0 = new Date(start.getTime() + rr * perRow * 6048e5);
+      o.push('<text x="0" y="' + (rr * (cell + 10) + 20) + '" font-size="11" fill="var(--ink-3)">' +
+             d0.getFullYear() + '·' + (d0.getMonth() + 1) + '月</text>');
+    }
+    o.push('<circle cx="52" cy="' + (rows * (cell + 10) + 18) + '" r="4.2" fill="' + ACC + '"/>' +
+           '<text x="62" y="' + (rows * (cell + 10) + 22) + '" font-size="11" fill="var(--ink-3)">有纪要</text>' +
+           '<circle cx="132" cy="' + (rows * (cell + 10) + 18) + '" r="4.2" fill="none" stroke="var(--line)"/>' +
+           '<text x="142" y="' + (rows * (cell + 10) + 22) + '" font-size="11" fill="var(--ink-3)">无</text>');
+    o.push('</svg>');
+    document.getElementById('f-dots').innerHTML = o.join('');
+  })();
+
+  // ---- missing weeks by month ----
+  (function () {
+    var start = new Date('2022-02-14T00:00:00'), end = new Date('2026-08-31T00:00:00');
+    var weeks = Math.round((end - start) / 6048e5), seen = {};
+    ALL_DATES.forEach(function (d) { seen[Math.floor((new Date(d + 'T00:00:00') - start) / 6048e5)] = 1; });
+    var byMonth = new Array(12).fill(0), miss = 0;
+    for (var w = 0; w <= weeks; w++) {
+      if (seen[w]) continue;
+      miss++;
+      byMonth[new Date(start.getTime() + w * 6048e5).getMonth()]++;
+    }
+    var W = 760, H = 190, padL = 34, padB = 40, top = 14;
+    var max = Math.max.apply(null, byMonth) || 1, bw = (W - padL - 14) / 12;
+    var o = ['<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="缺席周按月分布。"><title>缺的周落在哪几个月</title>'];
+    var HOLIDAY = { 0: 1, 1: 1, 3: 1, 4: 1, 8: 1, 9: 1 };
+    byMonth.forEach(function (v, m) {
+      var h = (v / max) * (H - top - padB), x = padL + m * bw + 6, y = H - padB - h;
+      o.push('<rect x="' + x + '" y="' + y + '" width="' + (bw - 12) + '" height="' + Math.max(v ? 2 : 0, h) +
+             '" rx="4" fill="' + (HOLIDAY[m] ? 'var(--warn)' : '#9a9aa0') + '" opacity=".85"/>');
+      o.push('<text x="' + (x + (bw - 12) / 2) + '" y="' + (y - 5) + '" font-size="11.5" font-weight="600" text-anchor="middle" fill="var(--ink)">' + (v || '') + '</text>');
+      o.push('<text x="' + (x + (bw - 12) / 2) + '" y="' + (H - padB + 17) + '" font-size="11" text-anchor="middle" fill="var(--ink-3)">' + (m + 1) + '月</text>');
+    });
+    o.push('<line x1="' + padL + '" y1="' + (H - padB) + '" x2="' + (W - 8) + '" y2="' + (H - padB) + '" stroke="var(--line)"/>');
+    o.push('<text x="' + padL + '" y="' + (H - 6) + '" font-size="10.5" fill="var(--ink-3)">共缺 ' + miss +
+           ' 周；黄色为含长假的月份（春节、清明五一、中秋国庆），合计占 ' +
+           Math.round(byMonth.reduce(function (a, v, m) { return a + (HOLIDAY[m] ? v : 0); }, 0) / miss * 100) + '%。</text>');
+    o.push('</svg>');
+    document.getElementById('f-miss').innerHTML = o.join('');
+  })();
+
+  // ---- the six three-week breaks ----
+  (function () {
+    var d = ALL_DATES.map(function (x) { return new Date(x + 'T00:00:00'); });
+    var breaks = [];
+    for (var i = 0; i < d.length - 1; i++) {
+      var g = Math.round((d[i + 1] - d[i]) / 864e5);
+      if (g >= 21) breaks.push([ALL_DATES[i], ALL_DATES[i + 1], g]);
+    }
+    var W = 760, rh = 30, H = breaks.length * rh + 30, padL = 150;
+    var t0 = new Date('2022-02-14T00:00:00'), t1 = new Date('2026-08-31T00:00:00'), span = t1 - t0;
+    var track = W - padL - 130;
+    var o = ['<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="六次三周断档的时间位置。"><title>六次 21 天断档</title>'];
+    for (var y = 2022; y <= 2026; y++) {
+      var x = padL + ((new Date(y + '-01-01T00:00:00') - t0) / span) * track;
+      if (x < padL) continue;
+      o.push('<line x1="' + x + '" y1="4" x2="' + x + '" y2="' + (breaks.length * rh + 2) + '" stroke="var(--line-2)"/>');
+      o.push('<text x="' + x + '" y="' + (breaks.length * rh + 20) + '" font-size="10.5" text-anchor="middle" fill="var(--ink-3)">' + y + '</text>');
+    }
+    var LABEL = ['春节', '中秋国庆', '春节', '春节', '中秋国庆', '春节'];
+    breaks.forEach(function (b, i) {
+      var a = padL + ((new Date(b[0] + 'T00:00:00') - t0) / span) * track;
+      var w = Math.max(5, ((new Date(b[1] + 'T00:00:00') - new Date(b[0] + 'T00:00:00')) / span) * track);
+      var y = i * rh + 8;
+      o.push('<text x="0" y="' + (y + 12) + '" font-size="12" fill="var(--ink-2)">' + b[0] + ' → ' + b[1].slice(5) + '</text>');
+      o.push('<rect x="' + a + '" y="' + y + '" width="' + w + '" height="14" rx="4" fill="var(--danger)" opacity=".8"/>');
+      o.push('<text x="' + (a + w + 8) + '" y="' + (y + 12) + '" font-size="11.5" fill="var(--ink-3)">' + b[2] + ' 天 · ' + LABEL[i] + '</text>');
+    });
+    o.push('</svg>');
+    document.getElementById('f-break').innerHTML = o.join('');
+  })();
+
+  // ---- template switch ----
+  (function () {
+    var W = 760, H = 210;
+    var L = ['日期', '参会人', '会议日程', '重点项目同步', '个人工作总结', '个人工作计划', 'QA', '跟进项'];
+    var R = ["Member's Job Schedule", 'Ongoing Project Status', 'Live Issue', 'Technical Solutions',
+             'Sync-Up & Discussion', 'Follow UP', 'OKR', 'Current Thinking Points'];
+    var o = ['<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="第 4 期起模板从中文自由格式换成固定英文议程。"><title>模板切换</title>'];
+    o.push('<text x="10" y="18" font-size="12.5" font-weight="600" fill="var(--ink)">前 3 期 · 中文自由格式</text>');
+    o.push('<text x="420" y="18" font-size="12.5" font-weight="600" fill="var(--ink)">2022-03-11 起 · 固定英文议程</text>');
+    L.forEach(function (s, i) {
+      o.push('<rect x="10" y="' + (28 + i * 21) + '" width="300" height="16" rx="4" fill="#9a9aa0" opacity=".28"/>');
+      o.push('<text x="18" y="' + (40 + i * 21) + '" font-size="11" fill="var(--ink-2)">' + esc(s) + '</text>');
+    });
+    R.forEach(function (s, i) {
+      var dead = s === 'Current Thinking Points';
+      o.push('<rect x="420" y="' + (28 + i * 21) + '" width="300" height="16" rx="4" fill="' +
+             (dead ? 'var(--danger)' : ACC) + '" opacity="' + (dead ? .35 : .8) + '"/>');
+      o.push('<text x="428" y="' + (40 + i * 21) + '" font-size="11" fill="' + (dead ? 'var(--ink-2)' : '#fff') + '">' + esc(s) + '</text>');
+    });
+    o.push('<path d="M320 110 L410 110" stroke="var(--ink-3)" stroke-width="1.5" marker-end="url(#tw)"/>');
+    o.push('<defs><marker id="tw" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">' +
+           '<path d="M0,0 L7,3.5 L0,7 z" fill="var(--ink-3)"/></marker></defs>');
+    o.push('<text x="10" y="' + (H - 6) + '" font-size="10.5" fill="var(--ink-3)">' +
+           '右侧淡红的一段是 Current Thinking Points，加进来 19 期后被删掉，是这四年半里唯一消失的段落。</text>');
+    o.push('</svg>');
+    document.getElementById('f-switch').innerHTML = o.join('');
+  })();
+
+  bars('f-gap', Object.keys(D.gaps).map(Number).sort(function (a, b) { return a - b; }).map(function (g) {
+    return { name: g + ' 天', c: g === 7 ? ACC : (g >= 14 ? '#eda100' : GRAY), v: D.gaps[g], t: D.gaps[g] + ' 次' };
+  }), { alt: '相邻两期周会的间隔天数分布。', title: '间隔分布', padL: 60 });
+
+  bars('f-dow', [
+    { name: '周五', c: ACC, v: D.dow.Fri, t: D.dow.Fri + ' 期' },
+    { name: '周四', c: GRAY, v: D.dow.Thu, t: D.dow.Thu + ' 期' },
+    { name: '周一', c: GRAY, v: D.dow.Mon, t: D.dow.Mon + ' 期' }
+  ], { alt: '周会开在星期几的分布。', title: '星期分布', padL: 60 });
+
+  // ---- section lifespan gantt ----
+  (function () {
+    var keys = Object.keys(D.life);
+    var toX = function (ym) { var p = ym.split('-'); return (+p[0] - 2022) * 12 + (+p[1] - 1); };
+    var span = toX('2026-09');
+    var W = 760, padL = 190, padR = 74, track = W - padL - padR;
+    var rh = 26, H = keys.length * rh + 44;
+    var o = ['<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="各议程段落在四年半里的存续区间。"><title>段落生命周期</title>'];
+    for (var y = 2022; y <= 2026; y++) {
+      var x = padL + (toX(y + '-01') / span) * track;
+      o.push('<line x1="' + x + '" y1="6" x2="' + x + '" y2="' + (keys.length * rh + 8) + '" stroke="var(--line-2)"/>');
+      o.push('<text x="' + x + '" y="' + (keys.length * rh + 26) + '" font-size="10.5" fill="var(--ink-3)" text-anchor="middle">' + y + '</text>');
+    }
+    keys.forEach(function (k, i) {
+      var v = D.life[k], a = toX(v[0]), b = toX(v[1]) + 1;
+      var x = padL + (a / span) * track, w = Math.max(3, ((b - a) / span) * track);
+      var short = v[2] < 130;
+      o.push('<text x="0" y="' + (i * rh + 20) + '" font-size="12" fill="' + (short ? 'var(--ink-3)' : 'var(--ink-2)') + '">' + esc(k) + '</text>');
+      o.push('<rect x="' + x + '" y="' + (i * rh + 8) + '" width="' + w + '" height="14" rx="4" fill="' +
+             (v[2] === 19 ? 'var(--danger)' : (v[2] < 130 ? 'var(--warn)' : ACC)) + '" opacity=".85"/>');
+      o.push('<text x="' + (W - padR + 8) + '" y="' + (i * rh + 19) + '" font-size="11.5" font-weight="600" fill="var(--ink)" text-anchor="end" transform="translate(66,0)">' + v[2] + ' 期</text>');
+    });
+    o.push('</svg>');
+    document.getElementById('f-life').innerHTML = o.join('');
+  })();
+
+  var S = D.share, TOT = Object.keys(S).reduce(function (a, k) { return a + S[k]; }, 0);
+  bars('f-share', Object.keys(S).sort(function (a, b) { return S[b] - S[a]; }).map(function (k) {
+    var pct = S[k] / TOT * 100;
+    return { name: k, c: pct > 5 ? ACC : GRAY, v: S[k], t: pct.toFixed(1) + '%', mute: pct < 1 };
+  }), { alt: '八个议程段落的字符数占比。', title: '字数落在哪一段' });
+
+  bars('f-empty', Object.keys(D.empty).sort(function (a, b) {
+    return (D.empty[b][0] / D.empty[b][1]) - (D.empty[a][0] / D.empty[a][1]);
+  }).map(function (k) {
+    var e = D.empty[k], p = e[0] / e[1] * 100;
+    return { name: k, c: p > 80 ? 'var(--danger)' : (p > 30 ? '#eda100' : 'var(--ok)'),
+      v: p, t: p.toFixed(1) + '%', s: e[0] + ' / ' + e[1] + ' 期只有模板表头' };
+  }), { alt: '各段落的空段率。', title: '空段率', max: 100 });
+
+  var N = D.nextweek;
+  bars('f-nw', [
+    { name: '最小', c: GRAY, v: N.min, t: N.min },
+    { name: '下四分位', c: ACC, v: N.p25, t: N.p25 + '（与最小值相同）' },
+    { name: '中位', c: ACC, v: N.med, t: N.med },
+    { name: '上四分位', c: ACC, v: N.p75, t: N.p75 },
+    { name: '最大', c: GRAY, v: N.max, t: N.max }
+  ], { alt: 'Next week topic 段落字符数的分位点。', title: '一个长度几乎不变的段落', padL: 90, max: N.max * 1.02 });
+
+  var PY = D.perYearTotal;
+  bars('f-year', Object.keys(PY).map(function (y) {
+    return { name: y, c: ACC, v: PY[y][1], t: PY[y][1].toLocaleString('en-US') + ' 字符', s: PY[y][0] + ' 期' };
+  }), { alt: '逐年单期平均总字符数与期数。', title: '逐年篇幅', padL: 60 });
+
+  var JB = D.jobByYear, rows2 = [];
+  Object.keys(JB).forEach(function (y) {
+    rows2.push({ name: y + ' 个人进度', c: '#eda100', v: JB[y][0], t: JB[y][0].toLocaleString('en-US') });
+    rows2.push({ name: y + ' 项目进展', c: ACC, v: JB[y][1], t: JB[y][1].toLocaleString('en-US') });
+  });
+  bars('f-two', rows2, { alt: '两个主要段落逐年的平均字符数。', title: '两段的此消彼长', padL: 110 });
+
+  // ---- claimed vs actual ----
+  (function () {
+    var keys = Object.keys(S).filter(function (k) { return D.life[k]; });
+    var W = 760, H = 250;
+    var o = ['<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="模板声称的八个平等段落，与实际承载内容的四个段落对比。"><title>声称 vs 实际</title>'];
+    o.push('<text x="20" y="20" font-size="12.5" font-weight="600" fill="var(--ink)">模板声称的样子</text>');
+    o.push('<text x="420" y="20" font-size="12.5" font-weight="600" fill="var(--ink)">实际的样子</text>');
+    keys.forEach(function (k, i) {
+      var y = 36 + i * 24;
+      o.push('<rect x="20" y="' + y + '" width="330" height="18" rx="4" fill="' + ACC + '" opacity=".8"/>');
+      o.push('<text x="28" y="' + (y + 13) + '" font-size="11" fill="#fff">' + esc(k) + '</text>');
+      var pct = S[k] / TOT;
+      var w = Math.max(2, pct * 330);
+      var ghost = pct < .01;
+      o.push('<rect x="420" y="' + y + '" width="' + w + '" height="18" rx="4" fill="' + (ghost ? 'var(--ghost)' : ACC) + '" opacity="' + (ghost ? .3 : .8) + '"/>');
+      o.push('<text x="' + (420 + w + 7) + '" y="' + (y + 13) + '" font-size="10.5" fill="var(--ink-3)">' + (pct * 100).toFixed(1) + '%</text>');
+    });
+    o.push('<text x="20" y="' + (H - 8) + '" font-size="10.5" fill="var(--ink-3)">左边每段等宽，是打开纪要时看到的印象；右边按字符数占比，是实际写进去的东西。</text>');
+    o.push('</svg>');
+    document.getElementById('f-final').innerHTML = o.join('');
+  })();
+
+  // ---- the weekly icebreaker question ----
+  // Lives in the header cell of each meeting's first table, not in a section of
+  // its own — which is why it survived while three real sections went empty.
+  var TOPICS = [
+    ["2026-08-28","时事政策","许家印获刑：恒大案一审宣判无期徒刑，他到底做了什么？被如此判罚，是否合理，可能有什么考量？"],
+    ["2026-08-21","科技与 AI","全球首个 mRNA 癌症疫苗 III 期临床试验成功：莫德纳一夜暴涨 177%，降低黑色素瘤复发风险 49%，你觉得癌症是否有望被攻克？"],
+    ["2026-08-14","生活与消费","怎么看待陪诊、陪逛、情绪陪伴付费服务越来越火，花钱买陪伴成新消费趋势?"],
+    ["2026-08-07","社会现象","删不掉的「竹知了」，如何看待华为「竹知了」事件？"],
+    ["2026-07-31","科技与 AI","王虹和邓煜获得了菲尔兹奖。对我们自身发展以及培养下一代有哪些启发？如何看待菲尔兹奖仅授予 40 岁以下数学家的规则？"],
+    ["2026-07-24","时事政策","深圳地铁安检排队上热搜：公共安全和通勤效率怎么平衡？对这种管理一刀切、类似拍脑袋的决定，你怎么看？"],
+    ["2026-07-17","科技与 AI","工作方式：你觉得远程办公是否是一种趋势，随着 AI 普及出现很多仅几人的小公司，随着人力规模降低，「坐在一起」办公是否真的重要？"],
+    ["2026-07-10","生活与消费","深圳出发：最近你去了哪些好地方，好在哪，值得推荐吗？"],
+    ["2026-07-03","生活与消费","消费观念：在你人生的几个重要节点上，你的消费观念发生了哪些变迁：自娱消费、付出消费、金融消费、自我提升消费"],
+    ["2026-06-26","生活与消费","南山医院：如何看「小病看不好，大病看不了」的深圳南山人民医院"],
+    ["2026-06-12","投资理财","投资日常：最近多家券商被监管点名，你怎么看这个信号？这会影响你之后买港美股吗？你会继续换券商，还是改用 ETF / QDII 等替代方式？"],
+    ["2026-06-05","投资理财","投资日常：最近多家券商被监管点名，你怎么看这个信号？这会影响你之后买港美股吗？你会继续换券商，还是改用 ETF / QDII 等替代方式？"],
+    ["2026-05-29","科技与 AI","谈一谈最近 autodev 的体验，你觉得目前的模式和你理想的 autodev 是相同的吗，说说你满意和不满意的地方"],
+    ["2026-05-22","其他","经典话题：现阶段的房子，你怎么看？"],
+    ["2026-05-15","科技与 AI","前沿科技：宇树科技发布全球首款量产载人变形机甲，你如何看待人形机器人的未来？"],
+    ["2026-05-08","投资理财","全球市场全线大涨，是牛市确认还是追高风险？现在你会加仓、定投、再平衡，还是保留现金，避免情绪化追高？"],
+    ["2026-04-24","生活与消费","日常生活：你是如何看待线上 APP 会员（B 站大会员、云盘会员、Claude Code 订阅等）的？有哪些会员推荐吗？"],
+    ["2026-04-17","时事政策","2026 国考报名新高，而录取人数持续 7 年首次下降，这反应了什么现象？你对考公怎么看，铁饭碗的工作相比于高流动性工作，你会怎么选择"],
+    ["2026-04-10","时事政策","国家曾开放第三方在线彩票业务，也尝试试点颁发过赌场牌照（海南），最终都被撤回，你觉得是为什么？如果全面开放对现在的社会有什么影响"],
+    ["2026-04-03","时事政策","金融学习：美伊战争对你的账户产生了怎样的影响？你如何期待接下来的局势发展？"],
+    ["2026-03-27","社会现象","你如何评价张雪峰这个人？"],
+    ["2026-03-20","职业与工作","如何看待老板让 PM/PJM 写代码维护项目？"],
+    ["2026-03-13","投资理财","今年两会后，社会上对「稳增长／就业／消费」的讨论很多：你体感里最真实的一个变化是什么（身边人的消费、投资心态）？"],
+    ["2026-03-06","科技与 AI","AI 已经这么强了，程序员的价值何在"],
+    ["2026-02-27","其他","听完一位同事的内部分享之后，有什么感想"],
+    ["2026-02-06","其他","你听说过什么赚钱的点子？"],
+    ["2026-01-30","职业与工作","程序员周末猝死，怎么看待这个事情，如何评价这个人，对我们有什么启示?"],
+    ["2026-01-23","投资理财","2026 年 A 股强势开盘，纳斯达克却变成了「缅纳」，今年你有什么投资计划吗？"],
+    ["2026-01-16","投资理财","已经 2026 年了，如何看待中国房地产，今年有计划买房／卖房吗，为什么？"],
+    ["2026-01-09","时事政策","如何看待「美国斩杀线」，中国有斩杀线吗？你觉得美国这样的斩杀线是好还是不好？"],
+    ["2025-12-26","个人成长","随着年龄增大，社会地位和角色慢慢固定下来，你怎么看待「这辈子也就这样了」？如何接受平凡的自己、接受当下的局限性？"],
+    ["2025-12-19","时事政策","如何看待游戏主播蓝战非在南非被绑架? 财产是否有机会追回？给你带来了哪些深思？"],
+    ["2025-12-12","科技与 AI","上周中兴和豆包合作的 AI 手机，是你期待的形态吗? 对未来 AI 手机形态有什么畅想"],
+    ["2025-12-05","投资理财","你的投资收益，来源于 trading 还是 holding？你更倾向于哪种方式？为什么？"],
+    ["2025-11-28","科技与 AI","你觉得本次 AI 革命是泡沫吗，为什么？"],
+    ["2025-11-21","科技与 AI","现在的编程框架会不会让程序员离计算机原理越来越远？"],
+    ["2025-11-14","个人成长","当你感到压力山大时，通常会用什么方式来调节自己？"],
+    ["2025-11-07","个人成长","如何评价最近李新野的大作？他在表达什么？你认同他吗？对你有什么启示？"],
+    ["2025-10-31","投资理财","美联储 10 月 30 日再次宣布降息 25 个基点，并决定自 12 月 1 日起暂停缩表，你如何看待未来中美经济走势？"],
+    ["2025-10-24","社会现象","你怎么看待最近网络热梗：力工思维（力工梭哈理论）"],
+    ["2025-10-17","职业与工作","作为程序员在成长过程中，有没有经历过「呀哈」时刻，突然在某一刻感觉自己想通了某些道理，水平前进了一个巨大的台阶？"],
+    ["2025-09-26","社会现象","推荐两个你最近比较喜欢的 UP 主，说说为什么。（最近，不要太古早；文字的视频的都行，方向不要太小众，建议财经、生活、科技、社会）"],
+    ["2025-09-19","生活与消费","平时你会吃预制菜吗，你对预制菜怎么看。连锁店和预制菜馆越来越多，对整个餐饮消费的未来你怎么看。对于食品安全是否有过焦虑。"],
+    ["2025-07-18","生活与消费","聊一聊保险，怎么看待它，曾经或者现在买过哪些?"],
+    ["2025-07-11","社会现象","如何看待现今网络上的男女对立现象？你身边有极致的 男/女 拳吗？你觉得它们会怎样影响你的生活？"],
+    ["2025-07-04","生活与消费","最近很多同事开始健身／减肥了，你如何看待健身／减肥，未来有什么计划吗？如果已经开始了，为什么开始？"],
+    ["2025-06-27","职业与工作","阿里 P9 离职感言"],
+    ["2025-06-20","生活与消费","高考特辑：上周才结束了今年的高考，你有哪些独特的高考回忆？如果你的孩子／弟弟／妹妹今年高考，你会给他哪些建议呢？"],
+    ["2025-06-06","其他","科技生活：现在占用你时间最多的 APP／网站是什么？你为什么喜欢用它？来点推荐吧？你曾经又有哪些喜欢用的 APP，为什么离它远去？"],
+    ["2025-05-30","投资理财","你认同哪一种消费观？是「该花就花」、「该省就省」，还是更倾向于理财型、精致型、极简型……你现在的消费观是怎样形成的？"],
+    ["2025-05-23","生活与消费","你经历过的最超值和最踩坑的消费分别是什么？"],
+    ["2025-05-15","社会现象","如何看待「董小姐 4+4 事件」，你觉得这种 4+4 是创新还是变相特权？"],
+    ["2025-05-09","职业与工作","如何看待职场喝酒文化。酒产量连续下滑，现在的年轻人真的不喝酒了吗？如果本身抗拒喝酒又因为工作需求不得不喝，你是怎么做的"],
+    ["2025-04-25","其他","如何看待京东入局外卖行业？"],
+    ["2025-04-18","科技与 AI","在手机、电脑数据量爆炸式增长的当下，有什么适合大众的存储方案？"],
+    ["2025-04-11","投资理财","如何看待中美的对等关税政策，对我们普通人有什么影响?"],
+    ["2025-03-28","社会现象","如何看待大祥哥被骗，如果有的话，谈谈你遇到过最遭心的骗局是什么，怎么规避"],
+    ["2025-03-21","时事政策","怎么看公司的薪资政策：通用的年终奖和调薪"],
+    ["2025-03-14","时事政策","怎么看公司的薪资政策：年终奖和调薪"],
+    ["2025-03-07","个人成长","你遇到过最大的挫折是什么，最后是怎么克服的，现在回想起来对你以后的发展有什么帮助或影响"],
+    ["2025-02-28","其他","自马斯克的 DOGE 出现以来，美国社会各界态度不一，近期还有在美部分 Tesla 电车被人为烧毁破坏的负面消息。你怎么看 Elon 近期的操作，对我们本国会有啥影响?"],
+    ["2025-02-21","科技与 AI","随着 ChatGPT 的推出和大模型基础能力的快速发展，AI 在金融、教育、医疗、法律、电商、游戏、智能驾驶和机器人等行业的探索持续深入。面对如此广阔的应用前景，你认为 AI 在哪个领域的潜力最大? 为什么?"],
+    ["2025-02-14","个人成长","如果有来生，你希望成为什么人或物？"],
+    ["2025-02-07","投资理财","特朗普币发售，加密货币的趋势就真的向好吗？"],
+    ["2025-01-17","生活与消费","马上就到春节了，你对春节有哪些有趣的记忆，又有哪些想吐槽的？"],
+    ["2025-01-10","职业与工作","假设你是一个面试官（面试程序员），对于应聘者你最看重的品质或者性格是什么？能不能设计几个问题来检验它？"],
+    ["2025-01-03","时事政策","如何看待巴西比亚迪工厂工人被当作奴工事件？从不同的角度进行解读都可以"],
+    ["2024-12-27","时事政策","如果你是政策制定者，针对互联网公司通过已有资本无限扩张、占领各个新产业市场，使得新晋创业者即使有想法和能力也会被迅速抄袭的问题，你会怎么解决"],
+    ["2024-12-20","其他","聊一位你想聊的科技类企业家（可以是你很欣赏的，可以是很感兴趣的，可以是你觉得有一些特点值得学习借鉴的）"],
+    ["2024-11-29","社会现象","怎么看待最近多地发生的恐怖事件? 对于我们个人该如何加强防范意识"],
+    ["2024-11-22","社会现象","现代人为何在关系中似乎更加难以维系深度的情感连接？是因为选择过多，还是因为其他原因？（亲情、友情、爱情）"],
+    ["2024-11-01","投资理财","聊一聊自己在投资中最大的一次亏损，从这次亏损过后对自己的操作以及后续的投资思路有什么影响？"],
+    ["2024-10-25","时事政策","全国开始启动生育意愿调查，大家对未来养育小孩的意愿目前是怎么样的，想还是不想，都可以随便说说？"],
+    ["2024-10-18","其他","在二级市场，你有哪些觉得很不错的赚钱策略？"],
+    ["2024-10-11","职业与工作","作为一个程序员，你有没有想过如果不做程序员了你还能做什么？"],
+    ["2024-09-27","社会现象","如何看待「老板初衷是好的，但是执行歪了」这种「草台班子」的情况"],
+    ["2024-09-20","其他","谈一谈上次观看《姥姥的外孙》观后感"],
+    ["2024-09-13","其他","美国大选在即，大热门川普当选后，资产该如何配置！（选前，选后，国内外）"],
+    ["2024-09-06","时事政策","基于目前国家的状况，大胆预测一下，政府会在 3-5 年或者 5-10 年出台哪些方面的政策？"],
+    ["2024-08-30","社会现象","有什么深信不疑的信念，最后发现是被人刻意植入的，而不是世界的真实？"],
+    ["2024-08-23","时事政策","谈谈你对 GFW 的看法，如果国内全面开放国际网络访问，会对我们的生活有什么影响？"],
+    ["2024-08-16","时事政策","执行三年的双减政策现在又开放？朝令夕改大家怎么看？小时候是否被父母拉去课外补习？结合自己的经历说说"],
+    ["2024-08-09","时事政策","如何看待官方提出「有序推进渐进式延迟法定退休年龄改革」？将带来哪些影响？"],
+    ["2023-11-17","其他","结合当时的容灾建设，聊聊中间件、第三方服务与第三方库的选型"]
+  ];
+
+  var TCAT = { '时事政策': '#e34948', '投资理财': '#0071e3', '科技与 AI': '#7c5cd6', '社会现象': '#eda100',
+               '生活与消费': '#12855c', '职业与工作': '#eb6834', '个人成长': '#2aa9a0', '其他': '#9a9aa0' };
+
+  (function () {
+    var byYear = {}, byCat = {};
+    TOPICS.forEach(function (t) {
+      byYear[t[0].slice(0, 4)] = (byYear[t[0].slice(0, 4)] || 0) + 1;
+      byCat[t[1]] = (byCat[t[1]] || 0) + 1;
+    });
+
+    bars('f-topicyear', Object.keys(byYear).sort().map(function (y) {
+      return { name: y, c: y === '2023' ? GRAY : ACC, v: byYear[y], t: byYear[y] + ' 期' };
+    }), { alt: '每年有本周话题的期数。', title: '栏目哪一年才立住', padL: 60 });
+
+    var cats = Object.keys(byCat).sort(function (a, b) { return byCat[b] - byCat[a]; });
+    bars('f-topiccat', cats.map(function (c) {
+      return { name: c, c: TCAT[c] || GRAY, v: byCat[c], t: byCat[c] + ' 条' };
+    }), { alt: '本周话题的类别分布。', title: '聊得最多的是什么', padL: 110 });
+
+    document.getElementById('tchips').innerHTML =
+      '<button type="button" class="chip on" data-k="">全部 ' + TOPICS.length + '</button>' +
+      cats.map(function (c) {
+        return '<button type="button" class="chip" data-k="' + c + '">' + c + ' ' + byCat[c] + '</button>';
+      }).join('');
+
+    document.getElementById('tlist').innerHTML = TOPICS.map(function (t) {
+      return '<li data-c="' + t[1] + '"><span class="d">' + t[0] + '</span>' +
+             '<span class="q">' + esc(t[2]) + '</span>' +
+             '<span class="c"><i style="background:' + (TCAT[t[1]] || GRAY) + '"></i>' + t[1] + '</span></li>';
+    }).join('');
+
+    document.getElementById('tchips').addEventListener('click', function (e) {
+      var b = e.target.closest('.chip');
+      if (!b) return;
+      Array.prototype.forEach.call(this.querySelectorAll('.chip'), function (c) { c.classList.remove('on'); });
+      b.classList.add('on');
+      var k = b.getAttribute('data-k');
+      Array.prototype.forEach.call(document.querySelectorAll('#tlist li'), function (li) {
+        li.classList.toggle('off', !!k && li.getAttribute('data-c') !== k);
+      });
+    });
+  })();
+})();
+</script>
+</body>
+</html>
