@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>周会话题清单：84 个问题，四年半</title>
-<meta name="description" content="一个后端团队周五开会前先聊五分钟的破冰问题，2023 年 11 月到 2026 年 8 月共 84 条，逐条带日期与类别；45 条留下了当场的回答，按人匿名。另附一份逐条的延伸讨论。">
+<title>话题清单：84 个问题，四年半</title>
+<meta name="description" content="每周一问的破冰话题，2023 年 11 月到 2026 年 8 月共 84 条，逐条带日期与类别；45 条留下了当场的回答，按人匿名成成员 A–H。另附 68 条延伸讨论。">
 <link rel="stylesheet" href="/assets/theme.css">
 <style>
   /* theme.css ships --ease (the drawer curve) but no strong ease-out; entrances
@@ -95,11 +95,11 @@
 <body>
 <main>
   <p class="back"><a href="../">← 首页</a></p>
-  <h1 id="top">周会话题清单</h1>
-  <p class="lede">一个后端团队每周五开会前，先花五分钟聊一个跟工作无关的问题。<span class="hl">2023 年 11 月到 2026 年 8 月，一共 84 个</span>。这页把它们按时间排开，45 个留下了当场的回答，另附一份逐条的延伸。</p>
+  <h1 id="top">话题清单</h1>
+  <p class="lede">一个团队每周固定花五分钟，聊一个跟工作无关的问题。<span class="hl">2023 年 11 月到 2026 年 8 月，一共 84 个</span>。这页把它们按时间排开，45 个留下了当场的回答，另附一份逐条的延伸。</p>
 
   <div class="note">
-    <b>关于脱敏。</b>这里只有破冰问题和当场的回答，跟业务无关，逐条核过没有工单号、项目名和内部链接。回答按人匿名成成员 A 到 H，代号全表稳定，可以顺着看同一个人。不写是哪家公司哪个团队，项目进展、技术方案、个人排期这些真正的会议内容一个字都没往外拿。
+    <b>关于脱敏。</b>这里只有破冰问题和当场的回答，跟业务无关，逐条核过没有工单号、项目名和内部链接。回答按人匿名成成员 A 到 H，代号全表稳定，可以顺着看同一个人。不写是哪家公司哪个团队，工作内容一个字都没往外拿。
   </div>
 
   <div class="stats">
@@ -110,15 +110,15 @@
   </div>
 
   <h2 id="when" data-rail="节奏">这个栏目是长出来的</h2>
-  <p>2023-11-17 冒过一次，还是个技术话题，然后沉寂了 9 个月。2024-08-09 起才每周固定下来，2025 年 37 期是完整的一年。</p>
+  <p>2023-11-17 冒过一次，还是个技术话题，然后沉寂了 9 个月。2024-08-09 起才每周固定下来，2025 年 37 条是完整的一年。</p>
 
   <figure>
     <div id="f-topicyear"></div>
-    <figcaption>按年统计有话题的期数。2026 年截至 8 月底 30 期。有意思的是，这个栏目不在会议模板里 —— 它挂在第一张表的表头上，模板里正式立项的段落反而有三个四年半没人填过。</figcaption>
+    <figcaption>按年统计。2026 年截至 8 月底 30 条。有意思的是它从来不是被正式立项的栏目 —— 只是挂在一张表的表头上，没人规定要写，反而写了两年。</figcaption>
   </figure>
 
   <h2 id="what" data-rail="类别">聊得最多的是宏观和钱</h2>
-  <p>时事政策 16 条、投资理财 12 条，两类加起来占三分之一。一个做交易系统的后端团队，周五下午的闲聊落点在这里，大概不算巧合。</p>
+  <p>时事政策 16 条、投资理财 12 条，两类加起来占三分之一。一群写交易系统的人，闲聊落点在这里，大概不算巧合。</p>
 
   <figure>
     <div id="f-topiccat"></div>
@@ -391,7 +391,7 @@
 
   bars('f-topicyear', Object.keys(byYear).sort().map(function (y) {
     return { name: y, c: y === '2023' ? GRAY : ACC, v: byYear[y], t: byYear[y] + ' 期' };
-  }), { alt: '每年有本周话题的期数。', title: '栏目哪一年才立住', padL: 60 });
+  }), { alt: '每年出现的话题条数。', title: '栏目哪一年才立住', padL: 60 });
 
   var cats = Object.keys(byCat).sort(function (a, b) { return byCat[b] - byCat[a]; });
   bars('f-topiccat', cats.map(function (c) {
