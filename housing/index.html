@@ -20,7 +20,12 @@
   .legend span { display: inline-flex; align-items: center; gap: 6px; }
   .swatch { width: 16px; height: 2px; background: var(--accent); }
   .chart { position: relative; height: 300px; }
-  .chart.tall { height: 400px; }
+  .chart.tall { height: 360px; }
+  /* TradingView's own Lightweight Charts draws into a plain div, not a canvas
+     we own, so it gets its own box rather than the .chart wrapper. */
+  .lwc { height: 460px; margin: .2rem 0 .6rem; border: 1px solid var(--line);
+    border-radius: var(--r-sm); overflow: hidden; background: var(--card); }
+  @media (max-width: 640px) { .lwc { height: 380px; } }
   .chips { display: flex; flex-wrap: wrap; gap: 6px; }
   /* The city row is the picker: a 362-entry <select> is nobody's idea of a
      control. Chips show the province you are in, the map does the rest. */
@@ -206,7 +211,15 @@
       <button class="chip" data-span="0" type="button" aria-pressed="false">全部</button>
     </div>
     <div class="chips" id="cp-overlay">
-      <button class="chip" data-ov="yoy" type="button" aria-pressed="true">叠加同比 %</button>
+      <button class="chip" data-ov="log" type="button" aria-pressed="false">对数轴</button>
+      <button class="chip" data-ov="yoy" type="button" aria-pressed="true">同比副图</button>
+      <button class="chip" data-ov="cmp" type="button" aria-pressed="false">对比中位数</button>
+    </div>
+    <div class="chips" id="cp-ind">
+      <button class="chip" data-ind="ma" type="button" aria-pressed="true">均线</button>
+      <button class="chip" data-ind="gmma" type="button" aria-pressed="false">顾比 GMMA</button>
+      <button class="chip" data-ind="st" type="button" aria-pressed="false">SuperTrend</button>
+      <button class="chip" data-ind="boll" type="button" aria-pressed="false">布林带</button>
     </div>
   </div>
 
@@ -216,7 +229,7 @@
   <div class="keys" id="cp-trend"></div>
 
   <div class="legend" id="cp-line-legend"></div>
-  <div class="chart tall"><canvas id="cp-line" role="img" aria-label="组合图：选中城市的逐月挂牌均价（左轴，元每平方米）、省与全国中位数，以及同比涨跌（右轴，百分比）。">逐月挂牌均价与同比。</canvas></div>
+  <div class="lwc" id="cp-line" role="img" aria-label="主图为选中城市的挂牌均价（右轴）与省、全国中位数（左轴），副图为同比涨跌，红涨绿跌。"></div>
   <p class="hint" id="cp-line-note"></p>
 
   <h2 id="sec1" data-rail="怎么读">读这张图要知道的三件事</h2>
@@ -230,6 +243,7 @@
   <h2 id="sec2">数据来源</h2>
   <ul class="links">
     <li><a href="https://www.stats.gov.cn/" rel="noopener">国家统计局</a> — 70 个大中城市商品住宅销售价格变动情况，每月发布</li>
+    <li><a href="https://github.com/tradingview/lightweight-charts" rel="noopener">TradingView Lightweight Charts</a> — 第三把尺子那张图的引擎（Apache-2.0，图内保留官方署名标识）。数据是本站自己的，不是 TradingView 的行情</li>
     <li><a href="./data/city-price.json" rel="noopener">city-price.json</a> — 第三把尺子：362 个城市 2010-01 至 2026-01 的二手房挂牌均价，手工导入的静态快照。与另一份 58 同城年度表逐城逐年对过账（357 个重合城市、3,382 对可比值，年均价差中位 +0.8%，89% 在 ±10% 内）。<b>非成交价、非统计局口径、不随工作流更新</b></li>
     <li><a href="https://github.com/hugohe3/70cityprice" rel="noopener">hugohe3/70cityprice</a> — 上游整理与月度更新，本页的数据管线从这里取 CSV</li>
     <li><a href="./data/house-index.json" rel="noopener">house-index.json</a> — 本页用的派生数据，可直接下载</li>
@@ -783,7 +797,7 @@
     }
 
     var D = null, all = [], panel = [], byProv = {}, med = [], mi = {};
-    var lineChart = null, cpMap = null, cpLevel = null, cpProv = '广东', cpCity = null;
+    var cpMap = null, cpLevel = null, cpProv = '广东', cpCity = null;
     var from = 0, last = 0;
 
     fetch('./data/city-price.json', { cache: 'no-cache' })
@@ -857,7 +871,15 @@
       });
       bindChips('cp-mode', function (b) { cpMode = b.dataset.mode; });
       bindChips('cp-range', function (b) { cpSpan = +b.dataset.span; });
-      bindChips('cp-overlay', function (b) { cpYoy = b.getAttribute('aria-pressed') === 'true'; });
+      bindChips('cp-ind', function (b) {
+        cpInd[b.dataset.ind] = b.getAttribute('aria-pressed') === 'true';
+      });
+      bindChips('cp-overlay', function (b) {
+        var on = b.getAttribute('aria-pressed') === 'true';
+        if (b.dataset.ov === 'yoy') cpYoy = on;
+        else if (b.dataset.ov === 'cmp') cpCmp = on;
+        else cpLog = on;
+      });
       document.getElementById('cp-load').addEventListener('click', loadCityMap);
       document.getElementById('cp-back').addEventListener('click', function () { drill(null); });
     }
@@ -865,7 +887,7 @@
     // --- chart: price on the left axis, YoY on the right ---------------------
     // Everything is monthly. Bar and candle aggregate nothing except the candle's
     // quarter box, because one price per month is all the source has.
-    var cpMode = 'line', cpSpan = 60, cpYoy = true;
+    var cpMode = 'line', cpSpan = 60, cpYoy = true, cpLog = false, cpCmp = false;
 
     function selectCity(city, opts) {
       var hit = all.filter(function (c) { return c.city === city; })[0];
@@ -914,7 +936,7 @@
       box.addEventListener('click', function (e) {
         var b = e.target.closest('.chip');
         if (!b) return;
-        if (id === 'cp-overlay') {
+        if (id === 'cp-overlay' || id === 'cp-ind') {
           b.setAttribute('aria-pressed', String(b.getAttribute('aria-pressed') !== 'true'));
         } else {
           Array.prototype.forEach.call(box.querySelectorAll('.chip'), function (x) {
@@ -922,7 +944,6 @@
           });
         }
         apply(b);
-        if (lineChart) { lineChart.destroy(); lineChart = null; }
         drawLine();
       });
     }
@@ -965,130 +986,274 @@
         sets: sets.map(function (s) { return Object.assign({}, s, { data: s.data.slice(k) }); }) };
     }
 
-    function drawLine() {
-      var pick = all.filter(function (c) { return c.city === cpCity; })[0];
-      var city = pick ? seriesOf(pick) : null;
-      var pm = provMedian();
-      var labels, sets;
+    // --- indicators -----------------------------------------------------------
+    // Classic overlays computed here rather than pulled in as another library:
+    // EMA, Guppy's two ribbons, SuperTrend and Bollinger are twenty lines each.
+    var cpInd = { ma: true, gmma: false, st: false, boll: false };
 
-      if (cpMode === 'candle') {
-        var rows = quarters(city || med);
-        labels = rows.map(function (r) { return r.q; });
-        // 红涨绿跌, the convention this page already uses on the map. Sharp
-        // corners, a hair-thin wick and a fat body: a candle, not a bar chart.
-        var UPC = '#e34948', DOWNC = '#1baf7a';
-        var colors = rows.map(function (r) { return r.c >= r.o ? UPC : DOWNC; });
-        var ma = function (k) {
-          return rows.map(function (_, i) {
-            if (i < k - 1) return null;
-            var sum = 0;
-            for (var j = i - k + 1; j <= i; j++) sum += rows[j].c;
-            return Math.round(sum / k);
-          });
-        };
-        sets = [
-          { label: '影线 · 当季最高最低', yAxisID: 'y', type: 'bar', barPercentage: .09,
-            categoryPercentage: .95, borderRadius: 0, order: 3,
-            data: rows.map(function (r) { return [r.l, r.h]; }), backgroundColor: colors },
-          { label: '实体 · 季初→季末', yAxisID: 'y', type: 'bar', barPercentage: .6,
-            categoryPercentage: .95, borderRadius: 0, order: 2,
-            data: rows.map(function (r) { return [Math.min(r.o, r.c), Math.max(r.o, r.c)]; }),
-            backgroundColor: colors },
-          { label: 'MA4（一年）', yAxisID: 'y', type: 'line', data: ma(4), order: 1,
-            borderColor: '#eda100', borderWidth: 1.6, pointRadius: 0, tension: .25, spanGaps: true },
-          { label: 'MA8（两年）', yAxisID: 'y', type: 'line', data: ma(8), order: 0,
-            borderColor: BLUE, borderWidth: 1.6, pointRadius: 0, tension: .25, spanGaps: true }
-        ];
-        if (cpYoy) {
-          var qy = rows.map(function (r, i) {
-            var pv = rows[i - 4];
-            return pv ? +((r.c / pv.c - 1) * 100).toFixed(2) : null;
-          });
-          sets.push({ label: '同比 %（右轴）', type: 'line', yAxisID: 'y1', data: qy, order: 0,
-            borderColor: GRAY, borderWidth: 1.4, borderDash: [4, 3], pointRadius: 0,
-            tension: .2, spanGaps: true });
-        }
-        var w0 = cut(labels, sets, 'q');
-        lineChart = build(w0, rows);
-        return note(pick, rows);
-      }
-
-      labels = D.months;
-      var priceSet = cpMode === 'bar'
-        ? { label: (pick ? pick.city : '选中城市') + ' 挂牌均价', type: 'bar', yAxisID: 'y',
-            data: city || med, backgroundColor: 'rgba(227,73,72,.75)', borderRadius: 1,
-            barPercentage: 1, categoryPercentage: .92 }
-        : { label: (pick ? pick.city : '选中城市') + ' 挂牌均价', type: 'line', yAxisID: 'y',
-            data: city || med, borderColor: RED, borderWidth: 2.6, pointRadius: 0, tension: .2 };
-      sets = [
-        priceSet,
-        { label: cpProv + ' 中位数', type: 'line', yAxisID: 'y', data: pm, borderColor: BLUE,
-          borderWidth: 1.8, pointRadius: 0, tension: .2 },
-        { label: panel.length + ' 城中位数', type: 'line', yAxisID: 'y', data: med, borderColor: GRAY,
-          borderWidth: 1.5, borderDash: [5, 4], pointRadius: 0, tension: .2 }
-      ];
-      if (cpYoy) sets.push({ label: '同比 %（右轴）', type: 'line', yAxisID: 'y1',
-        data: yoy(city || med), borderColor: '#eda100', borderWidth: 2, pointRadius: 0,
-        tension: .2, spanGaps: true });
-
-      var w = cut(labels, sets);
-      lineChart = build(w, null);
-      note(pick, null);
+    function ema(vals, k) {
+      var a = 2 / (k + 1), out = [], prev = null;
+      vals.forEach(function (v) {
+        if (v == null) { out.push(null); return; }
+        prev = prev == null ? v : v * a + prev * (1 - a);
+        out.push(prev);
+      });
+      return out;
+    }
+    function sma(vals, k) {
+      return vals.map(function (_, i) {
+        if (i < k - 1) return null;
+        var s = 0;
+        for (var j = i - k + 1; j <= i; j++) { if (vals[j] == null) return null; s += vals[j]; }
+        return s / k;
+      });
+    }
+    function stddev(vals, k) {
+      var m = sma(vals, k);
+      return vals.map(function (_, i) {
+        if (m[i] == null) return null;
+        var s = 0;
+        for (var j = i - k + 1; j <= i; j++) s += Math.pow(vals[j] - m[i], 2);
+        return Math.sqrt(s / k);
+      });
+    }
+    // Wilder's ATR. With one price per month there is no intrabar range, so the
+    // true range degenerates to |Δclose| - which is exactly what ATR reduces to
+    // on a close-only series, and is honest about it.
+    function atr(bars, k) {
+      var tr = bars.map(function (b, i) {
+        if (i === 0) return b.h - b.l;
+        return Math.max(b.h - b.l, Math.abs(b.h - bars[i - 1].c), Math.abs(b.l - bars[i - 1].c));
+      });
+      var out = [], prev = null;
+      tr.forEach(function (v, i) {
+        if (i < k - 1) { out.push(null); return; }
+        if (prev == null) {
+          var s = 0;
+          for (var j = 0; j < k; j++) s += tr[i - j];
+          prev = s / k;
+        } else prev = (prev * (k - 1) + v) / k;
+        out.push(prev);
+      });
+      return out;
+    }
+    // SuperTrend(10, 3) over the bar series.
+    function superTrend(bars, period, mult) {
+      var a = atr(bars, period), up = [], dn = [], trend = [], line = [];
+      bars.forEach(function (b, i) {
+        if (a[i] == null) { up.push(null); dn.push(null); trend.push(null); line.push(null); return; }
+        var mid = (b.h + b.l) / 2;
+        var bu = mid + mult * a[i], bl = mid - mult * a[i];
+        var pu = up[i - 1] == null ? bu : up[i - 1], pl = dn[i - 1] == null ? bl : dn[i - 1];
+        var fu = (bu < pu || bars[i - 1].c > pu) ? bu : pu;
+        var fl = (bl > pl || bars[i - 1].c < pl) ? bl : pl;
+        up.push(fu); dn.push(fl);
+        var t = trend[i - 1];
+        if (t == null) t = b.c >= fl ? 1 : -1;
+        else if (t === 1 && b.c < fl) t = -1;
+        else if (t === -1 && b.c > fu) t = 1;
+        trend.push(t);
+        line.push(t === 1 ? fl : fu);
+      });
+      return { line: line, trend: trend };
     }
 
-    function build(w, candleRows) {
-      document.getElementById('cp-line-legend').innerHTML = w.sets.map(function (s) {
-        var c = s.borderColor || (typeof s.backgroundColor === 'string' ? s.backgroundColor : 'rgba(138,138,138,.6)');
-        return '<span><i class="swatch" style="' + (s.borderDash
-          ? 'background:none;border-top:2px dashed ' + c : 'background:' + c) + '"></i>' + s.label + '</span>';
-      }).join('');
-      var cfg = {
-        type: 'bar',
-        data: { labels: w.labels, datasets: w.sets },
-        options: {
-          responsive: true, maintainAspectRatio: false, animation: { duration: 200 },
-          interaction: { mode: 'index', intersect: false },
-          plugins: { legend: { display: false }, tooltip: { callbacks: {
-            label: function (c) {
-              if (candleRows && c.datasetIndex < 2) {
-                if (c.datasetIndex === 1) return null;   // one OHLC block, not two
-                var r = candleRows[c.dataIndex];
-                return ['开 ' + yuan(r.o), '高 ' + yuan(r.h), '低 ' + yuan(r.l), '收 ' + yuan(r.c),
-                        '涨跌 ' + pct(r.c / r.o - 1) + '（' + (r.c - r.o > 0 ? '+' : '') + yuan(r.c - r.o) + ' 元）'];
-              }
-              if (c.parsed.y == null) return null;
-              return c.dataset.yAxisID === 'y1'
-                ? c.dataset.label.replace('（右轴）', '') + '：' + (c.parsed.y > 0 ? '+' : '') + c.parsed.y + '%'
-                : c.dataset.label + '：' + yuan(c.parsed.y) + ' 元/㎡';
-            } } } },
-          scales: {
-            x: { ticks: { color: GRAY, maxTicksLimit: 10, callback: function (v) {
-                   var l = this.getLabelForValue(v);
-                   if (!l) return '';
-                   if (l.indexOf('Q') > 0) return l.slice(5) === 'Q1' ? l.slice(0, 4) : '';
-                   return l.slice(5) === '01' ? l.slice(0, 4) : (cpSpan && cpSpan <= 36 ? l.slice(5) + '月' : '');
-                 } }, grid: { display: false } },
-            // Candles are bars, and Chart.js pins bar axes to zero - which
-            // squeezes an OHLC series into the top third. Stock charts scale to
-            // the data; the plain bar mode keeps its honest zero baseline.
-            // Only real bars get the zero baseline: a price line pinned to zero
-            // flattens every move into a straight band across the top.
-            y: { position: 'left', beginAtZero: cpMode === 'bar', grace: cpMode === 'bar' ? 0 : '6%',
-                 ticks: { color: GRAY, callback: function (v) { return yuan(v); } },
-                 grid: { color: grid }, title: { display: true, text: '元/㎡（左轴）', color: GRAY } },
-            y1: { position: 'right', display: cpYoy, grid: { display: false },
-                  ticks: { color: '#eda100', callback: function (v) { return v + '%'; } },
-                  title: { display: true, text: '同比 %（右轴）', color: '#eda100' } }
-          }
-        }
+    // --- chart: TradingView's Lightweight Charts ------------------------------
+    // Their engine, our data. Two panes like a trading app: price on top with
+    // the city on the right scale and the two medians on the left (a 53,000
+    // yuan city and a 6,000 yuan median cannot share one axis), YoY histogram
+    // underneath. Apache-2.0; the attribution logo stays on.
+    var LWC_SRC = 'https://cdn.jsdelivr.net/npm/lightweight-charts@5.0.9/dist/lightweight-charts.standalone.production.js';
+    var lwcReady = null, chart = null, ro = null;
+
+    function ensureLwc() {
+      if (!lwcReady) lwcReady = script(LWC_SRC);
+      return lwcReady;
+    }
+    function css(name, fallback) {
+      var v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+      return v || fallback;
+    }
+    // Lightweight Charts wants a date; a month is its first day, a quarter its
+    // first month.
+    function tOf(m) { return m + '-01'; }
+
+    function drawLine() {
+      ensureLwc().then(build).catch(function () {
+        document.getElementById('cp-line').textContent = '图表引擎加载失败';
+      });
+    }
+
+    function build() {
+      var LC = window.LightweightCharts;
+      var pick = all.filter(function (c) { return c.city === cpCity; })[0];
+      var city = pick ? seriesOf(pick) : med;
+      var name = pick ? pick.city : (panel.length + ' 城中位数');
+      var pm = provMedian();
+      var host = document.getElementById('cp-line');
+
+      if (chart) { chart.remove(); chart = null; }
+      host.innerHTML = '';
+      var ink = css('--ink-2', '#4b4b51'), faint = css('--ink-3', '#86868b');
+      var line = 'rgba(138,138,138,.18)';
+      var UP = '#e34948', DOWN = '#1baf7a';   // 红涨绿跌
+
+      chart = LC.createChart(host, {
+        layout: { background: { color: 'transparent' }, textColor: faint, attributionLogo: true,
+          fontFamily: '-apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif' },
+        grid: { vertLines: { color: line }, horzLines: { color: line } },
+        rightPriceScale: { borderColor: line, scaleMargins: { top: .08, bottom: .08 },
+          mode: cpLog ? LC.PriceScaleMode.Logarithmic : LC.PriceScaleMode.Normal },
+        leftPriceScale: { visible: cpCmp, borderColor: line, scaleMargins: { top: .08, bottom: .08 },
+          mode: cpLog ? LC.PriceScaleMode.Logarithmic : LC.PriceScaleMode.Normal },
+        timeScale: { borderColor: line, rightOffset: 2, minBarSpacing: .5 },
+        crosshair: { mode: LC.CrosshairMode.Normal,
+          vertLine: { color: faint, labelBackgroundColor: css('--accent', '#0071e3') },
+          horzLine: { color: faint, labelBackgroundColor: css('--accent', '#0071e3') } },
+        localization: { priceFormatter: function (v) { return yuan(v); } }
+      });
+
+      var pricePane = 0;
+      var legend = [];
+
+      // One bar series drives both the candles and every overlay, so the
+      // indicators are always computed on exactly what is drawn.
+      var bars, times;
+      if (cpMode === 'candle') {
+        var rows = quarters(city);
+        bars = rows.map(function (r) { return { o: r.o, h: r.h, l: r.l, c: r.c }; });
+        times = rows.map(function (r) {
+          var y = r.q.slice(0, 4), q = +r.q.slice(-1);
+          return y + '-' + String((q - 1) * 3 + 1).padStart(2, '0') + '-01';
+        });
+      } else {
+        bars = []; times = [];
+        D.months.forEach(function (m, i) {
+          var v = city[i];
+          if (v == null) return;
+          bars.push({ o: v, h: v, l: v, c: v });
+          times.push(tOf(m));
+        });
+      }
+      var closes = bars.map(function (b) { return b.c; });
+      var lineAt = function (arr, color, width, dashed) {
+        var se = chart.addSeries(LC.LineSeries, { color: color, lineWidth: width || 1,
+          priceScaleId: 'right', lastValueVisible: false, priceLineVisible: false,
+          crosshairMarkerVisible: false,
+          lineStyle: dashed ? LC.LineStyle.Dashed : LC.LineStyle.Solid }, pricePane);
+        se.setData(times.map(function (t, i) {
+          return arr[i] == null ? { time: t } : { time: t, value: Math.round(arr[i]) };
+        }));
+        return se;
       };
-      var cv = document.getElementById('cp-line');
-      // Chart.js refuses a canvas that is already in use, and silently leaves
-      // the old chart on screen - which looked exactly like "the picker does
-      // nothing". Always tear the previous one down.
-      var prev = Chart.getChart(cv);
-      if (prev) prev.destroy();
-      return new Chart(cv, cfg);
+
+      // --- overlays ---
+      var unit = cpMode === 'candle' ? 4 : 12;           // one year, in bars
+      if (cpInd.ma) {
+        lineAt(sma(closes, unit), '#eda100', 1.6);
+        lineAt(sma(closes, unit * 2), css('--accent', '#0071e3'), 1.6);
+        legend.push(['#eda100', 'MA' + unit + '（一年）'], [css('--accent', '#0071e3'), 'MA' + unit * 2 + '（两年）']);
+      }
+      if (cpInd.gmma) {
+        // Guppy: the short ribbon is the traders, the long one the investors.
+        // Scaled to the bar size so the monthly and quarterly views agree.
+        // 3-15 and 30-60 are bar counts. On quarterly bars they are divided,
+        // not multiplied: a 60-quarter EMA would be fifteen years of smoothing.
+        var k = cpMode === 'candle' ? 1 / 3 : 1;
+        [3, 5, 8, 10, 12, 15].forEach(function (n) {
+          lineAt(ema(closes, Math.max(2, Math.round(n * k))), 'rgba(227,73,72,.5)', 1); });
+        [30, 35, 40, 45, 50, 60].forEach(function (n) {
+          lineAt(ema(closes, Math.max(3, Math.round(n * k))), 'rgba(42,120,214,.45)', 1); });
+        legend.push(['rgba(227,73,72,.55)', '顾比短期组（3–15）'], ['rgba(42,120,214,.5)', '顾比长期组（30–60）']);
+      }
+      if (cpInd.boll) {
+        var mid = sma(closes, unit * 2), sd = stddev(closes, unit * 2);
+        lineAt(mid, 'rgba(138,138,138,.9)', 1.2, true);
+        lineAt(mid.map(function (m, i) { return m == null ? null : m + 2 * sd[i]; }), 'rgba(138,138,138,.55)', 1);
+        lineAt(mid.map(function (m, i) { return m == null ? null : m - 2 * sd[i]; }), 'rgba(138,138,138,.55)', 1);
+        legend.push(['rgba(138,138,138,.9)', '布林带（' + unit * 2 + ' 期，±2σ）']);
+      }
+      if (cpInd.st) {
+        var st = superTrend(bars, cpMode === 'candle' ? 7 : 10, 3);
+        // Two series so the flip is visible: red while the trend is up, green
+        // while it is down - the same 红涨绿跌 as everything else on this page.
+        lineAt(st.line.map(function (v, i) { return st.trend[i] === 1 ? v : null; }), UP, 2);
+        lineAt(st.line.map(function (v, i) { return st.trend[i] === -1 ? v : null; }), DOWN, 2);
+        var t = st.trend[st.trend.length - 1];
+        legend.push([t === 1 ? UP : DOWN, 'SuperTrend · 当前' + (t === 1 ? '多头' : '空头')]);
+      }
+
+      if (cpMode === 'candle') {
+        var s1 = chart.addSeries(LC.CandlestickSeries, {
+          upColor: UP, downColor: DOWN, borderUpColor: UP, borderDownColor: DOWN,
+          wickUpColor: UP, wickDownColor: DOWN, priceScaleId: 'right'
+        }, pricePane);
+        s1.setData(bars.map(function (b, i) {
+          return { time: times[i], open: b.o, high: b.h, low: b.l, close: b.c };
+        }));
+        legend.push([UP, name + ' 季度 K 线 · 红涨绿跌']);
+      } else if (cpMode === 'bar') {
+        var s2 = chart.addSeries(LC.HistogramSeries, { priceScaleId: 'right' }, pricePane);
+        s2.setData(bars.map(function (b, i) {
+          return { time: times[i], value: b.c,
+            color: i && b.c < bars[i - 1].c ? 'rgba(27,175,122,.6)' : 'rgba(227,73,72,.6)' };
+        }));
+        legend.push([UP, name + ' 月度挂牌均价 · 红涨绿跌']);
+      } else {
+        var s3 = chart.addSeries(LC.AreaSeries, { priceScaleId: 'right', lineColor: UP,
+          topColor: 'rgba(227,73,72,.22)', bottomColor: 'rgba(227,73,72,0)', lineWidth: 3 }, pricePane);
+        s3.setData(bars.map(function (b, i) { return { time: times[i], value: b.c }; }));
+        legend.push([UP, name + ' 逐月挂牌均价']);
+      }
+
+      // Medians sit on the left scale - same unit, different order of magnitude -
+      // and are off by default: two extra lines on their own axis is exactly the
+      // clutter that made the first version unreadable.
+      if (cpCmp) [[pm, css('--accent', '#0071e3'), cpProv + ' 中位数（左轴）'],
+       [med, faint, panel.length + ' 城中位数（左轴）']].forEach(function (m) {
+        var s = chart.addSeries(LC.LineSeries, { color: m[1], lineWidth: 1, priceScaleId: 'left',
+          lastValueVisible: false, priceLineVisible: false, crosshairMarkerVisible: false,
+          lineStyle: LC.LineStyle.Dashed }, pricePane);
+        var d = [];
+        D.months.forEach(function (mm, i) { if (m[0][i] != null) d.push({ time: tOf(mm), value: m[0][i] }); });
+        s.setData(d);
+        legend.push([m[1], m[2]]);
+      });
+
+      if (cpYoy) {
+        var yv = yoy(city);
+        var pane = chart.addPane();
+        var h = chart.addSeries(LC.HistogramSeries, { priceScaleId: 'right',
+          priceFormat: { type: 'percent' } }, 1);
+        var hd = [];
+        D.months.forEach(function (m, i) {
+          if (yv[i] == null) return;
+          hd.push({ time: tOf(m), value: yv[i], color: yv[i] >= 0 ? 'rgba(227,73,72,.8)' : 'rgba(27,175,122,.8)' });
+        });
+        h.setData(hd);
+        try { chart.panes()[1].setHeight(110); } catch (e) { /* older build, ignore */ }
+        legend.push([UP, '同比 %（副图，红涨绿跌）']);
+      }
+
+      // Range chips drive the visible window; the user can still drag and zoom.
+      var lastM = D.months[D.months.length - 1];
+      if (cpSpan) {
+        var fromIdx = Math.max(0, D.months.length - cpSpan);
+        chart.timeScale().setVisibleRange({ from: tOf(D.months[fromIdx]), to: tOf(lastM) });
+      } else {
+        chart.timeScale().fitContent();
+      }
+
+      document.getElementById('cp-line-legend').innerHTML = legend.map(function (x) {
+        return '<span><i class="swatch" style="background:' + x[0] + '"></i>' + x[1] + '</span>';
+      }).join('');
+
+      if (ro) ro.disconnect();
+      if (window.ResizeObserver) {
+        ro = new ResizeObserver(function () { if (chart) chart.applyOptions({ width: host.clientWidth }); });
+        ro.observe(host);
+      }
+      note(pick, cpMode === 'candle' ? quarters(city) : null);
     }
 
     // --- trend ---------------------------------------------------------------
@@ -1136,12 +1301,13 @@
           + '</div><p class="kd">' + x[2] + '</p></div>';
       }).join('');
 
-      var tail = { line: '折线是价格本身。', bar: '柱子是每个月的挂牌均价。',
-        candle: '一根 K 线是一个季度：实体两端是季初与季末，影线是当季最高最低月。绿涨红跌。' }[cpMode];
+      var tail = { line: '折线是价格本身。', bar: '柱子是每个月的挂牌均价，红涨绿跌。',
+        candle: '一根 K 线是一个季度：实体两端是季初与季末，影线是当季最高最低月，红涨绿跌。' }[cpMode];
       document.getElementById('cp-line-note').textContent =
-        name + '：' + tail + '左轴永远是元/㎡ 的真实价格，右轴那条橙线是同一条序列的同比 %，'
-        + '两件事放一张图上看得出「跌得快不快」和「跌到哪了」不是一回事。'
-        + '蓝线是 ' + cpProv + ' 省内城市中位数，灰虚线是 ' + panel.length + ' 城平衡面板中位数。';
+        name + '：' + tail + '右轴是这座城市的真实价格（元/㎡），左轴是 ' + cpProv
+        + ' 与全国中位数 —— 五万块的城市和六千块的中位数没法共用一根轴，所以分两边放。'
+        + '副图是同比 %；图可以拖动和缩放。指标是把股票那套算法直接套在房价月度序列上：'
+        + '房价没有成交量、没有日内高低，ATR 退化成相邻两期的价差 —— 看趋势方向可以，别当交易信号。';
     }
 
     // --- map ------------------------------------------------------------------
