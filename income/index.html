@@ -9,6 +9,9 @@
 <style>
   main { max-width: 820px; margin: 0 auto; }
   .chart { position: relative; height: 330px; }
+  /* Seventeen provinces, two bars each - the national charts' height would
+     squeeze them into unreadable slivers. */
+  .chart.tall { height: 620px; }
   .legend { display: flex; flex-wrap: wrap; gap: 16px; font-size: 12px; color: var(--ink-2); margin-bottom: 8px; }
   .legend span { display: inline-flex; align-items: center; gap: 6px; }
   .swatch { width: 11px; height: 11px; border-radius: 2px; background: var(--accent); display: inline-block; }
@@ -117,18 +120,25 @@
   <div class="chart"><canvas id="region-chart" role="img" aria-label="柱状图：同一份家庭年收入在全国及东部、中部、西部、东北能购买的建筑面积。">一年收入能买的平米数。</canvas></div>
   <p class="hint" id="reg-note"></p>
 
-  <h2 id="index" data-rail="指数的坑">六、附：指数说的是另一回事</h2>
+  <h2 id="prov" data-rail="分省">六、分省版：同一套算法，逐省算一遍</h2>
+  <p>上面全是全国口径。收入能拿到的最细一层是<b>省</b>：19 个省的城镇可支配收入是从各省统计公报里逐篇抓出来的，房价这一侧用<b>省会挂牌均价</b>代表该省。两边一除，就是同一套天花板公式落到每个省的样子。</p>
+  <div class="legend" id="prov-legend"></div>
+  <div class="chart tall"><canvas id="prov-chart" role="img" aria-label="横向条形图：各省双职工收入能支撑的房价上限，与省会 100 平方米按挂牌均价计的实际总价对比。">分省的上限与实际总价。</canvas></div>
+  <p class="hint" id="prov-note"></p>
+  <p><b>这一节比全国口径严，方向是一致的偏严：</b>分子用省会房价（高于全省），分母用全省收入（低于省会），挂牌价又高于成交价。<span class="hl">绝对值别当估价单，省与省之间的排序才是可比的</span>。区级和市级的工资仍然没有公开的机器可读来源 —— 试过哪些源、各自卡在哪，写在<a href="../district/#edge">区级那页第七节</a>。</p>
+
+  <h2 id="index" data-rail="指数的坑">七、附：指数说的是另一回事</h2>
   <p>还有一条能拉到二十年的线：BIS 的中国实际住宅价格指数（剔除通胀，2010 = 100）。把它和不变价人均产出画在一起，结论会和上面完全不同 —— 所以它单独放在这里，<b>不作为本页的论据</b>。</p>
   <div class="legend" id="idx-legend"></div>
   <div class="chart"><canvas id="index-chart" role="img" aria-label="折线图：中国实际住宅价格指数与实际人均产出指数，均以 2010 年为 100。">实际房价指数与实际人均产出。</canvas></div>
   <p class="hint" id="idx-note"></p>
   <p><b>为什么不拿它当论据。</b>底层是 70 城<b>新建</b>商品住宅指数：只统计新房、受限价影响、不含二手。<span class="hl">指数回答的是变化，均价回答的是水平</span>，用它往回推 2005–2010 会得出「几乎没涨」，和当时的成交价对不上。</p>
 
-  <h2 id="caveat" data-rail="口径的坑">七、这几个数字容易被误读的地方</h2>
+  <h2 id="caveat" data-rail="口径的坑">八、这几个数字容易被误读的地方</h2>
   <p><b>全国均价掩盖了差距。</b>9,527 元/㎡ 是把一线和县城平均在一起的结果。全国口径下「工资撑得起」，不代表在你想买的那个城市撑得起 —— 这正是分城市数据缺失最要命的地方。</p>
   <p><b>上限用的是固定利率。</b>按 3.5% 算了十五年，但 2011 年实际房贷利率在 7% 上下。固定住是为了把工资的贡献单独拆出来，不是说 2011 年真能借到 3.5%。</p>
   <p><b>房价收入比的口径不唯一。</b>这里用双职工家庭、100 平方米、可支配收入。换成三口之家单一收入、或用 90 平方米，数字会明显不同。看到别人引用这个比值时，先确认对方用的是哪一套。</p>
-  <p><b>人均产出不是工资。</b>第六节用的是不变价人均 GDP，它包含企业留存和政府收入，通常比居民到手的增长更快。它只出现在那一节，正是因为它不能替代真实收入。</p>
+  <p><b>人均产出不是工资。</b>第七节用的是不变价人均 GDP，它包含企业留存和政府收入，通常比居民到手的增长更快。它只出现在那一节，正是因为它不能替代真实收入。</p>
 
   <h2 id="close" data-rail="收尾">收尾：三句话</h2>
   <p><b>一、工资十五年变成 2.6 倍</b>（21,810 → 56,502 元），利率不变时能出的价同步从 58 万变到 150 万。</p>
@@ -139,8 +149,10 @@
   <ul class="links">
     <li><a href="https://www.stats.gov.cn/sj/tjgb/ndtjgb/qgndtjgb/" rel="noopener">国家统计局：国民经济和社会发展统计公报</a> — 城镇居民人均可支配收入，每年一份，本页取 2011 年起</li>
     <li><a href="https://www.stats.gov.cn/sj/zxfb/" rel="noopener">国家统计局：全国房地产市场基本情况</a> — 均价由销售额 ÷ 销售面积得出，归档覆盖 2023 年起</li>
-    <li><a href="https://fred.stlouisfed.org/series/QCNR628BIS" rel="noopener">BIS 中国实际住宅价格指数（经 FRED）</a> — 仅用于第六节，2010 = 100</li>
-    <li><a href="https://api.worldbank.org/v2/country/CHN/indicator/NY.GDP.PCAP.KN?format=json" rel="noopener">World Bank：人均 GDP（不变价本币）</a> — 仅用于第六节的收入代理</li>
+    <li><a href="../district/data/province-income.json" rel="noopener">province-income.json</a> — 第六节的分省收入，从 19 个省统计局的统计公报里逐篇抓出，每条带原文链接</li>
+    <li><a href="../district/data/district-price.json" rel="noopener">district-price.json</a> — 第六节的省会房价，房天下二手房<b>挂牌</b>参考均价（非成交备案价）</li>
+    <li><a href="https://fred.stlouisfed.org/series/QCNR628BIS" rel="noopener">BIS 中国实际住宅价格指数（经 FRED）</a> — 仅用于第七节，2010 = 100</li>
+    <li><a href="https://api.worldbank.org/v2/country/CHN/indicator/NY.GDP.PCAP.KN?format=json" rel="noopener">World Bank：人均 GDP（不变价本币）</a> — 仅用于第七节的收入代理</li>
     <li>试算参数：首付 30%、等额本息、年利率 3.5%、期限 30 年、月供收入比上限 50%、双职工、100 平方米。同一组假设也用于 <a href="../story/">一套房的一生</a> 与 <a href="../loan/">房贷计算器</a></li>
   </ul>
   <div class="scroll" style="margin-top:1rem">
@@ -399,6 +411,95 @@
              + (a.payShare * 100).toFixed(1) + '%</td>')
         + '</tr>';
     }).join('');
+
+    drawProvinces(A);
+  }
+
+  // The province layer reuses the district page's two datasets rather than
+  // fetching anything new: provincial urban income scraped from each province's
+  // statistical communique, and the capital city's asking price standing in for
+  // the province. Same ceiling formula as the national sections above, so the
+  // only thing that changes between here and section 1 is the granularity.
+  var CAP = { 北京: '北京', 天津: '天津', 上海: '上海', 重庆: '重庆', 河北: '石家庄', 山西: '太原',
+    内蒙古: '呼和浩特', 辽宁: '沈阳', 吉林: '长春', 黑龙江: '哈尔滨', 江苏: '南京', 浙江: '杭州',
+    安徽: '合肥', 福建: '福州', 江西: '南昌', 山东: '济南', 河南: '郑州', 湖北: '武汉', 湖南: '长沙',
+    广东: '广州', 广西: '南宁', 海南: '海口', 四川: '成都', 贵州: '贵阳', 云南: '昆明', 西藏: '拉萨',
+    陕西: '西安', 甘肃: '兰州', 青海: '西宁', 宁夏: '银川', 新疆: '乌鲁木齐' };
+
+  function drawProvinces(A) {
+    Promise.all([
+      fetch('../district/data/province-income.json', { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : null; }),
+      fetch('../district/data/district-price.json', { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : null; })
+    ]).catch(function () { return [null, null]; }).then(function (x) {
+      var inc = x && x[0], pr = x && x[1];
+      var note = document.getElementById('prov-note');
+      if (!inc || !pr) { if (note) note.textContent = '分省数据暂时取不到，刷新或稍后再看。'; return; }
+
+      // Only the newest year, the way the district page does it: a province
+      // stuck on 2017 income against 2026 prices is not a comparison.
+      var newest = Math.max.apply(null, inc.rows.map(function (r) { return r.year; }));
+      // Every province has a multi-year series, so "stale" is about its own
+      // latest year, not about having old rows.
+      var latest = {};
+      inc.rows.forEach(function (r) {
+        if (!latest[r.province] || r.year > latest[r.province]) latest[r.province] = r.year;
+      });
+      var stale = Object.keys(latest).filter(function (p) { return latest[p] < newest; });
+      var byCity = {};
+      pr.cities.filter(function (c) { return !c.suspect; })
+        .forEach(function (c) { byCity[c.name] = c; });
+
+      var i = (A.rate / 100) / 12, n = A.years * 12;
+      var rows = inc.rows.filter(function (r) { return r.year === newest; }).map(function (r) {
+        var c = byCity[CAP[r.province]];
+        if (!c) return null;
+        var household = r.urban * A.earners;
+        var ceiling = household / 12 * A.dsr * (1 - Math.pow(1 + i, -n)) / i / (1 - A.down);
+        return { province: r.province, capital: c.name, price: c.price, household: household,
+                 ceiling: ceiling, actual: c.price * A.area, share: c.price * A.area / ceiling };
+      }).filter(Boolean).sort(function (a, b) { return b.share - a.share; });
+      if (!rows.length) { if (note) note.textContent = '分省数据暂时取不到，刷新或稍后再看。'; return; }
+
+      lg('prov-legend', [[BLUE, '工资撑得起的上限'], [RED, '省会 ' + A.area + '㎡ 的实际总价']]);
+      new Chart(document.getElementById('prov-chart'), {
+        type: 'bar',
+        data: { labels: rows.map(function (r) { return r.province + ' · ' + r.capital; }),
+          datasets: [
+            { label: '上限', data: rows.map(function (r) { return Math.round(r.ceiling); }),
+              backgroundColor: BLUE, borderRadius: 3, barPercentage: .82 },
+            { label: '实际总价', data: rows.map(function (r) { return Math.round(r.actual); }),
+              backgroundColor: RED, borderRadius: 3, barPercentage: .82 }
+          ] },
+        options: Object.assign({}, base, {
+          indexAxis: 'y',
+          plugins: { legend: { display: false }, tooltip: { callbacks: {
+            label: function (c) {
+              var r = rows[c.dataIndex];
+              return c.dataset.label + ' ' + money(c.raw) + '（房价 ' + yuan(r.price) + ' 元/㎡，家庭年收入 '
+                + yuan(r.household) + ' 元）';
+            } } } },
+          scales: { x: { ticks: { color: GRAY, callback: function (v) { return money(v); } }, grid: { color: grid },
+                         title: { display: true, text: '总价（元）', color: GRAY } },
+                    y: { ticks: { color: GRAY, font: { size: 11 } }, grid: { display: false } } } })
+      });
+
+      var over = rows.filter(function (r) { return r.share > 1; });
+      var hi = rows[0], lo = rows[rows.length - 1];
+      var missing = (inc.failures || []).map(function (f) { return String(f).split(':')[0]; });
+      var noPrice = inc.rows.filter(function (r) { return r.year === newest; })
+        .map(function (r) { return r.province; })
+        .filter(function (p) { return !byCity[CAP[p]]; });
+      note.textContent = newest + ' 年收入 × ' + pr.period + ' 挂牌价，' + rows.length + ' 个省。'
+        + (over.length ? over.length + ' 个省的省会总价已经高过这份工资撑得起的上限，最吃力的是 '
+            + hi.province + '（' + hi.capital + '，实际是上限的 ' + hi.share.toFixed(2) + ' 倍）；'
+          : '没有一个省的省会总价超过上限；')
+        + '最宽松的是 ' + lo.province + '（' + lo.capital + '，' + lo.share.toFixed(2) + ' 倍）。'
+        + '口径与第一节完全一样：双职工、首付 ' + (A.down * 100) + '%、'
+        + A.years + ' 年、固定 ' + A.rate + '%、月供不超过收入的 ' + (A.dsr * 100) + '%。'
+        + (stale.length ? '收入只抓到旧年份的 ' + stale.join('、') + ' 已排除。' : '')
+        + (noPrice.length ? noPrice.join('、') + ' 的省会没有挂牌价，缺席。' : '')
+        + (missing.length ? missing.join('、') + ' 的统计公报抓不到。' : '');
+    });
   }
 })();
 </script>
