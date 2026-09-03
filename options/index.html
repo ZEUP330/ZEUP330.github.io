@@ -92,6 +92,57 @@
   <p class="lede">Wheel 的两条腿：先卖现金担保看跌，被指派后卖备兑看涨。这页从 22 个标的里筛出候选，附年化、Delta、缓冲与流动性。<span class="hl">按年化排序，榜首永远是杠杆 ETF —— 那是风险的标价，不是白捡的收益</span>。</p>
   <p>覆盖七姐妹、指数与行业 ETF、杠杆 ETF。GitHub Actions 在美股交易时段定时抓 Cboe 延迟行情，在 runner 里筛完再把结果提交进仓库 —— 页面只读静态 JSON，没有后端。</p>
 
+  <figure class="shot">
+    <div class="fr">
+      <svg viewBox="0 0 960 540" preserveAspectRatio="xMidYMid meet" role="img" aria-label="流程图：Wheel 策略的循环。手里是现金时卖出现金担保看跌；没被指派则收下权利金回到现金，被指派则按行权价接到股票；持股后卖出备兑看涨；被行权则卖出股票回到现金，没被行权则继续卖看涨。">
+        <title>Wheel 的一圈</title>
+        <defs>
+          <marker id="wh-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--ink-3)"/>
+          </marker>
+        </defs>
+        <g font-family="-apple-system, BlinkMacSystemFont, sans-serif">
+          <text x="40" y="44" fill="var(--ink)" font-size="24" font-weight="600">一圈四步，两条腿各收一次权利金</text>
+
+          <path d="M650 128 C 560 66, 300 66, 212 126" stroke="var(--ink-3)" stroke-width="2"
+                stroke-dasharray="7 6" fill="none" marker-end="url(#wh-a)"/>
+          <text x="430" y="116" fill="var(--ink-2)" font-size="16" text-anchor="middle">没被指派：权利金落袋，回到 ①</text>
+
+          <g stroke="var(--ink-3)" stroke-width="2.5" fill="none" marker-end="url(#wh-a)">
+            <path d="M330 188 H600"/>
+            <path d="M750 248 V318"/>
+            <path d="M610 382 H352"/>
+            <path d="M200 325 V250"/>
+          </g>
+
+          <g>
+            <rect x="80" y="135" width="240" height="105" rx="14" fill="var(--card)" stroke="var(--line)"/>
+            <rect x="620" y="135" width="260" height="105" rx="14" fill="var(--card)" stroke="var(--put)"/>
+            <rect x="620" y="330" width="260" height="105" rx="14" fill="var(--card)" stroke="var(--line)"/>
+            <rect x="80" y="330" width="260" height="105" rx="14" fill="var(--card)" stroke="var(--call)"/>
+          </g>
+
+          <g fill="var(--ink)" font-size="21" font-weight="600" text-anchor="middle">
+            <text x="200" y="178">① 手里是现金</text>
+            <text x="750" y="178">② 卖现金担保看跌</text>
+            <text x="750" y="373">③ 按行权价接到股票</text>
+            <text x="210" y="373">④ 卖备兑看涨</text>
+          </g>
+          <g fill="var(--ink-3)" font-size="16" text-anchor="middle">
+            <text x="200" y="208">留足行权价 × 100 的现金</text>
+            <text x="750" y="208">CSP · 收权利金</text>
+            <text x="750" y="403">成本 ＝ 行权价 − 权利金</text>
+            <text x="210" y="403">CC · 再收一次权利金</text>
+          </g>
+
+          <text x="480" y="474" fill="var(--ink-2)" font-size="16" text-anchor="middle">被行权：股票卖出，回到 ①；没被行权：继续卖 ④</text>
+          <text x="480" y="510" fill="var(--put)" font-size="17" text-anchor="middle">整圈唯一没被定价的风险：③ 那天你还愿不愿意持有它</text>
+        </g>
+      </svg>
+    </div>
+    <figcaption>年化只描述 ② 和 ④ 两步收到的权利金，描述不了 ③ 那一步接下来的股票值多少 —— 那是整圈里唯一要自己判断的地方。</figcaption>
+  </figure>
+
   <div class="warn" id="stale">
     <b class="hl hl--warn">这是延迟行情快照，不是实时报价</b>；盘后与周末的卖价常被挂得很宽，年化收益会因此偏低或偏高。所有数字是公开数据的机械计算，不是投资建议。
   </div>

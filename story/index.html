@@ -62,9 +62,52 @@
   <h1 id="top">一套房的一生：钱从哪来，到哪去</h1>
   <p class="lede">一套 100 万的房子可以涨到 1000 万，<span class="hl">但涨不到 100 亿</span> —— 拦住它的不是想象力，是下一个买家的工资条。这页用一套房从开发商到第十位买家的完整路径，回答四件事：价格为什么涨、天花板在哪、涨的时候钱从谁的口袋进了谁的口袋、跌的时候又是谁先亏。能画的都画出来。</p>
 
-  <div class="alert">
-    <strong>先说口径。</strong>下面所有单套测算都用同一组假设：首套商贷、首付 30%、等额本息、年利率 3.5%（2026-08 五年期以上 LPR）、期限 30 年、家庭月供收入比上限 50%。宏观数字标注了年份与来源，均为国家统计局与财政部公开口径。这是一篇解释机制的文章，不是对任何城市、任何楼盘的判断。
-  </div>
+  <figure class="shot">
+    <div class="fr">
+      <svg viewBox="0 0 960 540" preserveAspectRatio="xMidYMid meet" role="img" aria-label="示意图：一套房从 100 万起转手十次、每次加价 100 万到 1100 万，最后一位买家的钱主要来自银行按揭；沿途有税费与中介、开发商第一手售房、土地出让金三处把现金抽走。">
+        <title>钱从哪来，到哪去</title>
+        <defs>
+          <marker id="st-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--ink-3)"/>
+          </marker>
+        </defs>
+        <g font-family="-apple-system, BlinkMacSystemFont, sans-serif">
+          <text x="40" y="46" fill="var(--ink)" font-size="24" font-weight="600">十次转手，钱是从最后一位的贷款里出来的</text>
+
+          <rect x="620" y="78" width="260" height="72" rx="14" fill="var(--card)" stroke="var(--line)"/>
+          <text x="750" y="122" fill="var(--ink)" font-size="20" font-weight="600" text-anchor="middle">银行按揭</text>
+          <path d="M810 152 C 830 190, 855 205, 868 228" stroke="var(--ink-3)" stroke-width="2.5"
+                fill="none" marker-end="url(#st-a)"/>
+
+          <line x1="90" y1="250" x2="870" y2="250" stroke="var(--line)" stroke-width="3"/>
+          <g fill="var(--accent)" opacity=".55">
+            <circle cx="90" cy="250" r="9"/><circle cx="168" cy="250" r="9"/><circle cx="246" cy="250" r="9"/>
+            <circle cx="324" cy="250" r="9"/><circle cx="402" cy="250" r="9"/><circle cx="480" cy="250" r="9"/>
+            <circle cx="558" cy="250" r="9"/><circle cx="636" cy="250" r="9"/><circle cx="714" cy="250" r="9"/>
+            <circle cx="792" cy="250" r="9"/>
+          </g>
+          <circle cx="870" cy="250" r="13" fill="var(--accent)"/>
+
+          <g fill="var(--ink-2)" font-size="17">
+            <text x="90" y="224" text-anchor="middle">100 万</text>
+            <text x="480" y="224" text-anchor="middle">每转一手 +100 万</text>
+            <text x="870" y="222" text-anchor="middle" fill="var(--ink)" font-weight="600">1100 万</text>
+          </g>
+
+          <g stroke="var(--ink-3)" stroke-width="2.5" fill="none" marker-end="url(#st-a)" opacity=".8">
+            <path d="M246 262 V352"/><path d="M480 262 V352"/><path d="M714 262 V352"/>
+          </g>
+
+          <rect x="90" y="366" width="780" height="96" rx="14" fill="var(--card)" stroke="var(--line)"/>
+          <text x="480" y="400" fill="var(--ink)" font-size="19" font-weight="600" text-anchor="middle">沿途被抽走的现金</text>
+          <text x="480" y="432" fill="var(--ink-2)" font-size="17" text-anchor="middle">每次转手的税费与中介 · 第一手卖房的开发商 · 卖地的地方财政</text>
+
+          <text x="480" y="508" fill="var(--ink-2)" font-size="17" text-anchor="middle">前十位「各赚 100 万」多数是估值：换房的人把它锁进了下一套同样贵的房子。</text>
+        </g>
+      </svg>
+    </div>
+    <figcaption>口径：首套商贷、首付 30%、等额本息、3.5%、30 年、月供收入比上限 50%；宏观数字为统计局与财政部公开口径。这是解释机制，不是对任何楼盘的判断。</figcaption>
+  </figure>
 
   <h2 id="ceiling" data-rail="天花板">一、天花板：为什么炒不到 100 亿</h2>
   <p>房子的成交价不是卖家喊出来的，是<b>下一个买家能借到多少钱</b>。而银行肯借多少，锚在他的收入上。把这条链算出来，天花板就出现了。</p>
@@ -95,7 +138,7 @@
   <div class="legend" id="real-legend"></div>
   <div class="chart"><canvas id="real" role="img" aria-label="对比柱状图：卖房后彻底退出市场的人拿到现金，换房的人账面收益被同步上涨的下一套房抵消。">谁真的拿到了现金。</canvas></div>
   <p class="hint" id="real-note"></p>
-  <p><span class="hl">在一个所有房子同步上涨的市场里，「房子涨了」对不打算离开这个市场的人来说，不是收入，是估值。</span>真正把现金装进口袋并且不用再交出去的，只有三类人：卖房后彻底退出（换城市、换成租房、移民、去世后继承变现）的家庭、第一手卖房的开发商、以及卖地的地方财政。</p>
+  <p><span class="hl">房子同步上涨时，「涨了」对不打算离开市场的人不是收入，是估值。</span>真正把现金装进口袋的只有三类：彻底退出的家庭、第一手卖房的开发商、卖地的地方财政。</p>
 
   <h2 id="where" data-rail="钱去了哪">五、这套房的第一笔钱，去了哪</h2>
   <p>上面说的是二手转手。但这条链的<b>起点</b>——开发商第一次把房子卖给购房者——才是最大的一笔现金转移。用全国口径能看出比例。</p>
@@ -131,8 +174,8 @@
   <figure id="timeline"></figure>
   <div class="keys" id="evg-keys"></div>
   <p class="hint" id="evg-note"></p>
-  <p>证监会认定的事实很具体：2019 至 2020 两年，恒大地产通过<b>提前确认收入</b>虚增收入 5,641 亿元、虚增利润 920.11 亿元，并用这两年的虚假财报在交易所面向合格投资者发行了 5 期合计 208 亿元的债券，构成<b>欺诈发行</b>。造假手段包括修改当年交楼清单、修改系统里的交楼时间。</p>
-  <p>处罚落到人身上时的表述是：许家印「决策并组织实施财务造假，手段特别恶劣、情节特别严重」，作为实际控制人组织、指使实施上述违法行为。<span class="hl">从「首富」到被采取强制措施，中间隔着的不是房价下跌，是这几个动词。</span>房价下跌只是让循环停了；停下来之后，账上的窟窿藏不住了。</p>
+  <p>证监会认定：2019–2020 两年，恒大地产<b>提前确认收入</b>虚增收入 5,641 亿元、虚增利润 920.11 亿元，并用这两年的虚假财报发行 5 期合计 208 亿元债券，构成<b>欺诈发行</b>。</p>
+  <p>对许家印的表述是「决策并组织实施财务造假，手段特别恶劣」。<span class="hl">从「首富」到被采取强制措施，中间隔着的不是房价下跌，是这几个动词</span> —— 下跌只是让循环停了，停下来窟窿就藏不住。</p>
 
   <h2 id="down" data-rail="下跌">九、下跌的时候呢：谁先亏，亏的是什么</h2>
   <p>上涨时大家一起「赚」，下跌时却不是大家一起亏 —— 因为这条链上每个人的<b>受偿顺序</b>不一样。</p>

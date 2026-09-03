@@ -91,10 +91,15 @@
   <p class="back"><a href="../">← 首页</a> · <a href="../housing/">全国房价走势地图</a></p>
   <h1>中国房企：谁在什么时候暴的</h1>
   <p class="lede">这页只用一个客观量：<span class="hl">每家公司距自己历史最高股价还剩多少</span>。不依赖任何人对「暴雷」的定义。逐家核对公告后能确认：股价通常比违约公告早，但它<b>不等于</b>违约 —— 万科跌破 −90% 至今没有发生公开市场违约。</p>
-  <p><span id="n-firms">22</span> 家上市房企距各自历史最高收盘价还剩多少。用股价，是因为它是这件事里<b class="hl">唯一权威、带日期、且可以自动更新</b>的记录 —— 交易所每天都在给每家公司定价，停牌和退市也会直接写进这条曲线。</p>
+  <p><span id="n-firms">22</span> 家上市房企距各自历史最高收盘价还剩多少。用股价，是因为它是这件事里<b class="hl">唯一权威、带日期、且可以自动更新</b>的记录。</p>
+
+  <figure class="shot">
+    <a class="fr" href="https://commons.wikimedia.org/wiki/File:FORMER_EVERGRANDE_GROUP_REAL_ESTATE_IN_GUIYUAN_ROAD,_SHENZHEN_(46).jpg" rel="noopener"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/FORMER_EVERGRANDE_GROUP_REAL_ESTATE_IN_GUIYUAN_ROAD%2C_SHENZHEN_%2846%29.jpg/960px-FORMER_EVERGRANDE_GROUP_REAL_ESTATE_IN_GUIYUAN_ROAD%2C_SHENZHEN_%2846%29.jpg" alt="深圳桂园路，恒大集团曾经的地产项目" loading="lazy" referrerpolicy="no-referrer" onerror="this.closest('figure').hidden=true"></a>
+    <figcaption>深圳桂园路，恒大曾经的项目。股价比违约公告早了 13 个月——它是预警，不是判决。<span class="cred">图：Dinkun Chen / Wikimedia Commons，CC BY-SA 4.0</span></figcaption>
+  </figure>
 
   <div class="note">
-    你要的<b>项目点位</b>和<b>区县级均价分布</b>我找不到能用的权威来源，没有硬做。理由写在页面最下面「为什么没有地图」一节，包括我查了哪些官方渠道、各自卡在哪里。
+    <b>项目点位</b>和<b>区县级均价分布</b>找不到能用的权威来源，没有硬做。理由见页尾「为什么没有地图」。
   </div>
 
   <div id="empty" class="placeholder" hidden>还没有数据。等 <code>developers</code> 工作流跑完后刷新。</div>
@@ -185,8 +190,8 @@
   <p>你要的是「房企在各城市的项目点 + 暴雷点 + 区县均价分布」。我按权威来源逐个查过，卡在这几处：</p>
   <ul>
     <li><b>项目点位</b>：没有免费的机器可读数据集。上市公司年报只披露到「进入 X 个城市」这种粒度，项目级坐标只存在于贝壳、安居客这类商业平台，要爬且受其服务条款限制。</li>
-    <li><b>区县级均价</b>：统计局只发布 <a href="../housing/">70 城价格<b>指数</b></a>（不是价格）。区县级成交均价在各市住建委/房管局手里 —— <a href="https://zjw.beijing.gov.cn/" rel="noopener">北京住建委</a>是项目级、要自行按区聚合，<a href="https://fdc.zjj.sz.gov.cn/" rel="noopener">深圳房地产信息平台</a>又是另一套页面。几十个城市各一套 HTML、无 API、对境外 IP 不友好，而这个站的更新是跑在 GitHub 的美国 runner 上。</li>
-    <li><b>违约名单</b>：交易所<b>没有</b>统一的「违约债券名单」下载入口。<a href="https://bond.sse.com.cn/" rel="noopener">上证债券信息网</a>和<a href="http://www.szse.cn/disclosure/bond/notice/index.html" rel="noopener">深交所债券公告</a>是逐条公告，需要按发行人检索；<a href="https://pccz.court.gov.cn/pcajxxw/index/xxwsy" rel="noopener">全国法院破产重整案件信息网</a>是门户页面不是接口。实务上要靠公告 + 评级机构报告 + 商业数据库交叉验证，做不成每日自动更新。</li>
+    <li><b>区县级均价</b>：统计局只发布 <a href="../housing/">70 城价格<b>指数</b></a>。区县级成交均价散在各市住建委手里（<a href="https://zjw.beijing.gov.cn/" rel="noopener">北京</a>是项目级、<a href="https://fdc.zjj.sz.gov.cn/" rel="noopener">深圳</a>又是另一套），几十个城市各一套 HTML、无 API。</li>
+    <li><b>违约名单</b>：交易所<b>没有</b>统一下载入口。<a href="https://bond.sse.com.cn/" rel="noopener">上证</a>、<a href="http://www.szse.cn/disclosure/bond/notice/index.html" rel="noopener">深交所</a>是逐条公告，<a href="https://pccz.court.gov.cn/pcajxxw/index/xxwsy" rel="noopener">破产重整信息网</a>是门户不是接口，做不成每日自动更新。</li>
   </ul>
   <p>所以这一页退回到能站住的那部分：<b>交易所价格</b>。它不能告诉你某个楼盘停没停工，但能准确告诉你市场在哪一天给这家公司判了刑，而且明天还会自动更新。</p>
 

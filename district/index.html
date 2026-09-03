@@ -56,10 +56,15 @@
   <h1 id="top">区级房价与各省工资</h1>
   <p class="lede">上一页说“区级数据拿不到”。那是我找得不够。这页把能找到的都摆出来：<span class="hl"><b id="n-cities">200</b> 个城市、<b id="n-districts">665</b> 个区县的挂牌均价，和 <b id="n-prov">19</b> 个省的城镇可支配收入</span>。把两边相除，各省的房价收入比差了将近四倍。</p>
 
+  <figure class="shot">
+    <a class="fr" href="https://commons.wikimedia.org/wiki/File:Qingdao_-_Drone_view_city_with_skyline_(Unsplash).jpg" rel="noopener"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Qingdao_-_Drone_view_city_with_skyline_%28Unsplash%29.jpg/960px-Qingdao_-_Drone_view_city_with_skyline_%28Unsplash%29.jpg" alt="青岛航拍：新旧城区与天际线连成一片" loading="lazy" referrerpolicy="no-referrer" onerror="this.closest('figure').hidden=true"></a>
+    <figcaption>青岛：一张照片里最贵的区和最便宜的区差 6.5 倍。城市内部的差距比城市之间还大，这页量的就是它。<span class="cred">图：CHO EUNSEONG / Wikimedia Commons，CC0</span></figcaption>
+  </figure>
+
   <div class="keys" id="keys"></div>
 
   <div class="alert">
-    <strong>先说这份数据是什么、不是什么。</strong>房价是<b>挂牌参考均价</b>（房天下按在售房源计算），不是成交备案价，通常比成交价高。每座城市只公布<b>房价最高的 10 个区县</b>，不是全部 —— 北京 16 个区里只有 10 个有价。收入是<b>省级</b>的，不是区级：区级工资没有任何公开的机器可读来源，这一点找遍了也确实没有，详见<a href="#edge">第七节</a>。
+    <strong>先说这份数据是什么。</strong>房价是<b>挂牌参考均价</b>（房天下按在售房源算），高于成交价；每城只公布<b>最贵的 10 个区县</b>；收入是<b>省级</b>的——区级工资没有公开的机器可读来源，详见<a href="#edge">第七节</a>。
   </div>
 
   <h2 id="cities" data-rail="200 城">一、200 个城市：头部有多陡</h2>
@@ -90,7 +95,7 @@
   <div class="legend" id="ratio-legend"></div>
   <div class="chart tall"><canvas id="ratio-chart" role="img" aria-label="横向条形图：各省省会房价对应的房价收入比。">各省房价收入比。</canvas></div>
   <p class="hint" id="ratio-note"></p>
-  <p><b>这个比值系统性偏高，原因要说清楚。</b>分子是省会的房价，分母是全省的收入 —— 而省会的收入本来就高于全省平均。所以每个省的绝对值都比真实情况大，<span class="hl">但各省之间的排序仍然可比</span>，因为这个偏差在每个省的方向一致。要消掉它，需要省会城市自己的收入，那又回到了城市级工资只散落在各市统计公报里的问题。</p>
+  <p><b>这个比值系统性偏高：</b>分子是省会房价，分母是全省收入，而省会收入高于全省平均。绝对值都偏大，<span class="hl">但各省排序仍可比</span>——偏差方向一致。</p>
 
   <h2 id="sqm" data-rail="能买几平米">六、一年家庭收入，在各省会能买几平米</h2>
   <p>同一件事换个说法，不用比值用面积 —— 这个更好想象：双职工一整年不吃不喝，买得下多大一块地板。</p>
@@ -118,7 +123,7 @@
     <dt class="no">区级工资</dt>
     <dd>不存在公开的机器可读来源。各区确实各自发统计公报，但那是数千个区政府网站，各一套结构，且多数不在归档里。城市级同理：只在各市公报里，七十多个站点各一套。</dd>
   </dl>
-  <p><b>还有几处已知的脏数据，不藏着。</b>房天下把<b>莆田</b>的挂牌均价发布为 67,350 元/平，约是其他来源的五倍，且它的区级数字同样偏高，靠内部一致性检不出来 —— 本页把它按原样保留但标记出来，既不悄悄删也不悄悄改。另外<b>广东</b>只抓到 2017 年、<b>云南</b>只到 2019 年的收入，第五、六节因此把这两个省排除，否则会拿八年前的工资去比今天的房价。</p>
+  <p><b>已知脏数据，不藏着。</b>房天下把<b>莆田</b>发布为 67,350 元/平，约是其他来源的五倍，本页原样保留但标记。<b>广东</b>只抓到 2017 年、<b>云南</b>只到 2019 年，第五、六节排除这两省。</p>
 
   <h2 id="table" data-rail="全表">八、全部 <span id="n-districts2">665</span> 个区</h2>
   <div class="scroll">

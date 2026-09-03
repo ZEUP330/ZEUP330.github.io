@@ -126,6 +126,48 @@
   <h1>房贷计算器</h1>
   <p class="lede">三个滑块，看月供、总利息和剩余本金怎么随年限和利率变。<span class="hl">月供有下限</span> —— 等于本金 × 月利率的纯利息（当前 <strong id="lede-floor">4,167</strong> 元），年限拉到 1000 年也降不下去。三国为什么把上限定在 30/40/50 年，在<a href="../mortgage/">对照那页</a>。</p>
 
+  <figure class="shot">
+    <div class="fr">
+      <svg viewBox="0 0 960 540" preserveAspectRatio="xMidYMid meet" role="img" aria-label="曲线图：100 万本金、年利率 3.5% 时，月供随贷款年限延长而下降，10 年 9,889 元、30 年 4,490 元、40 年 3,874 元、100 年 3,008 元，始终停在 2,917 元这条纯利息地板之上。">
+        <title>月供的地板</title>
+        <g font-family="-apple-system, BlinkMacSystemFont, sans-serif">
+          <text x="40" y="46" fill="var(--ink)" font-size="24" font-weight="600">年限拉多长，月供都过不去这条线</text>
+          <text x="40" y="74" fill="var(--ink-3)" font-size="16">100 万本金 · 年利率 3.5% · 等额本息</text>
+
+          <g stroke="var(--line)" stroke-width="1">
+            <line x1="110" y1="470" x2="920" y2="470"/>
+            <line x1="110" y1="100" x2="110" y2="470"/>
+          </g>
+          <g fill="var(--ink-3)" font-size="15" text-anchor="end">
+            <text x="98" y="70">1 万</text>
+            <text x="98" y="275">5,000</text>
+            <text x="98" y="476">0</text>
+          </g>
+          <g fill="var(--ink-3)" font-size="15" text-anchor="middle">
+            <text x="110" y="498">10 年</text><text x="290" y="498">30</text>
+            <text x="470" y="498">50</text><text x="650" y="498">70</text><text x="920" y="498">100</text>
+          </g>
+
+          <polyline fill="none" stroke="var(--accent)" stroke-width="3.5" stroke-linejoin="round"
+            points="110,65 155,177 200,232 245,265 290,286 380,311 470,325 560,334 650,339 740,343 830,345 920,347"/>
+
+          <line x1="110" y1="350" x2="920" y2="350" stroke="var(--ink-3)" stroke-width="2" stroke-dasharray="7 6"/>
+          <text x="920" y="374" fill="var(--ink-2)" font-size="17" text-anchor="end">地板 2,917 元 ＝ 本金 × 月利率，全是利息</text>
+
+          <g fill="var(--accent)">
+            <circle cx="290" cy="286" r="6"/><circle cx="380" cy="311" r="6"/><circle cx="920" cy="347" r="6"/>
+          </g>
+          <g fill="var(--ink)" font-size="17">
+            <text x="300" y="272">30 年 4,490 元</text>
+            <text x="392" y="300">40 年 3,874</text>
+            <text x="912" y="333" text-anchor="end">100 年 3,008</text>
+          </g>
+        </g>
+      </svg>
+    </div>
+    <figcaption>前 30 年砍掉的月供最多，之后每加十年只省一两百块，总利息却一路线性往上加。</figcaption>
+  </figure>
+
   <div class="controls">
     <div class="row">
       <label for="p">贷款本金</label>

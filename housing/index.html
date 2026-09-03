@@ -59,12 +59,15 @@
   <p class="lede">统计局只发布<span class="hl">指数，不发布房价</span>。所以这页有两把尺子：城市级的<b>涨跌速度</b>（70 城指数，2006 年至今逐月），和大区级的<b>真实均价</b>（元/㎡）。最新一期 30 个省里有 29 个同比为负，全国均价 9,488 元/㎡。</p>
   <p>两套官方数据：<b class="hl">涨跌速度</b>用 70 城指数（城市级，2006 年至今逐月），<b class="hl">真实均价</b>用月度新闻稿里的销售额÷销售面积（大区级，元/㎡）。口径下拉框切换，进度条拖时间，双击省份放大到市级。</p>
 
+  <figure class="shot">
+    <a class="fr" href="https://commons.wikimedia.org/wiki/File:20211111_Residential_buildings_of_Liulisi_Village.jpg" rel="noopener"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/20211111_Residential_buildings_of_Liulisi_Village.jpg/960px-20211111_Residential_buildings_of_Liulisi_Village.jpg" alt="临街成排的住宅楼与底商" loading="lazy" referrerpolicy="no-referrer" onerror="this.closest('figure').hidden=true"></a>
+    <figcaption>地图上每一格背后是这样的楼。指数量的是它的涨跌速度，不是它一平方米多少钱 —— 这两件事这页分开放。<span class="cred">图：Windmemories / Wikimedia Commons，CC BY-SA 4.0</span></figcaption>
+  </figure>
+
   <div class="alert-note">
-    <strong>均价只有大区口径，没有分省，更没有分市和分区。</strong>元/㎡ 这一套数字的来源是统计局每月的《全国房地产市场基本情况》新闻稿，用 新建商品房销售额 ÷ 销售面积 得到 —— 那份稿子<b class="hl hl--warn">本身就只公布全国与东/中/西/东北四大区</b>，不是这里筛掉了城市。所以均价模式下同一大区的省份是同色的：那是<b>整个大区</b>的均价，不是该省的。
+    <strong>均价只有大区口径，没有分省、分市、分区。</strong>元/㎡ 来自统计局月度新闻稿的 销售额 ÷ 销售面积，<b class="hl hl--warn">那份稿子本身只公布全国与东/中/西/东北四大区</b>，所以同一大区的省份同色。
     <br><br>
-    更细的分省、分市 元/㎡ 在统计局数据库 <code>data.stats.gov.cn</code> 里有，但它的查询接口 <code>easyquery.htm</code> 被 WAF 拦截（403 UrlACL）—— 站点根目录正常访问，只有查询接口挡程序化请求，<b>国内 IP 同样被拦</b>，所以这不是境外访问的问题，换机器也取不到。此外土地成交（landchina.com 空响应）、全国公共资源交易平台（连接不通）、深圳与上海的房产交易平台（412）也都挡程序化访问。<b>区县级均价目前没有任何可自动更新的权威来源</b>，各市住建委发的是项目级网签，格式各异且无接口。
-    <br><br>
-    城市级能拿到的只有<b>指数</b>（涨跌幅），不是价格 —— 这就是地图默认那一套。想看某个城市自己跌了多少，在<a href="../developers/">房企暴雷那页</a>有 70 城按自身峰值排的回撤榜。
+    更细的在 <code>data.stats.gov.cn</code>，但查询接口 <code>easyquery.htm</code> 被 WAF 拦（403，国内 IP 同样被拦）；土地成交、公共资源交易、深沪房产平台也都挡程序化访问。<b>区县级均价没有可自动更新的权威来源</b>。城市级能拿到的只有指数，某城自身跌幅见<a href="../developers/">房企暴雷那页</a>的回撤榜。
   </div>
 
   <div class="toolbar">
