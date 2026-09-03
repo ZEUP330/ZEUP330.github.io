@@ -3,20 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>周会的元数据：210 期，四年半，三个从没被填过的段落</title>
-<meta name="description" content="一个后端团队 210 期周会纪要的元数据分析：模板八个段落，三个四年半从没被填过；一半字数落在同一段里；207 期开在周五。附 84 条「本周话题」破冰问题全清单，逐条带日期。">
+<title>周会话题清单：84 个问题，四年半</title>
+<meta name="description" content="一个后端团队周五开会前先聊五分钟的破冰问题，2023 年 11 月到 2026 年 8 月共 84 条，逐条带日期与类别；45 条留下了当场的回答，按人匿名。另附一份逐条的延伸讨论。">
 <link rel="stylesheet" href="/assets/theme.css">
 <style>
   /* theme.css ships --ease (the drawer curve) but no strong ease-out; entrances
      and disclosures need one, so the page adds it rather than reusing a curve
      that was picked for sliding sheets. */
-  :root { --warn: #eda100; --ok: #12855c; --danger: #cf3520; --ghost: #9a9aa0;
-          --ease-out: cubic-bezier(0.23, 1, 0.32, 1); }
-  @media (prefers-color-scheme: dark) {
-    :root { --warn: #fac775; --ok: #34c48a; --danger: #ff6b57; --ghost: #77777d; }
-  }
+  :root { --ease-out: cubic-bezier(0.23, 1, 0.32, 1); --mine: #7c5cd6; }
 
-  main { max-width: 780px; margin: 0 auto; }
+  main { max-width: 760px; margin: 0 auto; }
 
   figure { margin: 1.4rem 0; }
   figure svg { width: 100%; height: auto; display: block; }
@@ -30,17 +26,20 @@
     margin: 1.2rem 0; }
   .note b { color: var(--ink); }
 
-  ul.links { padding-left: 1.1rem; margin: 0; }
-  ul.links li { color: var(--ink-3); font-size: 14px; margin-bottom: .55rem; }
   .chips { display: flex; flex-wrap: wrap; gap: 7px; margin: 1rem 0 .6rem; }
   .chip { font: inherit; font-size: 12.5px; color: var(--ink-2); background: var(--bg-2);
     border: 1px solid var(--line-2); border-radius: 999px; padding: 4px 13px; cursor: pointer;
-    transition: color var(--t) var(--ease), border-color var(--t) var(--ease), background var(--t) var(--ease); }
-  .chip:hover { border-color: var(--ink-3); }
+    transition: color var(--t) var(--ease), border-color var(--t) var(--ease),
+      background var(--t) var(--ease), transform 120ms var(--ease-out); }
+  .chip:active { transform: scale(.97); }
   .chip.on { background: var(--accent); border-color: var(--accent); color: #fff; }
-  ol.tlist { list-style: none; padding: 0; margin: .4rem 0 0; counter-reset: t; }
+  @media (hover: hover) and (pointer: fine) {
+    .chip:hover { border-color: var(--ink-3); }
+  }
+
+  ol.tlist { list-style: none; padding: 0; margin: .4rem 0 0; }
   ol.tlist li { display: grid; grid-template-columns: 5.6rem 1fr; gap: 2px 14px;
-    padding: .62rem 0; border-top: 1px solid var(--line-2); align-items: baseline; }
+    padding: .68rem 0; border-top: 1px solid var(--line-2); align-items: baseline; }
   ol.tlist li.off { display: none; }
   ol.tlist .d { font-size: 12.5px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
   ol.tlist .q { font-size: 14.5px; color: var(--ink); line-height: 1.6; }
@@ -49,38 +48,36 @@
     border-radius: 2px; margin-right: 5px; vertical-align: 1px; }
 
   /* Answers disclosure. height is the one layout-animating property allowed
-     here — it is the accordion case, and there is no transform equivalent.
-     The 0fr→1fr grid trick was tried first and resolves to 0 inside this
-     baseline-aligned row, so the height is measured in JS. 200ms because this
+     here — it is the accordion case and has no transform equivalent. The
+     0fr→1fr grid trick was tried first and resolves to 0 inside this
+     baseline-aligned row, so the height is measured in JS. 200ms, because this
      costs layout on every frame. */
   .ans-t { grid-column: 2; justify-self: start; font: inherit; font-size: 11.5px;
-    color: var(--accent); background: none; border: 0; padding: 2px 0 0; cursor: pointer;
-    display: inline-flex; align-items: center; gap: 4px;
-    transition: opacity var(--t-fast) var(--ease-out); }
+    color: var(--accent); background: none; border: 0; padding: 3px 0 0; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 4px; }
   .ans-t::after { content: '▾'; font-size: 9px; transition: transform 200ms var(--ease-out); }
   li.open .ans-t::after { transform: rotate(180deg); }
   .ans { grid-column: 2; height: 0; overflow: hidden; opacity: 0;
     transition: height 200ms var(--ease-out), opacity 200ms var(--ease-out); }
   li.open .ans { opacity: 1; }
-  .ans dl { margin: .45rem 0 .15rem; display: grid; grid-template-columns: 4.2rem 1fr;
-    gap: 6px 12px; font-size: 13px; }
-  .ans dt { color: var(--ink-3); font-size: 11.5px; white-space: nowrap; padding-top: 1px; }
-  .ans dd { margin: 0; color: var(--ink-2); line-height: 1.65; }
+  .ans dl { margin: .45rem 0 .15rem; display: grid; grid-template-columns: 4.4rem 1fr;
+    gap: 7px 12px; font-size: 13px; }
+  .ans dt { color: var(--ink-3); font-size: 11.5px; white-space: nowrap; padding-top: 2px; }
+  .ans dd { margin: 0; color: var(--ink-2); line-height: 1.7; }
+  .ans dt.mine { color: var(--mine); }
+  .ans dd.mine { color: var(--ink-2); border-left: 2px solid color-mix(in srgb, var(--mine) 45%, transparent);
+    padding-left: 10px; margin-left: -2px; }
 
-  /* Filter re-entry: the surviving rows fade up rather than snapping in.
-     Stagger caps at the first 8 rows so a 84-row list never blocks reading. */
+  /* Filter re-entry: surviving rows fade up instead of snapping in. The stagger
+     stops after 8 rows — past that it is delay the reader has to sit through. */
   @keyframes tfade { from { opacity: 0; transform: translateY(6px); } }
   ol.tlist.filtering li:not(.off) { animation: tfade 200ms var(--ease-out) both; }
-
-  .chip { transition: color var(--t) var(--ease), border-color var(--t) var(--ease),
-    background var(--t) var(--ease), transform 120ms var(--ease-out); }
-  .chip:active { transform: scale(.97); }
 
   @media (max-width: 620px) {
     ol.tlist li { grid-template-columns: 1fr; }
     ol.tlist .c, .ans-t, .ans { grid-column: 1; }
     .ans dl { grid-template-columns: 1fr; gap: 2px; }
-    .ans dt { padding-top: 4px; }
+    .ans dt { padding-top: 6px; }
   }
   /* Fewer and gentler, not zero: keep the opacity cues, drop the movement. */
   @media (prefers-reduced-motion: reduce) {
@@ -88,7 +85,6 @@
     .ans-t::after, .chip { transition: none; }
     .chip:active { transform: none; }
   }
-  h2 { scroll-margin-top: 70px; }
 </style>
 <link rel="stylesheet" href="/assets/statusbar.css">
 <link rel="stylesheet" href="/assets/rail.css">
@@ -99,437 +95,77 @@
 <body>
 <main>
   <p class="back"><a href="../">← 首页</a></p>
-  <h1 id="top">周会的元数据</h1>
-  <p class="lede">一个后端团队的周会纪要，2022 年 2 月开到 2026 年 8 月，210 期。前七节不看它们写了什么，只看<span class="hl">它们长什么样</span> —— 模板有几段、哪段最长、哪段从来没人填、断档发生在什么时候。结论有点扎人：八个段落里有三个，四年半一次都没被写过。最后一节是<a href="#topics">84 条「本周话题」</a>，那是开会前先聊五分钟的破冰问题。</p>
+  <h1 id="top">周会话题清单</h1>
+  <p class="lede">一个后端团队每周五开会前，先花五分钟聊一个跟工作无关的问题。<span class="hl">2023 年 11 月到 2026 年 8 月，一共 84 个</span>。这页把它们按时间排开，45 个留下了当场的回答，另附一份逐条的延伸。</p>
 
   <div class="note">
-    <b>关于脱敏。</b>统计部分全是元数据：期数、日期、段落名、字符数、空段率。唯一带原文的是最后那份<a href="#topics">本周话题清单</a> —— 每期开会前先聊五分钟的破冰问题和当场的回答，跟业务无关，逐条核过没有工单号、项目名和内部链接。回答按人匿名成成员 A 到 H，姓名与邮箱不出现。不写是哪家公司哪个团队。项目进展、技术方案、个人排期这些真正的会议内容全部留在内网。
+    <b>关于脱敏。</b>这里只有破冰问题和当场的回答，跟业务无关，逐条核过没有工单号、项目名和内部链接。回答按人匿名成成员 A 到 H，代号全表稳定，可以顺着看同一个人。不写是哪家公司哪个团队，项目进展、技术方案、个人排期这些真正的会议内容一个字都没往外拿。
   </div>
 
   <div class="stats">
-    <div class="stat"><div class="k">期数</div><div class="v">210</div></div>
-    <div class="stat"><div class="k">跨度</div><div class="v">238 周</div></div>
-    <div class="stat"><div class="k">开在周五</div><div class="v">207 期</div></div>
-    <div class="stat"><div class="k">全空的段落</div><div class="v">3 个</div></div>
+    <div class="stat"><div class="k">话题</div><div class="v">84</div></div>
+    <div class="stat"><div class="k">有回答</div><div class="v">45</div></div>
+    <div class="stat"><div class="k">回答条数</div><div class="v">90</div></div>
+    <div class="stat"><div class="k">跨度</div><div class="v">2.8 年</div></div>
   </div>
 
-  <h2 id="rhythm" data-rail="节奏">一、238 周里开了 210 期</h2>
-  <p>首期 2022-02-18，末期 2026-08-28，中间横跨 238 周。这 210 期落在 209 个不同的周里（有一周开了两次），覆盖率 87.8%。</p>
-
-  <figure>
-    <div id="f-dots"></div>
-    <figcaption>每一格是一周，从 2022-02 的那一周开始按周排列，一行 53 周。实心＝这周有纪要，空心＝没有。没有纪要不等于没开会，只等于没留下页面 —— 这条限制贯穿全页。</figcaption>
-  </figure>
-
-  <p>缺的 29 周不是随机掉的。按月拆开：1 月 4 周、2 月 4 周、4 月 4 周、9 月 3 周、10 月 3 周 —— 春节、清明五一、中秋国庆三个假期段吃掉了其中 20 周，占 69%。</p>
-
-  <figure>
-    <div id="f-miss"></div>
-    <figcaption>横轴是月份，纵轴是这个月总共缺了几周（四年半累计）。3 月、8 月、11 月几乎不缺，这三个月里没有长假。</figcaption>
-  </figure>
-
-  <p>把相邻两期的间隔拉出来看，节奏比想象中硬：182 次是标准的 7 天，15 次隔两周，6 次隔三周。三周是这四年半里出现过的最长断档，一次都没有更长的。</p>
-
-  <figure>
-    <div id="f-gap"></div>
-    <figcaption>间隔＝相邻两期纪要的日期差。4 天和 6 天那三次是调会，8 天和 10 天是顺延一天。分布只有两个明显的簇：7 天，和 7 的倍数。</figcaption>
-  </figure>
-
-  <p>那 6 次三周断档全部踩在长假上：四次春节（2023-01、2024-02、2025-01、2026-02），两次中秋国庆连休（2023-09、2025-09）。会没停过，只是跟着法定假日让路。</p>
-
-  <figure>
-    <div id="f-break"></div>
-    <figcaption>六次 21 天断档的起止。四年半里断档的原因只有一个，规律到可以拿它反推假期表。</figcaption>
-  </figure>
-
-  <p>星期分布更极端：210 期里 207 期在周五，2 期周四，1 期周一。一个开了四年半的会，98.6% 的时间没有挪过窝。</p>
-
-  <figure>
-    <div id="f-dow"></div>
-    <figcaption>周五下午的周会是这类团队的默认配置：一周的活干完了，下周的活还没开始，是唯一一个「说完就能散」的时间点。</figcaption>
-  </figure>
-
-  <h2 id="tpl" data-rail="模板">二、模板活了多久</h2>
-  <p>最早三期用的是中文自由格式：日期、参会人、会议日程、个人工作总结、跟进项。从 2022-03-11 起换成固定英文模板，此后四年半基本没动过 —— 只增删了两个段落。</p>
-
-  <figure>
-    <div id="f-switch"></div>
-    <figcaption>切换发生在第 4 期。中文模板按「人」组织（谁总结、谁计划），英文模板按「事」组织（项目、线上问题、技术方案），换的不只是语言。</figcaption>
-  </figure>
-
-  <figure>
-    <div id="f-life"></div>
-    <figcaption>横条＝该段落在纪要里出现的时间跨度，右侧数字是出现期数。两处变动值得看：Current Thinking Points 只活了 19 期，Next week topic 直到 2023-12 才加进来。</figcaption>
-  </figure>
-
-  <p>Current Thinking Points 是个短命段落：2022-03-11 加上，2022-07-29 撤掉，中间出现 19 期。而这 19 期里，它的正文字数<b>全部为 0</b> —— 加了一个段落，从来没人填，半年后删掉。这是本页最短的一个故事。</p>
-
-  <h2 id="share" data-rail="篇幅">三、字都写在哪一段</h2>
-  <p>把 210 期所有段落的字符数加起来，分布极度倾斜：Member's Job Schedule 一段吃掉 48.9%，Ongoing Project Status 31.0%，Next week topic 10.9%，OKR 6.6%。四段占 97.4%，剩下四段分 2.6%。</p>
-
-  <figure>
-    <div id="f-share"></div>
-    <figcaption>字符数含表格标记，所以绝对值不等于「说了多少话」；但段与段之间的比例是可比的，因为它们用同一套表格结构。</figcaption>
-  </figure>
-
-  <p>这个分布说明周会的重心在「谁在做什么、做到哪了」。技术方案、线上问题、跨组同步这三件事加起来不到全部篇幅的 2.2% —— 它们要么在别的场合解决，要么根本没在这个会上发生。</p>
-
-  <h2 id="empty" data-rail="空段">四、三个从没被填过的段落</h2>
-  <p>把「正文少于 120 字符」判为只剩模板表头，空段率就出来了。Sync-Up &amp; Discussion：207 期，207 期空，<b>100%</b>。Live Issue：209 期里 207 期空，99.0%。Follow UP 88.9%，Technical Solutions 44.4%。</p>
-
-  <figure>
-    <div id="f-empty"></div>
-    <figcaption>阈值 120 字符是按空表格的字节数定的：一个只有表头没有行的段落约 51–81 字符。把阈值放到 120 是给「写了一句话」留余量，所以这个空段率是<b>偏低</b>的估计。</figcaption>
-  </figure>
-
-  <p>四个段落常年不填，但每周都在模板里被复制一次，跟着会议一起走了四年半。它们不消耗会议时间，消耗的是「这份纪要看起来完整」这个错觉 —— 打开一份纪要看到八个标题，实际有内容的是四个。</p>
-
-  <div class="note">
-    <b>为什么不直接删。</b>删段落要有人拍板，留段落零成本 —— 这是模板腐化的标准路径：加一段很容易（有人提一句「要不要跟一下线上问题」），删一段要有人承认它没用。Current Thinking Points 是这四年半里唯一被删掉的段落，代价是它连着 19 期完全空白，空到没法辩护。
-  </div>
-
-  <h2 id="copy" data-rail="复制">五、有一段的长度几乎不变</h2>
-  <p>Next week topic 出现了 125 期，字符数分布窄得可疑：最小 2999，四分位 2999，中位 3424，上四分位 3459，最大 3886。四分之一的期数字符数<b>完全相同</b>。</p>
-
-  <figure>
-    <div id="f-nw"></div>
-    <figcaption>一个每周重写的段落，长度应该是散的。挤在 2999–3459 这个 460 字符宽的带子里，更像是上周的清单整段复制过来、改两个字。</figcaption>
-  </figure>
-
-  <p>这不一定是坏事 —— 固定清单本来就该长得一样。但它意味着这一段承载的是「常驻待办」，不是「下周要聊的新话题」，跟段落名字承诺的东西不是一回事。</p>
-
-  <h2 id="year" data-rail="逐年">六、逐年看</h2>
-  <p>期数四年稳定在 42–47 期，2026 年到 8 月底 30 期，节奏没变。单期总字数 2023 年最高（平均 22091），之后一路降到 2025 年的 16265，2026 年回到 17541。</p>
-
-  <figure>
-    <div id="f-year"></div>
-    <figcaption>单期总字数含全部表格标记与模板本身，所以底噪不低；把它当作「这一年纪要写得细不细」的相对指标。</figcaption>
-  </figure>
-
-  <p>拆开看更清楚：Member's Job Schedule 从 2023 年的平均 12065 掉到 2025 年的 5649，砍掉一半还多；同期 Ongoing Project Status 基本没动（5273 → 5923）。缩掉的是「每个人报自己在干嘛」，保住的是「项目进展」。</p>
-
-  <figure>
-    <div id="f-two"></div>
-    <figcaption>2026 年 Member's Job Schedule 又回升到 8648，是这条曲线上唯一一次反弹，原因本页看不出来 —— 元数据能看见变化，看不见原因。</figcaption>
-  </figure>
-
-  <h2 id="end" data-rail="收束">七、能得出什么</h2>
-  <p>三条，都只从结构里来：</p>
-  <p><b>一、会议模板会腐化，而且是单向的。</b>八段里四段常年空着，四年半只删掉过一段，而那一段是因为空到 19 期一个字都没有。加段容易删段难，所以模板只会越来越长。</p>
-  <p><b>二、纪要的完整度是假象。</b>看标题数量以为覆盖了八件事，实际 97.4% 的字落在四段里。要判断一个会在讨论什么，数标题没用，得数字数。</p>
-  <p><b>三、节奏比内容稳定得多。</b>四年半、236 周、207 次周五，中位间隔 7 天。内容的篇幅涨了又跌，段落加了又删，唯一没动过的是「周五开会」这件事本身。</p>
-
-  <figure>
-    <div id="f-final"></div>
-    <figcaption>同一份模板的两种读法：左边是它声称的样子（八个平等的段落），右边是它实际的样子（四段承载内容，四段是仪式）。</figcaption>
-  </figure>
-
-  <h2 id="topics" data-rail="话题清单">八、本周话题：84 条，逐条带日期</h2>
-  <p>前面数的是形状，这一节是内容。每期纪要的第一张表，表头上挂着一句「本周话题」—— 它不是技术议题，是开会前先聊五分钟的那个破冰问题。</p>
+  <h2 id="when" data-rail="节奏">这个栏目是长出来的</h2>
+  <p>2023-11-17 冒过一次，还是个技术话题，然后沉寂了 9 个月。2024-08-09 起才每周固定下来，2025 年 37 期是完整的一年。</p>
 
   <figure>
     <div id="f-topicyear"></div>
-    <figcaption>按年统计有话题的期数。2023 年只有 1 次，之后沉寂了 9 个月；2024 年 8 月起才每周固定，2025 年 37 期是完整的一年。</figcaption>
+    <figcaption>按年统计有话题的期数。2026 年截至 8 月底 30 期。有意思的是，这个栏目不在会议模板里 —— 它挂在第一张表的表头上，模板里正式立项的段落反而有三个四年半没人填过。</figcaption>
   </figure>
 
-  <p>栏目是长出来的，不是设计出来的：2023-11-17 冒过一次就没了，直到 2024-08-09 才真正立住。这跟前面那些段落的命运正好相反 —— 模板里加的段落没人填，模板外长出来的栏目反而活了两年。</p>
+  <h2 id="what" data-rail="类别">聊得最多的是宏观和钱</h2>
+  <p>时事政策 16 条、投资理财 12 条，两类加起来占三分之一。一个做交易系统的后端团队，周五下午的闲聊落点在这里，大概不算巧合。</p>
 
   <figure>
     <div id="f-topiccat"></div>
-    <figcaption>类别为按关键词归并后人工校对，边界不严格 —— 「关税对普通人的影响」既是时事也是投资，这里只归一次。</figcaption>
+    <figcaption>按关键词归并后人工校对，边界不严格 —— 「关税对普通人的影响」既是时事也是投资，这里只归一次。</figcaption>
   </figure>
 
-  <p>时事政策 16 条、投资理财 12 条，两类加起来占三分之一。一个做交易系统的后端团队，周五下午聊得最多的是宏观和钱，这大概不算巧合。</p>
-
-  <p>下面是全部 84 条，按时间倒序，点类别可以只看一类。其中 45 条当场留下了回答，展开能看到 —— 回答写在同一张表的最后一列，一人一行，这里按人匿名成成员 A 到 H，代号在整份清单里是稳定的，可以顺着看同一个人。</p>
+  <h2 id="list" data-rail="清单">全部 84 条</h2>
+  <p>按时间倒序，点类别只看一类。展开能看到当场的回答，以及标成紫色的「延伸」—— 那是事后补的，把话题往下推一格，不是现场发生的讨论。其中延迟退休、预制菜、保险、AI 泡沫、面试、关税、备份这几条，写的是能在知乎／Hacker News 上检索到的主流说法与被反复引用的数据；其余是自己的框架，没有假托别人。</p>
 
   <div class="chips" id="tchips"></div>
   <ol class="tlist" id="tlist"></ol>
 
   <div class="note">
-    <b>几条观察。</b>① 2025-07-18 到 09-19 断了两个月，是栏目立住之后唯一一次长空窗。② 只重复过一次 —— 券商被监管点名那条连挂两周（2026-06-05 / 06-12），说明出题的人基本每周都在找新题。③ 2026 年开始出现「投资日常：」「前沿科技：」「日常生活：」这类前缀，有人在给话题分类，但只坚持了半年。
+    <b>三条观察。</b>① 2025-07-18 到 09-19 断了两个月，是栏目立住之后唯一一次长空窗。② 只重复过一次 —— 券商被监管点名那条连挂两周（2026-06-05 / 06-12），出题的人基本每周都在找新题。③ 2026 年开始出现「投资日常：」「前沿科技：」「日常生活：」这类前缀，有人在给话题分类，但只坚持了半年。
   </div>
 
-  <p class="hint">话题原文照录，只做了两处改写：2023 年那条内部技术话题改成了泛化描述，一条提到同事外号的改成「一位同事」；另外去掉了原文里的外部链接和图片。其余保持原样，包括错别字和标点。回答同样照录，去掉了姓名与邮箱，只留代号；纯图片的格子、串进这一列的工作记录、以及整行复制到下一周的重复回答都不计入 —— 所以「N 条回答」是当周实际写了字的人数的下限。</p>
+  <p class="hint">话题原文照录，只做了两处改写：2023 年那条内部技术话题改成了泛化描述，一条提到同事外号的改成「一位同事」；另外去掉了原文里的外部链接和图片。回答同样照录，去掉姓名与邮箱只留代号；纯图片的格子、串进这一列的工作记录、以及整行复制到下一周的重复回答都不计入 —— 所以「N 条回答」是当周实际写了字的人数的下限。「延伸」是事后补写的，涉及具体人物评价、争议事件细节和政治判断的题目一律留空。</p>
 
-  <h2 id="how" data-rail="方法">方法与局限</h2>
-  <ul class="links">
-    <li>样本：内网 wiki 上「后端」页面树下的全部年份子页，逐页取标题日期与段落结构，共 210 期，2022-02-18 至 2026-08-28。</li>
-    <li>段落识别按标题文本归一（含两处拼写变体：<code>Technical S olutions</code>、首尾多空格的 <code>Sync-Up &amp; Discussion</code>），OKR 的四个季度变体合并为一段。</li>
-    <li>字符数统计的是段落正文（含表格标记）的长度，不是发言字数；不同段落用同一套表格结构，所以段间可比、跨页面可比，绝对值不可直接理解为「说了多少」。</li>
-    <li>空段阈值取 120 字符，比实测的空表格（51–81 字符）宽，因此空段率是保守估计。</li>
-    <li>局限：没有纪要 ≠ 没开会；纪要是会后补的，篇幅反映记录习惯，不完全反映会议时长。本页不做因果推断。</li>
-    <li>本页只发布上述聚合量，原始页面内容未离开内网。</li>
-  </ul>
-
-  <footer>这是对会议记录形式的统计，不是对任何团队或个人工作的评价。所有数字为元数据聚合，不含会议内容。</footer>
+  <footer>破冰问题与回答为团队闲聊记录，不代表任何机构立场。涉及市场与资产的段落只做框架描述，不构成投资建议。</footer>
 </main>
 
 <script>
 (function () {
-  var D = {"share":{"Member's Job Schedule":1839777,"Ongoing Project Status":1168347,"Next week topic":410678,"OKR":248040,"Technical Solutions":44811,"Live Issue":19245,"Follow UP":17182,"Sync-Up & Discussion":16767,"Current Thinking Points":0},
-  "empty":{"Member's Job Schedule":[0,207],"Ongoing Project Status":[0,205],"Next week topic":[0,125],"OKR":[0,207],"Technical Solutions":[92,207],"Live Issue":[207,209],"Follow UP":[184,207],"Sync-Up & Discussion":[207,207],"Current Thinking Points":[19,19]},
-  "life":{"Member's Job Schedule":["2022-03","2026-08",207],"Ongoing Project Status":["2022-03","2026-08",205],"Next week topic":["2023-12","2026-08",125],"OKR":["2022-03","2026-08",207],"Technical Solutions":["2022-03","2026-08",207],"Live Issue":["2022-02","2026-08",209],"Follow UP":["2022-03","2026-08",207],"Sync-Up & Discussion":["2022-03","2026-08",207],"Current Thinking Points":["2022-03","2022-07",19]},
-  "gaps":{"4":1,"6":2,"7":182,"8":2,"10":1,"14":15,"21":6},
-  "dow":{"Fri":207,"Thu":2,"Mon":1},
-  "perYearTotal":{"2022":[42,17838],"2023":[46,22091],"2024":[47,17677],"2025":[45,16265],"2026":[30,17541]},
-  "jobByYear":{"2022":[11718,5273],"2023":[12065,6630],"2024":[6684,5597],"2025":[5649,5923],"2026":[8648,4576]},
-  "nextweek":{"n":125,"min":2999,"p25":2999,"med":3424,"p75":3459,"max":3886},
-  "span":{"first":"2022-02-18","last":"2026-08-28","weeks":236,"n":210}};
-
-  // 210 meeting dates, "YY-MM-DD", the only per-meeting data on this page.
-  var ALL_DATES = "22-02-18,22-02-25,22-03-04,22-03-11,22-03-18,22-03-25,22-04-01,22-04-08,22-04-15,22-04-22,22-04-29,22-05-13,22-05-20,22-05-27,22-06-02,22-06-10,22-06-17,22-06-24,22-07-01,22-07-08,22-07-22,22-07-29,22-08-05,22-08-12,22-08-19,22-08-26,22-09-02,22-09-09,22-09-16,22-09-23,22-09-30,22-10-14,22-10-21,22-10-28,22-11-04,22-11-11,22-11-18,22-11-25,22-12-02,22-12-09,22-12-16,22-12-30,23-01-06,23-01-13,23-02-03,23-02-10,23-02-17,23-02-24,23-03-03,23-03-10,23-03-17,23-03-24,23-03-31,23-04-07,23-04-14,23-04-21,23-04-28,23-05-12,23-05-19,23-05-26,23-06-02,23-06-09,23-06-16,23-06-30,23-07-07,23-07-14,23-07-21,23-07-28,23-08-04,23-08-11,23-08-18,23-08-25,23-09-01,23-09-08,23-09-15,23-09-22,23-10-13,23-10-20,23-10-27,23-11-03,23-11-10,23-11-17,23-11-24,23-12-01,23-12-08,23-12-15,23-12-22,23-12-29,24-01-05,24-01-12,24-01-19,24-01-26,24-02-02,24-02-23,24-03-01,24-03-08,24-03-15,24-03-22,24-03-29,24-04-12,24-04-19,24-04-26,24-05-10,24-05-17,24-05-24,24-05-31,24-06-07,24-06-14,24-06-21,24-06-28,24-07-05,24-07-12,24-07-22,24-07-26,24-08-02,24-08-09,24-08-16,24-08-23,24-08-30,24-09-06,24-09-13,24-09-20,24-09-27,24-10-11,24-10-18,24-10-25,24-11-01,24-11-08,24-11-15,24-11-22,24-11-29,24-12-06,24-12-13,24-12-20,24-12-27,25-01-03,25-01-10,25-01-17,25-02-07,25-02-14,25-02-21,25-02-28,25-03-07,25-03-14,25-03-21,25-03-28,25-04-11,25-04-18,25-04-25,25-05-09,25-05-15,25-05-23,25-05-30,25-06-06,25-06-20,25-06-27,25-07-04,25-07-11,25-07-18,25-07-25,25-08-01,25-08-08,25-08-15,25-08-22,25-08-29,25-09-05,25-09-12,25-09-19,25-09-26,25-10-17,25-10-24,25-10-31,25-11-07,25-11-14,25-11-21,25-11-28,25-12-05,25-12-12,25-12-19,25-12-26,26-01-09,26-01-16,26-01-23,26-01-30,26-02-06,26-02-27,26-03-06,26-03-13,26-03-20,26-03-27,26-04-03,26-04-10,26-04-17,26-04-24,26-05-08,26-05-15,26-05-22,26-05-29,26-06-05,26-06-12,26-06-26,26-07-03,26-07-10,26-07-17,26-07-24,26-07-31,26-08-07,26-08-14,26-08-21,26-08-28".split(',').map(function (d) { return '20' + d; });
-
   var esc = function (s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;'); };
+  var ACC = '#0071e3', GRAY = '#9a9aa0';
 
-  // One horizontal-bar renderer for the whole page.
   function bars(id, rows, opt) {
     opt = opt || {};
-    var host = document.getElementById(id); if (!host) return;
+    var host = document.getElementById(id);
+    if (!host) return;
     var max = opt.max || Math.max.apply(null, rows.map(function (r) { return Math.abs(r.v || 0); })) || 1;
-    var W = 760, padL = opt.padL || 200, padR = 12, tip = opt.tip || 96;
-    var rh = rows.some(function (r) { return r.s; }) ? 40 : 30;
-    var track = W - padL - padR - tip;
+    var W = 760, padL = opt.padL || 110, padR = 12, tip = 80;
+    var rh = 30, track = W - padL - padR - tip;
     var H = rows.length * rh + 8;
     var o = ['<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + esc(opt.alt || '') + '">'];
     if (opt.title) o.push('<title>' + esc(opt.title) + '</title>');
     rows.forEach(function (r, i) {
       var y = i * rh + 4;
-      o.push('<text x="0" y="' + (y + 15) + '" font-size="12.5" fill="' + (r.mute ? 'var(--ink-3)' : 'var(--ink-2)') + '">' + esc(r.name) + '</text>');
+      o.push('<text x="0" y="' + (y + 15) + '" font-size="12.5" fill="var(--ink-2)">' + esc(r.name) + '</text>');
       var w = Math.max(1.5, (Math.abs(r.v) / max) * track);
-      o.push('<rect x="' + padL + '" y="' + (y + 3) + '" width="' + w + '" height="17" rx="4" fill="' + r.c + '" opacity="' + (r.dim ? .35 : .88) + '"/>');
+      o.push('<rect x="' + padL + '" y="' + (y + 3) + '" width="' + w + '" height="17" rx="4" fill="' + r.c + '" opacity=".88"/>');
       o.push('<text x="' + (padL + w + 8) + '" y="' + (y + 17) + '" font-size="12.5" font-weight="600" fill="var(--ink)">' + esc(r.t) + '</text>');
-      if (r.s) o.push('<text x="' + padL + '" y="' + (y + 34) + '" font-size="11" fill="var(--ink-3)">' + esc(r.s) + '</text>');
     });
     o.push('</svg>');
     host.innerHTML = o.join('');
   }
 
-  var ACC = '#0071e3', GRAY = '#9a9aa0';
-
-  // ---- week dot grid ----
-  (function () {
-    var have = {};
-    // rebuild the full date list from the compact per-year run below
-    ALL_DATES.forEach(function (d) { have[d] = 1; });
-    var start = new Date('2022-02-14T00:00:00');       // Monday of the first meeting week
-    var end = new Date('2026-08-31T00:00:00');
-    var weeks = Math.round((end - start) / 6048e5);
-    var perRow = 53, cell = 13, r = 4.2;
-    var rows = Math.ceil(weeks / perRow);
-    var W = 760, x0 = 46, H = rows * (cell + 10) + 34;
-    var o = ['<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="每周是否有周会纪要的点阵图。">' +
-             '<title>236 周，210 期</title>'];
-    var seen = {};
-    ALL_DATES.forEach(function (d) {
-      var t = new Date(d + 'T00:00:00');
-      seen[Math.floor((t - start) / 6048e5)] = 1;
-    });
-    for (var w = 0; w <= weeks; w++) {
-      var row = Math.floor(w / perRow), col = w % perRow;
-      var cx = x0 + col * cell + 5, cy = row * (cell + 10) + 16;
-      var on = seen[w];
-      o.push('<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="' + (on ? ACC : 'none') +
-             '" stroke="' + (on ? ACC : 'var(--line)') + '" stroke-width="1"/>');
-    }
-    for (var rr = 0; rr < rows; rr++) {
-      var d0 = new Date(start.getTime() + rr * perRow * 6048e5);
-      o.push('<text x="0" y="' + (rr * (cell + 10) + 20) + '" font-size="11" fill="var(--ink-3)">' +
-             d0.getFullYear() + '·' + (d0.getMonth() + 1) + '月</text>');
-    }
-    o.push('<circle cx="52" cy="' + (rows * (cell + 10) + 18) + '" r="4.2" fill="' + ACC + '"/>' +
-           '<text x="62" y="' + (rows * (cell + 10) + 22) + '" font-size="11" fill="var(--ink-3)">有纪要</text>' +
-           '<circle cx="132" cy="' + (rows * (cell + 10) + 18) + '" r="4.2" fill="none" stroke="var(--line)"/>' +
-           '<text x="142" y="' + (rows * (cell + 10) + 22) + '" font-size="11" fill="var(--ink-3)">无</text>');
-    o.push('</svg>');
-    document.getElementById('f-dots').innerHTML = o.join('');
-  })();
-
-  // ---- missing weeks by month ----
-  (function () {
-    var start = new Date('2022-02-14T00:00:00'), end = new Date('2026-08-31T00:00:00');
-    var weeks = Math.round((end - start) / 6048e5), seen = {};
-    ALL_DATES.forEach(function (d) { seen[Math.floor((new Date(d + 'T00:00:00') - start) / 6048e5)] = 1; });
-    var byMonth = new Array(12).fill(0), miss = 0;
-    for (var w = 0; w <= weeks; w++) {
-      if (seen[w]) continue;
-      miss++;
-      byMonth[new Date(start.getTime() + w * 6048e5).getMonth()]++;
-    }
-    var W = 760, H = 190, padL = 34, padB = 40, top = 14;
-    var max = Math.max.apply(null, byMonth) || 1, bw = (W - padL - 14) / 12;
-    var o = ['<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="缺席周按月分布。"><title>缺的周落在哪几个月</title>'];
-    var HOLIDAY = { 0: 1, 1: 1, 3: 1, 4: 1, 8: 1, 9: 1 };
-    byMonth.forEach(function (v, m) {
-      var h = (v / max) * (H - top - padB), x = padL + m * bw + 6, y = H - padB - h;
-      o.push('<rect x="' + x + '" y="' + y + '" width="' + (bw - 12) + '" height="' + Math.max(v ? 2 : 0, h) +
-             '" rx="4" fill="' + (HOLIDAY[m] ? 'var(--warn)' : '#9a9aa0') + '" opacity=".85"/>');
-      o.push('<text x="' + (x + (bw - 12) / 2) + '" y="' + (y - 5) + '" font-size="11.5" font-weight="600" text-anchor="middle" fill="var(--ink)">' + (v || '') + '</text>');
-      o.push('<text x="' + (x + (bw - 12) / 2) + '" y="' + (H - padB + 17) + '" font-size="11" text-anchor="middle" fill="var(--ink-3)">' + (m + 1) + '月</text>');
-    });
-    o.push('<line x1="' + padL + '" y1="' + (H - padB) + '" x2="' + (W - 8) + '" y2="' + (H - padB) + '" stroke="var(--line)"/>');
-    o.push('<text x="' + padL + '" y="' + (H - 6) + '" font-size="10.5" fill="var(--ink-3)">共缺 ' + miss +
-           ' 周；黄色为含长假的月份（春节、清明五一、中秋国庆），合计占 ' +
-           Math.round(byMonth.reduce(function (a, v, m) { return a + (HOLIDAY[m] ? v : 0); }, 0) / miss * 100) + '%。</text>');
-    o.push('</svg>');
-    document.getElementById('f-miss').innerHTML = o.join('');
-  })();
-
-  // ---- the six three-week breaks ----
-  (function () {
-    var d = ALL_DATES.map(function (x) { return new Date(x + 'T00:00:00'); });
-    var breaks = [];
-    for (var i = 0; i < d.length - 1; i++) {
-      var g = Math.round((d[i + 1] - d[i]) / 864e5);
-      if (g >= 21) breaks.push([ALL_DATES[i], ALL_DATES[i + 1], g]);
-    }
-    var W = 760, rh = 30, H = breaks.length * rh + 30, padL = 150;
-    var t0 = new Date('2022-02-14T00:00:00'), t1 = new Date('2026-08-31T00:00:00'), span = t1 - t0;
-    var track = W - padL - 130;
-    var o = ['<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="六次三周断档的时间位置。"><title>六次 21 天断档</title>'];
-    for (var y = 2022; y <= 2026; y++) {
-      var x = padL + ((new Date(y + '-01-01T00:00:00') - t0) / span) * track;
-      if (x < padL) continue;
-      o.push('<line x1="' + x + '" y1="4" x2="' + x + '" y2="' + (breaks.length * rh + 2) + '" stroke="var(--line-2)"/>');
-      o.push('<text x="' + x + '" y="' + (breaks.length * rh + 20) + '" font-size="10.5" text-anchor="middle" fill="var(--ink-3)">' + y + '</text>');
-    }
-    var LABEL = ['春节', '中秋国庆', '春节', '春节', '中秋国庆', '春节'];
-    breaks.forEach(function (b, i) {
-      var a = padL + ((new Date(b[0] + 'T00:00:00') - t0) / span) * track;
-      var w = Math.max(5, ((new Date(b[1] + 'T00:00:00') - new Date(b[0] + 'T00:00:00')) / span) * track);
-      var y = i * rh + 8;
-      o.push('<text x="0" y="' + (y + 12) + '" font-size="12" fill="var(--ink-2)">' + b[0] + ' → ' + b[1].slice(5) + '</text>');
-      o.push('<rect x="' + a + '" y="' + y + '" width="' + w + '" height="14" rx="4" fill="var(--danger)" opacity=".8"/>');
-      o.push('<text x="' + (a + w + 8) + '" y="' + (y + 12) + '" font-size="11.5" fill="var(--ink-3)">' + b[2] + ' 天 · ' + LABEL[i] + '</text>');
-    });
-    o.push('</svg>');
-    document.getElementById('f-break').innerHTML = o.join('');
-  })();
-
-  // ---- template switch ----
-  (function () {
-    var W = 760, H = 210;
-    var L = ['日期', '参会人', '会议日程', '重点项目同步', '个人工作总结', '个人工作计划', 'QA', '跟进项'];
-    var R = ["Member's Job Schedule", 'Ongoing Project Status', 'Live Issue', 'Technical Solutions',
-             'Sync-Up & Discussion', 'Follow UP', 'OKR', 'Current Thinking Points'];
-    var o = ['<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="第 4 期起模板从中文自由格式换成固定英文议程。"><title>模板切换</title>'];
-    o.push('<text x="10" y="18" font-size="12.5" font-weight="600" fill="var(--ink)">前 3 期 · 中文自由格式</text>');
-    o.push('<text x="420" y="18" font-size="12.5" font-weight="600" fill="var(--ink)">2022-03-11 起 · 固定英文议程</text>');
-    L.forEach(function (s, i) {
-      o.push('<rect x="10" y="' + (28 + i * 21) + '" width="300" height="16" rx="4" fill="#9a9aa0" opacity=".28"/>');
-      o.push('<text x="18" y="' + (40 + i * 21) + '" font-size="11" fill="var(--ink-2)">' + esc(s) + '</text>');
-    });
-    R.forEach(function (s, i) {
-      var dead = s === 'Current Thinking Points';
-      o.push('<rect x="420" y="' + (28 + i * 21) + '" width="300" height="16" rx="4" fill="' +
-             (dead ? 'var(--danger)' : ACC) + '" opacity="' + (dead ? .35 : .8) + '"/>');
-      o.push('<text x="428" y="' + (40 + i * 21) + '" font-size="11" fill="' + (dead ? 'var(--ink-2)' : '#fff') + '">' + esc(s) + '</text>');
-    });
-    o.push('<path d="M320 110 L410 110" stroke="var(--ink-3)" stroke-width="1.5" marker-end="url(#tw)"/>');
-    o.push('<defs><marker id="tw" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">' +
-           '<path d="M0,0 L7,3.5 L0,7 z" fill="var(--ink-3)"/></marker></defs>');
-    o.push('<text x="10" y="' + (H - 6) + '" font-size="10.5" fill="var(--ink-3)">' +
-           '右侧淡红的一段是 Current Thinking Points，加进来 19 期后被删掉，是这四年半里唯一消失的段落。</text>');
-    o.push('</svg>');
-    document.getElementById('f-switch').innerHTML = o.join('');
-  })();
-
-  bars('f-gap', Object.keys(D.gaps).map(Number).sort(function (a, b) { return a - b; }).map(function (g) {
-    return { name: g + ' 天', c: g === 7 ? ACC : (g >= 14 ? '#eda100' : GRAY), v: D.gaps[g], t: D.gaps[g] + ' 次' };
-  }), { alt: '相邻两期周会的间隔天数分布。', title: '间隔分布', padL: 60 });
-
-  bars('f-dow', [
-    { name: '周五', c: ACC, v: D.dow.Fri, t: D.dow.Fri + ' 期' },
-    { name: '周四', c: GRAY, v: D.dow.Thu, t: D.dow.Thu + ' 期' },
-    { name: '周一', c: GRAY, v: D.dow.Mon, t: D.dow.Mon + ' 期' }
-  ], { alt: '周会开在星期几的分布。', title: '星期分布', padL: 60 });
-
-  // ---- section lifespan gantt ----
-  (function () {
-    var keys = Object.keys(D.life);
-    var toX = function (ym) { var p = ym.split('-'); return (+p[0] - 2022) * 12 + (+p[1] - 1); };
-    var span = toX('2026-09');
-    var W = 760, padL = 190, padR = 74, track = W - padL - padR;
-    var rh = 26, H = keys.length * rh + 44;
-    var o = ['<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="各议程段落在四年半里的存续区间。"><title>段落生命周期</title>'];
-    for (var y = 2022; y <= 2026; y++) {
-      var x = padL + (toX(y + '-01') / span) * track;
-      o.push('<line x1="' + x + '" y1="6" x2="' + x + '" y2="' + (keys.length * rh + 8) + '" stroke="var(--line-2)"/>');
-      o.push('<text x="' + x + '" y="' + (keys.length * rh + 26) + '" font-size="10.5" fill="var(--ink-3)" text-anchor="middle">' + y + '</text>');
-    }
-    keys.forEach(function (k, i) {
-      var v = D.life[k], a = toX(v[0]), b = toX(v[1]) + 1;
-      var x = padL + (a / span) * track, w = Math.max(3, ((b - a) / span) * track);
-      var short = v[2] < 130;
-      o.push('<text x="0" y="' + (i * rh + 20) + '" font-size="12" fill="' + (short ? 'var(--ink-3)' : 'var(--ink-2)') + '">' + esc(k) + '</text>');
-      o.push('<rect x="' + x + '" y="' + (i * rh + 8) + '" width="' + w + '" height="14" rx="4" fill="' +
-             (v[2] === 19 ? 'var(--danger)' : (v[2] < 130 ? 'var(--warn)' : ACC)) + '" opacity=".85"/>');
-      o.push('<text x="' + (W - padR + 8) + '" y="' + (i * rh + 19) + '" font-size="11.5" font-weight="600" fill="var(--ink)" text-anchor="end" transform="translate(66,0)">' + v[2] + ' 期</text>');
-    });
-    o.push('</svg>');
-    document.getElementById('f-life').innerHTML = o.join('');
-  })();
-
-  var S = D.share, TOT = Object.keys(S).reduce(function (a, k) { return a + S[k]; }, 0);
-  bars('f-share', Object.keys(S).sort(function (a, b) { return S[b] - S[a]; }).map(function (k) {
-    var pct = S[k] / TOT * 100;
-    return { name: k, c: pct > 5 ? ACC : GRAY, v: S[k], t: pct.toFixed(1) + '%', mute: pct < 1 };
-  }), { alt: '八个议程段落的字符数占比。', title: '字数落在哪一段' });
-
-  bars('f-empty', Object.keys(D.empty).sort(function (a, b) {
-    return (D.empty[b][0] / D.empty[b][1]) - (D.empty[a][0] / D.empty[a][1]);
-  }).map(function (k) {
-    var e = D.empty[k], p = e[0] / e[1] * 100;
-    return { name: k, c: p > 80 ? 'var(--danger)' : (p > 30 ? '#eda100' : 'var(--ok)'),
-      v: p, t: p.toFixed(1) + '%', s: e[0] + ' / ' + e[1] + ' 期只有模板表头' };
-  }), { alt: '各段落的空段率。', title: '空段率', max: 100 });
-
-  var N = D.nextweek;
-  bars('f-nw', [
-    { name: '最小', c: GRAY, v: N.min, t: N.min },
-    { name: '下四分位', c: ACC, v: N.p25, t: N.p25 + '（与最小值相同）' },
-    { name: '中位', c: ACC, v: N.med, t: N.med },
-    { name: '上四分位', c: ACC, v: N.p75, t: N.p75 },
-    { name: '最大', c: GRAY, v: N.max, t: N.max }
-  ], { alt: 'Next week topic 段落字符数的分位点。', title: '一个长度几乎不变的段落', padL: 90, max: N.max * 1.02 });
-
-  var PY = D.perYearTotal;
-  bars('f-year', Object.keys(PY).map(function (y) {
-    return { name: y, c: ACC, v: PY[y][1], t: PY[y][1].toLocaleString('en-US') + ' 字符', s: PY[y][0] + ' 期' };
-  }), { alt: '逐年单期平均总字符数与期数。', title: '逐年篇幅', padL: 60 });
-
-  var JB = D.jobByYear, rows2 = [];
-  Object.keys(JB).forEach(function (y) {
-    rows2.push({ name: y + ' 个人进度', c: '#eda100', v: JB[y][0], t: JB[y][0].toLocaleString('en-US') });
-    rows2.push({ name: y + ' 项目进展', c: ACC, v: JB[y][1], t: JB[y][1].toLocaleString('en-US') });
-  });
-  bars('f-two', rows2, { alt: '两个主要段落逐年的平均字符数。', title: '两段的此消彼长', padL: 110 });
-
-  // ---- claimed vs actual ----
-  (function () {
-    var keys = Object.keys(S).filter(function (k) { return D.life[k]; });
-    var W = 760, H = 250;
-    var o = ['<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="模板声称的八个平等段落，与实际承载内容的四个段落对比。"><title>声称 vs 实际</title>'];
-    o.push('<text x="20" y="20" font-size="12.5" font-weight="600" fill="var(--ink)">模板声称的样子</text>');
-    o.push('<text x="420" y="20" font-size="12.5" font-weight="600" fill="var(--ink)">实际的样子</text>');
-    keys.forEach(function (k, i) {
-      var y = 36 + i * 24;
-      o.push('<rect x="20" y="' + y + '" width="330" height="18" rx="4" fill="' + ACC + '" opacity=".8"/>');
-      o.push('<text x="28" y="' + (y + 13) + '" font-size="11" fill="#fff">' + esc(k) + '</text>');
-      var pct = S[k] / TOT;
-      var w = Math.max(2, pct * 330);
-      var ghost = pct < .01;
-      o.push('<rect x="420" y="' + y + '" width="' + w + '" height="18" rx="4" fill="' + (ghost ? 'var(--ghost)' : ACC) + '" opacity="' + (ghost ? .3 : .8) + '"/>');
-      o.push('<text x="' + (420 + w + 7) + '" y="' + (y + 13) + '" font-size="10.5" fill="var(--ink-3)">' + (pct * 100).toFixed(1) + '%</text>');
-    });
-    o.push('<text x="20" y="' + (H - 8) + '" font-size="10.5" fill="var(--ink-3)">左边每段等宽，是打开纪要时看到的印象；右边按字符数占比，是实际写进去的东西。</text>');
-    o.push('</svg>');
-    document.getElementById('f-final').innerHTML = o.join('');
-  })();
-
-  // ---- the weekly icebreaker question ----
-  // Lives in the header cell of each meeting's first table, not in a section of
-  // its own — which is why it survived while three real sections went empty.
   var TOPICS = [
     ["2026-08-28","时事政策","许家印获刑：恒大案一审宣判无期徒刑，他到底做了什么？被如此判罚，是否合理，可能有什么考量？"],
     ["2026-08-21","科技与 AI","全球首个 mRNA 癌症疫苗 III 期临床试验成功：莫德纳一夜暴涨 177%，降低黑色素瘤复发风险 49%，你觉得癌症是否有望被攻克？"],
@@ -622,9 +258,8 @@
 
   // Answers sat in the last column of the same table, one row per person.
   // Members are aliased A–H (ordered by how often they answered) and the alias
-  // is stable across the whole list, so you can follow one person through.
-  // Image-only cells, work notes that leaked into the column, and rows copied
-  // unchanged into a later week are dropped.
+  // is stable across the list. Image-only cells, work notes that leaked into the
+  // column, and rows copied unchanged into a later week are dropped.
   var ANSWERS = {
     "2024-08-09": [["A","人口老龄化，65 是好多发达国家的退休时间"],["B","没办法，遵守；不能完全信任"],["D","宏观：养老金不够了，延后退休来延缓问题。问题：并没有提供足够多的工作岗位，延缓退休仅仅变成延后养老金发放。微观：影响个人生活／工作规划"],["E","我 50% 支持"]],
     "2024-08-30": [["E","先富带动后富"]],
@@ -673,81 +308,155 @@
     "2026-08-21": [["A","非常有前景"]]
   };
 
-  (function () {
-    var byYear = {}, byCat = {};
-    TOPICS.forEach(function (t) {
-      byYear[t[0].slice(0, 4)] = (byYear[t[0].slice(0, 4)] || 0) + 1;
-      byCat[t[1]] = (byCat[t[1]] || 0) + 1;
+  // My own extension, written afterwards — one move further than the question,
+  // not a record of what was said in the room. Left blank where answering means
+  // judging a named person, adjudicating a contested incident, or taking a
+  // political position.
+  var MINE = {
+    "2026-08-21": "个体化新抗原疫苗是按每位患者的肿瘤突变现做的，III 期终点也不是「治愈」而是无复发生存。更现实的路径是把一部分癌症变成慢病，而不是消灭它 —— 177% 的涨幅定价的是平台，不是这一个适应症。",
+    "2026-08-14": "把「情绪劳动」从人情网络里拆出来单独定价，说明免费供给在收缩。判断它是不是趋势，看复购：一次性尝鲜是猎奇，按月复购才是熟人网络真的补不上了。",
+    "2026-07-31": "菲尔兹奖设立时的定位是鼓励而非终身成就，所以卡 40 岁。副作用是把数学的公众叙事压在青年天才上 —— 怀尔斯证费马时 41 岁，正好领不了。对培养下一代的启发大概是反的：别按天才叙事来。",
+    "2026-07-24": "安检的边际收益随基数下降，通勤成本却是线性上升的。争论真正的分歧不在「要不要安检」，而在乘客的等待时间从来不进任何一本成本账 —— 谁的时间不被计价，谁就承担代价。",
+    "2026-07-17": "远程削掉的是通勤和工位成本，涨上去的是协调成本。团队越小协调成本越低，所以「AI 让团队变小」和「远程更可行」是同一件事的两面；真正扛不住远程的是需要大量隐性对齐的中型团队。",
+    "2026-07-03": "消费观的拐点一般不在收入变化那一年，而在责任变化那一年 —— 成家、生育、父母生病。收入涨了消费观不一定跟着涨，责任变了它一定会变。",
+    "2026-06-12": "监管点名多针对展业合规，不是清算能力，所以「换一家券商」解决不了这类风险，分散托管才能。真正该问的是这家券商的客户资产是否独立存管 —— 那才是出事时唯一起作用的东西。不构成投资建议。",
+    "2026-06-05": "同上：合规问题不等于兑付问题，但它是治理质量的可观测代理变量。看信号别看单次处罚，看它是不是同一类问题的第二次。不构成投资建议。",
+    "2026-05-29": "现在的瓶颈已经不在生成，在验证和上下文 —— 写得出来但不知道对不对，是最贵的一段。理想形态是它能自己跑测试并读回失败，把「我觉得对」换成「它证明了对」。",
+    "2026-05-22": "判断信号看二手挂牌量与成交量的比值，别看均价 —— 均价被成交结构带偏，挂牌／成交比反映的是流动性。另外一线和全国已经脱钩两年了，用全国数据推一线是错的。不构成投资建议。",
+    "2026-05-15": "量产载人机甲是展示不是产品。人形的真正理由是复用为人造的环境（楼梯、门把手、工具），瓶颈也一直是那两个：电池能量密度，和手的自由度与触觉。",
+    "2026-05-08": "把「我判断方向」和「我能承受多大回撤」拆开问，后一个才决定该做什么。再平衡是唯一一个不需要预测就能执行的动作 —— 涨多了自动减，跌多了自动加。不构成投资建议。",
+    "2026-04-24": "会员的本质是对边际成本近零的商品做价格歧视。对用户划不划算只有一条：月使用次数 × 单次替代成本，是否高于月费。想不清楚就退订一个月，看会不会难受。",
+    "2026-04-17": "报名涨、录取降，反映的是风险偏好在转，不是岗位吸引力在涨。铁饭碗与高流动性的取舍，本质是拿收入上限换收入方差 —— 三十岁前方差是资产，四十岁后方差是负债。",
+    "2026-04-10": "博彩的财政收益和社会成本不进同一本账：收益归财政，成本落在家庭、治安和司法。这是各国反复发牌又反复收回的共同原因，跟一时的道德判断关系不大。",
+    "2026-04-03": "地缘冲突对账户的影响主要走两个通道：油价，和风险溢价。实证上，两者的持续时间通常都远短于市场当时的预期 —— 冲击大、半衰期短。不构成投资建议。",
+    "2026-03-20": "PM 写代码的收益是缩短反馈链，代价是没人再守需求边界了。小团队值，因为边界本来就模糊；大团队不值，因为守边界是全职工作。",
+    "2026-03-06": "价值从「写」转移到「定义什么是对的」和「出事谁负责」。判据很直白：能被规格完整描述的工作最先被吃掉，规格本身写不出来的地方才是剩下的价值。",
+    "2026-02-06": "能被讲出来的赚钱点子，窗口期基本已经过了 —— 传播速度快过套利空间的消失速度，是很罕见的情况。听到这类故事，值得问的不是「怎么做」，是「为什么现在还轮得到我」。",
+    "2026-01-30": "个体归因很容易滑成指责。结构上能说的是：长期夜班和睡眠碎片化与心血管事件的相关性有流行病学证据，这不是意志力问题。启示落在排班和 on-call 制度上，比落在个人作息上有用。",
+    "2026-01-23": "开年强势和全年收益的相关性很弱，用它定计划等于用噪声定计划。计划真正该定的是仓位上限和加仓规则，那两样跟行情无关，写下来就能执行。不构成投资建议。",
+    "2026-01-16": "变化不在价格，在持有成本：空置、折旧、维护正在从看不见变成看得见。这改变的是「要不要多一套」，不太改变「要不要住一套」。不构成投资建议。",
+    "2025-12-26": "把这句话拆成两件事：能力上限，和选择上限。前者可能真的到了，后者通常远没有 —— 大部分人感到的封顶，其实是选项集合被自己提前砍掉了。",
+    "2025-12-12": "形态之争的关键不是技术，是入口能不能被系统级拦截。被抵制的从来不是能力，是渠道分成 —— 一旦系统层能替 APP 做决定，分成结构就得重谈。",
+    "2025-12-05": "两者的差别是你在为什么付费：trading 买的是信息优势，holding 买的是时间溢价。大多数人没有前者，所以问题不是喜欢哪个，是有没有资格选前者。不构成投资建议。",
+    "2025-11-28": "Hacker News 上吵得最凶的三条：一是 capex 与 AI 直接收入的比例（2026 年约 6600–6900 亿美元 对 500 亿量级，2011 年云计算同阶段是 2.4∶1）；二是折旧 —— 按 5–6 年摊，实际经济寿命可能 2–3 年；三是循环交易，被类比成 1999 年 Lucent 的供应商融资。多头最有力的反驳是「谁在出钱」：这轮主要来自已盈利公司的经营性现金流，不是债和投机股权。所以更接近共识的说法是「是泡沫，但集中在特定节点」—— 铁路和光纤也是先泡沫后基础设施，管子铺过头了，但管子留下来了。",
+    "2025-11-21": "抽象一直在拿「能力」换「可预测性」，这笔交易大多数时候是划算的。真正决定上限的是被迫回到原理的那几次 —— 平时不需要，出事时只有它管用。",
+    "2025-11-14": "有效的调节基本都是把交感神经拉下来：运动、睡眠、白天见自然光。刷手机是反向的 —— 它提供的是新刺激，不是恢复。",
+    "2025-10-31": "降息路径和经济走势不是一回事：前者是政策的反应函数，后者是被反应的对象。看信号盯期限利差和缩表节奏，比盯单次 25 个基点有用。不构成投资建议。",
+    "2025-10-17": "那种时刻通常发生在同一个概念第三次以不同形式出现的时候。它不是学到了新东西，是几个旧东西被压缩成了一个 —— 所以事后往往说不清自己学了什么。",
+    "2025-09-26": "换个筛法：按「信息密度 ÷ 时长」筛，比按题材筛有效。视频天然稀释信息密度，同一个人的文字版通常比视频版值得看。",
+    "2025-09-19": "高赞回答的落点几乎一致：反对的不是预制，是「卖现炒的价、上预制的菜」。被反复引用的那份 800 人调研里，61.4% 接受餐厅用预制菜，48.9% 会因为「声称现做实为预制」而不再推荐。还有人点破了为什么舆论只谈知情权 —— 跟市监说「他们卖高价」没用，说「侵犯知情权」就必须管。",
+    "2025-07-18": "知乎那批科普长文口径高度一致：百万医疗 + 重疾 + 意外 + 定期寿，四样分工不同 —— 医疗险报销大额医疗费，重疾险补收入中断，意外险便宜管用，定寿保的是家庭责任。一致反对返还型和捆绑型：捆绑寿险的重疾共用保额，赔了一项就没另一项。挑的时候硬指标只有几个：百万医疗看写进合同的保证续保（20 年最优）和院外靶向药；意外险一年一买，别买贵十倍的长期返还型。",
+    "2025-07-11": "平台的推荐机制奖励冲突性表达，所以线上的比例不能用来推断线下的比例。真正会影响生活的不是那些极端表达，是你因为它们对陌生人默认的敌意。",
+    "2025-07-04": "减重靠热量差，维持靠习惯成本 —— 前者决定这三个月，后者决定这三年。力量训练的长期价值不在体重，在基础代谢和老年的肌肉量，那是六十岁以后才兑现的东西。",
+    "2025-06-27": "大厂反思文有个共同结构：把系统问题写成个人顿悟。不是作者不诚实，是系统那一半写出来发不出去 —— 所以读的时候要把「我悟了」还原成「这里的激励设计导致了什么」。",
+    "2025-06-20": "给建议的人多半在给当年的自己补课，所以先打个折。真要给一条：优先选可逆性高的路 —— 十八岁判断不了自己想要什么，但可以判断哪条路以后好换。",
+    "2025-06-06": "把「主动打开」和「被通知拉回」分开统计，后者才是被占用的部分。多数人以为自己在选择，其实是在响应。",
+    "2025-05-30": "消费观通常滞后收入变化两三年，痛苦大多来自这个不同步 —— 收入降了消费观还没降，或者收入涨了还在过苦日子。所以「哪种对」这个问题不成立，同步才是对的。",
+    "2025-05-23": "超值集中在高频低单价，踩坑集中在低频高单价，原因是同一个：后者没有试错机会。所以低频高价的东西，租一次或者借一次再买，能省掉大部分坑。",
+    "2025-05-15": "这类事件真正可讨论的部分是培养路径的可复制性和信息公开程度，不是当事人。如果同一条路径别人走不了，那它就是特权，不管它叫什么名字。",
+    "2025-05-09": "酒桌的社会功能是制造「可控的失态」来快速建立信任 —— 你在我面前出过丑，我们就算自己人。人员流动性一高，这套的投资回报率就崩了，所以它衰退的是经济基础，不是风气。",
+    "2025-04-25": "补贴换份额的老剧本，变量只有一个：骑手成本能不能被社保化。能，则终局是两三家寡头；不能，则谁先撑不住谁先退，跟补贴力度关系不大。",
+    "2025-04-18": "通用答案是 3-2-1：3 份副本、2 种介质、1 份异地。个人最省心的组合是本地 NAS + 云端冷存储，冷存储便宜到可以不看价格。真正的成本从来不是存储费，是你到底恢复过没有 —— 没演练过的备份等于没有备份。",
+    "2025-04-11": "这条有比较硬的实证：Amiti–Redding–Weinstein 和 Fajgelbaum 等人对 2018–2019 那轮关税的研究都发现，关税几乎完全传导到进口国的进口商和消费者身上，出口国降价让利的部分很小。所以「对普通人的影响」不抽象，就是价格。",
+    "2025-03-28": "骗局的共同结构是两件事：制造时间压力，加上制造信息孤岛（别告诉别人）。识别不需要懂具体套路，只要发现这两样同时出现，就一定有问题。",
+    "2025-03-21": "调薪的信息价值在分布不在均值。只公布均值、不公布分位数的时候，通常意味着分布本身不好看 —— 这条规律适用于任何组织。",
+    "2025-03-14": "同上。另外年终奖的激励效果高度依赖可预期性：一个说不清怎么算出来的数字，无论多少都不产生激励，只产生比较。",
+    "2025-03-07": "挫折真正的价值是把「能力问题」和「信息问题」分开 —— 当时以为是前者的，事后看多半是后者：不知道有这条路、不知道可以问谁。所以复盘要复的是当时缺什么信息。",
+    "2025-02-21": "潜力最大的领域是验证成本最低的那些：代码、翻译、结构化抽取 —— 对不对当场就知道。医疗的天花板最高但验证最贵，所以它会最晚落地，不是因为技术不够。",
+    "2025-02-14": "这题的有趣之处在于，几乎所有人给的都是「换一个约束条件」而不是「换一个自己」 —— 想当老师、想重活一遍，说的其实都是当下哪一项约束最紧。",
+    "2025-02-07": "单一名人为某个代币站台，历史上收敛到零的比例极高。但这跟「加密货币整体趋势」是两个问题 —— 把它们混在一起谈，是这类讨论最常见的错位。不构成投资建议。",
+    "2025-01-10": "高赞答案和人力资源的实证研究在这里罕见地一致：有用的是基于真实经历的结构化追问，不是性格题 —— 结构化面试的预测效度有元分析支持，性格类问题基本没有。可操作的版本是挑简历上他最熟的一项深挖三层：描述、原理、权衡（写入怎么防丢、怎么做最终一致、要扩怎么分库分表）。缺陷是行为面试依赖经历，应届生得用情境题补。",
+    "2025-01-03": "跨国用工争议大多出在承包链条的标准落差上，而不是总部的主观意图。可讨论的是审计义务：总包方对下游用工条件有没有实质检查能力，以及出事后有没有连带责任。",
+    "2024-12-27": "反垄断在这里的难点是，「抄袭」本身不违法，而「低于成本定价」极难举证。可操作的抓手通常不是禁止扩张，是强制互操作和数据可携 —— 让用户能走，比不让平台进更有效。",
+    "2024-12-20": "企业家叙事是幸存者偏差最强的一类文本：同样的性格，成了叫坚持，败了叫固执。可学的是决策方式（信息怎么收集、赌注怎么下小），不是性格。",
+    "2024-11-29": "个人层面真正有效的只有降低暴露：避开人群密集处、进任何空间先看一眼出口在哪。剩下的大部分建议都属于安慰性质 —— 这类事件的基础概率极低，但代价极高，所以只值得做零成本的准备。",
+    "2024-11-22": "深度连接需要两个条件：重复接触，且这种接触不是自己选的（同学、邻居、同事）。现代生活把两个条件都拆掉了 —— 选择过多只是结果，接触结构变了才是原因。",
+    "2024-11-01": "亏损有没有教育价值，取决于当时有没有记录理由。记了，事后能分清是判断错还是运气差；没记，就只剩情绪，下一次照错不误。",
+    "2024-10-25": "生育率下降在所有完成城镇化的经济体都发生过，差别只在速度。各国经验里，补贴能改变生育的时点，对总量的影响都很小 —— 真正相关的是住房成本和女性就业的连续性。",
+    "2024-10-18": "能公开说出来的策略，超额收益通常已经被交易掉了；剩下的部分多半是风险溢价，不是 alpha —— 也就是说你赚的是承担波动的钱，不是聪明的钱。不构成投资建议。",
+    "2024-10-11": "真正可迁移的能力只有一个：把模糊问题拆成可验证的步骤。这在任何行业都稀缺，也是为什么转行的程序员往往不是靠技术吃饭，是靠这个。",
+    "2024-09-27": "执行走样很少是能力问题。目标在逐层传递时会被替换成可考核的代理指标，几层之后大家优化的已经是代理指标本身 —— 「初衷是好的」和「执行歪了」之间，隔的是考核方式。",
+    "2024-09-20": "这部电影真正的题目是照护劳动怎么定价：谁付出的时间被算作亲情，谁付出的时间被算作继承权。它没给答案，但把账摊开了。",
+    "2024-09-13": "选举结果对资产价格的影响，事后看普遍远小于事前预期 —— 因为预期本身已经被交易进价格了。基于选举结果调整配置，赚的是自己判断更准的钱，那是很窄的一条路。不构成投资建议。",
+    "2024-08-30": "最难察觉的不是具体观点，是方法论级别的植入 —— 比如「努力必然有回报」「吃亏是福」。观点可以被反例推翻，方法论会自动把反例解释掉。",
+    "2024-08-09": "高赞的论证基本是同一套算术：现收现付制下抚养比从制度初期的 5∶1 掉到 2.8∶1，社科院精算报告推到 2035 年是 1.22∶1 —— 这段几乎没人反驳。真正吵的是替代率：国际通行合意区间 70–85%，国际劳工组织的警戒线 55%，而实感在 40% 上下。所以争议不在「要不要延」，在「多缴几年、晚领几年，替代率却没涨」。",
+    "2023-11-17": "选型的判据不是功能覆盖度，是出问题时能不能自己修 —— 能读懂源码、能打补丁、社区还活着。这三条不满足的依赖，早晚会在一个你最不想面对的凌晨变成你的问题。"
+  };
+
+  var byYear = {}, byCat = {};
+  TOPICS.forEach(function (t) {
+    byYear[t[0].slice(0, 4)] = (byYear[t[0].slice(0, 4)] || 0) + 1;
+    byCat[t[1]] = (byCat[t[1]] || 0) + 1;
+  });
+
+  bars('f-topicyear', Object.keys(byYear).sort().map(function (y) {
+    return { name: y, c: y === '2023' ? GRAY : ACC, v: byYear[y], t: byYear[y] + ' 期' };
+  }), { alt: '每年有本周话题的期数。', title: '栏目哪一年才立住', padL: 60 });
+
+  var cats = Object.keys(byCat).sort(function (a, b) { return byCat[b] - byCat[a]; });
+  bars('f-topiccat', cats.map(function (c) {
+    return { name: c, c: TCAT[c] || GRAY, v: byCat[c], t: byCat[c] + ' 条' };
+  }), { alt: '本周话题的类别分布。', title: '聊得最多的是什么', padL: 110 });
+
+  var list = document.getElementById('tlist');
+  list.innerHTML = TOPICS.map(function (t) {
+    var a = ANSWERS[t[0]] || [], mine = MINE[t[0]];
+    var n = a.length + (mine ? 1 : 0);
+    return '<li data-c="' + t[1] + '"><span class="d">' + t[0] + '</span>' +
+           '<span class="q">' + esc(t[2]) + '</span>' +
+           '<span class="c"><i style="background:' + (TCAT[t[1]] || GRAY) + '"></i>' + t[1] + '</span>' +
+           (n
+             ? '<button type="button" class="ans-t" aria-expanded="false">' +
+               (a.length ? a.length + ' 条回答' : '') + (a.length && mine ? ' · ' : '') + (mine ? '延伸' : '') +
+               '</button>' +
+               '<div class="ans"><div class="ans-in"><dl>' +
+               a.map(function (r) { return '<dt>成员 ' + r[0] + '</dt><dd>' + esc(r[1]) + '</dd>'; }).join('') +
+               (mine ? '<dt class="mine">延伸</dt><dd class="mine">' + esc(mine) + '</dd>' : '') +
+               '</dl></div></div>'
+             : '') +
+           '</li>';
+  }).join('');
+
+  // Disclosure. Always animate between two pixel values — going to or from
+  // `auto` does not transition. Opening settles back to auto so a later reflow
+  // (resize, font swap) cannot leave a stale height behind.
+  list.addEventListener('click', function (e) {
+    var b = e.target.closest('.ans-t');
+    if (!b) return;
+    var li = b.closest('li'), box = li.querySelector('.ans');
+    var open = li.classList.toggle('open');
+    b.setAttribute('aria-expanded', String(open));
+    box.style.height = box.getBoundingClientRect().height + 'px';
+    void box.offsetHeight;
+    box.style.height = open ? box.scrollHeight + 'px' : '0px';
+    box.addEventListener('transitionend', function done(ev) {
+      if (ev.propertyName !== 'height') return;
+      box.removeEventListener('transitionend', done);
+      if (li.classList.contains('open')) box.style.height = 'auto';
     });
+  });
 
-    bars('f-topicyear', Object.keys(byYear).sort().map(function (y) {
-      return { name: y, c: y === '2023' ? GRAY : ACC, v: byYear[y], t: byYear[y] + ' 期' };
-    }), { alt: '每年有本周话题的期数。', title: '栏目哪一年才立住', padL: 60 });
-
-    var cats = Object.keys(byCat).sort(function (a, b) { return byCat[b] - byCat[a]; });
-    bars('f-topiccat', cats.map(function (c) {
-      return { name: c, c: TCAT[c] || GRAY, v: byCat[c], t: byCat[c] + ' 条' };
-    }), { alt: '本周话题的类别分布。', title: '聊得最多的是什么', padL: 110 });
-
-    document.getElementById('tchips').innerHTML =
-      '<button type="button" class="chip on" data-k="">全部 ' + TOPICS.length + '</button>' +
-      cats.map(function (c) {
-        return '<button type="button" class="chip" data-k="' + c + '">' + c + ' ' + byCat[c] + '</button>';
-      }).join('');
-
-    var list = document.getElementById('tlist');
-    list.innerHTML = TOPICS.map(function (t) {
-      var a = ANSWERS[t[0]] || [];
-      return '<li data-c="' + t[1] + '"><span class="d">' + t[0] + '</span>' +
-             '<span class="q">' + esc(t[2]) + '</span>' +
-             '<span class="c"><i style="background:' + (TCAT[t[1]] || GRAY) + '"></i>' + t[1] + '</span>' +
-             (a.length
-               ? '<button type="button" class="ans-t" aria-expanded="false">' + a.length + ' 条回答</button>' +
-                 '<div class="ans"><div class="ans-in"><dl>' +
-                 a.map(function (r) { return '<dt>成员 ' + r[0] + '</dt><dd>' + esc(r[1]) + '</dd>'; }).join('') +
-                 '</dl></div></div>'
-               : '') +
-             '</li>';
+  document.getElementById('tchips').innerHTML =
+    '<button type="button" class="chip on" data-k="">全部 ' + TOPICS.length + '</button>' +
+    cats.map(function (c) {
+      return '<button type="button" class="chip" data-k="' + c + '">' + c + ' ' + byCat[c] + '</button>';
     }).join('');
 
-    // Disclosure. Always animate between two pixel values — going to or from
-    // `auto` does not transition. Opening settles back to auto so a later
-    // reflow (resize, font swap) cannot leave a stale height behind.
-    list.addEventListener('click', function (e) {
-      var b = e.target.closest('.ans-t');
-      if (!b) return;
-      var li = b.closest('li'), box = li.querySelector('.ans');
-      var open = li.classList.toggle('open');
-      b.setAttribute('aria-expanded', String(open));
-      box.style.height = box.getBoundingClientRect().height + 'px';
-      void box.offsetHeight;
-      box.style.height = open ? box.scrollHeight + 'px' : '0px';
-      box.addEventListener('transitionend', function done(ev) {
-        if (ev.propertyName !== 'height') return;
-        box.removeEventListener('transitionend', done);
-        if (li.classList.contains('open')) box.style.height = 'auto';
-      });
+  document.getElementById('tchips').addEventListener('click', function (e) {
+    var b = e.target.closest('.chip');
+    if (!b) return;
+    Array.prototype.forEach.call(this.querySelectorAll('.chip'), function (c) { c.classList.remove('on'); });
+    b.classList.add('on');
+    var k = b.getAttribute('data-k'), shown = 0;
+    Array.prototype.forEach.call(list.children, function (li) {
+      var off = !!k && li.getAttribute('data-c') !== k;
+      li.classList.toggle('off', off);
+      li.style.animationDelay = (!off && shown < 8) ? (shown++ * 30) + 'ms' : '0ms';
     });
-
-    document.getElementById('tchips').addEventListener('click', function (e) {
-      var b = e.target.closest('.chip');
-      if (!b) return;
-      Array.prototype.forEach.call(this.querySelectorAll('.chip'), function (c) { c.classList.remove('on'); });
-      b.classList.add('on');
-      var k = b.getAttribute('data-k'), shown = 0;
-      Array.prototype.forEach.call(list.children, function (li) {
-        var off = !!k && li.getAttribute('data-c') !== k;
-        li.classList.toggle('off', off);
-        // Stagger only the first rows in view; past that it is noise the reader
-        // has to wait through.
-        li.style.animationDelay = (!off && shown < 8) ? (shown++ * 30) + 'ms' : '0ms';
-      });
-      // Restart the entrance: drop the class, force reflow, put it back.
-      list.classList.remove('filtering');
-      void list.offsetWidth;
-      list.classList.add('filtering');
-    });
-  })();
+    list.classList.remove('filtering');
+    void list.offsetWidth;
+    list.classList.add('filtering');
+  });
 })();
 </script>
 </body>
