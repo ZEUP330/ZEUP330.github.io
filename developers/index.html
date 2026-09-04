@@ -217,7 +217,7 @@
   <p>你要的是「房企在各城市的项目点 + 暴雷点 + 区县均价分布」。我按权威来源逐个查过，卡在这几处：</p>
   <ul>
     <li><b>项目点位</b>：没有免费的机器可读数据集。上市公司年报只披露到「进入 X 个城市」这种粒度，项目级坐标只存在于贝壳、安居客这类商业平台，要爬且受其服务条款限制。</li>
-    <li><b>区县级均价</b>：统计局只发布 <a href="../housing/">70 城价格<b>指数</b></a>。区县级成交均价散在各市住建委手里（<a href="https://zjw.beijing.gov.cn/" rel="noopener">北京</a>是项目级、<a href="https://fdc.zjj.sz.gov.cn/" rel="noopener">深圳</a>又是另一套），几十个城市各一套 HTML、无 API。</li>
+    <li><b>区县级均价</b>：统计局只发布 <a href="../housing/">70 城价格<b>指数</b></a>。区县级成交均价散在各市住建委手里（<a href="https://zjw.beijing.gov.cn/" rel="noopener">北京</a>是项目级、深圳又是另一套（该站对程序化访问返回 412，本次核对时浏览器 UA 也打不开）），几十个城市各一套 HTML、无 API。</li>
     <li><b>违约名单</b>：交易所<b>没有</b>统一下载入口。<a href="https://bond.sse.com.cn/" rel="noopener">上证</a>、<a href="http://www.szse.cn/disclosure/bond/notice/index.html" rel="noopener">深交所</a>是逐条公告，<a href="https://pccz.court.gov.cn/pcajxxw/index/xxwsy" rel="noopener">破产重整信息网</a>是门户不是接口，做不成每日自动更新。</li>
   </ul>
   <p>所以这一页退回到能站住的那部分：<b>交易所价格</b>。它不能告诉你某个楼盘停没停工，但能准确告诉你市场在哪一天给这家公司判了刑，而且明天还会自动更新。</p>
@@ -616,8 +616,7 @@
             ['界面新闻：按期偿还 2 亿美元债（2022 年对照）', 'https://m.jiemian.com/article/7903896.html']] },
     { sym: '000656.SZ', ev: '2024-04-22', kind: '破产重整受理',
       what: '重庆五中院裁定受理重整申请，为近年 A 股首家进入重整程序的大型全国化房企；4-24 复牌起被实施退市风险警示。2025-05-11 法院裁定批准重整计划。',
-      src: [['界面新闻：金科股份正式开启破产重整', 'https://www.jiemian.com/article/11085774.html'],
-            ['中国日报网：批准！金科正式进入重整计划执行环节', 'https://cn.chinadaily.com.cn/a/202505/12/WS6821a451a310205377032af0.html']] },
+      src: [['界面新闻：金科股份正式开启破产重整', 'https://www.jiemian.com/article/11085774.html']] },
     { sym: '2202.HK', ev: null, kind: '未发生违约',
       what: '2024 年多只境内债按期足额付息，3 月全额存入 6.47 亿美元中票本息；至 2025 年底转入展期谈判（「22 万科 MTN004」展期议案未获通过，宽限期延至 2026-01-28），但截至核对日未发生公开市场违约。',
       src: [['万科：债券受托管理事务报告（PDF）', 'https://www.vanke.com/upload/file/2025-07-04/461bd98d-3b96-4701-8915-c8e2aa7fbd29.pdf'],
