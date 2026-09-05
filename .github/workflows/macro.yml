@@ -1,0 +1,53 @@
+name: macro snapshot
+
+# Twice a month, because that is the release rhythm the page tracks: the
+# Employment Situation lands on the first Friday (so never later than the 7th),
+# and CPI in the second week. 14:00 UTC is 09:00/10:00 ET, after both 08:30 ET
+# releases have settled.
+on:
+  schedule:
+    - cron: '0 14 8,18 * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: macro-snapshot
+  cancel-in-progress: false
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build macro series and the Nasdaq cross-tabs
+        run: node scripts/fetch-macro.mjs
+
+      - name: Commit snapshot
+        run: |
+          set -euo pipefail
+          git config user.name 'ZEUP330'
+          git config user.email '37589028+ZEUP330@users.noreply.github.com'
+          git add macro/data
+          if git diff --cached --quiet; then
+            echo 'no change'
+            exit 0
+          fi
+          # Amend onto the previous snapshot so a ~120KB blob does not land in
+          # history twice a month forever. Only when HEAD is itself a snapshot
+          # commit, so a hand-written commit is never rewritten.
+          if git log -1 --pretty=%s | grep -q '^data: macro snapshot$'; then
+            git commit --amend --no-edit --date=now
+            git push --force-with-lease origin HEAD:main
+          else
+            git commit -m 'data: macro snapshot'
+            git push origin HEAD:main
+          fi

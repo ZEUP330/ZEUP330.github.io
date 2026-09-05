@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>美国经济数据 × 纳指：每次数据变化之后发生了什么</title>
+<meta name="description" content="非农、失业率、CPI、政策利率与初请的月度序列，以及把每个月的纳指收益按当时已知的数据分档之后的统计对比。">
+<link rel="stylesheet" href="/assets/theme.css">
+<style>
+  :root { --ok: #12855c; --danger: #cf3520; --warn: #b26a00; }
+  @media (prefers-color-scheme: dark) {
+    :root { --ok: #30d158; --danger: #ff6b5a; --warn: #ffb340; }
+  }
+
+  main { max-width: 820px; margin: 0 auto; }
+
+  .keys { grid-template-columns: repeat(auto-fit, minmax(142px, 1fr)); }
+
+  .chart { position: relative; height: 300px; margin: .2rem 0 0; }
+  .chart.short { height: 240px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: .72rem;
+    color: var(--ink-2); margin: 0 0 .5rem; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend i { width: 14px; height: 3px; border-radius: 2px; flex: none; }
+  .legend i.dash { background: none !important; border-top: 2px dashed var(--ink-3); height: 0; }
+
+  /* Each block is the same shape all the way down: three sentences, then the
+     picture those sentences are about. */
+  .block { background: var(--card); border: 1px solid var(--line); border-radius: var(--r);
+    box-shadow: var(--shadow-1); padding: 1.05rem 1.15rem 1.1rem; margin: 1.3rem 0; }
+  .block h3 { margin: 0 0 .5rem; }
+  .block .three { margin: 0 0 .9rem; font-size: .92rem; line-height: 1.72; color: var(--ink-2); }
+  .block .three b { color: var(--ink); font-weight: 600; }
+  .block .note { margin: .8rem 0 0; }
+
+  table.stat td.n { color: var(--ink-3); }
+  table.stat td.pos { color: var(--ok); font-weight: 600; }
+  table.stat td.neg { color: var(--danger); font-weight: 600; }
+  table.stat tbody tr.best td:first-child { font-weight: 600; color: var(--ink); }
+
+  .quad { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 1rem 0 0; }
+  .q { border: 1px solid var(--line); border-radius: var(--r-sm); padding: .75rem .9rem;
+    background: var(--bg-2); }
+  /* spans, so they need saying: without this the three lines run together */
+  .q .qk, .q .qv, .q .qs { display: block; }
+  .q .qk { font-size: .7rem; letter-spacing: .1em; color: var(--ink-3); }
+  .q .qv { font-size: 1.55rem; font-weight: 650; letter-spacing: -.03em;
+    font-variant-numeric: tabular-nums; line-height: 1.25; margin: .15rem 0 .05rem; }
+  .q .qs { font-size: .74rem; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+
+  ul.links { padding-left: 1.1rem; margin: 0; }
+  ul.links li { color: var(--ink-3); font-size: 14px; margin-bottom: .5rem; }
+
+  .placeholder { background: var(--card); border: 1px dashed var(--line); border-radius: var(--r);
+    padding: 1.6rem 1.2rem; text-align: center; color: var(--ink-3); font-size: .88rem;
+    line-height: 1.7; }
+
+  @media (max-width: 640px) {
+    .keys { grid-template-columns: repeat(2, 1fr); }
+    .chart { height: 240px; }
+    .chart.short { height: 200px; }
+    .block { padding: .85rem .9rem .9rem; }
+    .quad { grid-template-columns: 1fr; }
+    table { font-size: 13px; }
+    th, td { padding: 6px 4px; }
+    .hide-sm { display: none; }
+  }
+</style>
+<link rel="stylesheet" href="/assets/statusbar.css">
+<script src="/assets/statusbar.js" defer></script>
+<script src="/assets/theme.js" defer></script>
+</head>
+<body>
+<main>
+  <p class="back"><a href="../">← 首页</a> · <a href="../drawdown/">三大指数回撤</a> · <a href="../options/">期权 Wheel 筛选器</a></p>
+  <h1>美国经济数据 × 纳指</h1>
+  <p class="lede">非农、失业率、CPI、政策利率、初请 —— 每月更新一次。前半页是数据本身，一段三句话配一张图；后半页把过去二十多年的每个月按<strong>当时已经公布的</strong>数据分档，看纳指在各档里到底表现如何。</p>
+
+  <div class="note" id="asof">正在读取数据…</div>
+
+  <div class="keys" id="keys" hidden></div>
+
+  <div class="placeholder" id="empty" hidden>
+    还没有数据快照。这一页由 GitHub Actions 每月抓两次 FRED 公开 CSV 生成，
+    第一次运行之后这里就会填满。
+  </div>
+
+  <div id="body" hidden>
+
+    <h2>先看数据本身</h2>
+
+    <section class="block" data-rise="0">
+      <h3>非农就业：每月新增多少个岗位</h3>
+      <p class="three" id="t-payrolls"></p>
+      <div class="legend">
+        <span><i style="background:#0a84ff"></i>当月新增</span>
+        <span><i style="background:#8a8a8a"></i>近 12 个月均值</span>
+      </div>
+      <div class="chart"><canvas id="c-payrolls" role="img" aria-label="柱状图：美国非农就业每月新增人数，以及近 12 个月的均值。"></canvas></div>
+      <p class="hint note">非农是「全部非农就业人数」这个存量的月度差分。市场看的是差分，不是存量。</p>
+    </section>
+
+    <section class="block" data-rise="1">
+      <h3>失业率与 Sahm 规则</h3>
+      <p class="three" id="t-unrate"></p>
+      <div class="legend">
+        <span><i style="background:#0a84ff"></i>失业率（%）</span>
+        <span><i style="background:#e8503a"></i>Sahm 指标</span>
+        <span><i class="dash"></i>0.50 触发线</span>
+      </div>
+      <div class="chart"><canvas id="c-unrate" role="img" aria-label="折线图：美国失业率，以及 Sahm 规则指标与它的 0.5 触发线。"></canvas></div>
+      <p class="hint note">Sahm 指标 = 失业率三个月均值 − 该均值过去一年的最低点。历史上它升破 0.50 时，衰退通常已经开始了；作者本人多次强调这是描述性规律，不是预测模型。</p>
+    </section>
+
+    <section class="block" data-rise="2">
+      <h3>通胀：三个口径一起看</h3>
+      <p class="three" id="t-infl"></p>
+      <div class="legend">
+        <span><i style="background:#0a84ff"></i>CPI 同比</span>
+        <span><i style="background:#eda100"></i>核心 CPI 同比</span>
+        <span><i style="background:#12855c"></i>核心 PCE 同比</span>
+        <span><i class="dash"></i>2% 目标</span>
+      </div>
+      <div class="chart"><canvas id="c-infl" role="img" aria-label="折线图：CPI、核心 CPI 与核心 PCE 的同比涨幅，以及 2% 目标线。"></canvas></div>
+      <p class="hint note">美联储的目标口径是核心 PCE，不是 CPI；CPI 出得早、波动大，所以市场先交易 CPI，但政策落在 PCE 上。两者长期能差 0.3 个百分点上下。</p>
+    </section>
+
+    <section class="block" data-rise="3">
+      <h3>政策利率</h3>
+      <p class="three" id="t-ff"></p>
+      <div class="legend"><span><i style="background:#0a84ff"></i>联邦基金有效利率（%）</span></div>
+      <div class="chart short"><canvas id="c-ff" role="img" aria-label="折线图：美国联邦基金有效利率的月度水平。"></canvas></div>
+      <p class="hint note">这里画的是有效利率的月度均值，不是目标区间的上下沿，所以看起来比新闻里的整数档位平滑。</p>
+    </section>
+
+    <section class="block" data-rise="4">
+      <h3>初请失业金：唯一的周度高频</h3>
+      <p class="three" id="t-claims"></p>
+      <div class="legend">
+        <span><i style="background:#0a84ff" ></i>当周初请</span>
+        <span><i style="background:#8a8a8a"></i>四周均值</span>
+      </div>
+      <div class="chart short"><canvas id="c-claims" role="img" aria-label="折线图：美国每周初次申请失业金人数与其四周均值。"></canvas></div>
+      <p class="hint note">周度数据噪音很大，节假日和州级口径调整都会造成跳变，所以四周均值才是能看的那条线。</p>
+    </section>
+
+    <section class="block" data-rise="5">
+      <h3>收益率曲线（10 年 − 2 年）</h3>
+      <p class="three" id="t-curve"></p>
+      <div class="legend">
+        <span><i style="background:#0a84ff"></i>10 年 − 2 年利差（%）</span>
+        <span><i class="dash"></i>0 线</span>
+      </div>
+      <div class="chart short"><canvas id="c-curve" role="img" aria-label="折线图：美国 10 年期与 2 年期国债收益率之差，以及零轴。"></canvas></div>
+      <p class="hint note">倒挂（跌破 0）在历史上领先衰退，但领先的时间从几个月到两年不等，作为择时工具几乎没用。它更像是「市场认为政策已经偏紧」的温度计。</p>
+    </section>
+
+    <section class="block" data-rise="6">
+      <h3>纳指本身</h3>
+      <p class="three" id="t-ndx"></p>
+      <div class="legend">
+        <span><i style="background:#12855c"></i>上涨月份</span>
+        <span><i style="background:#e8503a"></i>下跌月份</span>
+      </div>
+      <div class="chart"><canvas id="c-ndx" role="img" aria-label="柱状图：纳斯达克 100 指数的月度收益率，上涨为绿色，下跌为红色。"></canvas></div>
+      <p class="hint note">用的是纳斯达克 100 <b>指数</b>的月末收盘，不是 NQ 期货合约。期货有展期价差，长序列拼接口径不一，指数更适合做这种跨二十年的统计。</p>
+    </section>
+
+    <h2>数据变化之后，纳指怎么走</h2>
+
+    <p>下面四组统计是这一页真正想说的部分。做法是：把过去二十多年的<strong>每一个月</strong>，按当时市场已经知道的经济数据分成几档，然后比较纳指在各档里的月度收益。</p>
+
+    <div class="note">
+      <strong>一个必须先说清楚的处理。</strong>某个月的经济数据是在<strong>下个月</strong>才公布的 ——
+      8 月的非农要等 9 月初才出。所以如果拿 8 月的非农去解释 8 月的纳指，那是在用还没公布的信息，
+      结论会好看得离谱但毫无意义。这里全部<strong>滞后一个月</strong>：用 M−1 月的数据分档，去看 M 月的收益。
+    </div>
+
+    <section class="block" data-rise="0">
+      <h3>对比一：就业强弱</h3>
+      <p class="three" id="t-jobs"></p>
+      <div class="chart short"><canvas id="c-jobs" role="img" aria-label="条形图：按非农强弱分档的纳指月均收益率。"></canvas></div>
+      <div class="scroll"><table class="stat">
+        <thead><tr><th>分档</th><th>月数</th><th>月均收益</th><th>中位数</th><th>上涨占比</th><th class="hide-sm">标准差</th></tr></thead>
+        <tbody id="tb-jobs"></tbody>
+      </table></div>
+    </section>
+
+    <section class="block" data-rise="1">
+      <h3>对比二：通胀方向</h3>
+      <p class="three" id="t-inflstat"></p>
+      <div class="chart short"><canvas id="c-inflstat" role="img" aria-label="条形图：按核心 CPI 同比加速或回落分档的纳指月均收益率。"></canvas></div>
+      <div class="scroll"><table class="stat">
+        <thead><tr><th>分档</th><th>月数</th><th>月均收益</th><th>中位数</th><th>上涨占比</th><th class="hide-sm">标准差</th></tr></thead>
+        <tbody id="tb-infl"></tbody>
+      </table></div>
+    </section>
+
+    <section class="block" data-rise="2">
+      <h3>对比三：政策方向</h3>
+      <p class="three" id="t-policy"></p>
+      <div class="chart short"><canvas id="c-policy" role="img" aria-label="条形图：按政策利率三个月变化方向分档的纳指月均收益率。"></canvas></div>
+      <div class="scroll"><table class="stat">
+        <thead><tr><th>分档</th><th>月数</th><th>月均收益</th><th>中位数</th><th>上涨占比</th><th class="hide-sm">标准差</th></tr></thead>
+        <tbody id="tb-policy"></tbody>
+      </table></div>
+    </section>
+
+    <section class="block" data-rise="3">
+      <h3>对比四：增长 × 通胀 四象限</h3>
+      <p class="three" id="t-quad"></p>
+      <div class="quad" id="quad"></div>
+      <div class="chart short" style="margin-top:1rem"><canvas id="c-quad" role="img" aria-label="条形图：增长与通胀四个象限下的纳指月均收益率。"></canvas></div>
+      <p class="hint note">四象限是把前两组交叉起来。样本一分为四之后每格只剩几十个月，差异要更大才算得上有意义 —— 别把这张图当成信号。</p>
+    </section>
+
+    <h2>怎么读这些统计</h2>
+    <p><strong>一、这是分档平均，不是预测。</strong>每一档里都有涨得很好和跌得很惨的月份，标准差那一列就是在提醒这件事：差异往往比档与档之间的均值差大一个数量级。看均值不看离散度，是这类统计最常见的误用。</p>
+    <p><strong>二、样本量决定了能说多重的话。</strong>二十多年只有二百多个月，切成四档之后每格几十个。几十个样本的均值差几个百分点，很可能只是噪音。表里给了月数，请连着看。</p>
+    <p><strong>三、同一个数据在不同环境里含义相反。</strong>「非农超预期」在担心衰退的年份是利好，在担心通胀、担心美联储不降息的年份就是利空 —— 2022 到 2023 年反复出现过。任何一个「强数据 = 涨」的规则都会在某个阶段翻车，所以这页只给分档统计，不给结论式的规则。</p>
+    <p><strong>四、这里比的是月度，不是发布当天。</strong>发布当天的跳动需要精确到分钟的行情和逐次的发布时间表，那是另一套数据。月度口径回答的是「这一档环境里，指数整体倾向如何」，回答不了「非农超预期那一刻 NQ 跳了多少点」。</p>
+
+    <h2>信息来源</h2>
+    <ul class="links">
+      <li><a href="https://fred.stlouisfed.org/series/PAYEMS" rel="noopener">PAYEMS</a> · <a href="https://fred.stlouisfed.org/series/UNRATE" rel="noopener">UNRATE</a> — 非农就业与失业率，美国劳工统计局，经 FRED 分发</li>
+      <li><a href="https://fred.stlouisfed.org/series/CPIAUCSL" rel="noopener">CPIAUCSL</a> · <a href="https://fred.stlouisfed.org/series/CPILFESL" rel="noopener">CPILFESL</a> · <a href="https://fred.stlouisfed.org/series/PCEPILFE" rel="noopener">PCEPILFE</a> — CPI、核心 CPI 与核心 PCE</li>
+      <li><a href="https://fred.stlouisfed.org/series/FEDFUNDS" rel="noopener">FEDFUNDS</a> · <a href="https://fred.stlouisfed.org/series/T10Y2Y" rel="noopener">T10Y2Y</a> — 联邦基金有效利率与 10 年减 2 年利差</li>
+      <li><a href="https://fred.stlouisfed.org/series/ICSA" rel="noopener">ICSA</a> — 初次申请失业金人数，美国劳工部</li>
+      <li><a href="https://fred.stlouisfed.org/series/NASDAQ100" rel="noopener">NASDAQ100</a> — 纳斯达克 100 指数，Nasdaq OMX 提供，经 FRED 分发</li>
+      <li><a href="https://www.bls.gov/schedule/news_release/empsit.htm" rel="noopener">就业形势报告发布日程</a> · <a href="https://www.bls.gov/schedule/news_release/cpi.htm" rel="noopener">CPI 发布日程</a> — 美国劳工统计局</li>
+      <li><a href="https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm" rel="noopener">FOMC 会议日历</a> — 美联储</li>
+      <li id="dl">本页用的全部派生数据在第一次抓取之后会出现在 <code>macro/data/macro.json</code>，可直接下载</li>
+    </ul>
+  </div>
+
+  <footer>数据每月由 GitHub Actions 抓取 FRED 公开 CSV 后重算，无人工录入。所有统计是对公开历史数据的机械计算，样本有限、口径固定，不构成任何投资建议，也不是对未来的预测。</footer>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  var BLUE = '#0a84ff', GREY = '#8a8a8a', AMBER = '#eda100', GREEN = '#12855c', RED = '#e8503a';
+  var AXIS = '#8a8a8a', GRID = 'rgba(138,138,138,.22)';
+
+  var fmt = function (v, d) { return (+v).toFixed(d == null ? 1 : d); };
+  var sign = function (v, d) { return (v > 0 ? '+' : '') + fmt(v, d); };
+  var kn = function (v) { return Math.round(v).toLocaleString('en-US'); };
+  // FRED gives payrolls in thousands of persons; 万 is what reads naturally here
+  var wan = function (kPersons) { return (kPersons / 100).toFixed(1); };
+  // 2026-08 -> 2026 年 8 月; the leading zero is for sorting, not for reading
+  var mLabel = function (m) { return +m.slice(0, 4) + ' 年 ' + (+m.slice(5, 7)) + ' 月'; };
+
+  // One place for the shared chart options; every chart on the page differs
+  // only in its data and its axis titles.
+  function base(yTitle, yFmt) {
+    return {
+      responsive: true, maintainAspectRatio: false, animation: { duration: 250 },
+      interaction: { mode: 'index', intersect: false },
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color: AXIS, maxTicksLimit: 9, autoSkip: true }, grid: { display: false } },
+        y: { title: { display: !!yTitle, text: yTitle, color: AXIS },
+             ticks: { color: AXIS, callback: yFmt || undefined },
+             grid: { color: GRID } }
+      }
+    };
+  }
+  function line(color, data, extra) {
+    return Object.assign({ data: data, borderColor: color, borderWidth: 2, tension: .2,
+      pointRadius: 0, pointHoverRadius: 0 }, extra || {});
+  }
+
+  var el = function (id) { return document.getElementById(id); };
+
+  fetch('./data/macro.json', { cache: 'no-cache' })
+    .then(function (r) { if (!r.ok) throw new Error('macro.json ' + r.status); return r.json(); })
+    .then(render)
+    .catch(function (e) {
+      el('asof').textContent = '数据还没有生成：' + e.message;
+      el('empty').hidden = false;
+    });
+
+  function render(j) {
+    var S = j.series, L = j.latest, T = j.stats;
+    el('body').hidden = false;
+    el('keys').hidden = false;
+    // Linked from here rather than from the markup: until the first snapshot
+    // exists the file does not, and a dead link in the source would ship.
+    var dl = el('dl');
+    if (dl) {
+      var a = document.createElement('a');
+      a.href = './data/macro.json';
+      a.rel = 'noopener';
+      a.textContent = 'macro.json';
+      dl.textContent = ' — 本页用的全部派生数据，可直接下载';
+      dl.insertBefore(a, dl.firstChild);
+    }
+    el('asof').innerHTML = '数据截至 <b>' + mLabel(j.asOf) + '</b>（就业与物价口径）· 抓取于 '
+      + new Date(j.fetched).toLocaleString('zh-CN', { hour12: false })
+      + (j.failures && j.failures.length ? ' · 有 ' + j.failures.length + ' 个序列本次没取到' : '');
+
+    // ---- key tiles -------------------------------------------------------
+    var p12 = S.payrolls.slice(-13, -1).reduce(function (a, b) { return a + b.v; }, 0) / 12;
+    var dd = (L.ndx.c / L.ndxPeak - 1) * 100;
+    var keys = [
+      ['非农新增', wan(L.payrolls.v), '万人', '近 12 个月均值 ' + wan(p12) + ' 万人 · ' + mLabel(L.payrolls.d), L.payrolls.v >= p12 ? '' : ' key--cost'],
+      ['失业率', fmt(L.unrate.v), '%', 'Sahm 指标 ' + (L.sahm ? fmt(L.sahm.v, 2) : '—') + '（0.50 为触发线）', L.sahm && L.sahm.v >= 0.5 ? ' key--risk' : ''],
+      ['核心 CPI 同比', fmt(L.core.v), '%', L.corepce ? '核心 PCE ' + fmt(L.corepce.v) + '%，目标 2%' : '目标 2%', L.core.v > 3 ? ' key--cost' : ''],
+      ['联邦基金利率', fmt(L.ff.v, 2), '%', '有效利率月均，' + mLabel(L.ff.d), ''],
+      ['纳指距高点', fmt(dd, 1), '%', '月末收盘口径，' + mLabel(L.ndx.d), dd < -10 ? ' key--risk' : ' key--lead']
+    ];
+    el('keys').innerHTML = keys.map(function (k) {
+      return '<div class="key' + k[4] + '"><span class="kk">' + k[0] + '</span>'
+        + '<span class="kv">' + k[1] + '<span class="ku">' + k[2] + '</span></span>'
+        + '<p class="kd">' + k[3] + '</p></div>';
+    }).join('');
+
+    // ---- the six data blocks --------------------------------------------
+    var pay = S.payrolls.slice(-120);
+    var payMa = pay.map(function (_, i, a) {
+      if (i < 11) return null;
+      var s = 0; for (var k = i - 11; k <= i; k++) s += a[k].v; return s / 12;
+    });
+    el('t-payrolls').innerHTML =
+      '最新一期非农新增 <b>' + wan(L.payrolls.v) + ' 万人</b>（' + mLabel(L.payrolls.d) + '），'
+      + '近 12 个月的平均是 ' + wan(p12) + ' 万人，'
+      + (L.payrolls.v >= p12 ? '这一期<b>强于</b>' : '这一期<b>弱于</b>') + '自己的近一年均值。'
+      + '把它和均值线放在一起看，是因为绝对数字本身没有基准 —— 20 万在 2015 年偏弱，在 2019 年正常，'
+      + '在人口增长放缓之后又变成了偏强。'
+      + '柱子的方向比高度更值得看：连续几个月低于均值线，通常比单月的一个大数字更能说明问题。';
+    new Chart(el('c-payrolls'), {
+      type: 'bar',
+      data: { labels: pay.map(function (r) { return r.d; }), datasets: [
+        { data: pay.map(function (r) { return r.v; }), backgroundColor: pay.map(function (r) { return r.v < 0 ? RED : BLUE; }), borderWidth: 0, order: 2 },
+        Object.assign({ type: 'line', order: 1 }, line(GREY, payMa, { borderDash: [5, 4] }))
+      ] },
+      options: Object.assign(base('千人'), { plugins: { legend: { display: false }, tooltip: { callbacks: {
+        label: function (c) { return (c.datasetIndex ? '12 个月均值：' : '当月新增：') + wan(c.parsed.y) + ' 万人'; } } } } })
+    });
+
+    var un = S.unrate.slice(-300), sa = S.sahm.slice(-300);
+    var saMap = new Map(sa.map(function (r) { return [r.d, r.v]; }));
+    el('t-unrate').innerHTML =
+      '失业率现在是 <b>' + fmt(L.unrate.v) + '%</b>，Sahm 指标 '
+      + (L.sahm ? '<b>' + fmt(L.sahm.v, 2) + '</b>' : '暂缺') + '。'
+      + '失业率的水平高低几乎没有信息量，重要的是<b>变化的方向和速度</b> —— 它是典型的滞后指标，'
+      + '掉下来时慢慢磨，升上去时几乎从不温和。'
+      + 'Sahm 指标就是把「升得多快」量化出来：三个月均值比过去一年的低点高出半个百分点，历史上衰退基本已经开始。';
+    new Chart(el('c-unrate'), {
+      type: 'line',
+      data: { labels: un.map(function (r) { return r.d; }), datasets: [
+        line(BLUE, un.map(function (r) { return r.v; })),
+        line(RED, un.map(function (r) { return saMap.has(r.d) ? saMap.get(r.d) : null; }), { yAxisID: 'y2' }),
+        line(GREY, un.map(function () { return 0.5; }), { yAxisID: 'y2', borderDash: [6, 4], borderWidth: 1.5 })
+      ] },
+      options: (function (o) {
+        o.scales.y.title.text = '失业率（%）';
+        o.scales.y2 = { position: 'right', title: { display: true, text: 'Sahm', color: AXIS },
+          ticks: { color: AXIS }, grid: { display: false } };
+        o.plugins.tooltip = { callbacks: { label: function (c) {
+          return ['失业率', 'Sahm 指标', '触发线'][c.datasetIndex] + '：' + fmt(c.parsed.y, 2); } } };
+        return o;
+      })(base('失业率（%）'))
+    });
+
+    var ci = S.core.slice(-300), cpiMap = new Map(S.cpi.map(function (r) { return [r.d, r.v]; }));
+    var pceMap = new Map(S.corepce.map(function (r) { return [r.d, r.v]; }));
+    el('t-infl').innerHTML =
+      '核心 CPI 同比 <b>' + fmt(L.core.v) + '%</b>，整体 CPI ' + fmt(L.cpi.v) + '%'
+      + (L.corepce ? '，核心 PCE ' + fmt(L.corepce.v) + '%' : '') + '。'
+      + '三条线里，<b>核心</b>剔除了食品和能源，所以它转向得慢，但转向之后更难反转；'
+      + '整体 CPI 会被油价一个月拉高一个百分点，然后下个月还回去。'
+      + '真正决定政策的是核心 PCE：它是美联储 2% 目标的口径，而且通常比 CPI 低一截，'
+      + '所以「CPI 还有 3%」和「已经接近目标」可以同时成立。';
+    new Chart(el('c-infl'), {
+      type: 'line',
+      data: { labels: ci.map(function (r) { return r.d; }), datasets: [
+        line(BLUE, ci.map(function (r) { return cpiMap.has(r.d) ? cpiMap.get(r.d) : null; })),
+        line(AMBER, ci.map(function (r) { return r.v; })),
+        line(GREEN, ci.map(function (r) { return pceMap.has(r.d) ? pceMap.get(r.d) : null; })),
+        line(GREY, ci.map(function () { return 2; }), { borderDash: [6, 4], borderWidth: 1.5 })
+      ] },
+      options: (function (o) {
+        o.plugins.tooltip = { callbacks: { label: function (c) {
+          return ['CPI', '核心 CPI', '核心 PCE', '2% 目标'][c.datasetIndex] + '：' + fmt(c.parsed.y) + '%'; } } };
+        return o;
+      })(base('同比（%）'))
+    });
+
+    var ff = S.ff.slice(-300);
+    var ffMin = ff.reduce(function (a, b) { return Math.min(a, b.v); }, 99);
+    el('t-ff').innerHTML =
+      '联邦基金有效利率 <b>' + fmt(L.ff.v, 2) + '%</b>（' + mLabel(L.ff.d) + '），'
+      + '这条线是整页所有资产定价的地板。'
+      + '它对纳指的影响不在水平值，而在<b>方向和速度</b> —— 成长股的估值是把很远的现金流贴回今天，'
+      + '贴现率动一点，久期越长的资产反应越大，纳指恰恰是久期最长的那一类。'
+      + '所以同样是 4%，在往上走的路上和往下走的路上，市场给的估值可以差很远。';
+    new Chart(el('c-ff'), {
+      type: 'line',
+      data: { labels: ff.map(function (r) { return r.d; }), datasets: [
+        line(BLUE, ff.map(function (r) { return r.v; }), { fill: true, backgroundColor: 'rgba(10,132,255,.10)' })
+      ] },
+      options: (function (o) { o.scales.y.min = Math.max(0, Math.floor(ffMin));
+        o.plugins.tooltip = { callbacks: { label: function (c) { return '有效利率：' + fmt(c.parsed.y, 2) + '%'; } } };
+        return o; })(base('%'))
+    });
+
+    var cl = S.claims.slice(-160);
+    el('t-claims').innerHTML =
+      '最近一周初请 <b>' + kn(L.claims.v) + '</b> 人，四周均值 ' + kn(L.claims.ma4) + ' 人。'
+      + '它是这一页唯一的<b>周度</b>数据，也是最早能看到劳动力市场转向的地方 —— '
+      + '企业停止招聘不需要申报，开始裁员才会立刻变成初请。'
+      + '判断标准不是绝对水平，而是四周均值有没有连续几周往上走：单周跳一两万是常态，趋势才有意义。';
+    new Chart(el('c-claims'), {
+      type: 'line',
+      data: { labels: cl.map(function (r) { return r.d; }), datasets: [
+        line(BLUE, cl.map(function (r) { return r.v; }), { borderWidth: 1.2, borderColor: 'rgba(10,132,255,.45)' }),
+        line(GREY, cl.map(function (r) { return r.ma4; }), { borderWidth: 2.5, borderColor: BLUE })
+      ] },
+      options: (function (o) { o.scales.y.ticks.callback = function (v) { return kn(v / 1000) + 'k'; };
+        o.plugins.tooltip = { callbacks: { label: function (c) {
+          return (c.datasetIndex ? '四周均值：' : '当周：') + kn(c.parsed.y) + ' 人'; } } };
+        return o; })(base('人'))
+    });
+
+    var cv = S.curve.slice(-1300);
+    el('t-curve').innerHTML =
+      '10 年减 2 年利差现在是 <b>' + sign(L.curve.v, 2) + ' 个百分点</b>。'
+      + '正常年份它是正的：借得越久，要求的补偿越高；'
+      + '<b>倒挂</b>意味着市场认为短端利率高得不可持续，未来必须降下来。'
+      + '它对择时几乎没用 —— 倒挂到衰退之间隔了几个月到两年不等，中间纳指经常还有一大段涨幅。';
+    new Chart(el('c-curve'), {
+      type: 'line',
+      data: { labels: cv.map(function (r) { return r.d; }), datasets: [
+        line(BLUE, cv.map(function (r) { return r.v; }), { borderWidth: 1.6 }),
+        line(GREY, cv.map(function () { return 0; }), { borderDash: [6, 4], borderWidth: 1.5 })
+      ] },
+      options: (function (o) { o.scales.x.ticks.maxTicksLimit = 7;
+        o.plugins.tooltip = { callbacks: { label: function (c) {
+          return c.datasetIndex ? '' : '利差：' + sign(c.parsed.y, 2); } } };
+        return o; })(base('百分点'))
+    });
+
+    var nq = S.ndx.slice(-120).filter(function (r) { return r.ret != null; });
+    var up = nq.filter(function (r) { return r.ret > 0; }).length;
+    el('t-ndx').innerHTML =
+      '最近 ' + nq.length + ' 个月里，纳指有 <b>' + up + '</b> 个月收涨，'
+      + '整段样本（' + T.span.n + ' 个月）的月均收益是 <b>' + sign(T.all.mean, 2) + '%</b>、上涨占比 '
+      + fmt(T.all.win) + '%。'
+      + '这个「上涨占比六成上下」就是后面所有分档统计的<b>基准线</b> —— '
+      + '任何一档如果只有五成几，其实并没有跑赢「什么都不看」。'
+      + '把这条基准记住，再去看下面四组对比，才不会被几个百分点的差异唬住。';
+    new Chart(el('c-ndx'), {
+      type: 'bar',
+      data: { labels: nq.map(function (r) { return r.d; }), datasets: [
+        { data: nq.map(function (r) { return r.ret; }),
+          backgroundColor: nq.map(function (r) { return r.ret >= 0 ? GREEN : RED; }), borderWidth: 0 }
+      ] },
+      options: (function (o) { o.scales.y.ticks.callback = function (v) { return v + '%'; };
+        o.plugins.tooltip = { callbacks: { label: function (c) { return '当月：' + sign(c.parsed.y, 2) + '%'; } } };
+        return o; })(base('月度收益（%）'))
+    });
+
+    // ---- the four cross-tabs --------------------------------------------
+    function statChart(id, rows, colors) {
+      new Chart(el(id), {
+        type: 'bar',
+        data: { labels: rows.map(function (r) { return r.k; }), datasets: [
+          { data: rows.map(function (r) { return r.mean; }), backgroundColor: colors, borderWidth: 0, barPercentage: .6 },
+          { type: 'line', data: rows.map(function () { return T.all.mean; }),
+            borderColor: GREY, borderDash: [6, 4], borderWidth: 1.5, pointRadius: 0 }
+        ] },
+        options: (function (o) {
+          o.indexAxis = 'y';
+          o.scales = { x: { title: { display: true, text: '月均收益（%）', color: AXIS },
+                            ticks: { color: AXIS, callback: function (v) { return v + '%'; } }, grid: { color: GRID } },
+                       y: { ticks: { color: AXIS }, grid: { display: false } } };
+          o.plugins.tooltip = { callbacks: { label: function (c) {
+            return c.datasetIndex ? '全样本均值：' + fmt(T.all.mean, 2) + '%' : '月均：' + sign(c.parsed.x, 2) + '%'; } } };
+          return o;
+        })(base(null))
+      });
+    }
+    function statTable(id, rows) {
+      var best = rows.reduce(function (a, b) { return (b.n && b.mean > (a ? a.mean : -99)) ? b : a; }, null);
+      el(id).innerHTML = rows.map(function (r) {
+        if (!r.n) return '<tr><td>' + r.k + '</td><td colspan="5" class="n">样本不足</td></tr>';
+        return '<tr' + (r === best ? ' class="best"' : '') + '><td>' + r.k + '</td>'
+          + '<td class="n">' + r.n + '</td>'
+          + '<td class="' + (r.mean >= 0 ? 'pos' : 'neg') + '">' + sign(r.mean, 2) + '%</td>'
+          + '<td>' + sign(r.med, 2) + '%</td><td>' + fmt(r.win) + '%</td>'
+          + '<td class="hide-sm n">' + fmt(r.sd, 2) + '</td></tr>';
+      }).join('');
+    }
+
+    var jb = T.jobs, gap = (jb[0].mean != null && jb[1].mean != null) ? jb[0].mean - jb[1].mean : null;
+    el('t-jobs').innerHTML =
+      '把每个月按「上月非农是否强于它此前 12 个月的均值」分成两档：强的一档 ' + jb[0].n + ' 个月，'
+      + '月均 <b>' + sign(jb[0].mean, 2) + '%</b>；弱的一档 ' + jb[1].n + ' 个月，月均 <b>' + sign(jb[1].mean, 2) + '%</b>。'
+      + '两档相差 ' + (gap == null ? '—' : fmt(Math.abs(gap), 2) + ' 个百分点')
+      + '，而两档各自的月度标准差都在 ' + fmt((jb[0].sd + jb[1].sd) / 2, 1) + '% 上下 —— '
+      + '<b>档间差远小于档内波动</b>，这是所有这类统计的常态。'
+      + '所以正确的读法是「就业强弱对纳指的月度方向影响有限」，而不是「非农强就该做多」。';
+    statChart('c-jobs', jb, [BLUE, GREY]);
+    statTable('tb-jobs', jb);
+
+    var inf = T.infl;
+    el('t-inflstat').innerHTML =
+      '按上月核心 CPI 同比比再上一个月是升还是降分档：加速的 ' + inf[0].n + ' 个月月均 <b>'
+      + sign(inf[0].mean, 2) + '%</b>，回落的 ' + inf[1].n + ' 个月月均 <b>' + sign(inf[1].mean, 2) + '%</b>。'
+      + '这一组通常比就业那组差得更明显，原因也更直接：<b>通胀回落等于降息的可能性上升</b>，'
+      + '而降息预期直接抬高长久期资产的估值。'
+      + '但要注意方向会随环境翻转 —— 在通缩担忧的年份（比如 2015 和 2019 年初），通胀回落反而是坏消息。';
+    statChart('c-inflstat', inf, [RED, GREEN]);
+    statTable('tb-infl', inf);
+
+    var po = T.policy;
+    el('t-policy').innerHTML =
+      '按政策利率过去三个月的变化方向分成升、平、降三档，'
+      + '月数分别是 ' + po[0].n + ' / ' + po[1].n + ' / ' + po[2].n + '，'
+      + '月均收益 <b>' + sign(po[0].mean, 2) + '% / ' + sign(po[1].mean, 2) + '% / ' + sign(po[2].mean, 2) + '%</b>。'
+      + '「降息档」的样本最少，而且高度集中在少数几段 —— 2001、2008、2020、2024 之后，'
+      + '其中前三段的降息是因为出事了，指数在降息途中还在跌。'
+      + '<b>降息不等于上涨</b>：这一档同时包含了危机中的暴跌和危机后的暴涨，均值是这两者相抵之后的结果。';
+    statChart('c-policy', po, [RED, GREY, GREEN]);
+    statTable('tb-policy', po);
+
+    var q = T.quad;
+    el('t-quad').innerHTML =
+      '把就业强弱和通胀方向交叉，得到四个象限。'
+      + '按月均收益排，最好的一格是「' + q.slice().sort(function (a, b) { return (b.mean || -99) - (a.mean || -99); })[0].k
+      + '」，最差的是「' + q.slice().sort(function (a, b) { return (a.mean || 99) - (b.mean || 99); })[0].k + '」。'
+      + '这套框架的通俗版本就是市场常说的「金发女孩」—— <b>经济不差、通胀在降</b>，'
+      + '既不用担心衰退，又能期待降息，历史上确实是纳指最舒服的组合。'
+      + '但每格只剩几十个月，四个数字的排序并不稳定，换一段样本区间就可能重排。';
+    el('quad').innerHTML = q.map(function (r) {
+      if (!r.n) return '<div class="q"><span class="qk">' + r.k + '</span><span class="qs">样本不足</span></div>';
+      return '<div class="q"><span class="qk">' + r.k + '</span>'
+        + '<span class="qv" style="color:' + (r.mean >= 0 ? 'var(--ok)' : 'var(--danger)') + '">'
+        + sign(r.mean, 2) + '%</span>'
+        + '<span class="qs">' + r.n + ' 个月 · 上涨 ' + fmt(r.win) + '% · 标准差 ' + fmt(r.sd, 1) + '</span></div>';
+    }).join('');
+    statChart('c-quad', q, [AMBER, GREEN, RED, BLUE]);
+  }
+}());
+</script>
+</body>
+</html>

@@ -480,8 +480,11 @@ input[type="range"]::-moz-range-thumb {
 }
 
 /* A callout is a card with a colored edge, not a tinted box — the tint is what
-   makes these look like a warning banner from 2012. */
-.note, .warn, .alert-note {
+   makes these look like a warning banner from 2012.
+   NOT `.warn`: that word is a state modifier all over this site (.zb-dot.warn,
+   .alert.warn, .badge.warn, dd.warn), and claiming it here put padding, a
+   border and a shadow on an 8px status-bar dot on every single page. */
+.note, .alert-note, .callout {
   background: var(--card);
   border: 1px solid var(--line);
   border-left: 3px solid var(--warn, #ff9f0a);
@@ -492,7 +495,7 @@ input[type="range"]::-moz-range-thumb {
   font-size: .82rem;
   color: var(--ink-2);
 }
-.note strong, .warn strong, .alert-note strong { color: var(--ink); }
+.note strong, .alert-note strong, .callout strong { color: var(--ink); }
 
 blockquote {
   margin: 1.4rem 0;

@@ -33,6 +33,12 @@
       note: '统计局月度发布后取，每月 3 次'
     },
     {
+      id: 'macro', name: '美国经济数据', url: '/macro/data/status.json', page: '/macro/',
+      // macro.yml: '0 14 8,18 * *'
+      cron: { monthDays: [8, 18], times: [[14, 0]] },
+      note: '非农与 CPI 发布后各取一次'
+    },
+    {
       id: 'catchup', name: '被追赶的经济体', url: '/catchup/data/status.json', page: '/catchup/',
       // catchup.yml: '40 4 5 * *'
       cron: { monthDays: [5], times: [[4, 40]] },

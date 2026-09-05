@@ -32,6 +32,7 @@ index.html          主页
 mortgage/           房贷年限 × 月供
 housing/            全国房价走势地图      housing/data/  ← housing.yml 写入
 options/            美股期权 wheel 筛选器  options/data/  ← options.yml 写入
+macro/              美国经济数据 × 纳指     macro/data/    ← macro.yml 写入
 changsha/           长沙行程
 assets/theme.*      全站共享的样式底座（配色/字号/控件/动效）+ 三个行为，每页两行 include
 assets/statusbar.*  全站共享状态栏（更新时间 + 抽签），每页两行 include
@@ -57,6 +58,10 @@ scripts/            两个采集脚本，在 Actions runner 里跑
   文字色、留下它们的背景色，变成蓝底蓝字；`.warn` 同时是块级提示框和修饰词，
   于是 `<b class="hl warn">` 继承了提示框的 padding/border，变成一个压在下一行文字上的方块。
   修饰类一律带前缀（`.key--cost`、`.hl--warn`），填充选中态用 `.btn.on`。
+  第三次是同一个 `.warn`：它还命中了状态栏的 `.zb-dot.warn`，把 8px 的圆点撑成带 padding
+  和边框的提示框 —— **每一页都有**，而且是从提交那天起就一直在。已经把 `.warn` 从
+  theme.css 的选择器里彻底去掉（提示框现在是 `.note`/`.alert-note`/`.callout`）。
+  规则很简单：**共享样式表里不要占用任何一个会被当作状态词的通名**。
 - **入场动画不能靠 IntersectionObserver 判可见**。观察器只报「跨过阈值」，用户一次跳到
   页尾时中间那几个元素从未相交，会永久停在 opacity 0。theme.js 改成按 rect 位置扫，
   并且 `.rise` 由 JS 加上 —— 关掉 JS 时内容必须是直接可见的。
