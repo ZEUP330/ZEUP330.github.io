@@ -543,6 +543,47 @@ footer {
   color: var(--ink-3);
 }
 
+/* ---- lead figure --------------------------------------------------------- */
+
+/* Every page carries one representative picture, and every one of them sits in
+   the same frame: a 16/9 box fed by a 960px-wide source, whether the content is
+   a Commons photo or an inline SVG. Uniform on purpose — no page gets to make
+   its own picture taller than the next page's.
+   Matched as `figure.shot` on the element so it cannot reach changsha's
+   .shots / .bk-shot / .cmp-shot grids, which are their own sizes. */
+figure.shot { margin: 1.15rem 0 1.5rem; }
+figure.shot .fr {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: var(--r-sm);
+  background: var(--bg-2);
+  box-shadow: var(--shadow-1);
+}
+figure.shot .fr > img,
+figure.shot .fr > svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border: 0;
+}
+figure.shot a.fr:hover { text-decoration: none; }
+
+/* On a phone the 16/9 box is ~194px tall, and a diagram scaled into that is
+   unreadable. Same trick the wide figures already use: fix the height, keep
+   the drawing at a legible width, and let it scroll sideways. Photos take the
+   same box, so every picture on the site is still one size. */
+@media (max-width: 640px) {
+  figure.shot .fr { aspect-ratio: auto; height: 320px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  figure.shot .fr > svg { width: 570px; }
+}
+
+figure.shot figcaption { margin: .5rem 0 0; line-height: 1.6; }
+figure.shot .cred { display: block; font-size: 11px; opacity: .85; }
+figure.shot .cred a { color: var(--ink-3); }
+
 /* ---- entrance ------------------------------------------------------------ */
 
 /* theme.js adds .rise to sectioned content once it has decided motion is

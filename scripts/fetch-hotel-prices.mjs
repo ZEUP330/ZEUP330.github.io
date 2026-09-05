@@ -16,13 +16,11 @@ const NIGHTS = 2;
 const CNY_PER_USD = 7.15;
 const HISTORY_CAP = 720; // 30 days at hourly
 
+// Only the booked hotel now. It was reserved on a free-cancellation rate, so
+// watching the price still pays: if it drops before the trip, cancel and
+// rebook. The other candidates are decided and gone.
 const HOTELS = [
-  { id: '116989879', key: 'luxury', name: '五一广场异国印象·奢酒店' },
-  { id: '112342483', key: 'xi', name: 'Xi Hotel（五一广场 IFS）' },
-  { id: '92349369', key: 'fungee', name: 'FUNGEE（黄兴广场站）' },
-  { id: '117841238', key: 'hampton', name: 'Hampton by Hilton 五一广场' },
-  { id: '1250258', key: 'exotic', name: 'IFS 国金中心·异国印象酒店' },
-  { id: '916436', key: 'atour', name: '亚朵酒店（长沙 IFS）' }
+  { id: '116989879', key: 'luxury', name: '五一广场异国印象·奢酒店' }
 ];
 
 const url = (id) =>
@@ -90,9 +88,24 @@ for (const h of HOTELS) {
       `room=${r.room || '-'} left=${r.roomsLeft ?? '-'} soldOut=${r.soldOut}`
     );
   } catch (err) {
+    // Say what the page actually was. A timeout alone cannot distinguish "slow"
+    // from "bot wall" from "redirected to another site", and those need
+    // different fixes.
+    let diag = {};
+    try {
+      diag = await page.evaluate(() => ({
+        url: location.href,
+        title: document.title,
+        head: document.body.innerText.replace(/\s+/g, ' ').slice(0, 300),
+        len: document.body.innerText.length
+      }));
+    } catch { /* page already gone */ }
     out.hotels[h.key] = { id: h.id, name: h.name, ok: false, error: String(err.message || err).slice(0, 120) };
     out.failures.push(`${h.key}: ${String(err.message || err).slice(0, 80)}`);
     console.log(`${h.key.padEnd(8)} FAILED ${err.message}`);
+    console.log(`         url=${diag.url || '?'}`);
+    console.log(`         title=${diag.title || '?'}`);
+    console.log(`         len=${diag.len} text="${diag.head || ''}"`);
   } finally {
     await page.close();
   }

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>长沙 41 小时：松弛版 / 暴走版</title>
+<title>长沙 41 小时：全程时间轴</title>
 <meta name="description" content="按周五 23:28 抵达、周日 18:00 离开排的长沙行程：时间预算、地理关系图、住哪、两种节奏的时间表与避坑。">
 <link rel="stylesheet" href="/assets/theme.css">
 <style>
@@ -28,7 +28,6 @@
   dl.kv dt { color: var(--ink-3); }
   dl.kv dd { margin: 0; color: var(--ink-2); }
   dl.kv dd b { color: var(--ink); font-weight: 500; }
-  dl.kv dd b.hl { font-weight: 600; }
 
   .hotel { border-top: 1px solid var(--line); padding: .9rem 0 .2rem; }
   .hotel:first-of-type { border-top: 0; }
@@ -44,6 +43,20 @@
   .subs b { font-size: 13px; font-variant-numeric: tabular-nums; }
   .facts { font-size: 12px; color: var(--ink-3); margin: 0 0 .6rem; }
   /* Apple-compare style: one column per hotel, rows aligned across columns. */
+  .booked { display: grid; grid-template-columns: 200px 1fr; gap: 16px; align-items: start;
+    background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 1rem; margin: 0 0 1rem; }
+  .bk-shot img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 8px; display: block; }
+  .bk-tag { font-size: 11px; color: var(--ok); border: 1px solid currentColor; border-radius: 999px;
+    padding: 1px 9px; display: inline-block; margin: 0 0 .4rem; }
+  .bk-name { font-size: 17px; font-weight: 500; margin: 0 0 .2rem; }
+  .bk-addr { font-size: 12px; color: var(--ink-3); margin: 0 0 .7rem; }
+  .bk-kv { display: grid; grid-template-columns: 5.5em 1fr; gap: .4rem 12px; margin: 0; font-size: 13px; }
+  .bk-kv dt { color: var(--ink-3); }
+  .bk-kv dd { margin: 0; color: var(--ink-2); }
+  @media (max-width: 640px) {
+    .booked { grid-template-columns: 1fr; }
+    .bk-kv { grid-template-columns: 4.5em 1fr; }
+  }
   .cmp-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 0 1rem; }
   .cmp { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(190px, 1fr); gap: 0; min-width: 100%; }
   .cmp-col { padding: 0 14px; border-left: 1px solid var(--line); text-align: center; }
@@ -71,6 +84,23 @@
   .fresh.old { border-left-color: var(--danger); }
   .per { font-size: 11px; color: var(--ink-3); }
 
+  /* Real photographs, hotlinked from Wikimedia Commons. Every one is CC or
+     CC0 and the caption carries the author and licence, which is the condition
+     of using them. */
+  figure.photo .g3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; }
+  figure.photo .g3 a { display: block; aspect-ratio: 3 / 2; border-radius: 10px; overflow: hidden;
+    border: 1px solid var(--line); }
+  figure.photo .g3 img { width: 100%; height: 100%; object-fit: cover; border: 0; border-radius: 0; }
+  @media (max-width: 640px) { figure.photo .g3 { grid-template-columns: 1fr 1fr; } }
+  figure.photo { margin: .9rem 0 1.2rem; }
+  figure.photo img { width: 100%; height: auto; border-radius: 10px; display: block;
+    border: 1px solid var(--line); }
+  figure.photo .two { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  figure.photo figcaption { font-size: 12px; color: var(--ink-3); margin-top: .45rem; line-height: 1.6; }
+  figure.photo .cred { display: block; font-size: 11px; opacity: .8; }
+  figure.photo .cred a { color: var(--ink-3); text-decoration: none; }
+  figure.photo .cred a:hover { text-decoration: underline; }
+
   .shots { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
     gap: 6px; margin: 0 0 .8rem; }
   .shots a { display: block; aspect-ratio: 4 / 3; border-radius: 8px; overflow: hidden;
@@ -92,6 +122,104 @@
   .quote .src { display: block; font-size: 11px; color: var(--ink-3); margin-top: 2px; }
   td.up { color: var(--ok); }
   td.down { color: var(--warn); }
+
+  /* Vertical spine, one entry per slot. The strip inside each entry scrolls
+     sideways with snap points so photos and detail cards live at the time they
+     belong to instead of in a gallery somewhere else on the page. */
+  /* Motion: transform and opacity only, eased rather than linear, and every
+     bit of it off when the reader has asked for less. */
+  @media (prefers-reduced-motion: no-preference) {
+    ol.tl > li { animation: tl-in .5s cubic-bezier(.22, 1, .36, 1) both; }
+    @keyframes tl-in { from { opacity: 0; transform: translateY(10px); } }
+    ol.tl > li:nth-child(-n+8) { animation-delay: calc((var(--i, 0) + 1) * 45ms); }
+
+    ol.tl > li::before { transition: transform .22s cubic-bezier(.22, 1, .36, 1); }
+    ol.tl > li:hover::before { transform: scale(1.35); }
+
+    .strip img, .strip .card {
+      transition: transform .22s cubic-bezier(.22, 1, .36, 1),
+                  box-shadow .22s cubic-bezier(.22, 1, .36, 1);
+    }
+    .strip img:hover, .strip .card:hover { transform: translateY(-2px); box-shadow: var(--shadow-2); }
+    .strip img:active { transform: translateY(0) scale(.99); transition-duration: .09s; }
+
+    /* The fixed times are the ones that can ruin the trip; a slow breath draws
+       the eye without becoming a blinking cursor. */
+    ol.tl > li.fix::before { animation: tl-pulse 2.6s ease-in-out infinite; }
+    @keyframes tl-pulse {
+      0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 45%, transparent); }
+      50% { box-shadow: 0 0 0 5px color-mix(in srgb, var(--accent) 0%, transparent); }
+    }
+  }
+
+  ol.tl { list-style: none; margin: 1.25rem 0 0; padding: 0 0 0 1.6rem;
+    border-left: 2px solid var(--line); }
+  ol.tl > li { position: relative; padding: 0 0 1.9rem; }
+  ol.tl > li::before { content: ''; position: absolute; left: -2.05rem; top: .42rem;
+    width: 11px; height: 11px; border-radius: 50%; background: var(--bg);
+    border: 2px solid var(--ink-3); }
+  ol.tl > li.fix::before { border-color: var(--accent); background: var(--accent); }
+  ol.tl > li.day { padding-top: .3rem; }
+  ol.tl > li.day::before { width: 0; height: 0; border: 0; }
+  .tl-day { font-size: 13px; font-weight: 500; color: var(--ink-3); letter-spacing: .04em;
+    border-bottom: 1px solid var(--line); padding-bottom: .3rem; margin: .5rem 0 1rem; }
+  .tl-t { font-size: 13px; font-variant-numeric: tabular-nums; color: var(--ink-3); }
+  ol.tl > li.fix .tl-t { color: var(--accent); font-weight: 500; }
+  .tl-h { font-size: 15px; font-weight: 500; margin: .1rem 0 .2rem; }
+  .tl-d { font-size: 13px; color: var(--ink-2); margin: 0 0 .6rem; }
+  .strip { display: flex; gap: 8px; overflow-x: auto; scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch; scrollbar-width: none; padding-bottom: 2px; }
+  .strip::-webkit-scrollbar { display: none; }
+  .strip > * { flex: 0 0 auto; scroll-snap-align: start; }
+  .strip img { width: 208px; height: 140px; object-fit: cover; border-radius: 10px;
+    border: 1px solid var(--line); display: block; }
+  .strip .card { width: 208px; min-height: 140px; border-radius: 10px; border: 1px solid var(--line);
+    background: var(--card); padding: .6rem .7rem; font-size: 12px; color: var(--ink-2);
+    line-height: 1.6; display: flex; flex-direction: column; }
+  .strip .card b { color: var(--ink); font-size: 13px; display: block; margin-bottom: .25rem; }
+  .strip .card .big { font-size: 21px; font-weight: 500; color: var(--ink);
+    font-variant-numeric: tabular-nums; margin: auto 0 .1rem; }
+  .strip .card.warn { border-color: var(--warn); }
+  .strip .card.ok { border-color: var(--ok); }
+  .tl-more:empty { display: none; }
+  .tl-more { margin-top: .7rem; }
+  .tl-more > * { margin-left: 0; margin-right: 0; }
+  .tl-more figure { margin: .6rem 0; }
+  .tl-more .booked { margin: 0 0 .7rem; }
+  .tl-more h3 { font-size: 14px; margin: 1rem 0 .35rem; }
+  .tl-more table { font-size: 12px; }
+  ol.tl > li.day .tl-more { margin-top: .2rem; }
+
+  .card.has-more { cursor: pointer; text-align: left; font: inherit; }
+  .card.has-more:hover { border-color: var(--accent); }
+  .card.has-more[aria-expanded="true"] { border-color: var(--accent);
+    box-shadow: inset 0 0 0 1px var(--accent); }
+  .more-cue { margin-top: auto; padding-top: .35rem; font-size: 11px; color: var(--accent); }
+  .card.has-more[aria-expanded="true"] .more-cue { color: var(--accent); }
+  .card.has-more[aria-expanded="true"] .more-cue::after { content: ' ▾'; }
+  .note { margin: .7rem 0 0; padding: .8rem .95rem; border-radius: 10px;
+    background: var(--card); border: 1px solid var(--accent); font-size: 13px;
+    color: var(--ink-2); line-height: 1.75; }
+  .note b { display: block; color: var(--ink); font-size: 14px; margin-bottom: .4rem; }
+  .note p { margin: 0 0 .5rem; font-size: 13px; }
+  .note p:last-child { margin-bottom: 0; }
+  .note ul { margin: .3rem 0 .5rem; padding-left: 1.1rem; }
+  .note li { margin-bottom: .2rem; }
+  @media (prefers-reduced-motion: no-preference) {
+    .note { animation: note-in .24s cubic-bezier(.22, 1, .36, 1) both; }
+    @keyframes note-in { from { opacity: 0; transform: translateY(-4px); } }
+  }
+
+  .strip.pics { margin-bottom: .2rem; }
+  .strip.facts { margin-top: .5rem; }
+  .swipe { font-size: 11px; color: var(--ink-3); margin: .3rem 0 .1rem; }
+  .swipe + .strip { margin-top: .55rem; }
+  @media (max-width: 640px) {
+    ol.tl { padding-left: 1.3rem; }
+    ol.tl > li::before { left: -1.75rem; }
+    .strip img, .strip .card { width: 176px; }
+    .strip img { height: 120px; }
+  }
 
   .rules { display: flex; flex-wrap: wrap; gap: 7px; margin: 0 0 1rem; }
   .rule { font-size: 12px; border: 1px solid currentColor; border-radius: 999px; padding: 2px 11px; }
@@ -165,6 +293,10 @@
   .tdt { height: 440px; border: 1px solid var(--line); border-radius: var(--r);
     overflow: hidden; box-shadow: var(--shadow-1); margin: 1rem 0 .5rem;
     background: var(--bg-2); }
+  .tdt-pin.c-sleep .pin { border-color: var(--accent); color: var(--accent); }
+  .tdt-pin.c-eat .pin { border-color: #eda100; color: #b9770e; }
+  .tdt-pin.c-spa .pin { border-color: #1baf7a; color: #0f6e56; }
+  .tdt-pin.c-move .pin { border-color: var(--ink-3); }
   .tdt .leaflet-container { font: inherit; background: var(--bg-2); }
   /* Leaflet paints its own chrome; pull it back onto the site's surfaces. */
   .tdt .leaflet-control-attribution { font-size: 11px; background: var(--material);
@@ -199,7 +331,6 @@
   .alert.warn { border-left-color: var(--warn); }
   .alert.ok { border-left-color: var(--ok); }
 
-  .modes { display: flex; gap: 8px; margin: 1.25rem 0 .5rem; flex-wrap: wrap; }
   .mode { font: inherit; font-size: 14px; color: var(--ink-2); background: var(--card);
     border: 1px solid var(--line); border-radius: 999px; padding: 6px 16px; cursor: pointer; box-shadow: var(--shadow-1); }
   .mode[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
@@ -252,7 +383,8 @@
 <main>
   <p class="back"><a href="../">← 首页</a></p>
   <h1>长沙 41 小时</h1>
-  <p>周五 23:28 到长沙南，周日 18:00 从长沙南走。默认给的是<b>松弛版</b>：一天只排一件必须做的事，其余时间用来坐着。想赶满可以切到暴走版。</p>
+  <p class="lede">车票定死了两头：周五 23:28 到，周日 18:00 走。41 小时里扣掉睡觉和通勤，真正能用的<span class="hl">大约 22 小时，而且只有周六是完整的一天</span>。下面全部按这个约束倒推。</p>
+  <p>周五 23:28 到长沙南，周日 18:00 从长沙南走。酒店已定、路线已定 —— 下面是<b>确定的全程时间轴</b>，每一格向左滑看图和细节。</p>
 
   <figure class="overview">
     <svg viewBox="0 0 700 430" role="img" aria-label="全页总览图：上方是从周五 23:28 到周日 18:00 的时间轴，标出深夜打车、周六整天和周日 16:30 死线；中间是住哪家、去哪、吃什么、要预约四张卡；下方是下雨和预算两个备用分支。每张卡可点击跳到对应章节。">
@@ -302,35 +434,35 @@
           <text x="547" y="136" fill="var(--ink)" font-size="13">要预约</text>
           <text x="547" y="156" fill="var(--ink-3)" font-size="10">清单跟着节奏变</text>
           <text x="547" y="172" fill="var(--ink-3)" font-size="10">松弛版只需两项</text>
-          <text x="547" y="188" fill="var(--warn)" font-size="10">博物院要提前 7 天</text>
+          <text x="547" y="188" fill="var(--warn)" font-size="10">博物院要提前 5 天</text>
         </a>
 
         <text x="0" y="228" fill="var(--ink-3)" font-size="11">出了状况往这两边拐</text>
-        <a href="#sec-rain">
+        
           <rect x="0" y="238" width="345" height="66" rx="10" fill="var(--card)" stroke="var(--line)"/>
           <text x="14" y="262" fill="var(--ink)" font-size="13">下雨</text>
           <text x="14" y="282" fill="var(--ink-3)" font-size="10">晴走户外 · 小雨走室内 · 暴雨不出地面</text>
           <text x="14" y="296" fill="var(--ink-3)" font-size="10">住五一广场时暴雨也有得玩</text>
-        </a>
-        <a href="#sec-cost">
+        
+        
           <rect x="355" y="238" width="345" height="66" rx="10" fill="var(--card)" stroke="var(--line)"/>
           <text x="369" y="262" fill="var(--ink)" font-size="13">预算</text>
           <text x="369" y="282" fill="var(--ink-3)" font-size="10">人均约 1050 – 2050 元，不含高铁</text>
           <text x="369" y="296" fill="var(--ink-3)" font-size="10">松弛版门票那项基本是 0</text>
-        </a>
+        
 
         <text x="0" y="334" fill="var(--ink-3)" font-size="11">其余章节</text>
-        <a href="#sec-time"><rect x="0" y="344" width="104" height="30" rx="15" fill="var(--card)" stroke="var(--line)"/><text x="52" y="363" fill="var(--ink-2)" font-size="11" text-anchor="middle">时间预算</text></a>
+        <rect x="0" y="344" width="104" height="30" rx="15" fill="var(--card)" stroke="var(--line)"/><text x="52" y="363" fill="var(--ink-2)" font-size="11" text-anchor="middle">时间预算</text>
         <a href="#sec-geo"><rect x="112" y="344" width="104" height="30" rx="15" fill="var(--card)" stroke="var(--line)"/><text x="164" y="363" fill="var(--ink-2)" font-size="11" text-anchor="middle">两岸地理</text></a>
-        <a href="#sec-hotel"><rect x="224" y="344" width="104" height="30" rx="15" fill="var(--card)" stroke="var(--line)"/><text x="276" y="363" fill="var(--ink-2)" font-size="11" text-anchor="middle">选址标准</text></a>
-        <a href="#sec-pool"><rect x="336" y="344" width="104" height="30" rx="15" fill="var(--card)" stroke="var(--line)"/><text x="388" y="363" fill="var(--ink-2)" font-size="11" text-anchor="middle">景点池</text></a>
-        <a href="#sec-walk"><rect x="448" y="344" width="104" height="30" rx="15" fill="var(--card)" stroke="var(--line)"/><text x="500" y="363" fill="var(--ink-2)" font-size="11" text-anchor="middle">步行圈</text></a>
+        <rect x="224" y="344" width="104" height="30" rx="15" fill="var(--card)" stroke="var(--line)"/><text x="276" y="363" fill="var(--ink-2)" font-size="11" text-anchor="middle">选址标准</text>
+        <rect x="336" y="344" width="104" height="30" rx="15" fill="var(--card)" stroke="var(--line)"/><text x="388" y="363" fill="var(--ink-2)" font-size="11" text-anchor="middle">景点池</text>
+        <rect x="448" y="344" width="104" height="30" rx="15" fill="var(--card)" stroke="var(--line)"/><text x="500" y="363" fill="var(--ink-2)" font-size="11" text-anchor="middle">步行圈</text>
         <a href="#sec-more"><rect x="560" y="344" width="140" height="30" rx="15" fill="var(--card)" stroke="var(--line)"/><text x="630" y="363" fill="var(--ink-2)" font-size="11" text-anchor="middle">还有哪里好玩</text></a>
         <a href="#sec-plan"><rect x="0" y="382" width="104" height="30" rx="15" fill="var(--card)" stroke="var(--line)"/><text x="52" y="401" fill="var(--ink-2)" font-size="11" text-anchor="middle">时间表</text></a>
         <a href="#sec-spa"><rect x="448" y="382" width="104" height="30" rx="15" fill="var(--card)" stroke="var(--line)"/><text x="500" y="401" fill="var(--ink-2)" font-size="11" text-anchor="middle">泡脚按摩</text></a>
         <a href="#sec-trap"><rect x="112" y="382" width="104" height="30" rx="15" fill="var(--card)" stroke="var(--line)"/><text x="164" y="401" fill="var(--ink-2)" font-size="11" text-anchor="middle">避坑</text></a>
-        <a href="#sec-pack"><rect x="224" y="382" width="104" height="30" rx="15" fill="var(--card)" stroke="var(--line)"/><text x="276" y="401" fill="var(--ink-2)" font-size="11" text-anchor="middle">带什么</text></a>
-        <a href="#sec-traffic"><rect x="336" y="382" width="104" height="30" rx="15" fill="var(--card)" stroke="var(--line)"/><text x="388" y="401" fill="var(--ink-2)" font-size="11" text-anchor="middle">交通速查</text></a>
+        <rect x="224" y="382" width="104" height="30" rx="15" fill="var(--card)" stroke="var(--line)"/><text x="276" y="401" fill="var(--ink-2)" font-size="11" text-anchor="middle">带什么</text>
+        <rect x="336" y="382" width="104" height="30" rx="15" fill="var(--card)" stroke="var(--line)"/><text x="388" y="401" fill="var(--ink-2)" font-size="11" text-anchor="middle">交通速查</text>
       </g>
     </svg>
     <figcaption>整页就这些内容。除了时间表，其他章节默认收起，点标题或点这张图上的块展开。</figcaption>
@@ -341,7 +473,7 @@
     <dl class="kv">
       <dt>去程</dt><dd>周五 9/4 · 20:15 虎门 → <b>23:28 长沙南</b> · G6026</dd>
       <dt>回程</dt><dd>周日 9/6 · <b>18:00 长沙南</b> → 20:25 虎门 · G6007</dd>
-      <dt>住</dt><dd>五一广场 / 黄兴路一带。确认 24 小时前台、周日行李寄存到 16:00</dd>
+      <dt>住</dt><dd><b>异国印象·奢酒店</b> · 芙蓉区五一大道 127 号 · 24h 前台 · 行李可寄存到 16:30</dd>
       <dt>落地</dt><dd><b>直接打车</b>，约 40 元 20 分钟。往市区的地铁末班 23:03，你到站时已停运</dd>
       <dt>回站</dt><dd>周日 <b>16:30 出发</b>，2 号线直达 25 分 + 安检，留足 1.5 小时</dd>
       <dt>要预约</dt><dd>李自健美术馆（免费领票）· 谢子龙（看展是否收费）· 走暴走版还要博物院、岳麓书院、岳麓山、橘子洲</dd>
@@ -357,115 +489,54 @@
   </div>
 
   <nav class="toc" aria-label="页面目录">
-    <a href="#sec-time">时间预算</a>
     <a href="#sec-geo">地理</a>
-    <a href="#sec-hotel">住哪</a>
     <a href="#sec-list">住哪家</a>
     <a href="#sec-todo">预约清单</a>
     <a href="#sec-plan">时间表</a>
     <a href="#sec-again">来过两次了</a>
-    <a href="#sec-pool">景点池</a>
-    <a href="#sec-walk">步行圈</a>
     <a href="#sec-food">吃什么</a>
     <a href="#sec-spa">泡脚按摩</a>
-    <a href="#sec-rain">下雨</a>
-    <a href="#sec-cost">预算</a>
-    <a href="#sec-pack">带什么</a>
     <a href="#sec-trap">避坑</a>
   </nav>
 
-  <h2 id="sec-time">时间到底有多少</h2>
-  <figure>
-    <svg viewBox="0 0 700 200" role="img" aria-label="时间预算条形图：41 小时中约 14 小时睡觉、5 小时通勤，剩约 22 小时可用，其中只有周六是完整白天。">
-      <title>41 小时怎么分</title>
-      <g font-family="-apple-system, sans-serif" font-size="12">
-        <text x="0" y="16" fill="var(--ink-3)">总时长 41 小时（周五 23:28 → 周日 18:00）</text>
-        <rect x="0" y="26" width="700" height="34" rx="4" fill="var(--card)" stroke="var(--line)"/>
-        <rect x="2" y="28" width="235" height="30" rx="3" fill="var(--ink-3)" opacity=".35"/>
-        <rect x="237" y="28" width="86" height="30" rx="3" fill="var(--warn)" opacity=".45"/>
-        <rect x="323" y="28" width="375" height="30" rx="3" fill="var(--accent)" opacity=".55"/>
-        <text x="10" y="48" fill="var(--ink)">睡觉 ~14h</text>
-        <text x="245" y="48" fill="var(--ink)">通勤 ~5h</text>
-        <text x="333" y="48" fill="var(--ink)">真正能玩 ~22h</text>
-
-        <text x="0" y="94" fill="var(--ink-3)">这 22 小时不是连续的</text>
-        <rect x="0" y="104" width="700" height="34" rx="4" fill="var(--card)" stroke="var(--line)"/>
-        <rect x="2" y="106" width="96" height="30" rx="3" fill="var(--accent)" opacity=".3"/>
-        <rect x="100" y="106" width="360" height="30" rx="3" fill="var(--accent)" opacity=".7"/>
-        <rect x="462" y="106" width="236" height="30" rx="3" fill="var(--accent)" opacity=".45"/>
-        <text x="8" y="126" fill="var(--ink)" font-size="11">周五夜 3h</text>
-        <text x="110" y="126" fill="var(--ink)">周六一整天 12h</text>
-        <text x="470" y="126" fill="var(--ink)">周日半天 7h</text>
-
-        <line x1="462" y1="146" x2="462" y2="166" stroke="var(--danger)" stroke-dasharray="4 3"/>
-        <text x="470" y="164" fill="var(--danger)" font-size="11">周日 16:30 必须往车站走，这条线不能碰</text>
-        <text x="0" y="188" fill="var(--ink-3)" font-size="11">结论：重头戏只能放周六。周日排离车站近、随时能撤的。</text>
-      </g>
-    </svg>
-    <figcaption>睡眠按两晚各 7 小时估，通勤含往返车站、市内换乘与进出站安检。</figcaption>
-  </figure>
-
   <h2 id="sec-geo">长沙的地理其实很简单</h2>
-  <figure>
-    <svg viewBox="0 0 700 400" role="img" aria-label="长沙主要景点与湘江的关系示意图：湘江纵贯南北，橘子洲在江心；东岸是五一广场、湖南博物院和长沙南站，西岸是岳麓山、大学城和洋湖艺术区。">
-      <title>湘江两岸与主要目的地</title>
-      <g font-family="-apple-system, sans-serif" font-size="12">
-        <rect x="300" y="0" width="70" height="400" fill="var(--river)" opacity=".35"/>
-        <text x="335" y="392" fill="var(--ink-3)" font-size="11" text-anchor="middle">湘江</text>
+  <figure class="shot">
+    <div class="fr">
+      <svg viewBox="0 0 960 540" preserveAspectRatio="xMidYMid meet" role="img" aria-label="示意图：长沙以湘江为轴，东岸是五一广场、太平街、黄兴路，西岸是岳麓山与岳麓书院，江心是橘子洲，地铁 2 号线横穿两岸。">
+        <title>一条江，两岸，江心一个洲</title>
+        <g font-family="-apple-system, BlinkMacSystemFont, sans-serif">
+          <text x="40" y="46" fill="var(--ink)" font-size="24" font-weight="600">整座城市是围着这条江排的</text>
 
-        <ellipse cx="335" cy="150" rx="22" ry="52" fill="var(--ok)" opacity=".35" stroke="var(--ok)"/>
-        <text x="335" y="148" fill="var(--ink)" font-size="11" text-anchor="middle">橘子洲</text>
-        <text x="335" y="163" fill="var(--ink-3)" font-size="10" text-anchor="middle">免费·预约</text>
+          <rect x="40"  y="92" width="330" height="368" rx="16" fill="var(--bg-2)"/>
+          <rect x="590" y="92" width="330" height="368" rx="16" fill="var(--bg-2)"/>
+          <rect x="378" y="72" width="204" height="408" rx="14" fill="var(--accent)" opacity=".14"/>
+          <rect x="440" y="150" width="80" height="250" rx="34" fill="var(--card)" stroke="var(--line)" stroke-width="2"/>
 
-        <text x="150" y="22" fill="var(--ink-3)" text-anchor="middle">西岸 · 河西</text>
-        <text x="530" y="22" fill="var(--ink-3)" text-anchor="middle">东岸 · 市中心</text>
+          <text x="480" y="106" fill="var(--accent)" font-size="20" font-weight="600" text-anchor="middle">湘江</text>
+          <text x="480" y="268" fill="var(--ink)" font-size="19" font-weight="600" text-anchor="middle">橘子</text>
+          <text x="480" y="294" fill="var(--ink)" font-size="19" font-weight="600" text-anchor="middle">洲</text>
 
-        <g>
-          <rect x="60" y="40" width="180" height="52" rx="8" fill="var(--card)" stroke="var(--line)"/>
-          <text x="72" y="62" fill="var(--ink)">岳麓山 · 岳麓书院</text>
-          <text x="72" y="80" fill="var(--ink-3)" font-size="11">山免费，书院 40 元，两个预约</text>
-        </g>
-        <g>
-          <rect x="60" y="150" width="180" height="52" rx="8" fill="var(--card)" stroke="var(--line)"/>
-          <text x="72" y="172" fill="var(--ink)">后湖 · 大学城</text>
-          <text x="72" y="190" fill="var(--ink-3)" font-size="11">咖啡馆密度高，人少</text>
-        </g>
-        <g>
-          <rect x="60" y="262" width="180" height="66" rx="8" fill="var(--card)" stroke="var(--line)"/>
-          <text x="72" y="284" fill="var(--ink)">洋湖 · 两座美术馆</text>
-          <text x="72" y="301" fill="var(--ink-3)" font-size="11">李自健免费，谢子龙一楼免费</text>
-          <text x="72" y="316" fill="var(--ink-3)" font-size="11">松弛版首选，周一闭馆</text>
-        </g>
+          <text x="205" y="140" fill="var(--ink-3)" font-size="17" text-anchor="middle">西岸</text>
+          <g fill="var(--ink)" font-size="21" font-weight="600" text-anchor="middle">
+            <text x="205" y="186">岳麓山</text><text x="205" y="228">岳麓书院</text><text x="205" y="270">湖南大学</text>
+          </g>
+          <text x="205" y="312" fill="var(--ink-3)" font-size="16" text-anchor="middle">爬山、看展、走校园</text>
 
-        <g>
-          <rect x="430" y="40" width="200" height="52" rx="8" fill="var(--card)" stroke="var(--line)"/>
-          <text x="442" y="62" fill="var(--ink)">湖南博物院</text>
-          <text x="442" y="80" fill="var(--ink-3)" font-size="11">免费但必须抢预约，逛 3 小时</text>
-        </g>
-        <g>
-          <rect x="430" y="150" width="200" height="66" rx="8" fill="var(--accent)" opacity=".12" stroke="var(--accent)"/>
-          <text x="442" y="172" fill="var(--ink)">五一广场 · 黄兴路</text>
-          <text x="442" y="189" fill="var(--ink-3)" font-size="11">住这里。吃喝步行可达</text>
-          <text x="442" y="204" fill="var(--ink-3)" font-size="11">潮宗街 / 太平街都在旁边</text>
-        </g>
-        <g>
-          <rect x="430" y="276" width="200" height="52" rx="8" fill="var(--card)" stroke="var(--line)"/>
-          <text x="442" y="298" fill="var(--ink)">长沙南站</text>
-          <text x="442" y="316" fill="var(--ink-3)" font-size="11">来回都在这里</text>
-        </g>
+          <text x="755" y="140" fill="var(--ink-3)" font-size="17" text-anchor="middle">东岸</text>
+          <g fill="var(--ink)" font-size="21" font-weight="600" text-anchor="middle">
+            <text x="755" y="186">五一广场</text><text x="755" y="228">太平街</text><text x="755" y="270">黄兴路</text>
+          </g>
+          <text x="755" y="312" fill="var(--ink-3)" font-size="16" text-anchor="middle">吃、逛、住都在这一圈</text>
 
-        <path d="M430 183 L370 165" stroke="var(--accent)" stroke-width="2" fill="none"/>
-        <path d="M300 165 L240 176" stroke="var(--accent)" stroke-width="2" fill="none"/>
-        <text x="258" y="140" fill="var(--accent)" font-size="11">2 号线 30 分</text>
-        <path d="M530 216 L530 276" stroke="var(--accent)" stroke-width="2" fill="none"/>
-        <text x="538" y="250" fill="var(--accent)" font-size="11">2 号线直达 25 分</text>
-        <path d="M470 150 L470 92" stroke="var(--ink-3)" stroke-width="1.5" stroke-dasharray="4 3" fill="none"/>
-        <text x="478" y="124" fill="var(--ink-3)" font-size="11">打车 20 分</text>
-        <path d="M240 300 Q 335 340 430 302" stroke="var(--ink-3)" stroke-width="1.5" stroke-dasharray="4 3" fill="none"/>
-        <text x="335" y="350" fill="var(--ink-3)" font-size="11" text-anchor="middle">3 号线 / 打车 30 分</text>
-      </g>
-    </svg>
-    <figcaption>一切都围着湘江排。住东岸的五一广场，两天里去西岸一次就够，别来回过江。</figcaption>
+          <line x1="60" y1="404" x2="900" y2="404" stroke="var(--accent)" stroke-width="4" stroke-linecap="round"/>
+          <g fill="var(--accent)"><circle cx="205" cy="404" r="8"/><circle cx="480" cy="404" r="8"/><circle cx="755" cy="404" r="8"/></g>
+          <text x="60" y="440" fill="var(--ink-2)" font-size="17">地铁 2 号线横穿两岸，过江不用想别的</text>
+
+          <text x="40" y="500" fill="var(--ink-3)" font-size="16">比例是排版排出来的，不是地图。真实比例见下面那张可切卫星影像的实景图。</text>
+        </g>
+      </svg>
+    </div>
+    <figcaption>东岸五一广场，西岸岳麓山，江心橘子洲 —— 记住这三样，路线就不会乱。</figcaption>
   </figure>
 
   <p>上面那张是示意图，比例是排版排出来的。下面这张是真的 —— 卫星影像来自 Esri，矢量底图来自 OpenStreetMap / CARTO，都不需要注册。</p>
@@ -478,372 +549,95 @@
     </span>
   </div>
   <div class="tdt" id="tdt" hidden></div>
+  <div class="chips" id="tdt-filters" hidden>
+    <button class="chip" type="button" data-cat="sleep" aria-pressed="true">住</button>
+    <button class="chip" type="button" data-cat="eat" aria-pressed="true">吃</button>
+    <button class="chip" type="button" data-cat="see" aria-pressed="true">玩</button>
+    <button class="chip" type="button" data-cat="spa" aria-pressed="true">泡脚</button>
+    <button class="chip" type="button" data-cat="move" aria-pressed="true">车站</button>
+    <button class="chip" type="button" data-route="sat" aria-pressed="false">画周六路线</button>
+    <button class="chip" type="button" data-route="sun" aria-pressed="false">画周日路线</button>
+  </div>
   <p class="hint" id="tdt-note" hidden></p>
 
-  <h2 id="sec-hotel">酒店怎么办</h2>
-  <p><b>第一次来</b>选址看动线：住哪里能少在路上耗时间。<b>第三次来、景点刷得差不多了</b>，动线这个理由就不成立了 —— 你不再需要靠近任何景点，酒店本身反而变成了这趟的目的地。两套标准差别很大，先看你是哪一种。</p>
-
-  <h3>先看第一次来的答案</h3>
-  <p>硬约束还是那两条：<b>深夜 23:28 落地、周日 16:30 就得走</b>。第一次来的话，选址只有一个标准 —— 到长沙南地铁直达，且楼下就有吃的。</p>
-
-  <figure>
-    <svg viewBox="0 0 700 260" role="img" aria-label="三个住宿区域对比：五一广场综合最优，河西溁湾镇靠近岳麓山但回车站要换乘，长沙南站周边只适合中转。">
-      <title>住哪里</title>
-      <g font-family="-apple-system, sans-serif" font-size="12">
-        <text x="210" y="14" fill="var(--ink-3)" font-size="11" text-anchor="middle">回长沙南</text>
-        <text x="350" y="14" fill="var(--ink-3)" font-size="11" text-anchor="middle">夜宵步行</text>
-        <text x="490" y="14" fill="var(--ink-3)" font-size="11" text-anchor="middle">去岳麓山</text>
-        <text x="620" y="14" fill="var(--ink-3)" font-size="11" text-anchor="middle">周末价位</text>
-
-        <rect x="0" y="26" width="700" height="66" rx="8" fill="var(--accent)" opacity=".1"/>
-        <rect x="0" y="26" width="700" height="66" rx="8" fill="none" stroke="var(--accent)"/>
-        <text x="14" y="50" fill="var(--ink)" font-size="14">五一广场 / 黄兴路</text>
-        <text x="14" y="70" fill="var(--ink-3)" font-size="11">推荐。两天动线都绕这里，深夜打车也最近</text>
-        <text x="14" y="86" fill="var(--ink-3)" font-size="11">代价：周末吵、同样档次贵一两成</text>
-        <text x="210" y="60" fill="var(--ok)" text-anchor="middle">直达 25 分</text>
-        <text x="350" y="60" fill="var(--ok)" text-anchor="middle">出门就是</text>
-        <text x="490" y="60" fill="var(--warn)" text-anchor="middle">30 分</text>
-        <text x="620" y="60" fill="var(--ink-2)" text-anchor="middle">中档 300–600</text>
-
-        <rect x="0" y="102" width="700" height="66" rx="8" fill="var(--card)" stroke="var(--line)"/>
-        <text x="14" y="126" fill="var(--ink)" font-size="14">溁湾镇 / 河西</text>
-        <text x="14" y="146" fill="var(--ink-3)" font-size="11">安静、便宜，出门就是岳麓山</text>
-        <text x="14" y="162" fill="var(--ink-3)" font-size="11">代价：周日回车站要换乘，深夜车费更贵</text>
-        <text x="210" y="136" fill="var(--warn)" text-anchor="middle">换乘 40 分</text>
-        <text x="350" y="136" fill="var(--warn)" text-anchor="middle">一般</text>
-        <text x="490" y="136" fill="var(--ok)" text-anchor="middle">10 分</text>
-        <text x="620" y="136" fill="var(--ink-2)" text-anchor="middle">中档 250–450</text>
-
-        <rect x="0" y="178" width="700" height="66" rx="8" fill="var(--card)" stroke="var(--line)"/>
-        <text x="14" y="202" fill="var(--ink)" font-size="14">长沙南站周边</text>
-        <text x="14" y="222" fill="var(--ink-3)" font-size="11">只有"下车就到"这一个优点</text>
-        <text x="14" y="238" fill="var(--ink-3)" font-size="11">代价：晚上没什么可玩，每天都要往城里跑</text>
-        <text x="210" y="212" fill="var(--ok)" text-anchor="middle">步行</text>
-        <text x="350" y="212" fill="var(--danger)" text-anchor="middle">没有</text>
-        <text x="490" y="212" fill="var(--danger)" text-anchor="middle">45 分</text>
-        <text x="620" y="212" fill="var(--ink-2)" text-anchor="middle">中档 200–400</text>
-      </g>
-    </svg>
-    <figcaption>价位是周末中档连锁的常见区间，仅供比价，实际以你订的时候为准。</figcaption>
-  </figure>
-
-  <div class="alert ok">
-    <strong>第一次来就选五一广场，别为省一百块住到车站边上。</strong>只有一个完整白天，住得远等于把本就不多的 22 小时再切掉两三个小时在路上。深夜从长沙南打车过来约 40 元、20 分钟；住车站边省下的这 40 元，周六两趟往返就还回去了。
-  </div>
-
-  <h3>第三次来，标准要换一套</h3>
-  <p>景点刷完之后，住宿预算的性质变了：原本花在门票、排队和通勤上的时间与钱，现在没有出口，最合理的去处就是房间本身。选址的四条标准按重要性排：</p>
-
-  <figure>
-    <svg viewBox="0 0 700 240" role="img" aria-label="重复来访者的选址四条标准：房间本身的质量最重要，其次是江景，再次是步行范围内的吃，最后是周日退房到出发之间那段空窗有没有地方待；靠近景点已经完全不重要。">
-      <title>第三次来的选址标准</title>
-      <g font-family="-apple-system, sans-serif" font-size="12">
-        <text x="0" y="14" fill="var(--ink-3)" font-size="11">按重要性排，条越长越该为它加预算</text>
-
-        <text x="0" y="44" fill="var(--ink)">房间本身</text>
-        <rect x="150" y="32" width="470" height="18" rx="3" fill="var(--accent)" opacity=".65"/>
-        <text x="160" y="45" fill="var(--ink)" font-size="11">这趟你待在房里的时间比前两次加起来都长</text>
-
-        <text x="0" y="78" fill="var(--ink)">江景</text>
-        <rect x="150" y="66" width="380" height="18" rx="3" fill="var(--accent)" opacity=".5"/>
-        <text x="160" y="79" fill="var(--ink)" font-size="11">湘江夜景是长沙少数看三次也不腻的东西</text>
-
-        <text x="0" y="112" fill="var(--ink)">步行有吃的</text>
-        <rect x="150" y="100" width="300" height="18" rx="3" fill="var(--ok)" opacity=".5"/>
-        <text x="160" y="113" fill="var(--ink)" font-size="11">这趟的主线是吃，不是看</text>
-
-        <text x="0" y="146" fill="var(--ink)">寄存 + 有处坐</text>
-        <rect x="150" y="134" width="215" height="18" rx="3" fill="var(--warn)" opacity=".5"/>
-        <text x="160" y="147" fill="var(--ink)" font-size="11">周日 12:00 退房到 16:30 出发，中间四个半小时</text>
-
-        <text x="0" y="180" fill="var(--ink-3)">靠近景点</text>
-        <rect x="150" y="168" width="34" height="18" rx="3" fill="var(--ink-3)" opacity=".35"/>
-        <text x="194" y="181" fill="var(--ink-3)" font-size="11">第一次来时的头号标准，现在基本归零</text>
-
-        <line x1="0" y1="200" x2="700" y2="200" stroke="var(--line)"/>
-        <text x="0" y="222" fill="var(--ink-3)" font-size="11">省下的门票和排队时间没有别的出口，加到房价上是这趟唯一划算的升级。</text>
-      </g>
-    </svg>
-  </figure>
-
-  <div class="scroll">
-    <table>
-      <thead><tr><th>片区</th><th>适合</th><th>江景</th><th>回长沙南</th><th>代价</th></tr></thead>
-      <tbody>
-        <tr><td><b>湘江中路沿江</b></td><td>第三次来的首选</td><td>有，且是正面</td><td>走到五一广场地铁站 5–10 分，再 25 分</td><td>江景房溢价明显，非江景侧没意义</td></tr>
-        <tr><td><b>潮宗街 / 西园北里</b></td><td>想住得安静有味道</td><td>没有</td><td>步行 15 分到地铁，再 25 分</td><td>老城区，停车和深夜打车略麻烦</td></tr>
-        <tr><td><b>五一广场核心</b></td><td>只想吃，懒得走路</td><td>看楼层和朝向</td><td>最方便</td><td>周末最吵，同档次最贵</td></tr>
-        <tr><td><b>梅溪湖</b></td><td>纯度假，把长沙当背景</td><td>湖景不是江景</td><td>40 分钟以上，周日回程紧张</td><td>吃的密度低，出门就得打车</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <div class="alert ok">
-    <strong>按你的情况：湘江中路沿江，订能看到江的那一侧。</strong>你周日 12:00 退房、16:30 才走，中间四个半小时是这趟最尴尬的一段 —— 沿江那一带走出门就是江边和潮宗街，行李寄前台，人在外面晃到点直接走。反过来，梅溪湖虽然环境最好，但周日回程要 40 分钟以上，会把这段空窗变成赶路。
-  </div>
-  <p class="hint">不管选哪个片区，订房时都确认三件事：24 小时前台（你到店已过零点）、行李寄存到 16:30、以及江景是「侧江」还是「正江」—— 很多房型写江景，实际要探头才看得见。</p>
-
-  <h2 id="sec-list">具体住哪家</h2>
-  <p>按你的四个条件筛完的结果。评分和评论数抓自 Trip.com 列表页（2026-08-31），价格是 <b>2026-09-04 入住、09-06 退房两晚的实际含税总价</b>（Trip.com，按 1 : 7.15 折算），不是列表页那个「起价」。</p>
-
-  <div class="rules">
-    <span class="rule ok">≤ ¥700 / 晚</span>
-    <span class="rule ok">五一广场步行圈</span>
-    <span class="rule ok">走得到笨萝卜太平街店</span>
-    <span class="rule warn">楼层 ≤ 18F（订房时选）</span>
-  </div>
-
-  <div class="cmp-wrap">
-    <div class="cmp">
-      <div class="cmp-col" data-h="luxury">
-        <a class="cmp-shot" href="https://us.trip.com/hotels/detail/?cityId=206&amp;hotelId=116989879" rel="noopener"><img src="https://ak-d.tripcdn.com/images/1mc2w12000h6972lfB564_R_960_660_R5_D.jpg" alt="五一广场异国印象·奢酒店 照片" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('dead')"></a>
-        <p class="cmp-tag">最贴合你的四条</p>
-        <h4 class="cmp-name">五一广场异国印象·奢酒店</h4>
-        <p class="cmp-price"><b>¥1,294</b><span>两晚含税 · ¥615/晚</span></p>
-        <a class="cmp-go" href="https://us.trip.com/hotels/detail/?cityId=206&amp;hotelId=116989879" rel="noopener">看房型与相册</a>
-        <dl class="cmp-rows">
-          <dt>总评分</dt><dd class="big">9.6</dd>
-          <dt>评论数</dt><dd>5,610</dd>
-          <dt>清洁</dt><dd>9.6</dd>
-          <dt>设施</dt><dd>9.5</dd>
-          <dt>位置</dt><dd>9.6</dd>
-          <dt>服务</dt><dd>9.6</dd>
-          <dt>房间楼层</dt><dd class="ok">4–9 层</dd>
-          <dt>行李寄存</dt><dd>免费</dd>
-          <dt>前台</dt><dd>24 小时</dd>
-          <dt>走到笨萝卜</dt><dd>10 分</dd>
-          <dt>额外</dt><dd>SPA · 空中花园</dd>
-          <dt>开业</dt><dd>2024</dd>
-          <dt>已知房型</dt><dd class="small">Dusk Double Bed Room<br>1 张大床 · 含早 · 免费取消</dd>
-        </dl>
-      </div>
-      <div class="cmp-col" data-h="xi">
-        <a class="cmp-shot" href="https://us.trip.com/hotels/changsha-hotel-detail-112342483/xi-hotel/" rel="noopener"><img src="https://ak-d.tripcdn.com/images/1mc6w12000c77rymq86BE_R_960_660_R5_D.jpg" alt="Xi Hotel（五一广场 IFS） 照片" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('dead')"></a>
-        <p class="cmp-tag">楼层最低</p>
-        <h4 class="cmp-name">Xi Hotel（五一广场 IFS）</h4>
-        <p class="cmp-price"><b>¥972</b><span>两晚含税 · ¥486/晚</span></p>
-        <a class="cmp-go" href="https://us.trip.com/hotels/changsha-hotel-detail-112342483/xi-hotel/" rel="noopener">看房型与相册</a>
-        <dl class="cmp-rows">
-          <dt>总评分</dt><dd class="big">9.7</dd>
-          <dt>评论数</dt><dd>5,977</dd>
-          <dt>清洁</dt><dd>9.7</dd>
-          <dt>设施</dt><dd>9.6</dd>
-          <dt>位置</dt><dd>9.7</dd>
-          <dt>服务</dt><dd>9.7</dd>
-          <dt>房间楼层</dt><dd class="ok">5–6 层</dd>
-          <dt>行李寄存</dt><dd>免费</dd>
-          <dt>前台</dt><dd>24 小时</dd>
-          <dt>走到笨萝卜</dt><dd>10 分</dd>
-          <dt>额外</dt><dd>屋顶泳池 · 楼内 spa</dd>
-          <dt>开业</dt><dd>—</dd>
-          <dt>已知房型</dt><dd class="small">未取到房型明细</dd>
-        </dl>
-      </div>
-      <div class="cmp-col" data-h="fungee">
-        <a class="cmp-shot" href="https://us.trip.com/hotels/changsha-hotel-detail-92349369/fungee-hotel/" rel="noopener"><img src="https://ak-d.tripcdn.com/images/1mc4a12000dexyvr4CB77_R_960_660_R5_D.jpg" alt="FUNGEE（黄兴广场站） 照片" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('dead')"></a>
-        <p class="cmp-tag">最便宜</p>
-        <h4 class="cmp-name">FUNGEE（黄兴广场站）</h4>
-        <p class="cmp-price"><b>¥615</b><span>两晚含税 · ¥293/晚</span></p>
-        <a class="cmp-go" href="https://us.trip.com/hotels/changsha-hotel-detail-92349369/fungee-hotel/" rel="noopener">看房型与相册</a>
-        <dl class="cmp-rows">
-          <dt>总评分</dt><dd class="big">9.7</dd>
-          <dt>评论数</dt><dd>10,353</dd>
-          <dt>清洁</dt><dd>9.7</dd>
-          <dt>设施</dt><dd>9.6</dd>
-          <dt>位置</dt><dd>9.7</dd>
-          <dt>服务</dt><dd>9.8</dd>
-          <dt>房间楼层</dt><dd class="ok">3–11 层</dd>
-          <dt>行李寄存</dt><dd>免费</dd>
-          <dt>前台</dt><dd>24 小时</dd>
-          <dt>走到笨萝卜</dt><dd>8 分</dd>
-          <dt>额外</dt><dd>地铁口下来就是</dd>
-          <dt>开业</dt><dd>—</dd>
-          <dt>已知房型</dt><dd class="small">未取到房型明细</dd>
-        </dl>
-      </div>
-      <div class="cmp-col" data-h="hampton">
-        <a class="cmp-shot" href="https://us.trip.com/hotels/changsha-hotel-detail-117841238/hampton-by-hilton-changsha-wuyi-square/" rel="noopener"><img src="https://ak-d.tripcdn.com/images/0201p12000dg5nmn10AF9_R_960_660_R5_D.jpg" alt="Hampton by Hilton 五一广场 照片" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('dead')"></a>
-        <p class="cmp-tag">样本最大</p>
-        <h4 class="cmp-name">Hampton by Hilton 五一广场</h4>
-        <p class="cmp-price"><b>¥980</b><span>两晚含税 · ¥465/晚</span></p>
-        <a class="cmp-go" href="https://us.trip.com/hotels/changsha-hotel-detail-117841238/hampton-by-hilton-changsha-wuyi-square/" rel="noopener">看房型与相册</a>
-        <dl class="cmp-rows">
-          <dt>总评分</dt><dd class="big">9.7</dd>
-          <dt>评论数</dt><dd>16,590</dd>
-          <dt>清洁</dt><dd>9.7</dd>
-          <dt>设施</dt><dd>9.6</dd>
-          <dt>位置</dt><dd>9.7</dd>
-          <dt>服务</dt><dd>9.7</dd>
-          <dt>房间楼层</dt><dd><b class="hl hl--warn">6–18 层</b></dd>
-          <dt>行李寄存</dt><dd>未列出</dd>
-          <dt>前台</dt><dd>24 小时 + 自助机</dd>
-          <dt>走到笨萝卜</dt><dd>10 分</dd>
-          <dt>额外</dt><dd>早餐含长沙米粉</dd>
-          <dt>开业</dt><dd>—</dd>
-          <dt>已知房型</dt><dd class="small">未取到房型明细</dd>
-        </dl>
-      </div>
+    <h2 id="sec-list">住 · 已定</h2>
+  <div class="booked">
+    <div class="bk-shot">
+      <img src="https://ak-d.tripcdn.com/images/1mc2w12000h6972lfB564_R_960_660_R5_D.jpg" alt="五一广场异国印象·奢酒店" referrerpolicy="no-referrer" onerror="this.closest('.bk-shot').hidden=true">
     </div>
-  </div>
-  <p class="hint" id="price-fresh" hidden></p>
-  <p class="hint">价格为 2026-09-04 入住、09-06 退房两晚的实际含税总价（Trip.com，1 : 7.15 折算），随时会变。楼层绿色表示整段都在你 18 层的线内，黄色表示压线。手机上左右滑动比较。</p>
-
-  <div class="scroll">
-    <table>
-      <thead><tr>
-        <th>酒店</th><th class="n">评分</th><th class="n">评论数</th><th class="n">9/4–9/6 两晚</th><th class="n">楼层</th><th class="n">到笨萝卜</th><th>为什么选它</th>
-      </tr></thead>
-      <tbody>
-        <tr><td><b>五一广场异国印象·奢酒店</b></td><td class="n">9.6</td><td class="n">5,610</td><td class="n">¥1,294<br><span class="per">¥615/晚</span></td><td class="n up">4–9</td><td class="n">10 分</td><td>楼层 4–9 完全在你线内，免费寄存 + 24h 前台 + 4 楼免费洗衣房，自带 SPA 和空中花园。2024 年开业</td></tr>
-        <tr><td><b>Xi Hotel（五一广场 IFS）</b></td><td class="n">9.7</td><td class="n">5,977</td><td class="n">¥972<br><span class="per">¥486/晚</span></td><td class="n up">5–6</td><td class="n">10 分</td><td>全楼只有 5–6 层，你这条限制它完全不受影响。免费寄存 + 24h 前台 + 屋顶泳池</td></tr>
-        <tr><td><b>FUNGEE（黄兴广场站）</b></td><td class="n">9.7</td><td class="n">10,353</td><td class="n">¥615<br><span class="per">¥293/晚</span></td><td class="n up">3–11</td><td class="n">8 分</td><td>服务分 9.8 是这批最高。地铁口下来就是，免费寄存 + 24h 前台，还最便宜</td></tr>
-        <tr><td><b>Hampton by Hilton 五一广场</b></td><td class="n">9.7</td><td class="n">16,590</td><td class="n">¥980<br><span class="per">¥465/晚</span></td><td class="n up">6–18</td><td class="n">10 分</td><td>整栋封顶就是 18 层，样本一万六，四项细分全 9.6 以上</td></tr>
-        <tr><td>IFS 国金中心·异国印象酒店（五一广场店）</td><td class="n">9.4</td><td class="n">21,957</td><td class="n">¥722<br><span class="per">¥343/晚</span></td><td class="n down">7 / 12 / 25–29</td><td class="n">10 分</td><td>评论数最多，但<b>江景房在 25 层以上</b> —— 江景和 18 层这两条只能二选一</td></tr>
-        <tr><td>Single Hotel（五一广场 IFS）</td><td class="n">9.6</td><td class="n">5,904</td><td class="n">¥240</td><td class="n">—</td><td class="n">10 分</td><td>同价备选，楼层未核</td></tr>
-        <tr><td>桔子水晶（五一大道）</td><td class="n">9.6</td><td class="n">3,822</td><td class="n">¥1,058<br><span class="per">¥500/晚</span></td><td class="n">—</td><td class="n">12 分</td><td>连锁里房间质感稍好，楼层未核</td></tr>
-        <tr><td>亚朵（长沙 IFS）</td><td class="n">9.5</td><td class="n">2,831</td><td class="n">¥1,022<br><span class="per">¥479/晚</span></td><td class="n">—</td><td class="n">10 分</td><td>看当天价差，楼层未核</td></tr>
-        <tr><td>Neyar 富广（五一广场）</td><td class="n">9.5</td><td class="n">5,864</td><td class="n">¥170</td><td class="n">—</td><td class="n">12 分</td><td>预算优先时的选择，楼层未核</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <div class="alert ok">
-    <strong>你说的奢酒店是对的，而且它才是最合适的那家。</strong>我之前给的数据是「IFS 国金中心·异国印象酒店」—— 同品牌不同店，两家都在五一广场，名字只差一个字。查清楚之后：<b>奢酒店房间在 4–9 层</b>，你 18 层那条线根本用不上；免费寄存和 24 小时前台解决了周日空窗和你零点到店；还自带 SPA 和空中花园，正好接上你想泡脚那件事。9.6 分、5,610 条评论，样本也够。次选仍是 Xi Hotel（5–6 层，楼里有 spa）和 FUNGEE（最便宜）。
+    <div class="bk-body">
+      <p class="bk-tag">已预订</p>
+      <h3 class="bk-name">长沙五一广场异国印象·奢酒店</h3>
+      <p class="bk-addr">芙蓉区五一大道 127 号 · 出门即五一广场地铁站</p>
+      <dl class="bk-kv">
+        <dt>入住</dt><dd>周五 9/4 · 14:00 后（你实际是次日零点到店，<b>24 小时前台</b>）</dd>
+        <dt>退房</dt><dd>周日 9/6 · 12:00，<b>行李免费寄存</b>到 16:30 出发</dd>
+        <dt>楼层</dt><dd>房间在 4–9 层</dd>
+        <dt>两晚</dt><dd>¥1,294 含税 · Dusk Double Bed Room · 1 张大床 · 含早 · 免费取消</dd>
+        <dt>楼里有</dt><dd>SPA · 空中花园 · 4 楼免费洗衣房</dd>
+        <dt>走到笨萝卜</dt><dd>太平街店 10 分钟</dd>
+      </dl>
+    </div>
   </div>
 
   <div class="alert warn">
-    <strong>订之前务必核对门店后缀 —— 这是这次最容易犯的错。</strong>「异国印象」是瑞尔酒店集团的连锁品牌，光五一广场一带就有五家名字极像的店：<b>奢</b>酒店、<b>悦</b>酒店、<b>假日</b>酒店、IFS 国金中心店、贺龙体育馆店，另有湖南金融中心店。评分、楼层、开业年份、价格全都不一样。搜索时用全称，并核对街道地址。
+    <strong>到店前确认一件事：房型的卫生间是不是透明门。</strong>这家有住客专门为此打了 8.5 分 ——「不是每个人都能接受透明的马桶和浴室门」。设计感酒店里不少见，介意就提前问客服换非透明的房型。
   </div>
 
-  <div class="scroll">
-    <table>
-      <thead><tr><th>同品牌门店</th><th class="n">评分</th><th class="n">点评</th><th>地址 / 备注</th></tr></thead>
-      <tbody>
-        <tr><td><b>五一广场异国印象·奢酒店</b></td><td class="n">4.8 / 5</td><td class="n">约 4,900</td><td>2024 年开业，房间 4–9 层，设计感酒店榜 No.6 <b>← 你说的这家</b></td></tr>
-        <tr><td>IFS 国金中心·异国印象酒店（五一广场店）</td><td class="n">4.6 / 5</td><td class="n">2.2 万</td><td>天心区湘江中路 2 段 18 号，2019 年装修，房间 7/12/25–29 层，江景在 25 层以上</td></tr>
-        <tr><td>异国印象·悦酒店（IFS 国金中心店）</td><td class="n">4.7 / 5</td><td class="n">3,888</td><td>天心区黄兴南路 216 号 5 楼</td></tr>
-        <tr><td>异国印象·假日酒店（五一广场店）</td><td class="n">4.7 / 5</td><td class="n">—</td><td>芙蓉区梨头后街 034 号 003 栋 6 层，2024 年开业</td></tr>
-        <tr><td>湖南金融中心异国印象酒店</td><td class="n">4.8 / 5</td><td class="n">7,819</td><td>不在五一广场，主打远眺江景</td></tr>
-        <tr><td>异国印象酒店（贺龙体育馆店）</td><td class="n">4.7 / 5</td><td class="n">3,331</td><td>近贺龙体育场，离你的动线远</td></tr>
-      </tbody>
-    </table>
+  <div class="alert ok">
+    <strong>免费取消意味着还能捡漏。</strong>这两晚订的是可免费取消的房型，所以出发前价格若跌下来，退了重订即可。<a href="https://us.trip.com/hotels/detail/?cityId=206&amp;hotelId=116989879&amp;checkIn=2026-09-04&amp;checkOut=2026-09-06&amp;adult=1" rel="noopener">点这里看这两晚的实时价</a> —— 现在这个 ¥1,294 是 2026-08-31 核对的。
   </div>
-  <p class="hint">这一列的分数是携程 5 分制，跟上面表里的 Trip.com 10 分制不是一套，别直接比。</p>
 
-  <details class="how">
-    <summary>四家的细分评分、住客怎么说、图片入口</summary>
-    <p class="hint">细分评分、楼层、照片与评论均来自各自的 Trip.com 详情页（2026-08-31）。照片是直链平台图床、未转存，<b>如果对方开了防盗链会显示不出来</b>，那时点图或末尾链接去原页看。评论按原文意思译写并保留署名与日期，<b>好评差评都留</b>，完整评论区在每家末尾的链接里。另外说明一点：这些是酒店官方相册的图，<b>住客实拍图我取不到</b> —— 它们挂在 App 的点评区里，网页端抓不出图片地址。想看真实房间就点每家末尾的链接，到点评区翻带图评价。</p>
-
-    <div class="hotel">
-      <h4>五一广场异国印象·奢酒店<span class="badge">最贴合你的四条</span></h4>
-      <div class="subs"><span><i>清洁</i><b>9.6</b></span><span><i>设施</i><b>9.5</b></span><span><i>位置</i><b>9.6</b></span><span><i>服务</i><b>9.6</b></span></div>
-      <p class="facts">总分 9.6 · 5,610 条 · 房间在 <b>4–9 层</b> · 免费寄存 · 24 小时前台 · 14:00 入住 · 2024 年开业 · 自带 SPA 与空中花园</p>
-      <div class="shots"><a href="https://us.trip.com/hotels/detail/?cityId=206&amp;hotelId=116989879" rel="noopener"><img src="https://ak-d.tripcdn.com/images/1mc2w12000h6972lfB564_R_960_660_R5_D.jpg" alt="五一广场异国印象·奢酒店 照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a><a href="https://us.trip.com/hotels/detail/?cityId=206&amp;hotelId=116989879" rel="noopener"><img src="https://ak-d.tripcdn.com/images/1mc2012000n02ehek4F5C_R_339_206_R5_D.jpg" alt="五一广场异国印象·奢酒店 照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a><a href="https://us.trip.com/hotels/detail/?cityId=206&amp;hotelId=116989879" rel="noopener"><img src="https://ak-d.tripcdn.com/images/1mc0w12000d5jaof727B9_R_339_206_R5_D.jpg" alt="五一广场异国印象·奢酒店 照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a><a href="https://us.trip.com/hotels/detail/?cityId=206&amp;hotelId=116989879" rel="noopener"><img src="https://ak-d.tripcdn.com/images/1mc2812000hjrkv757AC7_R_339_206_R5_D.jpg" alt="五一广场异国印象·奢酒店 照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a><a href="https://us.trip.com/hotels/detail/?cityId=206&amp;hotelId=116989879" rel="noopener"><img src="https://ak-d.tripcdn.com/images/1mc5f12000siz9yk57B10_R_339_206_R5_D.jpg" alt="五一广场异国印象·奢酒店 照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a><a href="https://us.trip.com/hotels/detail/?cityId=206&amp;hotelId=116989879" rel="noopener"><img src="https://ak-d.tripcdn.com/images/1mc5m12000drjnpz0DA45_R_339_206_R5_D.jpg" alt="五一广场异国印象·奢酒店 照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a><a href="https://us.trip.com/hotels/detail/?cityId=206&amp;hotelId=116989879" rel="noopener"><img src="https://ak-d.tripcdn.com/images/1mc0m12000e1x5htk86D5_R_339_206_R5_D.jpg" alt="五一广场异国印象·奢酒店 照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a></div>
-      <blockquote class="rev"><p>位置很好，有免费洗衣房和健身房，强烈推荐。</p><cite>_luna_ · 2026-08-27</cite></blockquote><blockquote class="rev"><p>前台很友好，4 楼有洗衣房。</p><cite>匿名住客 · 2026-08-17</cite></blockquote><blockquote class="rev"><p>环境很好，下次来长沙还会订这里。</p><cite>Pidan008 · 2026-08-27</cite></blockquote><blockquote class="rev"><p><b>希望酒店明白不是每个人都能接受透明的马桶和浴室门</b>，这点实在无法接受。<span class="score">评 8.5 / 10</span></p><cite>匿名住客 · 2026-08-29</cite></blockquote>
-      <p class="hint">最后那条是差评，我特意留着：<b>部分房型的卫生间和浴室是透明门</b>。这种设计在「设计感酒店」里不少见，介意的话订房前直接问客服要哪个房型不是透明的。</p>
-      <p><a href="https://us.trip.com/hotels/detail/?cityId=206&amp;hotelId=116989879" rel="noopener">Trip.com 上的完整相册与全部评论 →</a></p>
-    </div>
-    <div class="hotel">
-      <h4>Xi Hotel（五一广场 IFS）<span class="badge">推荐</span></h4>
-      <div class="subs"><span><i>清洁</i><b>9.7</b></span><span><i>设施</i><b>9.6</b></span><span><i>位置</i><b>9.7</b></span><span><i>服务</i><b>9.7</b></span></div>
-      <p class="facts">总分 9.7 · 5,977 条 · 房间在 <b>5–6 层</b> · 免费寄存 · 24 小时前台 · 15:00 入住</p>
-      <div class="shots"><a href="https://us.trip.com/hotels/changsha-hotel-detail-112342483/xi-hotel/" rel="noopener"><img src="https://ak-d.tripcdn.com/images/1mc6w12000c77rymq86BE_R_960_660_R5_D.jpg" alt="Xi Hotel（五一广场 IFS） 房间或公共区域照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a><a href="https://us.trip.com/hotels/changsha-hotel-detail-112342483/xi-hotel/" rel="noopener"><img src="https://ak-d.tripcdn.com/images/1mc5i12000c77s9dmB7AB_R_339_206_R5_D.jpg" alt="Xi Hotel（五一广场 IFS） 房间或公共区域照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a><a href="https://us.trip.com/hotels/changsha-hotel-detail-112342483/xi-hotel/" rel="noopener"><img src="https://ak-d.tripcdn.com/images/1mc4i12000ctr591h39D3_R_339_206_R5_D.jpg" alt="Xi Hotel（五一广场 IFS） 房间或公共区域照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a><a href="https://us.trip.com/hotels/changsha-hotel-detail-112342483/xi-hotel/" rel="noopener"><img src="https://ak-d.tripcdn.com/images/1mc2y12000cszlh75557E_R_339_206_R5_D.jpg" alt="Xi Hotel（五一广场 IFS） 房间或公共区域照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a><a href="https://us.trip.com/hotels/changsha-hotel-detail-112342483/xi-hotel/" rel="noopener"><img src="https://ak-d.tripcdn.com/images/1mc4n12000c77sjo35E14_R_339_206_R5_D.jpg" alt="Xi Hotel（五一广场 IFS） 房间或公共区域照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a><a href="https://us.trip.com/hotels/changsha-hotel-detail-112342483/xi-hotel/" rel="noopener"><img src="https://ak-d.tripcdn.com/images/1mc0a12000c77sk1y9C48_R_339_206_R5_D.jpg" alt="Xi Hotel（五一广场 IFS） 房间或公共区域照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a></div>
-      <blockquote class="rev"><p>超大露台泳池和空中花园，房间是全景落地窗，隔音很好，外面再热闹屋里也安静。迷你吧饮料免费，早餐有不少湖南小吃，还能免费试穿汉服。</p><cite>Okkkkkkzi · 2026-08-25</cite></blockquote><blockquote class="rev"><p>石材和木头为主的精品设计，床品很舒服。健身房和洗衣房不大但够用，两台洗衣机两台烘干机，洗衣液柔顺剂都配好。位置离热闹地带不远也不吵。</p><cite>gptzjs127 · 2026-07-12</cite></blockquote><blockquote class="rev"><p>小而精，洗衣房、泳池、健身房、拍照点都有，早餐含。<b>唯一的问题是洗衣房没人管</b>，我的衣服被人拿出来堆着，丢了几件。</p><cite>匿名住客 · 2026-08-30</cite></blockquote>
-      <p><a href="https://us.trip.com/hotels/changsha-hotel-detail-112342483/xi-hotel/" rel="noopener">Trip.com 上的完整相册与全部评论 →</a></p>
-    </div>
-    <div class="hotel">
-      <h4>FUNGEE（黄兴广场站）<span class="badge">推荐</span></h4>
-      <div class="subs"><span><i>清洁</i><b>9.7</b></span><span><i>设施</i><b>9.6</b></span><span><i>位置</i><b>9.7</b></span><span><i>服务</i><b>9.8</b></span></div>
-      <p class="facts">总分 9.7 · 10,353 条 · 房间在 <b>3–11 层</b> · 免费寄存 · 24 小时前台 · 14:00 入住</p>
-      <div class="shots"><a href="https://us.trip.com/hotels/changsha-hotel-detail-92349369/fungee-hotel/" rel="noopener"><img src="https://ak-d.tripcdn.com/images/1mc4a12000dexyvr4CB77_R_960_660_R5_D.jpg" alt="FUNGEE（黄兴广场站） 房间或公共区域照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a><a href="https://us.trip.com/hotels/changsha-hotel-detail-92349369/fungee-hotel/" rel="noopener"><img src="https://ak-d.tripcdn.com/images/1mc4y12000n9w2x1a8E04_R_339_206_R5_D.jpg" alt="FUNGEE（黄兴广场站） 房间或公共区域照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a><a href="https://us.trip.com/hotels/changsha-hotel-detail-92349369/fungee-hotel/" rel="noopener"><img src="https://ak-d.tripcdn.com/images/02025120009o06eyd9E3B_R_339_206_R5_D.jpg" alt="FUNGEE（黄兴广场站） 房间或公共区域照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a><a href="https://us.trip.com/hotels/changsha-hotel-detail-92349369/fungee-hotel/" rel="noopener"><img src="https://ak-d.tripcdn.com/images/0203j120009ftk0siB9A6_R_339_206_R5_D.jpg" alt="FUNGEE（黄兴广场站） 房间或公共区域照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a><a href="https://us.trip.com/hotels/changsha-hotel-detail-92349369/fungee-hotel/" rel="noopener"><img src="https://ak-d.tripcdn.com/images/0201g120009fp3kwf3AE7_R_339_206_R5_D.jpg" alt="FUNGEE（黄兴广场站） 房间或公共区域照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a><a href="https://us.trip.com/hotels/changsha-hotel-detail-92349369/fungee-hotel/" rel="noopener"><img src="https://ak-d.tripcdn.com/images/0203b120009grhd071764_R_339_206_R5_D.jpg" alt="FUNGEE（黄兴广场站） 房间或公共区域照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a></div>
-      <blockquote class="rev"><p>房间干净没有异味，住得很舒服，离地铁站也近。</p><cite>Geiwobadukongjian · 2026-08-30</cite></blockquote><blockquote class="rev"><p>房间很好，智能助手能控灯、空调和窗帘。</p><cite>白金会员 · 2026-08-26</cite></blockquote><blockquote class="rev"><p>位置极好，就在地铁出口旁边，楼下就是黄兴广场步行街。</p><cite>匿名住客 · 2026-08-30</cite></blockquote>
-      <p><a href="https://us.trip.com/hotels/changsha-hotel-detail-92349369/fungee-hotel/" rel="noopener">Trip.com 上的完整相册与全部评论 →</a></p>
-    </div>
-    <div class="hotel">
-      <h4>Hampton by Hilton 五一广场</h4>
-      <div class="subs"><span><i>清洁</i><b>9.7</b></span><span><i>设施</i><b>9.6</b></span><span><i>位置</i><b>9.7</b></span><span><i>服务</i><b>9.7</b></span></div>
-      <p class="facts">总分 9.7 · 16,590 条 · 房间在 <b>6–18 层</b>（整栋封顶）· 24 小时前台 + 自助入住机 · 14:00 入住 / 12:00 退房</p>
-      <div class="shots"><a href="https://us.trip.com/hotels/changsha-hotel-detail-117841238/hampton-by-hilton-changsha-wuyi-square/" rel="noopener"><img src="https://ak-d.tripcdn.com/images/0201p12000dg5nmn10AF9_R_960_660_R5_D.jpg" alt="Hampton by Hilton 五一广场 房间或公共区域照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a><a href="https://us.trip.com/hotels/changsha-hotel-detail-117841238/hampton-by-hilton-changsha-wuyi-square/" rel="noopener"><img src="https://ak-d.tripcdn.com/images/0200g12000dg5nxmx139A_R_339_206_R5_D.jpg" alt="Hampton by Hilton 五一广场 房间或公共区域照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a><a href="https://us.trip.com/hotels/changsha-hotel-detail-117841238/hampton-by-hilton-changsha-wuyi-square/" rel="noopener"><img src="https://ak-d.tripcdn.com/images/1mc1z12000dgp6fak8F35_R_339_206_R5_D.jpg" alt="Hampton by Hilton 五一广场 房间或公共区域照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a><a href="https://us.trip.com/hotels/changsha-hotel-detail-117841238/hampton-by-hilton-changsha-wuyi-square/" rel="noopener"><img src="https://ak-d.tripcdn.com/images/1mc6912000dgjozgoA980_R_339_206_R5_D.jpg" alt="Hampton by Hilton 五一广场 房间或公共区域照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a><a href="https://us.trip.com/hotels/changsha-hotel-detail-117841238/hampton-by-hilton-changsha-wuyi-square/" rel="noopener"><img src="https://ak-d.tripcdn.com/images/1mc3i12000dgp2qt05F0A_R_339_206_R5_D.jpg" alt="Hampton by Hilton 五一广场 房间或公共区域照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a><a href="https://us.trip.com/hotels/changsha-hotel-detail-117841238/hampton-by-hilton-changsha-wuyi-square/" rel="noopener"><img src="https://ak-d.tripcdn.com/images/1mc6112000dgp5vby2979_R_339_206_R5_D.jpg" alt="Hampton by Hilton 五一广场 房间或公共区域照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a></div>
-      <blockquote class="rev"><p>酒店非常干净，早餐种类好。<b>夜班前台特别客气，还打电话跟我确认深夜入住。</b></p><cite>匿名住客 · 2026-08-22</cite></blockquote><blockquote class="rev"><p>位置很好，房间尺寸合适，是翻新过的，设施干净，服务态度好又周到。</p><cite>CC0703 · 2026-08-22</cite></blockquote><blockquote class="rev"><p>就在五一商圈中心、离地铁很近，虽然周边热闹，房间隔音很好，晚上休息不受影响。</p><cite>匿名住客 · 2026-08-31</cite></blockquote>
-      <p><a href="https://us.trip.com/hotels/changsha-hotel-detail-117841238/hampton-by-hilton-changsha-wuyi-square/" rel="noopener">Trip.com 上的完整相册与全部评论 →</a></p>
-    </div>
-    <div class="hotel">
-      <h4>IFS 国金中心·异国印象酒店（五一广场店）<span class="badge warn">另一家，江景在 25 层以上</span></h4>
-      <div class="subs"><span><i>清洁</i><b>9.5</b></span><span><i>设施</i><b>9.2</b></span><span><i>位置</i><b>9.4</b></span><span><i>服务</i><b>9.5</b></span></div>
-      <p class="facts">总分 9.4 · 21,957 条 · 房型分布 <b>7 / 12 / 25–26 / 28–29 层</b> · 免费寄存 · 14:00 入住</p>
-      <div class="shots"><a href="https://us.trip.com/hotels/changsha-hotel-detail-1250258/changsha-ifs-international-finance-center-exotic-impression-hotel/" rel="noopener"><img src="https://ak-d.tripcdn.com/images/0206212000a0mms9x2C0C_R_960_660_R5_D.jpg" alt="异国印象（五一广场 IFS） 房间或公共区域照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a><a href="https://us.trip.com/hotels/changsha-hotel-detail-1250258/changsha-ifs-international-finance-center-exotic-impression-hotel/" rel="noopener"><img src="https://ak-d.tripcdn.com/images/0205i1200095gmpmp3072_R_339_206_R5_D.jpg" alt="异国印象（五一广场 IFS） 房间或公共区域照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a><a href="https://us.trip.com/hotels/changsha-hotel-detail-1250258/changsha-ifs-international-finance-center-exotic-impression-hotel/" rel="noopener"><img src="https://ak-d.tripcdn.com/images/0583l12000soq21dq8434_R_339_206_R5_D.jpg" alt="异国印象（五一广场 IFS） 房间或公共区域照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a><a href="https://us.trip.com/hotels/changsha-hotel-detail-1250258/changsha-ifs-international-finance-center-exotic-impression-hotel/" rel="noopener"><img src="https://ak-d.tripcdn.com/images/1mc4y12000im0em5uF2CD_R_339_206_R5_D.jpg" alt="异国印象（五一广场 IFS） 房间或公共区域照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a><a href="https://us.trip.com/hotels/changsha-hotel-detail-1250258/changsha-ifs-international-finance-center-exotic-impression-hotel/" rel="noopener"><img src="https://ak-d.tripcdn.com/images/02060120009d1n1ik7568_R_339_206_R5_D.jpg" alt="异国印象（五一广场 IFS） 房间或公共区域照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a><a href="https://us.trip.com/hotels/changsha-hotel-detail-1250258/changsha-ifs-international-finance-center-exotic-impression-hotel/" rel="noopener"><img src="https://ak-d.tripcdn.com/images/1mc5p12000hpnyprb6FC9_R_339_206_R5_D.jpg" alt="异国印象（五一广场 IFS） 房间或公共区域照片" referrerpolicy="no-referrer" onerror="this.closest('a').className='shot dead'"></a></div>
-      <blockquote class="rev"><p>房间能看到湘江夜景，白天是缓缓的江水，晚上有灯光秀。</p><cite>匿名住客 · —</cite></blockquote><blockquote class="rev"><p>每次来长沙都住这里，视野实在好，完全没有遮挡。</p><cite>匿名住客 · —</cite></blockquote><blockquote class="rev"><p>整趟中国行里住得最好的一家，一切都很完美。</p><cite>匿名住客 · —</cite></blockquote>
-      <p><a href="https://us.trip.com/hotels/changsha-hotel-detail-1250258/changsha-ifs-international-finance-center-exotic-impression-hotel/" rel="noopener">Trip.com 上的完整相册与全部评论 →</a></p>
-    </div>
-  </details>
-
-  <details class="how">
-    <summary>被排除的，和排除的理由</summary>
-    <div class="scroll">
-      <table>
-        <thead><tr><th>酒店</th><th class="n">评分</th><th class="n">起价</th><th>为什么排除</th></tr></thead>
-        <tbody>
-          <tr><td>Grand Hyatt 长沙君悦</td><td class="n">9.5</td><td class="n">¥910</td><td><b>超预算</b>，而且在海信广场塔楼，江景房本来就在高层，跟你 18 层的线冲突</td></tr>
-          <tr><td>SEYA Panoramic 五一广场旗舰</td><td class="n">9.6</td><td class="n">¥750</td><td><b>超预算</b>；名字里的 Panoramic 就是卖高层全景的，同样冲突</td></tr>
-          <tr><td>FUNGEE S（IFS 潮宗街）</td><td class="n">9.6</td><td class="n">¥190</td><td>分和价都好，但在潮宗街，走到笨萝卜太平街店要 20 分钟以上</td></tr>
-          <tr><td>Siman 思漫江景（潮宗街）</td><td class="n">9.5</td><td class="n">¥90</td><td>同上，江景+便宜很诱人，但离笨萝卜远</td></tr>
-          <tr><td>JI 全季（IFS 橘子洲店）</td><td class="n">9.7</td><td class="n">¥460</td><td>位置合格，但只有 542 条评论，<b>样本不足</b></td></tr>
-          <tr><td>长沙笨一酒店</td><td class="n">9.8</td><td class="n">¥280</td><td>全表最高分，但<b>只有 50 条评论</b> —— 这个样本量下 9.8 和 9.1 没有区别</td></tr>
-          <tr><td>Yiju Chinese Inn</td><td class="n">9.3</td><td class="n">¥90</td><td>964 条，同样在样本不足线下</td></tr>
-          <tr><td>三家长沙南站酒店</td><td class="n">9.5–9.6</td><td class="n">¥210–390</td><td>离五一广场太远，晚上无处可去，也走不到笨萝卜</td></tr>
-          <tr><td>Microtel 梅溪湖</td><td class="n">9.5</td><td class="n">¥290</td><td>环境最好，但周日回长沙南 40 分钟以上，会把退房后的空窗变成赶路</td></tr>
-          <tr><td>JOLLY / 浦京 / Mcsrh</td><td class="n">9.1–9.8</td><td class="n">¥120–260</td><td>分不低，但都不在五一广场步行圈</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <p class="hint">「样本不足」这条线画在 1000 条评论。低于这个数，平台分的小数点没有意义 —— 全表最高的 9.8 分只有 50 条评论就是例子。</p>
-  </details>
-
-  <h2 id="sec-todo">出发前要做完的</h2>
-  <ul class="todo" id="todo"></ul>
-  <p class="hint">清单会跟着上面的节奏切换：松弛版不去博物院，就不用熬夜抢预约。勾选状态存在本机浏览器里。</p>
-
-  <h2 id="sec-plan">时间表</h2>
-  <div class="modes" id="modes">
-    <button class="mode" type="button" data-m="chill" aria-pressed="true">松弛版</button>
-    <button class="mode" type="button" data-m="packed" aria-pressed="false">暴走版</button>
-  </div>
-  <p class="hint" id="mode-note"></p>
-  <div id="sched"></div>
-
-  <h2 id="sec-rules">松弛的几条规矩</h2>
+<h2 id="sec-todo">出发前要做完的</h2>
   <figure>
-    <svg viewBox="0 0 700 168" role="img" aria-label="松弛版的四条规则：一天一个必去点、排队不超过二十分钟、单程车程不超过三十分钟、留白也是行程。">
-      <title>松弛版规则</title>
+    <svg viewBox="0 0 700 250" role="img" aria-label="预约窗口时间线：湖南博物院提前 5 天、每晚 20:00 放票；岳麓书院、岳麓山、简牍博物馆提前 3 天；洋湖两座美术馆随时可约。">
+      <title>各处预约什么时候开</title>
       <g font-family="-apple-system, sans-serif" font-size="12">
-        <g>
-          <rect x="0" y="10" width="166" height="66" rx="10" fill="var(--card)" stroke="var(--line)"/>
-          <text x="83" y="38" fill="var(--accent)" font-size="20" text-anchor="middle">1</text>
-          <text x="83" y="60" fill="var(--ink)" text-anchor="middle">一天只排一个必去</text>
-        </g>
-        <g>
-          <rect x="178" y="10" width="166" height="66" rx="10" fill="var(--card)" stroke="var(--line)"/>
-          <text x="261" y="38" fill="var(--accent)" font-size="20" text-anchor="middle">20′</text>
-          <text x="261" y="60" fill="var(--ink)" text-anchor="middle">队超过这个就换一家</text>
-        </g>
-        <g>
-          <rect x="356" y="10" width="166" height="66" rx="10" fill="var(--card)" stroke="var(--line)"/>
-          <text x="439" y="38" fill="var(--accent)" font-size="20" text-anchor="middle">30′</text>
-          <text x="439" y="60" fill="var(--ink)" text-anchor="middle">单程车程上限</text>
-        </g>
-        <g>
-          <rect x="534" y="10" width="166" height="66" rx="10" fill="var(--card)" stroke="var(--line)"/>
-          <text x="617" y="38" fill="var(--accent)" font-size="20" text-anchor="middle">∅</text>
-          <text x="617" y="60" fill="var(--ink)" text-anchor="middle">留白也是行程</text>
-        </g>
-        <text x="0" y="106" fill="var(--ink-3)" font-size="11">按这四条走，两天大概只去 3 个地方 —— 这是特意的。</text>
-        <text x="0" y="126" fill="var(--ink-3)" font-size="11">41 小时里塞 8 个景点，回去只会记得排队和赶路。</text>
-        <text x="0" y="146" fill="var(--ink-3)" font-size="11">茶颜悦色市区几百家店，永远不用为它排队。</text>
+        <text x="0" y="14" fill="var(--ink-3)" font-size="11">横轴是距 9 月 4 日出发还剩几天</text>
+        <line x1="60" y1="42" x2="660" y2="42" stroke="var(--line)"/>
+        <text x="60" y="34" fill="var(--ink-3)" font-size="10" text-anchor="middle">−8 天</text>
+        <text x="360" y="34" fill="var(--ink-3)" font-size="10" text-anchor="middle">−4 天</text>
+        <text x="660" y="34" fill="var(--ink-3)" font-size="10" text-anchor="end">出发</text>
+        <line x1="660" y1="42" x2="660" y2="214" stroke="var(--danger)" stroke-dasharray="4 3"/>
+        <text x="0" y="72" fill="var(--ink)">湖南博物院</text>
+        <rect x="120" y="60" width="540" height="18" rx="3" fill="var(--danger)" opacity=".45"/>
+        <text x="130" y="74" fill="var(--ink)" font-size="11">提前 5 天 · 每晚 20:00 放票 · 热门时段当晚抢空</text>
+        <text x="0" y="108" fill="var(--ink)">岳麓书院</text>
+        <rect x="435" y="96" width="225" height="18" rx="3" fill="var(--warn)" opacity=".5"/>
+        <text x="445" y="110" fill="var(--ink)" font-size="11">提前 3 天 · 40 元</text>
+        <text x="0" y="144" fill="var(--ink)">岳麓山</text>
+        <rect x="435" y="132" width="225" height="18" rx="3" fill="var(--warn)" opacity=".5"/>
+        <text x="445" y="146" fill="var(--ink)" font-size="11">提前 3 天 · 免费 · 与书院两个入口</text>
+        <text x="0" y="180" fill="var(--ink)">简牍博物馆</text>
+        <rect x="435" y="168" width="225" height="18" rx="3" fill="var(--warn)" opacity=".5"/>
+        <text x="445" y="182" fill="var(--ink)" font-size="11">提前 3 天 · 每天 16:30 放票</text>
+        <text x="0" y="216" fill="var(--ink)">洋湖两座美术馆</text>
+        <rect x="120" y="204" width="540" height="18" rx="3" fill="var(--ok)" opacity=".4"/>
+        <text x="130" y="218" fill="var(--ink)" font-size="11">随时可约 · 李自健免费领票 · 松弛版只需要这一项</text>
+        <text x="0" y="244" fill="var(--ink-3)" font-size="11">只有第一条要守 20:00。松弛版跳过博物院，就只剩最下面那条。</text>
       </g>
     </svg>
   </figure>
+  <ul class="todo" id="todo"></ul>
+  <p class="hint">清单会跟着上面的节奏切换：松弛版不去博物院，就不用熬夜抢预约。勾选状态存在本机浏览器里。</p>
+
+  <h2 id="sec-plan">全程时间轴</h2>
+  <p class="hint">从虎门发车到回到虎门，每一格向左滑可以看图和细节。所有安排已定，不再有备选版本。</p>
+  <ol class="tl" id="tl"></ol>
 
   <h2 id="sec-again">来过两次了，还剩什么</h2>
+  <figure class="photo gal">
+    <div class="g3"><a href="https://commons.wikimedia.org/wiki/File:Young_Mao_Zedong_statue,_2010110301.jpg" rel="noopener"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Young_Mao_Zedong_statue%2C_2010110301.jpg/960px-Young_Mao_Zedong_statue%2C_2010110301.jpg" alt="橘子洲头青年毛泽东雕像" referrerpolicy="no-referrer" onerror="this.closest('a').hidden=true"></a><a href="https://commons.wikimedia.org/wiki/File:Young_Mao_Zedong_statue,_2010110304.jpg" rel="noopener"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Young_Mao_Zedong_statue%2C_2010110304.jpg/960px-Young_Mao_Zedong_statue%2C_2010110304.jpg" alt="雕像侧面" referrerpolicy="no-referrer" onerror="this.closest('a').hidden=true"></a><a href="https://commons.wikimedia.org/wiki/File:Orange_Isle_2021122625.jpg" rel="noopener"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Orange_Isle_2021122625.jpg/960px-Orange_Isle_2021122625.jpg" alt="橘子洲景区" referrerpolicy="no-referrer" onerror="this.closest('a').hidden=true"></a></div>
+    <figcaption>橘子洲头的青年毛泽东雕像。走完全洲要 1.5–2 小时，第三次来可以只在江边看，不进洲。<span class="cred">Li Ming / CC BY 3.0 · Huangdan2060 / CC BY 3.0 · Wikimedia Commons</span></figcaption>
+  </figure>
+  <figure class="photo gal">
+    <div class="g3"><a href="https://commons.wikimedia.org/wiki/File:New_building_of_Hunan_Museum_20230403a.jpg" rel="noopener"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c4/New_building_of_Hunan_Museum_20230403a.jpg/960px-New_building_of_Hunan_Museum_20230403a.jpg" alt="湖南博物院新馆" referrerpolicy="no-referrer" onerror="this.closest('a').hidden=true"></a><a href="https://commons.wikimedia.org/wiki/File:Mawangdui_silk_banner_from_tomb_no1.jpg" rel="noopener"><img src="https://upload.wikimedia.org/wikipedia/commons/2/2b/Mawangdui_silk_banner_from_tomb_no1.jpg" alt="马王堆一号墓 T 形帛画" referrerpolicy="no-referrer" onerror="this.closest('a').hidden=true"></a><a href="https://commons.wikimedia.org/wiki/File:Mawangdui_Silk_Texts_2.JPG" rel="noopener"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Mawangdui_Silk_Texts_2.JPG/960px-Mawangdui_Silk_Texts_2.JPG" alt="马王堆帛书" referrerpolicy="no-referrer" onerror="this.closest('a').hidden=true"></a></div>
+    <figcaption>湖南博物院和它的马王堆主线：T 形帛画、帛书、素纱襌衣。免费，但必须提前 5 天抢预约 —— 这是「换个方式再去」那一档里唯一要熬夜的。<span class="cred">Huangdan2060 / CC BY 3.0 · 公有领域 · Wikimedia Commons</span></figcaption>
+  </figure>
+  <figure class="photo">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Taiping_Street_at_night%2C_Changsha.jpg/960px-Taiping_Street_at_night%2C_Changsha.jpg" alt="夜晚的太平街，人流密集" referrerpolicy="no-referrer" onerror="this.closest('figure').hidden=true">
+    <figcaption>太平街的夜晚长这样。第一次来值得走一趟，第三次来就是纯人流了 —— 这也是它被排进「直接跳过」那一堆的原因。<span class="cred"><a href="https://commons.wikimedia.org/wiki/File:Taiping_Street_at_night,_Changsha.jpg" rel="noopener">EditQ / CC BY-SA 4.0 · Wikimedia Commons</a></span></figcaption>
+  </figure>
   <p>如果岳麓山、橘子洲、太平街、火宫殿都去过了，那么这趟的正确做法不是再找几个没去过的景点补上，而是<b>换一种使用这座城市的方式</b>：把它当成一个吃饭和坐着的地方，不是一个打卡的地方。下面按「还值不值得再去」分三堆。</p>
 
   <div class="scroll">
@@ -879,6 +673,10 @@
   </div>
 
   <h2 id="sec-more">还有哪里好玩</h2>
+  <figure class="photo gal">
+    <div class="g3"><a href="https://commons.wikimedia.org/wiki/File:Changsha_Jiandu_Museum.jpg" rel="noopener"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/Changsha_Jiandu_Museum.jpg/960px-Changsha_Jiandu_Museum.jpg" alt="长沙简牍博物馆外观" referrerpolicy="no-referrer" onerror="this.closest('a').hidden=true"></a><a href="https://commons.wikimedia.org/wiki/File:Interior_of_the_Changsha_Jiandu_Museum,_picture2.jpg" rel="noopener"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/Interior_of_the_Changsha_Jiandu_Museum%2C_picture2.jpg/960px-Interior_of_the_Changsha_Jiandu_Museum%2C_picture2.jpg" alt="简牍博物馆展厅内部" referrerpolicy="no-referrer" onerror="this.closest('a').hidden=true"></a><a href="https://commons.wikimedia.org/wiki/File:Gate_of_Tianxin_Pavilion,_Changsha.jpg" rel="noopener"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Gate_of_Tianxin_Pavilion%2C_Changsha.jpg/960px-Gate_of_Tianxin_Pavilion%2C_Changsha.jpg" alt="天心阁城门" referrerpolicy="no-referrer" onerror="this.closest('a').hidden=true"></a></div>
+    <figcaption>简牍博物馆和天心阁在同一片，走路可达，加上白沙古井能凑成半天。简牍馆免费但要提前 3 天预约，每天 16:30 放票。<span class="cred">Huangdan2060 / CC0 · JULIANISME / CC BY-SA 4.0 · Wikimedia Commons</span></figcaption>
+  </figure>
   <p>都是前两次大概率漏掉的。共同点：不是传统景点，所以人少，而且大多免费。按离你住处的远近排。</p>
 
   <div class="scroll">
@@ -911,147 +709,85 @@
   </div>
   <p class="hint">这两处票价来自 2023–2024 年的公开资料，可能已调整，去之前查景区公众号。相比之下市区那一列基本免费，这也是我不推荐出城的理由之一。</p>
 
-  <h2 id="sec-pool">景点池：按耗时和体力挑</h2>
-  <p>这张图是给还没去过的人排的，但对你也有用 —— 反过来看：把你去过的那些划掉，剩下的就是这趟的候选。左下角那片人少、省力、能坐，是松弛版的弹药库，也基本就是上面「大概率还没去」那一行。</p>
-  <figure>
-    <svg viewBox="0 0 700 430" role="img" aria-label="景点散点图：横轴是需要的时间，纵轴是体力消耗。岳麓山耗时长且费体力，两座美术馆和几条老街在左下角省时省力，湖南博物院耗时长但不费体力。">
-      <title>景点按耗时与体力分布</title>
-      <g font-family="-apple-system, sans-serif" font-size="11">
-        <rect x="60" y="20" width="620" height="330" fill="none" stroke="var(--line)"/>
-        <line x1="60" y1="130" x2="680" y2="130" stroke="var(--line)" stroke-dasharray="3 3"/>
-        <line x1="60" y1="240" x2="680" y2="240" stroke="var(--line)" stroke-dasharray="3 3"/>
-        <line x1="215" y1="20" x2="215" y2="350" stroke="var(--line)" stroke-dasharray="3 3"/>
-        <line x1="370" y1="20" x2="370" y2="350" stroke="var(--line)" stroke-dasharray="3 3"/>
-        <line x1="525" y1="20" x2="525" y2="350" stroke="var(--line)" stroke-dasharray="3 3"/>
-
-        <text x="370" y="376" fill="var(--ink-3)" text-anchor="middle">需要多少时间 →</text>
-        <text x="60" y="366" fill="var(--ink-3)">0.5h</text>
-        <text x="215" y="366" fill="var(--ink-3)" text-anchor="middle">1h</text>
-        <text x="370" y="366" fill="var(--ink-3)" text-anchor="middle">2h</text>
-        <text x="525" y="366" fill="var(--ink-3)" text-anchor="middle">3h</text>
-        <text x="674" y="366" fill="var(--ink-3)" text-anchor="end">4h+</text>
-        <text x="18" y="185" fill="var(--ink-3)" transform="rotate(-90 18 185)" text-anchor="middle">体力消耗 →</text>
-        <text x="52" y="332" fill="var(--ink-3)" text-anchor="end">低</text>
-        <text x="52" y="185" fill="var(--ink-3)" text-anchor="end">中</text>
-        <text x="52" y="48" fill="var(--ink-3)" text-anchor="end">高</text>
-
-        <rect x="61" y="242" width="308" height="107" fill="var(--ok)" opacity=".08"/>
-        <text x="70" y="260" fill="var(--ok)" font-size="10">松弛版弹药库</text>
-
-        <circle cx="612" cy="62" r="7" fill="var(--warn)"/>
-        <text x="600" y="56" fill="var(--ink)" text-anchor="end">岳麓山（爬上去）</text>
-        <circle cx="452" cy="112" r="7" fill="var(--warn)"/>
-        <text x="440" y="106" fill="var(--ink)" text-anchor="end">岳麓山（坐索道）</text>
-        <circle cx="412" cy="172" r="7" fill="var(--ok)"/>
-        <text x="400" y="166" fill="var(--ink)" text-anchor="end">橘子洲（走完全洲）</text>
-        <circle cx="302" cy="205" r="7" fill="var(--ok)"/>
-        <text x="290" y="199" fill="var(--ink)" text-anchor="end">梅溪湖 / 江边散步</text>
-
-        <circle cx="612" cy="292" r="7" fill="var(--accent)"/>
-        <text x="600" y="286" fill="var(--ink)" text-anchor="end">湖南博物院（要抢约）</text>
-        <circle cx="472" cy="322" r="7" fill="var(--accent)"/>
-        <text x="460" y="316" fill="var(--ink)" text-anchor="end">长沙博物馆（免费不用抢）</text>
-        <circle cx="332" cy="268" r="7" fill="var(--ok)"/>
-        <text x="344" y="264" fill="var(--ink)">李自健美术馆（免费）</text>
-        <circle cx="332" cy="300" r="7" fill="var(--ok)"/>
-        <text x="344" y="296" fill="var(--ink)">谢子龙影像馆（一楼免费）</text>
-        <circle cx="300" cy="334" r="7" fill="var(--danger)"/>
-        <text x="312" y="338" fill="var(--ink)">岳麓书院（40 元，要约）</text>
-
-        <circle cx="150" cy="288" r="7" fill="var(--ok)"/>
-        <text x="162" y="284" fill="var(--ink)">潮宗街</text>
-        <circle cx="150" cy="320" r="7" fill="var(--ok)"/>
-        <text x="162" y="324" fill="var(--ink)">都正街</text>
-        <circle cx="232" cy="334" r="7" fill="var(--ok)"/>
-        <text x="244" y="338" fill="var(--ink)">后湖艺术区</text>
-        <circle cx="216" cy="262" r="7" fill="var(--ok)"/>
-        <text x="228" y="258" fill="var(--ink)">太平街</text>
-        <circle cx="88" cy="304" r="7" fill="var(--ok)"/>
-        <text x="100" y="308" fill="var(--ink)">IFS 楼顶</text>
-        <circle cx="262" cy="292" r="7" fill="var(--ink-3)"/>
-        <text x="274" y="288" fill="var(--ink)">超级文和友（看队伍）</text>
-
-        <g transform="translate(60,398)">
-          <circle cx="6" cy="-4" r="6" fill="var(--ok)"/><text x="18" y="0" fill="var(--ink-3)">免费</text>
-          <circle cx="80" cy="-4" r="6" fill="var(--accent)"/><text x="92" y="0" fill="var(--ink-3)">免费但要预约</text>
-          <circle cx="204" cy="-4" r="6" fill="var(--danger)"/><text x="216" y="0" fill="var(--ink-3)">收费</text>
-          <circle cx="272" cy="-4" r="6" fill="var(--warn)"/><text x="284" y="0" fill="var(--ink-3)">户外费腿</text>
-          <circle cx="368" cy="-4" r="6" fill="var(--ink-3)"/><text x="380" y="0" fill="var(--ink-3)">时间不可控</text>
-        </g>
-      </g>
-    </svg>
-    <figcaption>耗时按正常节奏估，不含路上往返。文和友是灰色，因为它花多久完全取决于队伍长度。</figcaption>
-  </figure>
-
-  <h2 id="sec-walk">五一广场的步行圈</h2>
-  <p>住五一广场最大的好处：下面这些地方彼此都在走路范围内，不用查地铁。真正需要坐车的只有四个点。</p>
-  <figure>
-    <svg viewBox="0 0 700 330" role="img" aria-label="以五一广场为圆心的步行圈：五分钟内是黄兴路和 IFS，十分钟内是太平街、坡子街和文和友，二十分钟内是潮宗街、都正街和湘江风光带；橘子洲、岳麓山、洋湖和长沙南站需要坐地铁。">
-      <title>以五一广场为圆心</title>
-      <g font-family="-apple-system, sans-serif" font-size="11">
-        <circle cx="350" cy="165" r="150" fill="none" stroke="var(--line)" stroke-dasharray="4 4"/>
-        <circle cx="350" cy="165" r="105" fill="none" stroke="var(--line)" stroke-dasharray="4 4"/>
-        <circle cx="350" cy="165" r="58" fill="none" stroke="var(--line)" stroke-dasharray="4 4"/>
-
-        <circle cx="350" cy="165" r="31" fill="var(--accent)" opacity=".18" stroke="var(--accent)"/>
-        <text x="350" y="163" fill="var(--ink)" text-anchor="middle" font-size="12">五一广场</text>
-        <text x="350" y="177" fill="var(--ink-3)" text-anchor="middle" font-size="10">住这里</text>
-
-        <text x="350" y="122" fill="var(--ink-3)" text-anchor="middle" font-size="10">5 分钟</text>
-        <text x="350" y="75" fill="var(--ink-3)" text-anchor="middle" font-size="10">10 分钟</text>
-        <text x="350" y="28" fill="var(--ink-3)" text-anchor="middle" font-size="10">20 分钟</text>
-
-        <text x="392" y="152" fill="var(--ink)">黄兴路步行街</text>
-        <text x="308" y="152" fill="var(--ink)" text-anchor="end">IFS 国金中心</text>
-        <text x="430" y="200" fill="var(--ink)">太平街</text>
-        <text x="270" y="200" fill="var(--ink)" text-anchor="end">坡子街 · 火宫殿</text>
-        <text x="350" y="248" fill="var(--ink)" text-anchor="middle">超级文和友</text>
-        <text x="500" y="120" fill="var(--ink)">潮宗街</text>
-        <text x="200" y="120" fill="var(--ink)" text-anchor="end">都正街</text>
-        <text x="350" y="300" fill="var(--ink)" text-anchor="middle">湘江风光带</text>
-
-        <rect x="0" y="10" width="122" height="46" rx="8" fill="var(--card)" stroke="var(--line)"/>
-        <text x="12" y="30" fill="var(--ink)">岳麓山</text>
-        <text x="12" y="46" fill="var(--accent)" font-size="10">地铁 30 分</text>
-
-        <rect x="578" y="10" width="122" height="46" rx="8" fill="var(--card)" stroke="var(--line)"/>
-        <text x="590" y="30" fill="var(--ink)">橘子洲</text>
-        <text x="590" y="46" fill="var(--accent)" font-size="10">地铁 15 分</text>
-
-        <rect x="578" y="272" width="122" height="46" rx="8" fill="var(--card)" stroke="var(--line)"/>
-        <text x="590" y="292" fill="var(--ink)">洋湖两馆</text>
-        <text x="590" y="308" fill="var(--accent)" font-size="10">地铁 30 分</text>
-
-        <rect x="0" y="272" width="122" height="46" rx="8" fill="var(--card)" stroke="var(--line)"/>
-        <text x="12" y="292" fill="var(--ink)">长沙南站</text>
-        <text x="12" y="308" fill="var(--accent)" font-size="10">地铁 25 分</text>
-      </g>
-    </svg>
-    <figcaption>圈表示步行时间，不是距离比例。四个灰盒子是必须坐车的。</figcaption>
-  </figure>
-
   <h2 id="sec-food">吃什么</h2>
   <p>长沙的餐饮密度高到不需要提前做功课，但两件事值得先知道：<b>网红店周末等两小时是常态</b>，而<b>本地人真正吃的那些不用等</b>。按一天的进食节奏排：</p>
 
   <h3>早午饭 · 嗦粉</h3>
-  <p>长沙人的早饭是米粉，不是包子。<b>肆姐面粉馆、杨裕兴、甘长顺</b>是常见连锁，社区里的无名粉店往往更好吃。点单说「圆粉还是扁粉 + 码子」，肉丝、酸辣、排骨、酱汁都是常见浇头；「重挑」是加量，「轻挑」是减量。</p>
+  <figure class="photo pair">
+    <div class="two">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Changsha-style_mixed_rice_noodles_before_stirring_at_Baman_%2820211225175333%29.jpg/960px-Changsha-style_mixed_rice_noodles_before_stirring_at_Baman_%2820211225175333%29.jpg" alt="拌之前的长沙拌粉" referrerpolicy="no-referrer" onerror="this.closest('figure').hidden=true">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Changsha-style_mixed_rice_noodles_after_stirring_at_Baman_%2820211225175628%29.jpg/960px-Changsha-style_mixed_rice_noodles_after_stirring_at_Baman_%2820211225175628%29.jpg" alt="拌之后的长沙拌粉" referrerpolicy="no-referrer">
+    </div>
+    <figcaption>长沙拌粉：上桌是左边那样，码子堆在面上，得自己拌成右边那样再吃。<span class="cred"><a href="https://commons.wikimedia.org/wiki/File:Changsha-style_mixed_rice_noodles_before_stirring_at_Baman_(20211225175333).jpg" rel="noopener">N509FZ / CC BY-SA 4.0 · Wikimedia Commons</a></span></figcaption>
+  </figure>
+  <figure id="fig-fen">
+    <svg viewBox="0 0 700 210" role="img" aria-label="长沙嗦粉点单图解：先选圆粉或扁粉，再选码子也就是浇头，最后可选重挑加量或轻挑减量。">
+      <title>嗦粉怎么点</title>
+      <g font-family="-apple-system, sans-serif" font-size="12">
+        <text x="0" y="14" fill="var(--ink-3)" font-size="11">一句话点单：「圆粉 + 肉丝码 + 重挑」</text>
 
-  <h3>正餐 · 湘菜</h3>
-  <div class="scroll">
-    <table>
-      <thead><tr><th>店</th><th>招牌</th><th>周末等位</th><th>备注</th></tr></thead>
-      <tbody>
-        <tr><td>费大厨</td><td>辣椒炒肉</td><td>1–2 小时</td><td>最出名也最难等，小程序可提前取号</td></tr>
-        <tr><td>炊烟时代</td><td>小炒黄牛肉</td><td>1–2 小时</td><td>与费大厨风格接近，二选一即可</td></tr>
-        <tr><td><b>笨萝卜浏阳菜馆</b></td><td>浏阳菜，人均 40 上下</td><td>1 小时上下</td><td>离你最近的是<b>太平街店</b>（天心区西牌楼街 55 号，太平街 28 号东北 120 米，店在 2 楼）。全城八家，太平街／育英街／麻园湾这三家队最长</td></tr>
-        <tr><td>盛香亭</td><td>转转热卤</td><td>基本不等</td><td>快餐形式，一个人也好点</td></tr>
-        <tr><td>新长福</td><td>老式湘菜</td><td>较少</td><td>本地老店路线，不做网红生意</td></tr>
-      </tbody>
-    </table>
-  </div>
+        <rect x="0" y="26" width="215" height="120" rx="10" fill="var(--card)" stroke="var(--line)"/>
+        <text x="16" y="50" fill="var(--accent)" font-size="11">① 粉的形状</text>
+        <text x="16" y="76" fill="var(--ink)" font-size="14">圆粉</text>
+        <text x="70" y="76" fill="var(--ink-3)" font-size="11">米粉，更弹</text>
+        <text x="16" y="104" fill="var(--ink)" font-size="14">扁粉</text>
+        <text x="70" y="104" fill="var(--ink-3)" font-size="11">更吸汤</text>
+        <text x="16" y="130" fill="var(--ink-3)" font-size="10">本地人多数点扁粉</text>
+
+        <rect x="243" y="26" width="215" height="120" rx="10" fill="var(--card)" stroke="var(--line)"/>
+        <text x="259" y="50" fill="var(--accent)" font-size="11">② 码子（浇头）</text>
+        <text x="259" y="74" fill="var(--ink)">肉丝 · 酸辣 · 排骨</text>
+        <text x="259" y="96" fill="var(--ink)">酱汁 · 三鲜 · 牛肉</text>
+        <text x="259" y="130" fill="var(--ink-3)" font-size="10">「码子」就是盖在粉上的那勺菜</text>
+
+        <rect x="486" y="26" width="214" height="120" rx="10" fill="var(--card)" stroke="var(--line)"/>
+        <text x="502" y="50" fill="var(--accent)" font-size="11">③ 分量（可省）</text>
+        <text x="502" y="76" fill="var(--ink)" font-size="14">重挑</text>
+        <text x="556" y="76" fill="var(--ink-3)" font-size="11">加量</text>
+        <text x="502" y="104" fill="var(--ink)" font-size="14">轻挑</text>
+        <text x="556" y="104" fill="var(--ink-3)" font-size="11">减量</text>
+        <text x="502" y="130" fill="var(--ink-3)" font-size="10">不说就是标准量</text>
+
+        <path d="M215 86 L243 86" stroke="var(--ink-3)" stroke-width="1.5"/>
+        <path d="M458 86 L486 86" stroke="var(--ink-3)" stroke-width="1.5"/>
+        <text x="0" y="176" fill="var(--ink-3)" font-size="11">拌粉上桌时码子堆在面上，得自己拌开 —— 就是上面那两张图的区别。汤粉则直接吃。</text>
+        <text x="0" y="196" fill="var(--ink-3)" font-size="11">连锁：肆姐面粉馆 · 杨裕兴 · 甘长顺。社区里的无名粉店往往更好。</text>
+      </g>
+    </svg>
+  </figure>
+<h3>正餐 · 湘菜</h3>
+  <figure id="fig-wait">
+    <svg viewBox="0 0 700 205" role="img" aria-label="湘菜馆周末等位对比：费大厨与炊烟时代 1 到 2 小时，笨萝卜约 1 小时，新长福较少，盛香亭基本不等。">
+      <title>周末等位时长</title>
+      <g font-family="-apple-system, sans-serif" font-size="12">
+        <text x="0" y="14" fill="var(--ink-3)" font-size="11">条越长等得越久。松弛版的解法是直接看最下面两条</text>
+        <text x="0" y="44" fill="var(--ink)">费大厨</text>
+        <rect x="120" y="32" width="480" height="16" rx="3" fill="var(--danger)" opacity=".55"/>
+        <text x="610" y="45" fill="var(--ink-2)" font-size="11">1–2 小时</text>
+        <text x="0" y="76" fill="var(--ink)">炊烟时代</text>
+        <rect x="120" y="64" width="480" height="16" rx="3" fill="var(--danger)" opacity=".55"/>
+        <text x="610" y="77" fill="var(--ink-2)" font-size="11">1–2 小时</text>
+        <text x="0" y="108" fill="var(--ink)">笨萝卜</text>
+        <rect x="120" y="96" width="300" height="16" rx="3" fill="var(--warn)" opacity=".6"/>
+        <text x="430" y="109" fill="var(--ink-2)" font-size="11">约 1 小时 · 太平街店离你 10 分钟</text>
+        <text x="0" y="140" fill="var(--ink)">新长福</text>
+        <rect x="120" y="128" width="110" height="16" rx="3" fill="var(--ok)" opacity=".5"/>
+        <text x="240" y="141" fill="var(--ink-2)" font-size="11">较少 · 本地老店路线</text>
+        <text x="0" y="172" fill="var(--ink)">盛香亭</text>
+        <rect x="120" y="160" width="26" height="16" rx="3" fill="var(--ok)" opacity=".6"/>
+        <text x="156" y="173" fill="var(--ink-2)" font-size="11">基本不等 · 转转热卤，一个人也好点</text>
+        <text x="0" y="198" fill="var(--ink-3)" font-size="11">前两家风格接近，二选一即可；真要去，进城先取号边逛边等。</text>
+      </g>
+    </svg>
+  </figure>
+
   <p class="hint">松弛版的答案很干脆：<b>前三家一家都别去</b>。省下的两小时够在江边坐一下午。真想吃，进城第一件事先取号，边逛边等。</p>
 
   <h3>小吃 · 边走边吃</h3>
+  <figure class="photo gal">
+    <div class="g3"><a href="https://commons.wikimedia.org/wiki/File:Changsha-style_Stinky_Tofu_at_Huogongdian_(20180222183104).jpg" rel="noopener"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Changsha-style_Stinky_Tofu_at_Huogongdian_%2820180222183104%29.jpg/960px-Changsha-style_Stinky_Tofu_at_Huogongdian_%2820180222183104%29.jpg" alt="火宫殿的长沙臭豆腐" referrerpolicy="no-referrer" onerror="this.closest('a').hidden=true"></a><a href="https://commons.wikimedia.org/wiki/File:Gate_of_Huogongdian_(20180222180148).jpg" rel="noopener"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Gate_of_Huogongdian_%2820180222180148%29.jpg/960px-Gate_of_Huogongdian_%2820180222180148%29.jpg" alt="火宫殿大门" referrerpolicy="no-referrer" onerror="this.closest('a').hidden=true"></a><a href="https://commons.wikimedia.org/wiki/File:Taiping_Street_at_night,_Changsha.jpg" rel="noopener"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Taiping_Street_at_night%2C_Changsha.jpg/960px-Taiping_Street_at_night%2C_Changsha.jpg" alt="太平街夜晚的人流" referrerpolicy="no-referrer" onerror="this.closest('a').hidden=true"></a></div>
+    <figcaption>长沙臭豆腐是黑的，跟别处的白臭豆腐不是一回事。火宫殿是老字号，也是最挤的 —— 拐进黄兴路支巷，同样的东西便宜三成。<span class="cred">N509FZ / CC BY-SA 4.0 · EditQ / CC BY-SA 4.0 · Wikimedia Commons</span></figcaption>
+  </figure>
   <p>臭豆腐（黑色经典是连锁，火宫殿是老字号）、糖油粑粑、姊妹团子、葱油粑粑、刮凉粉。坡子街和太平街密度最高，但也最贵最挤；拐进黄兴路的支巷，同样的东西便宜三成。</p>
 
   <h3>夜宵 · 长沙真正的主场</h3>
@@ -1059,141 +795,91 @@
   <p>本地人的夜宵散在这些片区，不在游客动线上：<b>五一新村</b>（芙蓉区，入夜才热闹，本地吃货的夜宵据点）、<b>砂子塘</b>、<b>四方坪</b>、<b>东瓜山</b>、<b>学院街</b>、<b>麓山南路</b>。第三次来的话，这一行比坡子街值得走。</p>
 
   <h3>喝的</h3>
+  <figure class="photo gal">
+    <div class="g3"><a href="https://commons.wikimedia.org/wiki/File:Sexy_Tea.jpg" rel="noopener"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/27/Sexy_Tea.jpg/960px-Sexy_Tea.jpg" alt="茶颜悦色门店" referrerpolicy="no-referrer" onerror="this.closest('a').hidden=true"></a><a href="https://commons.wikimedia.org/wiki/File:20230127_Cha_Yan_Yue_Se_at_Juzizhou.jpg" rel="noopener"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/20230127_Cha_Yan_Yue_Se_at_Juzizhou.jpg/960px-20230127_Cha_Yan_Yue_Se_at_Juzizhou.jpg" alt="橘子洲的茶颜悦色门店" referrerpolicy="no-referrer" onerror="this.closest('a').hidden=true"></a><a href="https://commons.wikimedia.org/wiki/File:Cha_Yan_Yue_Se,_Changsha,_China_2021122603.jpg" rel="noopener"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/bb/Cha_Yan_Yue_Se%2C_Changsha%2C_China_2021122603.jpg/960px-Cha_Yan_Yue_Se%2C_Changsha%2C_China_2021122603.jpg" alt="茶颜悦色排队的人群" referrerpolicy="no-referrer" onerror="this.closest('a').hidden=true"></a></div>
+    <figcaption>茶颜悦色。市区几百家店，看到就进 —— 排一小时的都是网红打卡点，隔两百米那家往往没人。<span class="cred">Dqwyy / CC0 · Windmemories / CC BY-SA 4.0 · Huangdan2060 / CC BY 3.0 · Wikimedia Commons</span></figcaption>
+  </figure>
   <p>茶颜悦色市区几百家店，<b>永远不需要为它排队</b>，看到就进，幽兰拿铁是招牌。而且它早就出省了，广东也有门店 —— 如果你那边能买到，专程在长沙排一小时更没道理。果呀呀、柠季是本地水果茶。咖啡则去潮宗街、都正街、后湖艺术区，独立咖啡馆密度高、人少 —— 那才是松弛版真正该待的地方。</p>
 
   <h3>文和友：当景点逛不用排队，当饭馆吃才要</h3>
-  <p>这是最容易踩的一个坑，而且解法很具体：<b>只想进去拍照、吃点小吃的话，直接从一楼进，沿内部街道扫码买，完全不用领桌号</b>。传说中几千桌的队伍是「落座点菜」那条队，跟逛街那条不是一回事。</p>
-  <p>真要坐下吃，用微信「文和友排队」小程序线上取号：A 是小桌、C 是大桌，小桌可提前 100 桌取、大桌提前 10 桌，<b>叫到号后 10 分钟内有效，过期作废要重排</b>。所以取了号别走远。</p>
-  <p class="hint">补充一个判断背景：文和友出省后接连收缩，广州店开业不久就水土不服，深圳店半年内两次转型。它的价值一直在「场景」不在「菜」—— 按景点标准去，会满意；按餐厅标准去，容易失望。</p>
+  <figure class="photo gal">
+    <div class="g3"><a href="https://commons.wikimedia.org/wiki/File:Changsha_Wenheyou,_21_May_2021C.jpg" rel="noopener"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Changsha_Wenheyou%2C_21_May_2021C.jpg/960px-Changsha_Wenheyou%2C_21_May_2021C.jpg" alt="超级文和友外观" referrerpolicy="no-referrer" onerror="this.closest('a').hidden=true"></a><a href="https://commons.wikimedia.org/wiki/File:Interior_of_Changsha_Wenheyou_2021052113.jpg" rel="noopener"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Interior_of_Changsha_Wenheyou_2021052113.jpg/960px-Interior_of_Changsha_Wenheyou_2021052113.jpg" alt="文和友内部仿老长沙街景" referrerpolicy="no-referrer" onerror="this.closest('a').hidden=true"></a><a href="https://commons.wikimedia.org/wiki/File:Interior_of_Changsha_Wenheyou_2021052120.jpg" rel="noopener"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Interior_of_Changsha_Wenheyou_2021052120.jpg/960px-Interior_of_Changsha_Wenheyou_2021052120.jpg" alt="文和友内部楼层" referrerpolicy="no-referrer" onerror="this.closest('a').hidden=true"></a></div>
+    <figcaption>超级文和友。它的价值全在这个场景 —— 一楼进去扫码买小吃不用排队，几千桌的队是「落座点菜」那条。<span class="cred">Huangdan2060 / CC BY 3.0 · Wikimedia Commons</span></figcaption>
+  </figure>
+  <figure id="fig-whf">
+    <svg viewBox="0 0 700 300" role="img" aria-label="文和友两条队的流程图：只逛只吃小吃的话从一楼进、扫码购买，完全不排队；想落座点菜要用小程序取号，A 是小桌可提前 100 桌、C 是大桌提前 10 桌，叫到号后 10 分钟内不到就作废。">
+      <title>文和友：两条完全不同的队</title>
+      <g font-family="-apple-system, sans-serif" font-size="12">
+        <rect x="250" y="8" width="200" height="40" rx="8" fill="var(--card)" stroke="var(--line)"/>
+        <text x="350" y="33" fill="var(--ink)" text-anchor="middle" font-size="13">走到文和友门口</text>
+        <path d="M350 48 L350 66 L150 66 L150 84" stroke="var(--line)" fill="none"/>
+        <path d="M350 48 L350 66 L550 66 L550 84" stroke="var(--line)" fill="none"/>
+        <text x="240" y="80" fill="var(--ink-3)" font-size="11" text-anchor="end">只想拍照 · 吃小吃</text>
+        <text x="462" y="80" fill="var(--ink-3)" font-size="11">想坐下点菜</text>
 
-  <h2 id="sec-spa">泡脚按摩</h2>
-  <p>长沙的足浴密度和夜宵一样高，而且这件事<b>正好补上你行程里最尴尬的一段</b>：周日 12:00 退房、16:30 才出发，中间四个半小时。足浴店是少数能坐三四个小时、有茶点、不赶人的地方 —— 行李寄在酒店前台，人过去躺着，到点直接走。第三次来长沙，这比再刷一个景点合理。</p>
+        <rect x="20" y="84" width="260" height="150" rx="10" fill="var(--ok)" opacity=".12" stroke="var(--ok)"/>
+        <text x="150" y="110" fill="var(--ink)" text-anchor="middle" font-size="13">一楼直接进</text>
+        <text x="150" y="134" fill="var(--ink)" text-anchor="middle">沿内部街道扫码买</text>
+        <text x="150" y="176" fill="var(--ok)" text-anchor="middle" font-size="26">0 排队</text>
+        <text x="150" y="206" fill="var(--ink-3)" text-anchor="middle" font-size="11">不用领桌号</text>
 
-  <div class="alert ok">
-    <strong>如果订了 Xi Hotel，楼里就有。</strong>一条 7 月的住客评论写着：酒店所在的楼低层有 spa，专业按摩「把我的腰治好了」。不用出门，是这家在你这趟的一个额外加分项。
-  </div>
+        <rect x="420" y="84" width="260" height="150" rx="10" fill="var(--warn)" opacity=".12" stroke="var(--warn)"/>
+        <text x="550" y="110" fill="var(--ink)" text-anchor="middle" font-size="13">微信「文和友排队」取号</text>
+        <line x1="440" y1="122" x2="660" y2="122" stroke="var(--line)"/>
+        <text x="452" y="144" fill="var(--ink)"><tspan font-size="14" font-weight="500">A</tspan> 小桌 · 可提前 100 桌取</text>
+        <text x="452" y="168" fill="var(--ink)"><tspan font-size="14" font-weight="500">C</tspan> 大桌 · 可提前 10 桌取</text>
+        <rect x="440" y="182" width="220" height="38" rx="6" fill="var(--danger)" opacity=".14"/>
+        <text x="550" y="206" fill="var(--danger)" text-anchor="middle" font-size="12">叫到号 10 分钟内不到 → 作废重排</text>
 
-  <h3>五一广场商圈的选择</h3>
-  <p><b>新世界百货供销大厦</b>（五一广场地铁 5 号口）楼上是个足浴聚集地，11 楼、18 楼、20 楼都有店，逛完国金或平和堂下来就近上楼即可。</p>
+        <line x1="0" y1="252" x2="700" y2="252" stroke="var(--line)"/>
+        <text x="0" y="274" fill="var(--ink-3)" font-size="11">传说中几千桌的队，是右边这条。左边那条根本不存在排队 —— 大部分人是排错了队。</text>
+        <text x="0" y="292" fill="var(--ink-3)" font-size="11">它的价值在场景不在菜：按景点标准去会满意，按餐厅标准去容易失望。</text>
+      </g>
+    </svg>
+  </figure>
+  <h2 id="sec-spa">泡脚</h2>
+<h3>五一广场商圈的选择</h3>
+  <figure id="fig-spa">
+    <svg viewBox="0 0 700 255" role="img" aria-label="五一广场足浴店按人均价与评论数分布：足享计划 80 元 1726 条，康毅足道 152 元 1817 条，烨晨 91 元 383 条，尚悦 138 元 218 条，泰么 SPA 209 元 446 条。">
+      <title>足浴：价位与评论数</title>
+      <g font-family="-apple-system, sans-serif" font-size="11">
+        <rect x="60" y="20" width="600" height="175" fill="none" stroke="var(--line)"/>
+        <text x="360" y="224" fill="var(--ink-3)" text-anchor="middle">人均消费 →</text>
+        <text x="60" y="211" fill="var(--ink-3)" text-anchor="middle">¥80</text>
+        <text x="260" y="211" fill="var(--ink-3)" text-anchor="middle">¥120</text>
+        <text x="460" y="211" fill="var(--ink-3)" text-anchor="middle">¥160</text>
+        <text x="658" y="211" fill="var(--ink-3)" text-anchor="end">¥210</text>
+        <text x="18" y="108" fill="var(--ink-3)" transform="rotate(-90 18 108)" text-anchor="middle">评论数 →</text>
+        <text x="52" y="42" fill="var(--ink-3)" text-anchor="end">1800</text>
+        <text x="52" y="192" fill="var(--ink-3)" text-anchor="end">0</text>
+        <circle cx="62" cy="44" r="8" fill="var(--ok)"/>
+        <text x="78" y="40" fill="var(--ink)">足享计划 ¥80 · 1,726 条</text>
+        <text x="78" y="56" fill="var(--ink-3)" font-size="10">供销大厦 18 楼 · 地铁 5 号口</text>
+        <circle cx="420" cy="40" r="8" fill="var(--accent)"/>
+        <text x="436" y="36" fill="var(--ink)">康毅足道 ¥152 · 1,817 条</text>
+        <text x="436" y="52" fill="var(--ink-3)" font-size="10">评论最多 · 有茶点和影视房</text>
+        <circle cx="115" cy="160" r="7" fill="var(--ink-3)"/>
+        <text x="129" y="164" fill="var(--ink-2)">烨晨 ¥91 · 383 条</text>
+        <circle cx="350" cy="176" r="7" fill="var(--ink-3)"/>
+        <text x="364" y="180" fill="var(--ink-2)">尚悦 ¥138 · 218 条</text>
+        <circle cx="655" cy="154" r="7" fill="var(--ink-3)"/>
+        <text x="645" y="158" fill="var(--ink-2)" text-anchor="end">泰么 SPA 泰式 ¥209 · 446 条</text>
+        <text x="0" y="246" fill="var(--ink-3)">左上角是「便宜且被验证过」。右下角评论少，样本不足，别只看分。</text>
+      </g>
+    </svg>
+  </figure>
 
-  <div class="scroll">
-    <table>
-      <thead><tr><th>店</th><th class="n">人均</th><th class="n">评论数</th><th>位置</th></tr></thead>
-      <tbody>
-        <tr><td>足享计划（新世界百货店）</td><td class="n">¥80</td><td class="n">1,726</td><td>供销大厦 18 楼，地铁 5 号口</td></tr>
-        <tr><td>烨晨足浴养生馆</td><td class="n">¥91</td><td class="n">383</td><td>五一大道 202 大厦南栋 B 座 613，地铁 8 号口</td></tr>
-        <tr><td>尚悦影视足道</td><td class="n">¥138</td><td class="n">218</td><td>供销大厦 11 楼，装修较新、私密性好</td></tr>
-        <tr><td><b>康毅足道（五一广场店）</b></td><td class="n">¥152</td><td class="n">1,817</td><td>五一大道 868 号西南 170 米。评论数最多，有茶点和影视房</td></tr>
-        <tr><td>星瀚足道（含影院）</td><td class="n">—</td><td class="n">—</td><td>供销大厦 20 楼</td></tr>
-        <tr><td>泰么 SPA（泰式按摩）</td><td class="n">¥209</td><td class="n">446</td><td>国金中心店，五一大道 717 号新干线 B 座 4 楼</td></tr>
-      </tbody>
-    </table>
-  </div>
 
   <p class="hint">人均和评论数来自 360 地图的聚合数据，不是一手平台，且这类店铺变动频繁 —— 去之前在点评或高德上再确认一次营业状态和当前价。另外这个行业鱼龙混杂，<b>认准正规持证经营的门店</b>，正经足道店会明码标价、能开发票、有独立包间但不遮遮掩掩。</p>
 
   <p class="hint">价位带大致 ¥80–210，普遍需要提前电话或团购平台预约，尤其周末。几家都提供茶水茶点，部分有影视房和过夜服务 —— 你用不上过夜，但意味着待久一点不会被赶。</p>
 
-  <h2 id="sec-rain">下雨怎么办</h2>
-  <p>9 月的长沙白天常在 30 °C 上下，闷热，秋老虎和阵雨都可能。出门前看一眼天气，按这个分叉走：</p>
-  <figure>
-    <svg viewBox="0 0 700 300" role="img" aria-label="雨天决策树：晴天走岳麓山或橘子洲的户外线；小雨改走美术馆、博物馆和老街咖啡馆的室内线；暴雨则留在五一广场，靠商场与地下连廊活动。">
-      <title>看天气决定走哪条线</title>
-      <g font-family="-apple-system, sans-serif" font-size="11">
-        <rect x="270" y="10" width="160" height="42" rx="8" fill="var(--card)" stroke="var(--line)"/>
-        <text x="350" y="36" fill="var(--ink)" text-anchor="middle" font-size="12">出门前看天气</text>
-
-        <path d="M350 52 L350 74 L140 74 L140 96" stroke="var(--line)" fill="none"/>
-        <path d="M350 52 L350 96" stroke="var(--line)" fill="none"/>
-        <path d="M350 52 L350 74 L560 74 L560 96" stroke="var(--line)" fill="none"/>
-
-        <rect x="40" y="96" width="200" height="42" rx="8" fill="var(--ok)" opacity=".14" stroke="var(--ok)"/>
-        <text x="140" y="122" fill="var(--ink)" text-anchor="middle">晴 / 多云</text>
-        <rect x="250" y="96" width="200" height="42" rx="8" fill="var(--warn)" opacity=".16" stroke="var(--warn)"/>
-        <text x="350" y="122" fill="var(--ink)" text-anchor="middle">阵雨 / 小雨</text>
-        <rect x="460" y="96" width="200" height="42" rx="8" fill="var(--danger)" opacity=".14" stroke="var(--danger)"/>
-        <text x="560" y="122" fill="var(--ink)" text-anchor="middle">暴雨</text>
-
-        <path d="M140 138 L140 162" stroke="var(--line)" fill="none"/>
-        <path d="M350 138 L350 162" stroke="var(--line)" fill="none"/>
-        <path d="M560 138 L560 162" stroke="var(--line)" fill="none"/>
-
-        <rect x="40" y="162" width="200" height="112" rx="8" fill="var(--card)" stroke="var(--line)"/>
-        <text x="56" y="184" fill="var(--ink)">岳麓山 + 爱晚亭</text>
-        <text x="56" y="204" fill="var(--ink)">橘子洲</text>
-        <text x="56" y="224" fill="var(--ink)">湘江边散步</text>
-        <text x="56" y="252" fill="var(--ink-3)" font-size="10">带水和防晒，9 月日头仍硬</text>
-
-        <rect x="250" y="162" width="200" height="112" rx="8" fill="var(--card)" stroke="var(--line)"/>
-        <text x="266" y="184" fill="var(--ink)">洋湖两座美术馆</text>
-        <text x="266" y="204" fill="var(--ink)">湖南博物院 / 长沙博物馆</text>
-        <text x="266" y="224" fill="var(--ink)">老街咖啡馆泡一下午</text>
-        <text x="266" y="252" fill="var(--ink-3)" font-size="10">松弛版本来走的就是这条</text>
-
-        <rect x="460" y="162" width="200" height="112" rx="8" fill="var(--card)" stroke="var(--line)"/>
-        <text x="476" y="184" fill="var(--ink)">IFS + 黄兴路商场</text>
-        <text x="476" y="204" fill="var(--ink)">超级文和友</text>
-        <text x="476" y="224" fill="var(--ink)">地下连廊互通，不用出地面</text>
-        <text x="476" y="252" fill="var(--ink-3)" font-size="10">住五一广场的另一个好处</text>
-      </g>
-    </svg>
-    <figcaption>暴雨那一列是住五一广场才有的退路：商场和地铁站地下连通，一整天不出地面也能过。</figcaption>
-  </figure>
-
-  <h2 id="sec-cost">大概要花多少</h2>
-  <figure>
-    <svg viewBox="0 0 700 215" role="img" aria-label="两天人均预算：住宿两晚 600 到 1200 元，吃 300 到 500 元，市内交通 150 到 250 元，门票 0 到 100 元，合计约 1050 到 2050 元，不含往返高铁。">
-      <title>两天人均预算</title>
-      <g font-family="-apple-system, sans-serif" font-size="11">
-        <text x="0" y="14" fill="var(--ink-3)">人均，不含往返高铁票</text>
-
-        <text x="0" y="47" fill="var(--ink)">住宿 2 晚</text>
-        <rect x="130" y="35" width="330" height="16" rx="3" fill="var(--accent)" opacity=".6"/>
-        <text x="472" y="47" fill="var(--ink-2)">600 – 1200 元</text>
-
-        <text x="0" y="79" fill="var(--ink)">吃</text>
-        <rect x="130" y="67" width="140" height="16" rx="3" fill="var(--ok)" opacity=".6"/>
-        <text x="472" y="79" fill="var(--ink-2)">300 – 500 元</text>
-
-        <text x="0" y="111" fill="var(--ink)">市内交通</text>
-        <rect x="130" y="99" width="70" height="16" rx="3" fill="var(--warn)" opacity=".6"/>
-        <text x="472" y="111" fill="var(--ink-2)">150 – 250 元</text>
-
-        <text x="0" y="143" fill="var(--ink)">门票</text>
-        <rect x="130" y="131" width="28" height="16" rx="3" fill="var(--danger)" opacity=".6"/>
-        <text x="472" y="143" fill="var(--ink-2)">0 – 100 元</text>
-
-        <line x1="0" y1="160" x2="700" y2="160" stroke="var(--line)"/>
-        <text x="0" y="182" fill="var(--ink)" font-size="13">合计</text>
-        <text x="472" y="182" fill="var(--ink)" font-size="13">约 1050 – 2050 元</text>
-        <text x="0" y="204" fill="var(--ink-3)" font-size="10">松弛版天然省钱：不去收费景点，不排队也就不为等位买单，门票那项基本是 0。</text>
-      </g>
-    </svg>
-    <figcaption>交通含周五深夜打车约 40 元与周日回站，其余按地铁 4 元一程估；住宿按周末中档连锁。</figcaption>
-  </figure>
-
-  <h2 id="sec-pack">9 月的长沙 · 带什么</h2>
-  <p>白天常在 <b>30 °C 上下</b>，湿度高、闷，早晚略降。可能连着几天阵雨，也可能是秋老虎。</p>
-  <div class="scroll">
-    <table>
-      <thead><tr><th>带</th><th>为什么</th></tr></thead>
-      <tbody>
-        <tr><td>折叠伞</td><td>既挡雨也挡太阳，9 月的日头还很硬</td></tr>
-        <tr><td>一双走惯的鞋</td><td>就算松弛版，一天也是一两万步</td></tr>
-        <tr><td>薄外套</td><td>不是为室外，是为商场和地铁的冷气</td></tr>
-        <tr><td>充电宝</td><td>预约码、乘车码、点单码全在手机上</td></tr>
-        <tr><td>身份证</td><td>所有场馆实名核验，预约二维码不能替代证件</td></tr>
-        <tr><td>纸巾 / 湿巾</td><td>嗦粉和吃虾都用得上</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <h2 id="sec-trap">避坑</h2>
+<h2 id="sec-trap">避坑</h2>
   <table>
     <tbody>
       <tr><td><b>橘子洲烟花没有</b></td><td>每周六焰火早就停办了，现在只在元旦、除夕、元宵、国庆这类节日放。9 月 4–6 日没有场次，老攻略里"周六看烟花"是过期信息。</td></tr>
       <tr><td><b>周五到站赶不上地铁</b></td><td>长沙南 2 号线开往市区（梅溪湖西方向）末班 23:03，你 23:28 才到。出站直接走网约车通道。</td></tr>
-      <tr><td><b>美术馆和博物院都周一闭馆</b></td><td>你是周六周日，不受影响。但湖南博物院必须提前 7 天抢预约，松弛版可以直接跳过它。</td></tr>
+      <tr><td><b>美术馆和博物院都周一闭馆</b></td><td>你是周六周日，不受影响。但湖南博物院必须提前 5 天抢预约，松弛版可以直接跳过它。</td></tr>
       <tr><td><b>山和书院是两次预约</b></td><td>岳麓山免费预约，岳麓书院单独收费单独约，两个入口。只约了山进不了书院。</td></tr>
       <tr><td><b>热门餐厅先取号再逛</b></td><td>费大厨、炊烟、笨萝卜周末等两小时是常态。松弛版的解法是干脆不去，找楼下的本地小馆。</td></tr>
       <tr><td><b>文和友的队排错了</b></td><td>逛和吃是两条不同的队。只拍照吃小吃就从一楼进、扫码买，不用取号；取了号叫到后 10 分钟内不到就作废。</td></tr>
@@ -1202,22 +888,6 @@
       <tr><td><b>口味虾问清计价</b></td><td>9 月还在季节里，按斤还是按份先问，价格随行就市。</td></tr>
     </tbody>
   </table>
-
-  <h2 id="sec-traffic">交通速查</h2>
-  <div class="scroll">
-    <table>
-      <thead><tr><th>路线</th><th>方式</th><th class="n">时间</th><th class="n">费用</th></tr></thead>
-      <tbody>
-        <tr><td>长沙南 → 五一广场（深夜）</td><td>网约车</td><td class="n">约 20 分</td><td class="n">约 40 元</td></tr>
-        <tr><td>长沙南 → 五一广场（白天）</td><td>地铁 2 号线直达</td><td class="n">约 25 分</td><td class="n">4 元</td></tr>
-        <tr><td>五一广场 → 湖南博物院</td><td>地铁 1 号线转公交／打车</td><td class="n">约 30 分</td><td class="n">约 20 元</td></tr>
-        <tr><td>五一广场 → 岳麓山</td><td>地铁 2 号线溁湾镇 / 4 号线湖南大学</td><td class="n">约 30 分</td><td class="n">4 元</td></tr>
-        <tr><td>五一广场 → 橘子洲</td><td>地铁 2 号线橘子洲站</td><td class="n">约 15 分</td><td class="n">3 元</td></tr>
-        <tr><td>五一广场 → 洋湖两馆</td><td>地铁 3 号线洋湖湿地 / 打车</td><td class="n">约 30 分</td><td class="n">4–35 元</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <p class="hint">长沙地铁 23:00 左右发末班车，旺季周五周六可能延长 1 小时，但不要指望。深夜一律网约车。</p>
 
   <h2 id="sec-src">官方入口</h2>
   <ul>
@@ -1238,71 +908,210 @@
 
 <script>
 (function () {
-  var SCHED = {
-    chill: {
-      note: '两天只去三个地方，其余时间用来坐着。周六去洋湖两座美术馆（免费、人少、室内），周日就在住处附近晃。',
-      days: [
-        { h: '周五 9/4 · 落地就睡', rows: [
-          ['23:28', '抵长沙南', 'G6026，虎门 20:15 出发', 1],
-          ['23:35', '网约车直接回酒店', '地铁已停运。别安排夜宵，明天不设闹钟才是重点', 0],
-          ['00:10', '睡', '这一晚不产出任何行程，是松弛版的前提', 0]
-        ] },
-        { h: '周六 9/5 · 一件正事', rows: [
-          ['10:00', '自然醒', '不设闹钟。醒了再说', 0],
-          ['11:00', '楼下嗦碗粉', '肆姐面粉馆、杨裕兴、甘长顺这类，本地人早午饭', 0],
-          ['12:30', '随便一家茶颜悦色', '市区几百家店，看到就进，不为它走路', 0],
-          ['13:30', '洋湖两座美术馆', '李自健免费领票，谢子龙一楼免费。隔湖相望，湖边草坪能躺', 1],
-          ['16:30', '湖边或咖啡馆坐着', '这段就是空的，不安排', 0],
-          ['18:30', '回城吃晚饭', '不排队的本地小馆。想吃费大厨就提前两小时取号', 0],
-          ['20:30', '湘江边散步', '江风比太平街的人流舒服。太平街想去就走一段，不必挤到底', 0]
-        ] },
-        { h: '周日 9/6 · 半天，别走远', rows: [
-          ['09:30', '起床，慢慢收拾', '行李寄存前台', 0],
-          ['10:30', '早午餐 + 咖啡', '潮宗街、都正街这类老街，咖啡馆密度高、人不多', 0],
-          ['12:30', '就近逛街买手信', '黄兴路步行街。文和友只逛不吃的话一楼直接进，不用排队', 0],
-          ['14:30', '泡脚 或 找家店坐到走', '行李寄前台。足浴店能坐三四小时不赶人，正好填掉退房后的空窗', 0],
-          ['16:30', '出发去长沙南', '五一广场 2 号线直达约 25 分 + 安检。留足 1.5 小时', 1],
-          ['18:00', 'G6007 发车', '20:25 到虎门', 1]
-        ] }
-      ]
-    },
-    packed: {
-      note: '把能塞的都塞进去。要抢湖南博物院预约、要爬岳麓山、周日还要赶橘子洲。适合体力好且不介意排队的。',
-      days: [
-        { h: '周五 9/4 · 落地', rows: [
-          ['23:28', '抵长沙南', 'G6026，虎门 20:15 出发', 1],
-          ['23:35', '网约车去酒店', '地铁已停运', 0],
-          ['00:00', '放行李，出门吃夜宵', '坡子街、冬瓜山通宵。口味虾、嗦螺', 0]
-        ] },
-        { h: '周六 9/5 · 唯一的整天', rows: [
-          ['09:00', '湖南博物院', '9:00 开馆，16:00 停止入馆。马王堆是主线，2.5–3 小时', 1],
-          ['12:00', '午餐', '费大厨 / 笨萝卜 / 炊烟，先在小程序取号', 0],
-          ['14:00', '岳麓山 + 岳麓书院', '5–10 月书院 17:30 停售、18:00 闭馆，别拖', 1],
-          ['17:00', '爱晚亭 → 下山', '步行 40 分钟或坐索道', 0],
-          ['18:30', '过江回市区晚饭', '江边看落日', 0],
-          ['20:00', '五一广场 · 太平街 · IFS 楼顶', 'KAWS 雕塑在顶楼', 0]
-        ] },
-        { h: '周日 9/6 · 半天且要准时', rows: [
-          ['09:00', '橘子洲', '免费需预约，2 号线直达。来回 1.5–2 小时', 1],
-          ['11:30', '坡子街午餐 · 火宫殿', '臭豆腐、糖油粑粑、姊妹团子', 0],
-          ['13:30', '超级文和友 或 黄兴路', '只逛不吃就一楼进、扫码买小吃，不用取号；想坐下吃再用小程序排', 0],
-          ['16:30', '出发去长沙南', '2 号线 25 分 + 安检，留足 1.5 小时', 1],
-          ['18:00', 'G6007 发车', '20:25 到虎门', 1]
-        ] }
-      ]
-    }
-  };
+  // One decided plan on a vertical spine. Each slot owns its own images and
+  // detail cards in a sideways strip, so a photo sits at the time it matters
+  // rather than in a gallery elsewhere on the page.
+  var C = 'https://upload.wikimedia.org/wikipedia/commons/thumb/';
+  var T = 'https://ak-d.tripcdn.com/images/';
+  var TL = [
+    { day: '出发前', grab: ['#sec-todo figure', '#sec-todo ul.todo', '#sec-todo p.hint', '#sec-trap table'] },
+    { day: '周五 9/4' },
+    { t: '20:15', fix: 1, h: '虎门上车', d: 'G6026 · 二等座',
+      s: [{ c: 'ok', b: '车程', big: '3 小时 13 分', x: '20:15 → 23:28' }] },
+    { t: '23:28', fix: 1, h: '抵长沙南', d: '出站直接走网约车通道，别下地铁',
+      s: [{ i: C + '7/76/Concourse_of_South_Railway_Station%2C_Changsha_Metro_%28Aug_2%2C_2024%29.jpg/960px-Concourse_of_South_Railway_Station%2C_Changsha_Metro_%28Aug_2%2C_2024%29.jpg', a: '长沙南地铁站厅' },
+           { i: C + '6/6d/Line_2_train_to_West_Meixi_Lake.jpg/960px-Line_2_train_to_West_Meixi_Lake.jpg', a: '2 号线开往梅溪湖西' },
+           { i: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Sign_of_Changsha_Metro.jpg/960px-Sign_of_Changsha_Metro.jpg', a: 'Sign of Changsha Metro' },
+           { i: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fb/Single_Journey_Ticket_of_Changsha_Metro_%2829116312704%29.jpg/960px-Single_Journey_Ticket_of_Changsha_Metro_%2829116312704%29.jpg', a: 'Single Journey Ticket of Changsha Me' },
+           { i: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Single_Journey_Ticket_of_Changsha_Metro_%2829116315234%29.jpg/960px-Single_Journey_Ticket_of_Changsha_Metro_%2829116315234%29.jpg', a: 'Single Journey Ticket of Changsha Me' },
+           { c: 'warn', b: '地铁已停', x: '往市区（梅溪湖西方向）末班 <b>23:03</b>，你到站时已开走 25 分钟',
+             m: '<p>长沙地铁 23:00 左右发末班车，旺季周五周六可能延长 1 小时，但不要指望。第二张图里车头写的「梅溪湖西」就是往市区的方向。</p><p><b>各段耗时与费用：</b></p><ul><li>长沙南 → 五一广场（深夜）网约车，约 20 分，约 ¥40</li><li>长沙南 → 五一广场（白天）地铁 2 号线直达，约 25 分，¥4</li><li>五一广场 → 橘子洲 地铁 2 号线，约 15 分，¥3</li><li>五一广场 → 岳麓山 地铁 2 号线溁湾镇 / 4 号线湖南大学，约 30 分，¥4</li><li>五一广场 → 洋湖两馆 地铁 3 号线洋湖湿地，约 30 分</li></ul>' },
+           { c: '', b: '打车', big: '约 ¥40', x: '20 分钟到酒店' }] },
+    { t: '00:10', h: '入住奢酒店', d: '24 小时前台，零点后到店没问题',
+      grab: ['#sec-list .booked', '#sec-list .alert'],
+      s: [{ i: T + '1mc2w12000h6972lfB564_R_960_660_R5_D.jpg', a: '异国印象·奢酒店' },
+           { i: T + '1mc2012000n02ehek4F5C_R_339_206_R5_D.jpg', a: '酒店公共区域' },
+           { c: '', b: '地址', x: '芙蓉区五一大道 127 号<br>出门即五一广场地铁站',
+             m: '<p>住五一广场最大的好处：这些地方彼此都在走路范围内，不用查地铁。</p><ul><li><b>5 分钟</b>：黄兴路步行街、IFS 国金中心</li><li><b>10 分钟</b>：太平街、坡子街 · 火宫殿、超级文和友</li><li><b>20 分钟</b>：潮宗街、都正街、湘江风光带</li></ul><p>真正需要坐车的只有四个：岳麓山（地铁 30 分）、橘子洲（15 分）、洋湖两馆（30 分）、长沙南站（25 分）。金色印象在八一路，打车 10 分钟，是第五个。</p>' },
+           { c: 'ok', b: '房间', x: 'Dusk Double Bed Room<br>4–9 层 · 1 张大床 · 含早' }] },
+
+    { day: '周六 9/5 · citywalk + 吃 + 晚上按脚' },
+    { t: '10:00', h: '自然醒', d: '不设闹钟。前一晚零点才入住，硬起早会毁掉整个白天',
+      s: [{ c: 'ok', b: '不排任何事', x: '代价是吃不到本地人那些粉店 —— 它们 10 点后码子基本售光',
+             m: '<p><b>41 小时怎么分：</b>睡觉约 14 小时、通勤约 5 小时（含往返车站、市内换乘、进出站安检），真正能玩约 <b>22 小时</b>。</p><p>而且这 22 小时不连续：周五夜 3 小时、周六一整天 12 小时、周日半天 7 小时。周日 16:30 必须往车站走，这条线不能碰。</p><p>结论：重头戏只能放周六，周日排离车站近、随时能撤的。</p>' },
+           { c: '', b: '松弛的规矩', x: '一天只排一个必去；队超 20 分钟换一家；单程车程不超 30 分钟',
+             m: '<p>按这四条走，两天大概只去 3 个地方 —— 这是特意的。</p><p>41 小时里塞 8 个景点，回去只会记得排队和赶路。<b>留白也是行程。</b></p><p>茶颜悦色市区几百家店，永远不用为它排队；隔两百米那家通常没人。</p>' }] },
+    { t: '11:00', h: '甘长顺 · 原汤肉丝粉', d: '五一广场站 B 口 · 24 小时营业 · 人均约 ¥12', grab: ['#fig-fen'],
+      s: [{ i: C + 'f/f2/Changsha-style_mixed_rice_noodles_before_stirring_at_Baman_%2820211225175333%29.jpg/960px-Changsha-style_mixed_rice_noodles_before_stirring_at_Baman_%2820211225175333%29.jpg', a: '拌之前' },
+           { i: C + '4/41/Changsha-style_mixed_rice_noodles_after_stirring_at_Baman_%2820211225175628%29.jpg/960px-Changsha-style_mixed_rice_noodles_after_stirring_at_Baman_%2820211225175628%29.jpg', a: '拌之后' },
+           { c: '', b: '点什么', x: '原汤肉丝粉最能吃出汤底；想吃肉点原汤牛腩粉。<b>免费配菜自己加</b>：剁椒、酸豆角、腊八豆、油辣椒' },
+           { c: 'warn', b: '为什么是这家', x: '好粉店 5:30 开摊、<b>10 点后码子售光</b>。你睡到自然醒，只有 24 小时的老字号还供得上' }] },
+    { t: '12:30', h: 'Citywalk 上半段', d: '潮宗街 → 太平街 → 坡子街 → 湘江风光带，全程步行，不用坐车',
+      s: [
+           { i: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/%E9%95%BF%E6%B2%99%E5%A4%AA%E5%B9%B3%E8%80%81%E8%A1%97.jpg/960px-%E9%95%BF%E6%B2%99%E5%A4%AA%E5%B9%B3%E8%80%81%E8%A1%97.jpg', a: '长沙太平老街' },
+           { i: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/%E9%95%BF%E6%B2%99%E5%A4%AA%E5%B9%B3%E8%80%81%E8%A1%97%E5%85%A5%E5%8F%A3.jpg/960px-%E9%95%BF%E6%B2%99%E5%A4%AA%E5%B9%B3%E8%80%81%E8%A1%97%E5%85%A5%E5%8F%A3.jpg', a: '长沙太平老街入口' },
+           { i: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/%E9%95%BF%E6%B2%99%E5%A4%AA%E5%B9%B3%E8%A1%97_-_29349319932_August_2016_in_China.jpg/960px-%E9%95%BF%E6%B2%99%E5%A4%AA%E5%B9%B3%E8%A1%97_-_29349319932_August_2016_in_China.jpg', a: '长沙太平街 - 29349319932 August 2016 in C' },
+           { i: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/%E9%95%BF%E6%B2%99%E5%A4%AA%E5%B9%B3%E8%A1%97_August_2016_in_China.jpg/960px-%E9%95%BF%E6%B2%99%E5%A4%AA%E5%B9%B3%E8%A1%97_August_2016_in_China.jpg', a: '长沙太平街 August 2016 in China' },
+           { i: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/%E9%95%BF%E6%B2%99%E5%A4%AA%E5%B9%B3%E8%A1%97%E7%BE%8E%E9%A3%9F%E5%9F%8E.jpg/960px-%E9%95%BF%E6%B2%99%E5%A4%AA%E5%B9%B3%E8%A1%97%E7%BE%8E%E9%A3%9F%E5%9F%8E.jpg', a: '长沙太平街美食城' },
+           { i: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/10891-Changsha_%2849046780643%29.jpg/960px-10891-Changsha_%2849046780643%29.jpg', a: '10891-Changsha (49046780643)' },
+           { i: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/A_pleasure-boat_in_Changsha_Xiang_River%2C_27_September_2010.jpg/960px-A_pleasure-boat_in_Changsha_Xiang_River%2C_27_September_2010.jpg', a: 'A pleasure-boat in Changsha Xiang Ri' },
+           { i: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/57/Xiang_River_2021050901.jpg/960px-Xiang_River_2021050901.jpg', a: 'Xiang River 2021050901' },
+           { i: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Xiang_River_20211219.jpg/960px-Xiang_River_20211219.jpg', a: 'Xiang River 20211219' },
+           { i: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Xiang_River_and_Orange_Isle_Bridge%2C_Changsha.jpg/960px-Xiang_River_and_Orange_Isle_Bridge%2C_Changsha.jpg', a: 'Xiang River and Orange Isle Bridge, ' },
+           { i: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/81/Xiang_River_and_Orange_Isle%2C_Changsha.jpg/960px-Xiang_River_and_Orange_Isle%2C_Changsha.jpg', a: 'Xiang River and Orange Isle, Changsh' },
+           { i: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Xiang_River_and_Sail_Square%2C_Changsha.jpg/960px-Xiang_River_and_Sail_Square%2C_Changsha.jpg', a: 'Xiang River and Sail Square, Changsh' },
+           { i: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Xiang_River_runs_through_the_Chinese_city_of_Changsha_%28iss071e439833%29.jpg/960px-Xiang_River_runs_through_the_Chinese_city_of_Changsha_%28iss071e439833%29.jpg', a: 'Xiang River runs through the Chinese' },
+           { i: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/Xiangjiang_River_5.jpg/960px-Xiangjiang_River_5.jpg', a: 'Xiangjiang River 5' },
+           { c: 'ok', b: '主线全长', big: '6.4 km', x: '西园北里 → 潮宗街 → 太平街 → 坡子街 → 白果园 → 化龙池 → 都正街 → 西文庙坪 → 湖南第一师范' },
+           { c: '', b: '今天只走前半', x: '潮宗街 370 年历史，麻石路和公馆；坡子街是火宫殿所在，边逛边吃' },
+           { c: 'warn', b: '别贪多', x: '九个街区全走是一整天。后半段留给明天' },
+           { c: '', b: '下雨怎么办', x: '小雨照走，暴雨有地下退路',
+             m: '<p><b>晴 / 多云</b>：按原计划走街区，带水和防晒，9 月日头仍硬。</p><p><b>阵雨 / 小雨</b>：老街咖啡馆泡一下午，或改去洋湖两座美术馆、长沙博物馆，都是室内且免费。</p><p><b>暴雨</b>：IFS + 黄兴路商场 + 超级文和友 —— <b>地下连廊互通，一整天不出地面也能过</b>。这是住五一广场才有的退路。</p>' },
+           { c: '', b: '茶颜就在路上', x: '市区几百家店，看到就进，不为它排队' }] },
+    { t: '17:00', fix: 1, h: '金色印象取号', d: '这是今天唯一需要提前动作的一步',
+      s: [{ c: 'warn', b: '等位', big: '2–4 小时', x: '有人工作日下午四点去仍等这么久。<b>先取号，再去吃饭</b>，叫到号再过来' },
+           { c: '', b: '地址', x: '芙蓉区八一路 445-4 号<br>距五一广场 2–3 km，打车约 10 分钟' },
+           { c: '', b: '人均', big: '¥150–250', x: '影院式足道，边看电影边捏脚；号称「足浴界的海底捞」',
+             m: '<p>金色印象 2011 年创立，自研「一体式影音播放设备」，主打足体健康管理、HiFi 电影、HiFi 音乐、特色美食、健康检测、书吧阅听、留宿过早、旅行驿站八位一体。</p><p>长沙本来就是「一半人给另一半人洗脚」的城市，足浴密度和夜宵一样高。<b>不想跑八一路</b>的话，五一广场地铁 5 号口楼上的新世界百货供销大厦，11 楼、18 楼、20 楼都是足道店，其中尚悦影视足道 ¥138 也是影院式。</p>' }] },
+    { t: '17:30', fix: 1, h: '笨萝卜浏阳菜馆 · 太平街店', d: '天心区西牌楼街 55 号 2 楼 · 人均约 ¥40', grab: ['#fig-wait'],
+      s: [
+           { i: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Taiping_Street_at_night%2C_Changsha.jpg/960px-Taiping_Street_at_night%2C_Changsha.jpg', a: 'Taiping Street at night, Changsha' },
+           { i: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Taiping_Street_at_night.jpg/960px-Taiping_Street_at_night.jpg', a: 'Taiping Street at night' },
+           { i: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Taiping_Street%2C_Changsha.jpg/960px-Taiping_Street%2C_Changsha.jpg', a: 'Taiping Street, Changsha' },
+           { i: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/%E5%A4%AA%E5%B9%B3%E8%80%81%E8%A1%97.jpg/960px-%E5%A4%AA%E5%B9%B3%E8%80%81%E8%A1%97.jpg', a: '太平老街' },
+           { i: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/%E5%A4%AA%E5%B9%B3%E8%A1%97_%E6%A8%AA%E5%90%91.jpg/960px-%E5%A4%AA%E5%B9%B3%E8%A1%97_%E6%A8%AA%E5%90%91.jpg', a: '太平街 横向' },
+           { i: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/%E5%A4%AA%E5%B9%B3%E8%A1%97_%E7%89%8C%E6%A5%BC.jpg/960px-%E5%A4%AA%E5%B9%B3%E8%A1%97_%E7%89%8C%E6%A5%BC.jpg', a: '太平街 牌楼' },
+           { i: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/%E5%A4%AA%E5%B9%B3%E8%A1%97.jpg/960px-%E5%A4%AA%E5%B9%B3%E8%A1%97.jpg', a: '太平街' },
+           { i: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/%E5%A4%AA%E5%B9%B3%E8%A1%97%E7%BE%8E%E9%A3%9F%E5%9F%8E.jpg/960px-%E5%A4%AA%E5%B9%B3%E8%A1%97%E7%BE%8E%E9%A3%9F%E5%9F%8E.jpg', a: '太平街美食城' },
+           { i: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/%E9%95%BF%E6%B2%99%E5%A4%AA%E5%B9%B3%E8%80%81%E8%A1%97_1.jpg/960px-%E9%95%BF%E6%B2%99%E5%A4%AA%E5%B9%B3%E8%80%81%E8%A1%97_1.jpg', a: '长沙太平老街 1' },
+           { i: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/%E9%95%BF%E6%B2%99%E5%A4%AA%E5%B9%B3%E8%80%81%E8%A1%97_2.jpg/960px-%E9%95%BF%E6%B2%99%E5%A4%AA%E5%B9%B3%E8%80%81%E8%A1%97_2.jpg', a: '长沙太平老街 2' },
+           { c: 'warn', b: '为什么 17:30', x: '太平街店是全城队最长的三家之一，约 1 小时。<b>饭点前到能省掉大半</b>' },
+           { c: '', b: '点什么', x: '酸萝卜炒肚丝 · 爆炒肥肠 · 小炒基围虾 · 醋蒸鸡 · 紫苏碎鱼头 · 碎红椒炒肉' },
+           { c: 'ok', b: '走过去', big: '10 分钟', x: '太平街 28 号东北 120 米，从上半段 citywalk 的终点直接过去' }] },
+    { t: '19:30', h: '口味虾', d: '9 月是虾季尾声，出门前先打电话确认还有没有货',
+      s: [{ i: C + '3/36/Changsha-style_Stinky_Tofu_at_Huogongdian_%2820180222183104%29.jpg/960px-Changsha-style_Stinky_Tofu_at_Huogongdian_%2820180222183104%29.jpg', a: '长沙臭豆腐' },
+           { c: 'warn', b: '先打电话', x: '虾季 5 月起，<b>9 月接近尾声</b>，可能收摊或涨价。按斤还是按份也要先问清',
+             m: '<p>口味虾（麻辣小龙虾）五一前后进入旺季，<b>9 月已是尾声</b>，出门前先确认还有没有货。</p><p>点单前问清按斤还是按份 —— 这行价格随行就市，同一家不同日子能差不少。</p><p>怕辣可以点蒜蓉虾或咸蛋黄大虾，不用非得挑战麻辣。解放西一带夜宵选择最多也最容易排队。</p>' },
+           { c: 'ok', b: '虾忙龙虾', x: '坡子街 / 乐和城 4 楼 —— 离你最近，招牌青春卤虾、大胜虾尾' },
+           { c: '', b: '湘江大码头', x: '湘江中路 2 段 36 号海信广场，另有杜甫江阁店、化龙池店。招牌干爆虾' },
+           { c: '', b: '文和友老长沙龙虾馆', x: '五一商圈内，CCTV2 上过。<b>下午 5 点就开始排队</b>，怕辣点蒜蓉或咸蛋黄' },
+           { c: '', b: '必吃榜在大塘', x: '靓虾二哥、聚味瞿记是 2026 大众点评必吃榜，但打车 20 分钟以上' }] },
+    { t: '21:00', h: '金色印象 · 按脚', d: '叫到号，打车 10 分钟过去',
+      grab: ['#fig-spa', '#sec-spa p.hint'],
+      s: [{ c: 'ok', b: '等位不亏', x: '店里号称有全长沙最好吃的牛肉粉，真没叫到号就在店里吃' },
+           { c: '', b: '想全程步行就换', x: '尚悦影视足道 ¥138，供销大厦 11 楼；同是影院式，五一广场地铁 5 号口楼上' },
+           { c: '', b: '足享计划', big: '¥80', x: '供销大厦 18 楼 · 1,726 条评论 · 最便宜的验证过的选项' }] },
+
+    { day: '周日 9/6 · 继续 citywalk，16:30 必须走' },
+    { t: '09:30', h: '起床，行李寄前台', d: '奢酒店免费寄存，寄到 16:30',
+      s: [{ c: 'ok', b: '这一条最关键', x: '12:00 退房到 16:30 出发有四个半小时，行李不寄就得拖着走',
+             m: '<p>这四个半小时是整趟最尴尬的一段。行李寄前台之后，它就变成了完整的半天：citywalk 下半段 3 小时 + 黄兴路 2 小时，到点直接从五一广场坐 2 号线走。</p><p>奢酒店明确提供免费寄存，入住时确认一句能寄到 16:30 即可。</p>' },
+           { c: '', b: '两天花多少', big: '¥1,050–2,050', x: '人均，不含往返高铁',
+             m: '<ul><li>住宿 2 晚 ¥600–1,200（你已定 ¥1,294）</li><li>吃 ¥300–500</li><li>市内交通 ¥150–250</li><li>门票 ¥0–100</li></ul><p>不去收费景点、不排队也就不为等位买单，门票那项基本是 0。交通含周五深夜打车约 ¥40 和周日回站，其余按地铁 ¥4 一程估。</p>' },
+           { c: '', b: '带什么', x: '折叠伞 · 走惯的鞋 · 薄外套 · 充电宝 · 身份证',
+             m: '<p>9 月长沙白天常在 30 °C 上下，湿度高、闷，早晚略降。可能连着几天阵雨，也可能是秋老虎。</p><ul><li><b>折叠伞</b> —— 既挡雨也挡太阳，9 月的日头还很硬</li><li><b>走惯的鞋</b> —— citywalk 两天，一天一两万步</li><li><b>薄外套</b> —— 不是为室外，是为商场和地铁的冷气</li><li><b>充电宝</b> —— 预约码、乘车码、点单码全在手机上</li><li><b>身份证</b> —— 场馆实名核验，二维码不能替代证件</li><li>纸巾湿巾 —— 嗦粉和吃虾都用得上</li></ul>' }] },
+    { t: '10:00', h: '杨裕兴 · 三王街店', d: '「杨裕兴的面、甘长顺的粉」—— 今天吃面',
+      s: [{ c: '', b: '点什么', x: '手工擀面，下锅不粘。码子选肉丝 / 杂酱 / 三鲜 / 牛肉 / 酸辣；讲究就点<b>炒码</b>，随到随制' },
+           { c: '', b: '人均', big: '¥12–15', x: '清光绪年间的老店，就在五一广场步行圈' }] },
+    { t: '11:00', h: 'Citywalk 下半段', d: '白果园 → 化龙池 → 都正街，来过两次最该补的一段',
+      s: [{ c: 'ok', b: '白果园', x: '民国长沙的富人区。湘江评论印刷处旧址、程潜公馆、郑家溉公馆，闹中取静' },
+           { c: '', b: '化龙池 · 都正街', x: '清代街巷格局，麻石路、青砖墙。看的是历史本身，不是商业' },
+           { c: '', b: '为什么留到今天', x: '这三条前两次多半没走 —— 它们不在任何「必去清单」上' }] },
+    { t: '14:00', h: '黄兴路买手信', d: '文和友只逛不吃的话，一楼直接进', grab: ['#fig-whf'],
+      s: [{ i: C + '5/5f/Changsha_Wenheyou%2C_21_May_2021C.jpg/960px-Changsha_Wenheyou%2C_21_May_2021C.jpg', a: '超级文和友外观' },
+           { i: C + '2/2a/Interior_of_Changsha_Wenheyou_2021052113.jpg/960px-Interior_of_Changsha_Wenheyou_2021052113.jpg', a: '文和友内部' },
+           { c: 'ok', b: '0 排队', x: '一楼进去扫码买小吃<b>不用领桌号</b>。几千桌的队是「落座点菜」那条' }] },
+    { t: '16:30', fix: 1, h: '出发去长沙南', d: '2 号线直达 25 分 + 进站安检',
+      s: [{ i: C + '7/70/Entrance_2_of_Wuyi_Square_Station.jpg/960px-Entrance_2_of_Wuyi_Square_Station.jpg', a: '五一广场站出口' },
+           { c: 'warn', b: '留足', big: '1.5 小时', x: '别卡点。这条线是整趟唯一不能碰的' }] },
+    { t: '18:00', fix: 1, h: 'G6007 发车', d: '20:25 回到虎门',
+      s: [{ c: 'ok', b: '在长沙总计', big: '41 小时', x: '扣掉睡觉和通勤，真正玩了约 22 小时' }] }
+  ];
+
+  var NOTES = {};
+
+  (function timeline() {
+    var ol = document.getElementById('tl');
+    if (!ol) return;
+    var html = '';
+    TL.forEach(function (e, i) {
+      if (e.day) { html += '<li class="day" data-i="' + i + '"><p class="tl-day">' + e.day + '</p><div class="tl-more"></div></li>'; return; }
+      // Photos and fact cards get their own row. Mixed together the eye has to
+      // re-parse what each tile is; separated, one row is "what it looks like"
+      // and the next is "what you need to know".
+      var pics = (e.s || []).filter(function (x) { return x.i; }).map(function (x) {
+        return '<img src="' + x.i + '" alt="' + x.a + '" referrerpolicy="no-referrer" onerror="this.hidden=true">';
+      }).join('');
+      var facts = (e.s || []).filter(function (x) { return !x.i; }).map(function (x, k) {
+        // A card with a long note becomes a button. The note opens under the
+        // strip rather than inside the 208px tile, which cannot hold prose.
+        var tag = x.m ? 'button' : 'div';
+        var attr = x.m ? ' type="button" aria-expanded="false" data-k="' + i + '-' + k + '"' : '';
+        return '<' + tag + ' class="card ' + (x.c || '') + (x.m ? ' has-more' : '') + '"' + attr + '>'
+             + '<b>' + x.b + '</b>'
+             + (x.big ? '<span class="big">' + x.big + '</span>' : '')
+             + '<span>' + x.x + '</span>'
+             + (x.m ? '<span class="more-cue">点开看详情</span>' : '')
+             + '</' + tag + '>';
+      }).join('');
+      (e.s || []).filter(function (x) { return !x.i; }).forEach(function (x, k) {
+        if (x.m) NOTES[i + '-' + k] = { t: x.b, h: x.m };
+      });
+      var row = function (cls, inner) {
+        return inner ? '<div class="strip ' + cls + '">' + inner + '</div>'
+                     + '<p class="swipe" hidden>← 左右滑动看更多</p>' : '';
+      };
+      html += '<li class="' + (e.fix ? 'fix' : '') + '" data-i="' + i + '" style="--i:' + i + '">'
+            + '<p class="tl-t">' + e.t + '</p>'
+            + '<p class="tl-h">' + e.h + '</p>'
+            + '<p class="tl-d">' + e.d + '</p>'
+            + row('pics', pics) + row('facts', facts)
+            + '<div class="note" hidden></div>'
+            + '<div class="tl-more"></div>'
+            + '</li>';
+    });
+    ol.innerHTML = html;
+
+    // Only claim it swipes when it actually does: at desktop width three cards
+    // fit and the hint would be a lie.
+    var sync = function () {
+      [].forEach.call(ol.querySelectorAll('.strip'), function (st) {
+        var tip = st.nextElementSibling;
+        if (tip && tip.classList.contains('swipe')) {
+          tip.hidden = st.scrollWidth <= st.clientWidth + 4;
+        }
+      });
+    };
+    // One note open per slot: a second click on the same card closes it, a
+    // click on a different card in the same slot swaps the contents.
+    ol.addEventListener('click', function (ev) {
+      var b = ev.target.closest('.card.has-more');
+      if (!b) return;
+      var li = b.closest('li'), note = li.querySelector('.note');
+      var open = b.getAttribute('aria-expanded') === 'true';
+      [].forEach.call(li.querySelectorAll('.card.has-more'), function (o) {
+        o.setAttribute('aria-expanded', 'false');
+      });
+      if (open) { note.hidden = true; return; }
+      b.setAttribute('aria-expanded', 'true');
+      var d = NOTES[b.dataset.k];
+      note.innerHTML = '<b>' + d.t + '</b>' + d.h;
+      note.hidden = false;
+    });
+
+    sync();
+    window.addEventListener('resize', sync);
+    [].forEach.call(ol.querySelectorAll('.strip img'), function (im) {
+      im.addEventListener('load', sync);
+    });
+  })();
 
   var TASKS = [
-    { id: 'hotel', t: '订五一广场／黄兴路一带的酒店', w: '确认 24 小时前台（你零点后到店）和周日下午的行李寄存', due: '越早越便宜', modes: ['chill', 'packed'] },
-    { id: 'taxi', t: '装好网约车 App 并绑支付', w: '周五 23:28 落地时地铁已停运，出站直接叫车', due: '出发前', modes: ['chill', 'packed'] },
-    { id: 'lzj', t: '领李自健美术馆免费票', w: '公众号预约，免费不免票，周一闭馆', due: '出发前', soft: 1, modes: ['chill'] },
-    { id: 'xzl', t: '看谢子龙当期展览要不要买票', w: '一楼免费，二三楼按展收费，随展览变', due: '出发前', soft: 1, modes: ['chill'] },
-    { id: 'hnm', t: '抢湖南博物院预约', w: '每晚 20:00 放第 7 天的票，热门时段当晚抢空', due: '今晚就查', modes: ['packed'] },
-    { id: 'ylsy', t: '约岳麓书院门票 40 元', w: '微信"岳麓书院"公众号，最多提前 3 天，9/2 起可约周六', due: '9/2 起', modes: ['packed'] },
-    { id: 'ylsn', t: '约岳麓山入园（免费）', w: '与书院是两个独立入口', due: '9/2 起', modes: ['packed'] },
-    { id: 'juzi', t: '约橘子洲入园（免费）', w: '周日上午场', due: '出发前', modes: ['packed'] },
-    { id: 'queue', t: '存好费大厨／炊烟的小程序', w: '到市区先取号，边逛边等', due: '出发前', soft: 1, modes: ['packed'] }
+    { id: 'lzj', t: '领李自健美术馆免费票', w: '公众号预约，免费不免票。周六去，周一闭馆不影响', due: '出发前' },
+    { id: 'xzl', t: '看谢子龙当期展览要不要买票', w: '一楼免费，二三楼按展收费，随展览变', due: '出发前' },
+    { id: 'taxi', t: '确认网约车 App 能用', w: '周五 23:28 落地时地铁已停运，出站直接叫车', due: '出发前' },
+    { id: 'store', t: '跟酒店确认行李寄存到 16:30', w: '周日 12:00 退房到 16:30 出发的四个半小时，全靠这条', due: '入住时问' },
+    { id: 'bath', t: '问清房型卫生间是不是透明门', w: '有住客为此打了 8.5 分，介意就提前换房型', due: '到店前' }
   ];
 
   // Group the sections the way printed travel guides do - Wikivoyage's
@@ -1311,17 +1120,18 @@
   // that with scripting off the page is still plain readable prose.
   (function structureSections() {
     var GROUPS = [
-      { key: 'g-know', label: '概况', hint: '这趟有多少时间、城市怎么摆', ids: ['sec-time', 'sec-geo'] },
-      { key: 'g-plan', label: '行程', hint: '两种节奏的逐时段安排', ids: ['sec-plan', 'sec-rules'] },
-      { key: 'g-sleep', label: '住', hint: '选址标准与具体哪一家', ids: ['sec-hotel', 'sec-list'] },
+      { key: 'g-plan', label: '行程', hint: '两种节奏的逐时段安排', ids: ['sec-plan'] },
+      { key: 'g-sleep', label: '住', hint: '已预订', ids: ['sec-list'] },
       { key: 'g-eat', label: '吃', hint: '按一天的进食节奏排', ids: ['sec-food'] },
-      { key: 'g-do', label: '玩', hint: '来过两次之后还剩什么', ids: ['sec-again', 'sec-more', 'sec-pool', 'sec-spa'] },
-      { key: 'g-move', label: '行', hint: '步行圈与地铁耗时', ids: ['sec-walk', 'sec-traffic'] },
-      { key: 'g-prep', label: '行前', hint: '预约、预算、带什么', ids: ['sec-todo', 'sec-cost', 'sec-pack'] },
-      { key: 'g-care', label: '当心', hint: '避坑与下雨的退路', ids: ['sec-trap', 'sec-rain'] },
+      { key: 'g-do', label: '玩', hint: '来过两次之后还剩什么', ids: ['sec-again', 'sec-more', 'sec-spa'] },
+      { key: 'g-map', label: '地图', hint: '点位与两天的路线', ids: ['sec-geo'] },
+      { key: 'g-prep', label: '行前', hint: '要预约的两件事', ids: ['sec-todo'] },
+      { key: 'g-care', label: '当心', hint: '会让老攻略翻车的事实', ids: ['sec-trap'] },
       { key: 'g-src', label: '来源', hint: '官方入口与核对日期', ids: ['sec-src'] }
     ];
-    var OPEN_BY_DEFAULT = ['sec-plan'];
+    // Everything open. The folding existed because the page had grown to
+    // 22,000 characters; at a third of that it just hides content behind a
+    // click. The collapse controls stay for anyone who wants them.
     var main = document.querySelector('main');
     var heads = [].slice.call(main.querySelectorAll(':scope > h2[id]'));
     if (!heads.length) return;
@@ -1330,7 +1140,7 @@
       var det = document.createElement('details');
       det.className = 'sec';
       det.id = h.id;
-      det.open = OPEN_BY_DEFAULT.indexOf(h.id) > -1;
+      det.open = true;
       var sum = document.createElement('summary');
       sum.textContent = h.textContent;
       det.appendChild(sum);
@@ -1483,17 +1293,66 @@
     pick();
   })();
 
+  // Runs after structureSections, not inside the timeline IIFE: until the
+  // sections are wrapped in <details>, "#sec-todo figure" matches nothing
+  // because #sec-todo is still a bare heading with no children.
+  (function absorbIntoTimeline() {
+    var ol = document.getElementById('tl');
+    if (!ol) return;
+    // Move the rest of the page into the slot it belongs to. Moving live nodes
+    // rather than splicing HTML strings: the string surgery broke this file
+    // twice, and appendChild cannot produce a syntax error.
+    TL.forEach(function (e, i) {
+      if (!e.grab) return;
+      var box = ol.querySelector('li[data-i="' + i + '"] .tl-more');
+      if (!box) return;
+      e.grab.forEach(function (sel) {
+        [].forEach.call(document.querySelectorAll(sel), function (n) { box.appendChild(n); });
+      });
+    });
+
+    // Everything now lives on the spine, so the section / group / rail
+    // machinery has nothing left to organise.
+    ['#sec-list', '#sec-food', '#sec-again', '#sec-more', '#sec-spa', '#sec-todo', '#sec-trap']
+      .forEach(function (sel) { var n = document.querySelector(sel); if (n) n.remove(); });
+    [].forEach.call(document.querySelectorAll('section.grp'), function (g) {
+      if (!g.querySelector('details.sec')) g.remove();
+    });
+    ['.rail', '.toc', '#sec-ctl'].forEach(function (sel) {
+      var n = document.querySelector(sel); if (n) n.remove();
+    });
+
+    // The swipe hints were measured while the strips were still inside closed
+    // <details>: clientWidth 0 against a real scrollWidth reads as "overflows"
+    // and every hint lit up. Re-measure now that they have layout. sync() is
+    // bound to resize, so this is the whole fix.
+    window.dispatchEvent(new Event('resize'));
+    setTimeout(function () { window.dispatchEvent(new Event('resize')); }, 600);
+
+  })();
+
   // Live prices, written hourly by the Playwright job. Everything here is
   // additive: with the file missing the page keeps the hand-checked numbers
   // that are already in the HTML.
   (function livePrices() {
     var fresh = document.getElementById('price-fresh');
     if (!fresh) return;
+    var d0 = '2026-09-04', d1 = '2026-09-06';
     fetch('./data/prices.json', { cache: 'no-cache' })
       .then(function (r) { return r.ok ? r.json() : null; })
       .catch(function () { return null; })
       .then(function (d) {
-        if (!d || !d.hotels) return;
+        if (!d || !d.hotels) {
+          // Expected: the scheduled scrape is off because every OTA blocks
+          // server-side reads. The prices in the HTML are hand-checked and
+          // dated, so say when rather than pretending they are live.
+          fresh.className = 'hint fresh stale';
+          fresh.textContent = '价格为 2026-08-31 人工核对，' + d0 + ' 至 ' + d1
+            + ' 两晚含税。自动刷新拿不到 —— 各家 OTA 都挡服务器端抓取，'
+            + '实时价请点每家的「查这两晚实时价」，在你自己的浏览器里开。';
+          fresh.hidden = false;
+          return;
+        }
         var okCount = 0, total = 0;
         Object.keys(d.hotels).forEach(function (k) {
           var h = d.hotels[k];
@@ -1535,18 +1394,15 @@
       });
   })();
 
-  var KEY = 'changsha-todo', MKEY = 'changsha-mode';
+  var KEY = 'changsha-todo';
   var done = {};
   try { done = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { done = {}; }
-  var mode = 'chill';
-  try { mode = localStorage.getItem(MKEY) || 'chill'; } catch (e) { /* private mode */ }
-  if (!SCHED[mode]) mode = 'chill';
 
   function renderTodo() {
     var ul = document.getElementById('todo');
     ul.innerHTML = '';
     TASKS.forEach(function (task) {
-      var on = task.modes.indexOf(mode) > -1;
+      var on = true;
       var li = document.createElement('li');
       li.className = (done[task.id] ? 'done ' : '') + (on ? '' : 'off');
       var box = document.createElement('input');
@@ -1570,35 +1426,6 @@
     });
   }
 
-  function renderSched() {
-    var s = SCHED[mode];
-    document.getElementById('mode-note').textContent = s.note;
-    var html = '';
-    s.days.forEach(function (d) {
-      html += '<h3>' + d.h + '</h3><div class="day">';
-      d.rows.forEach(function (r) {
-        html += '<div class="slot' + (r[3] ? ' fix' : '') + '"><span class="t">' + r[0] + '</span>'
-          + '<span class="w"><b>' + r[1] + '</b><em>' + r[2] + '</em></span></div>';
-      });
-      html += '</div>';
-    });
-    document.getElementById('sched').innerHTML = html;
-  }
-
-  [].forEach.call(document.querySelectorAll('.mode'), function (b) {
-    b.setAttribute('aria-pressed', String(b.dataset.m === mode));
-    b.addEventListener('click', function () {
-      mode = b.dataset.m;
-      try { localStorage.setItem(MKEY, mode); } catch (e) { /* private mode */ }
-      [].forEach.call(document.querySelectorAll('.mode'), function (o) {
-        o.setAttribute('aria-pressed', String(o.dataset.m === mode));
-      });
-      renderSched();
-      renderTodo();
-    });
-  });
-
-  renderSched();
   renderTodo();
 })();
 </script>
@@ -1644,15 +1471,40 @@
   // Approximate positions, good to a few hundred metres - enough to see which
   // side of the river something is on, which is the whole point of this
   // section. Not enough to navigate by, and the note under the map says so.
+  // Approximate positions, good to a few hundred metres - enough to see which
+  // side of the river something is on and how the two days string together,
+  // which is the whole point. Not enough to navigate by, and the note says so.
   var PLACES = [
-    { n: '长沙南站',        at: [28.150, 113.062] },
-    { n: '五一广场 · 住这里', at: [28.196, 112.978], stay: true },
-    { n: '橘子洲',          at: [28.187, 112.963] },
-    { n: '岳麓山 · 岳麓书院', at: [28.182, 112.936] },
-    { n: '湖南博物院',      at: [28.218, 112.999] },
-    { n: '后湖 · 大学城',    at: [28.163, 112.934] },
-    { n: '洋湖 · 两座美术馆', at: [28.125, 112.938] }
+    { n: '长沙南站',          at: [28.150, 113.062], c: 'move' },
+    { n: '五一广场',          at: [28.196, 112.978], c: 'move' },
+    { n: '奢酒店 · 已定',      at: [28.197, 112.982], c: 'sleep', stay: true },
+    { n: '笨萝卜 · 太平街店',  at: [28.193, 112.974], c: 'eat' },
+    { n: '火宫殿 · 坡子街',    at: [28.193, 112.975], c: 'eat' },
+    { n: '超级文和友',        at: [28.194, 112.977], c: 'eat' },
+    { n: '冬瓜山夜宵',        at: [28.202, 112.989], c: 'eat' },
+    { n: '五一新村夜宵',      at: [28.198, 112.985], c: 'eat' },
+    { n: '足浴 · 供销大厦',    at: [28.197, 112.979], c: 'spa' },
+    { n: '太平街',            at: [28.194, 112.974], c: 'see' },
+    { n: '潮宗街',            at: [28.203, 112.973], c: 'see' },
+    { n: '都正街',            at: [28.192, 112.984], c: 'see' },
+    { n: '天心阁 · 简牍馆',    at: [28.186, 112.985], c: 'see' },
+    { n: '滨江文化园',        at: [28.216, 112.965], c: 'see' },
+    { n: '橘子洲',            at: [28.187, 112.963], c: 'see' },
+    { n: '岳麓山 · 岳麓书院',  at: [28.182, 112.936], c: 'see' },
+    { n: '湖南博物院',        at: [28.218, 112.999], c: 'see' },
+    { n: '后湖 · 大学城',      at: [28.163, 112.934], c: 'see' },
+    { n: '洋湖 · 两座美术馆',  at: [28.125, 112.938], c: 'see' }
   ];
+
+  // The two days as drawn lines. Same content as the schedule, but a route
+  // shows the one thing a table cannot: how far apart the stops are and how
+  // much of a day goes on crossing the river.
+  var ROUTES = {
+    sat: { color: '#2a78d6',
+           at: [[28.197, 112.982], [28.125, 112.938], [28.187, 112.963], [28.197, 112.982]] },
+    sun: { color: '#eda100',
+           at: [[28.197, 112.982], [28.203, 112.973], [28.192, 112.984], [28.197, 112.979], [28.150, 113.062]] }
+  };
 
   function asset(tag, attrs) {
     return new Promise(function (ok, fail) {
@@ -1682,12 +1534,36 @@
     layers[active].addTo(map);
 
     PLACES.forEach(function (p) {
-      L.marker(p.at, {
-        // iconSize null: Leaflet then leaves the box unsized and the label
-        // sizes to its own text, which is what centres it on the point.
-        icon: L.divIcon({ className: 'tdt-pin', html: '<span class="pin' + (p.stay ? ' stay' : '') + '">' + p.n + '</span>', iconSize: null })
+      // iconSize null: Leaflet then leaves the box unsized and the label
+      // sizes to its own text, which is what centres it on the point.
+      p.mk = L.marker(p.at, {
+        icon: L.divIcon({ className: 'tdt-pin c-' + p.c, html: '<span class="pin' + (p.stay ? ' stay' : '') + '">' + p.n + '</span>', iconSize: null })
       }).addTo(map);
     });
+
+    Object.keys(ROUTES).forEach(function (k) {
+      ROUTES[k].line = L.polyline(ROUTES[k].at,
+        { color: ROUTES[k].color, weight: 3, opacity: .85, dashArray: '7 6' });
+    });
+
+    // Filters sit under the map, not on it: on a phone a control on the canvas
+    // fights with panning.
+    var bar = document.getElementById('tdt-filters');
+    if (bar) {
+      bar.hidden = false;
+      bar.addEventListener('click', function (e) {
+        var b = e.target.closest('button');
+        if (!b) return;
+        var on = b.getAttribute('aria-pressed') !== 'true';
+        b.setAttribute('aria-pressed', String(on));
+        var cat = b.getAttribute('data-cat'), route = b.getAttribute('data-route');
+        if (cat) {
+          PLACES.filter(function (p) { return p.c === cat; })
+            .forEach(function (p) { on ? p.mk.addTo(map) : map.removeLayer(p.mk); });
+        }
+        if (route) { on ? ROUTES[route].line.addTo(map) : map.removeLayer(ROUTES[route].line); }
+      });
+    }
 
     // A map that eats the scroll wheel in the middle of a long page is a
     // trap; click to take control, and it lets go again on mouse-out.

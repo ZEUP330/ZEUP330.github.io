@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>被追赶的经济体：辜朝明的两个拐点，用数据看</title>
-<meta name="description" content="辜朝明《被追赶的经济体》的三阶段框架，配世界银行数据：谁在追谁、什么时候被超过，以及「储蓄照旧、投资无处可去」这个特征是否真的出现。">
+<title>被追赶的经济体：四国规格表</title>
+<meta name="description" content="把辜朝明「被追赶的经济体」框架的每一条主张做成可对比的维度：日德美中逐项对照，用图看框架在哪里成立、在哪里对不上。">
 <link rel="stylesheet" href="/assets/theme.css">
 <style>
   :root { --warn: #eda100; }
@@ -39,57 +39,110 @@
     .chart { height: 250px; }
     th, td { padding: 6px 4px; font-size: 12px; }
   }
+
+  /* Spec sheet: one row per claim the framework makes, one column per economy,
+     every cell carrying a bar, sparkline or flag instead of a sentence. */
+  .sheet { margin: 1.1rem 0 .5rem; }
+  .srow { display: grid; grid-template-columns: 9rem repeat(4, 1fr); gap: 0 10px;
+    padding: .7rem 0; border-top: 1px solid var(--line); align-items: start; }
+  .srow.head { border-top: 0; position: sticky; top: var(--sheet-top, 0px); z-index: 12;
+    background: var(--material); -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px);
+    padding: .55rem 0; border-bottom: 1px solid var(--line); }
+  .srow.head .cty { font-weight: 600; font-size: .95rem; display: flex; align-items: baseline; gap: 6px; }
+  .srow.head .cty i { width: 10px; height: 10px; border-radius: 3px; flex: none; }
+  .sdim { font-size: 13px; color: var(--ink-3); padding-top: 2px; }
+  .sdim b { display: block; color: var(--ink-2); font-weight: 500; font-size: 13.5px; }
+  .cell { min-width: 0; }
+  .cval { font-size: .95rem; font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1.35; }
+  .csub { font-size: 11.5px; color: var(--ink-3); line-height: 1.45; margin-top: 1px; }
+  .bar { height: 6px; border-radius: 3px; background: var(--bg-2); margin: 5px 0 3px; position: relative; }
+  .bar i { position: absolute; top: 0; height: 100%; border-radius: 3px; }
+  .flag { display: inline-flex; align-items: center; gap: 5px; font-size: .9rem; font-weight: 600; }
+  .flag .g { width: 16px; height: 16px; border-radius: 50%; display: inline-grid; place-items: center;
+    font-size: 11px; color: #fff; flex: none; }
+  .g.yes { background: var(--ok); } .g.no { background: var(--danger); } .g.mid { background: var(--warn); }
+  .g.na { background: var(--ink-3); }
+  .spark { display: block; width: 100%; height: 32px; }
+  @media (max-width: 760px) {
+    .srow { grid-template-columns: repeat(4, 1fr); gap: 0 6px; padding: .6rem 0; }
+    .sdim { grid-column: 1 / -1; padding: 0 0 .3rem; }
+    .cval { font-size: .82rem; } .csub { font-size: 10.5px; }
+    .srow.head .cty { font-size: .8rem; gap: 4px; }
+  }
+  details.fold { border-top: 1px solid var(--line); margin: 1.4rem 0 0; }
+  details.fold > summary { display: flex; align-items: baseline; gap: 10px; cursor: pointer;
+    list-style: none; padding: .8rem 0; font-size: 1rem; font-weight: 500; }
+  details.fold > summary::-webkit-details-marker { display: none; }
+  details.fold > summary::after { content: '展开'; margin-left: auto; font-size: 13px; color: var(--accent); font-weight: 400; }
+  details.fold[open] > summary::after { content: '收起'; }
+  details.fold > summary:hover { color: var(--accent); }
+  details.fold h2, details.fold h3 { margin: 0; font-size: 1rem; font-weight: 500; }
 </style>
 <link rel="stylesheet" href="/assets/statusbar.css">
+<link rel="stylesheet" href="/assets/rail.css">
 <script src="/assets/statusbar.js" defer></script>
 <script src="/assets/theme.js" defer></script>
+<script src="/assets/rail.js" defer></script>
 </head>
 <body>
 <main>
   <p class="back"><a href="../">← 首页</a></p>
-  <h1>被追赶的经济体</h1>
-  <p>辜朝明（Richard Koo）在《被追赶的经济体》里把工业化分成三段，中间隔着两个拐点。这一页不复述书，而是把他那套说法里<b class="hl">能被数据检验的部分</b>拿出来跑一遍：谁在追谁、什么时候被超过，以及「被追赶」的那个特征是否真的出现了。</p>
+  <h1 id="top">被追赶的经济体：四国规格表</h1>
+  <p class="lede">辜朝明把工业化分成三段、两个拐点，并预言「被追赶」的经济体会出现一个特征：<span class="hl">钱存下来了，但投不出去</span>。这页把他的每一条主张拆成一个可比的维度，日德美中逐项对照 —— 包括<b>对不上的那几项</b>。</p>
 
-  <h2>三个阶段，两个拐点</h2>
-  <figure>
-    <svg viewBox="0 0 760 210" role="img" aria-label="三阶段示意图：刘易斯拐点之前是劳动力无限供给的城镇化阶段，之后进入工资上涨的黄金时代，再被后发国家追上后进入被追赶阶段。">
-      <title>辜朝明的三阶段与两个拐点</title>
-      <g font-family="-apple-system, sans-serif" font-size="12">
-        <rect x="0" y="40" width="240" height="58" rx="6" fill="var(--card)" stroke="var(--line)"/>
-        <rect x="260" y="40" width="240" height="58" rx="6" fill="var(--card)" stroke="var(--line)"/>
-        <rect x="520" y="40" width="240" height="58" rx="6" fill="var(--card)" stroke="var(--line)"/>
+  <figure class="shot">
+    <div class="fr">
+      <svg viewBox="0 0 960 540" preserveAspectRatio="xMidYMid meet" role="img" aria-label="三阶段示意图：刘易斯拐点之前是劳动力无限供给的城镇化阶段，之后是工资上涨、企业抢着借钱的黄金时代，被后发国家追上后进入被追赶阶段，货币政策逐步失效、财政政策反而更有效、没人愿意借钱。">
+        <title>辜朝明的三阶段与两个拐点</title>
+        <g font-family="-apple-system, BlinkMacSystemFont, sans-serif">
+          <text x="40" y="46" fill="var(--ink)" font-size="24" font-weight="600">三个阶段，两个拐点</text>
 
-        <text x="120" y="64" text-anchor="middle" fill="var(--ink)">① 城镇化阶段</text>
-        <text x="120" y="84" text-anchor="middle" fill="var(--ink-3)" font-size="11">劳动力无限供给，工资被压住</text>
-        <text x="380" y="64" text-anchor="middle" fill="var(--ink)">② 黄金时代</text>
-        <text x="380" y="84" text-anchor="middle" fill="var(--ink-3)" font-size="11">工资涨，企业借钱在国内扩产</text>
-        <text x="640" y="64" text-anchor="middle" fill="var(--ink)">③ 被追赶阶段</text>
-        <text x="640" y="84" text-anchor="middle" fill="var(--ink-3)" font-size="11">国内回报不如海外，投资外流</text>
+          <text x="330" y="96" text-anchor="middle" fill="var(--accent)" font-size="16">刘易斯拐点</text>
+          <text x="630" y="96" text-anchor="middle" fill="var(--warn)" font-size="16">被追赶拐点</text>
+          <line x1="330" y1="108" x2="330" y2="252" stroke="var(--accent)" stroke-dasharray="6 5"/>
+          <line x1="630" y1="108" x2="630" y2="252" stroke="var(--warn)" stroke-dasharray="6 5"/>
 
-        <line x1="250" y1="30" x2="250" y2="112" stroke="var(--accent)" stroke-dasharray="4 3"/>
-        <line x1="510" y1="30" x2="510" y2="112" stroke="var(--warn)" stroke-dasharray="4 3"/>
-        <text x="250" y="22" text-anchor="middle" fill="var(--accent)" font-size="11">刘易斯拐点</text>
-        <text x="510" y="22" text-anchor="middle" fill="var(--warn)" font-size="11">被追赶拐点</text>
+          <rect x="40" y="118" width="270" height="112" rx="12" fill="var(--card)" stroke="var(--line)"/>
+          <rect x="350" y="118" width="260" height="112" rx="12" fill="var(--card)" stroke="var(--line)"/>
+          <rect x="650" y="118" width="270" height="112" rx="12" fill="var(--card)" stroke="var(--warn)"/>
 
-        <text x="0" y="136" fill="var(--ink-3)" font-size="11">货币政策</text>
-        <text x="120" y="136" text-anchor="middle" fill="var(--ink-2)" font-size="11">一般</text>
-        <text x="380" y="136" text-anchor="middle" fill="var(--ink-2)" font-size="11">很有效</text>
-        <text x="640" y="136" text-anchor="middle" fill="var(--ink-2)" font-size="11">逐步失效</text>
-        <text x="0" y="158" fill="var(--ink-3)" font-size="11">财政政策</text>
-        <text x="120" y="158" text-anchor="middle" fill="var(--ink-2)" font-size="11">有效</text>
-        <text x="380" y="158" text-anchor="middle" fill="var(--ink-2)" font-size="11">会挤出私人投资</text>
-        <text x="640" y="158" text-anchor="middle" fill="var(--ink-2)" font-size="11">更有效，不挤出</text>
-        <text x="0" y="180" fill="var(--ink-3)" font-size="11">借款人</text>
-        <text x="120" y="180" text-anchor="middle" fill="var(--ink-2)" font-size="11">企业在借</text>
-        <text x="380" y="180" text-anchor="middle" fill="var(--ink-2)" font-size="11">企业抢着借</text>
-        <text x="640" y="180" text-anchor="middle" fill="var(--ink-2)" font-size="11">没人愿意借</text>
-        <text x="0" y="202" fill="var(--ink-3)" font-size="11">辜朝明的核心主张：第三阶段还按第二阶段的教科书开药方，就会过度依赖货币政策、少用财政政策。</text>
-      </g>
-    </svg>
-    <figcaption>按辜朝明《被追赶的经济体》整理。他把三段的划分依据落在「有没有人愿意借钱」上，而不是增长率高低。</figcaption>
+          <g text-anchor="middle">
+            <text x="175" y="160" fill="var(--ink)" font-size="21" font-weight="600">① 城镇化</text>
+            <text x="175" y="192" fill="var(--ink-3)" font-size="16">劳动力无限供给，工资被压住</text>
+            <text x="480" y="160" fill="var(--ink)" font-size="21" font-weight="600">② 黄金时代</text>
+            <text x="480" y="192" fill="var(--ink-3)" font-size="16">工资涨，企业借钱在国内扩产</text>
+            <text x="785" y="160" fill="var(--ink)" font-size="21" font-weight="600">③ 被追赶</text>
+            <text x="785" y="192" fill="var(--ink-3)" font-size="16">国内回报不如海外，投资外流</text>
+          </g>
+
+          <g stroke="var(--line-2)"><line x1="40" y1="278" x2="920" y2="278"/>
+            <line x1="40" y1="342" x2="920" y2="342"/><line x1="40" y1="406" x2="920" y2="406"/></g>
+          <g fill="var(--ink-3)" font-size="17">
+            <text x="40" y="312">货币政策</text><text x="40" y="376">财政政策</text><text x="40" y="440">借款人</text>
+          </g>
+          <g fill="var(--ink-2)" font-size="17" text-anchor="middle">
+            <text x="230" y="312">一般</text><text x="500" y="312">很有效</text><text x="790" y="312">逐步失效</text>
+            <text x="230" y="376">有效</text><text x="500" y="376">会挤出私人投资</text><text x="790" y="376">更有效，不挤出</text>
+            <text x="230" y="440">企业在借</text><text x="500" y="440">企业抢着借</text><text x="790" y="440">没人愿意借</text>
+          </g>
+          <text x="40" y="500" fill="var(--ink-2)" font-size="16">核心主张：第三阶段还按第二阶段的教科书开药方，就会过度依赖货币政策、少用财政政策。</text>
+        </g>
+      </svg>
+    </div>
+    <figcaption>按辜朝明《被追赶的经济体》整理。三段的划分依据是「有没有人愿意借钱」，不是增长率高低。<a href="#stages">逐条对照 ↓</a></figcaption>
   </figure>
 
-  <h2>谁在追谁</h2>
+  <h2 id="sheet-h" data-rail="规格表">框架主张 × 四国实测</h2>
+  <p class="hint">条形在每行内归一，比的是同一维度上的相对位置；✓／✗ 表示该国是否符合框架的预期。数据为世界银行公开统计，年份见各格注脚。</p>
+  <div class="sheet" id="sheet"></div>
+  <p class="hint" id="sheet-note"></p>
+
+  <h2 id="detail">逐项细节</h2>
+  <p class="hint">上表每一行背后的图和推理，默认收起。</p>
+  <h2 id="stages">框架本身：三个阶段，两个拐点</h2>
+  <p class="hint">这张图搬到了页首，跳回去看：<a href="#top">↑ 框架图</a>。下面是逐条对照的数据。</p>
+
+  <h2 id="who">谁在追谁，什么时候被超过</h2>
   <div class="toolbar">
     <label>对照
       <select id="pair"></select>
@@ -109,7 +162,7 @@
     <strong>名义美元比较会被汇率放大。</strong>这里用现价美元 GDP，所以本币汇率一动，比值就跟着动 —— 印度 2022 年超过英国之后又掉回 100% 以下，主要不是印度变慢，是英镑与卢比的相对变化。看长期趋势可以，拿单年排名较真没意义。
   </div>
 
-  <h2>被追赶的指纹：钱存下来了，但投不出去</h2>
+  <h2 id="finger">被追赶的指纹：钱存下来了，但投不出去</h2>
   <p>辜朝明说第三阶段最要命的不是增长慢，而是<b class="hl">企业不再借钱</b> —— 国内找不到值得投的项目，钱要么出海，要么堆着。这件事有个直接的观察口径：一国的<b>总储蓄减去国内资本形成</b>。这个差额为正且持续扩大，就意味着国内投资吸不掉本国储蓄。</p>
   <div class="toolbar">
     <label>指标
@@ -133,19 +186,19 @@
   <p><b>美国</b>方向相反，缺口一直是负的（2024 年 −4.9%），也就是投掉的比存下的多，靠吸收别国储蓄补上。同样被追赶，美国的表现和日德不是一回事 —— 这也是辜朝明拿里根时期减税与放松管制当正面例子的原因。</p>
   <p><b>中国</b>的资本形成仍在 40% 以上，缺口只有个位数。按这套框架，它的位置和日德那种「钱投不出去」的状态并不相同；辜朝明本人也把中国放在第二阶段，但他 2023 年之后对中国是否已出现资产负债表衰退的判断引发过争论。</p>
 
-  <h2>反证：这套框架哪里靠不住</h2>
+  <h2 id="against">反证：这套框架哪里靠不住</h2>
   <p>下面三条不是立场，是拿同一套世界银行数据去撞这个框架的结果。</p>
 
   <h3>零、如果框架成立，这张图上该有一条斜线</h3>
   <p>框架的隐含预测是：<b>越靠近技术前沿、身后追兵越多的经济体，储蓄投资缺口应该越大</b>。把各国最近一年的「人均收入相当于美国的百分比」当作被追赶程度的代理，对上缺口，画出来是这样：</p>
   <div class="chart"><canvas id="scatter-chart" role="img" aria-label="各经济体相对美国收入水平与储蓄投资缺口的散点图，两者没有明显关系。">相对收入与储蓄投资缺口的散点图。</canvas></div>
   <p class="hint" id="scatter-note"></p>
-  <p>没有斜线。最刺眼的是英国和韩国：相对收入几乎一样（70.2% 与 72.4%），缺口一个 −2.5%、一个 +6.5%，符号都相反。扩到 235 个国家—年度观测，相关系数同样接近零。</p>
+  <p>没有斜线。最刺眼的是英国和韩国：相对收入几乎一样（70.2% 与 72.4%），缺口一个 −2.5%、一个 +6.5%，符号都相反。扩到 235 个国家—年度观测（截至 2026-07-13 的世行数据），相关系数同样接近零。</p>
   <p class="hint">代理变量有局限：相对收入不等于「被追赶程度」，样本只有 7 个经济体，相关系数也不能证明因果。但这张图至少说明，框架预测的那个方向性关系在数据里不明显。</p>
 
   <h3>一、最被追赶的经济体，没有出现被追赶的症状</h3>
   <p>按这个框架自己的定义，美国是被追得最凶的：中国占它 GDP 的比例从 40 年前的 7.1% 涨到现在的 63.4%。但美国身上一个症状都对不上 —— 储蓄减投资的缺口<b>一直是负的</b>（2024 年 −4.9%），私人部门信贷占 GDP 长期在 190% 以上还在涨，企业照样在国内借钱投资。</p>
-  <p>也就是说，「被追赶」并不能预测「借款人消失」。框架把两件事绑在一起，但数据里它们可以分开。辜朝明的解释是里根减税提高了国内回报率，可这等于承认：被追赶不是充分条件，政策才是变量 —— 那这个阶段划分还剩多少解释力，就是个问题。</p>
+  <p>「被追赶」并不能预测「借款人消失」——框架把两件事绑在一起，数据里它们可以分开。辜朝明用里根减税解释，等于承认：被追赶不是充分条件，政策才是变量。</p>
 
   <h3>二、德国那条线更像欧元的故事，不像被追赶的故事</h3>
   <p>德国的储蓄投资缺口在 2000 年还是 −1.8%，到 2015 年摆到 +8.1%。把两个制度性事件标在同一条时间轴上：</p>
@@ -156,7 +209,7 @@
   <h3>三、拐点没有判定标准，所以证伪不了</h3>
   <p>刘易斯拐点还能拿劳动力市场数据吵，「被追赶拐点」没有公认的量化门槛。结果是：任何一个陷入停滞的经济体，都可以事后被归进第三阶段；而任何一个没停滞的（比如美国），可以说它靠政策扛住了。<b>一个怎样都对的框架，预测能力是零。</b>批评者说它「答案写在谜面上」，指的就是这个。</p>
 
-  <h2>中国特殊在哪</h2>
+  <h2 id="china">中国特殊在哪</h2>
   <p>把中国往这个框架里套，有三处对不上，而且不是程度差异，是量级差异。</p>
 
   <h3>一、信贷方向完全相反</h3>
@@ -169,25 +222,25 @@
   <p class="hint" id="mech-note"></p>
 
   <h3>二、被追赶的时候，收入水平差了一个量级</h3>
-  <p>日本 1990 年被追上时，人均 GDP（购买力平价）已经是美国的 <b>81%</b>，德国是 95%。中国现在是 <b>31%</b>。</p>
+  <p>日本 1990 年被追上时，人均 GDP（购买力平价）已经是美国的 <b>81%</b>，德国是 95%。中国 2025 年是 <b>32.6%</b>。</p>
   <div class="chart" style="height:210px"><canvas id="income-bar" role="img" aria-label="各国人均收入相当于美国百分比的对比条形图，中国显著低于日本德国。">各国相对美国的收入水平。</canvas></div>
   <p class="hint">购买力平价口径，取各自最近一年；日本另附 1990 年（被追上那年）作为对照。</p>
-  <p>这是最关键的一处不同：日本进入第三阶段时已经站在收入的天花板附近，「找不到更高回报的国内项目」是合理的；中国在只有美国三分之一收入的位置上就遭遇产业外迁，意味着它面对的不是「发达经济体没项目投」，而是<b>在远未完成收敛时就丢失了成本优势</b>。这两件事的政策含义完全不同。</p>
+  <p>最关键的一处不同：日本进入第三阶段时已在收入天花板附近，「没有更高回报的项目」说得通；中国在美国三分之一收入的位置上就遭遇产业外迁，是<b>在远未完成收敛时丢失了成本优势</b>。政策含义完全不同。</p>
 
   <h3>三、未富先老，日本没有这个约束</h3>
   <p>日本 65 岁以上人口占到 12.2% 那年（1990），人均 GDP（PPP）是 36,138 国际元。中国到 12.6% 那年（2020），人均只有 <b>19,215</b> —— 同样的老龄化程度，收入不到日本当年的 <b>54%</b>。</p>
   <div class="legend" id="age-legend"></div>
   <div class="chart"><canvas id="age-chart" role="img" aria-label="日本与中国的老龄化程度与人均收入轨迹对比，中国在更低收入水平上达到同样的老龄化程度。">老龄化程度与人均收入的轨迹。</canvas></div>
-  <p class="hint">横轴是 65 岁以上人口占比，纵轴是人均 GDP（购买力平价）。同一个横坐标上比高低，就是「同样多的老人，兜里有多少钱」。日本那条线一路在上方。</p>
+  <p class="hint">横轴是 65 岁以上人口占比，纵轴是人均 GDP（购买力平价，2021 年不变价国际元）。同一个横坐标上比高低，就是「同样多的老人，兜里有多少钱」。日本那条线一路在上方。</p>
 
-  <h2>和中国现在对得上吗</h2>
+  <h2 id="fit">和中国现在对得上吗</h2>
   <div class="scroll">
     <table>
       <thead><tr><th>辜朝明的说法</th><th>中国现状</th><th>对不对得上</th></tr></thead>
       <tbody>
-        <tr><td>企业找不到国内投资机会</td><td>资本形成仍占 GDP 40% 以上，全球最高之列</td><td>对不上</td></tr>
+        <tr><td>企业找不到国内投资机会</td><td>资本形成仍占 GDP 40% 以上（2024 年 40.5%，已连续三年下滑），全球最高之列</td><td>对不上</td></tr>
         <tr><td>没人愿意借钱，信贷停滞</td><td>私人信贷/GDP 194% 且仍在上升</td><td>对不上</td></tr>
-        <tr><td>储蓄堆积、投不出去</td><td>储蓄减投资缺口仅 +2.2%，远低于德国 +5.6%、日本 +4.4%</td><td>对不上</td></tr>
+        <tr><td>储蓄堆积、投不出去</td><td>储蓄减投资缺口仅 +2.2%（2024），低于德国 +4.4%（2025）、日本 +4.4%（2024）</td><td>对不上</td></tr>
         <tr><td>货币政策失效、需要财政发力</td><td>降息降准对信贷需求拉动有限，财政承担了托底角色</td><td>部分对得上</td></tr>
         <tr><td>资产价格下跌触发资产负债表修复</td><td>房价指数连续多年负增长，居民提前还贷、地产投资收缩</td><td>对得上</td></tr>
         <tr><td>被更年轻更便宜的对手追赶</td><td>劳动密集环节向东南亚、印度、墨西哥转移</td><td>对得上</td></tr>
@@ -198,12 +251,13 @@
   <div class="chart" style="height:200px"><canvas id="verdict-gap" role="img" aria-label="中日德储蓄减投资缺口对比条形图。">储蓄减投资缺口对比。</canvas></div>
   <p class="hint">两项分开画，是因为量级差了一个数量级（资本形成 20–40%，缺口 2–5%）画在同一根轴上，缺口那组会被压成一条线。私人信贷已有上面的专图，不重复。</p>
   <p class="hint">中国的资本形成远高于日德，储蓄缺口却低于它们 —— 「钱多得投不出去」这个描述落不到中国身上。</p>
-  <p>结论不是「框架全错」或「框架全对」，而是<b>它描述的症状对上了一半，机制那一半没对上</b>。对得上的是资产价格下行与产业外迁；对不上的是他理论的发动机 —— 企业净还债、信贷收缩、投资无处可去。中国的投资率和信贷余额都还在高位，问题更像是<b>投资的回报在塌</b>（尤其地产与地方基建），而不是<b>没有人投资</b>。这两者用同一个药方，未必对症。</p>
+  <p>结论：<b>症状对上了一半，机制那一半没对上</b>。对得上的是资产价格下行与产业外迁；对不上的是发动机——企业净还债、信贷收缩。中国是<b>投资回报在塌</b>，不是<b>没有人投资</b>，同一个药方未必对症。</p>
   <p class="hint">上表中「资本形成」「信贷」「储蓄缺口」三行来自本页数据，可在上面的图里核对；「房价指数」一行见本站的<a href="../housing/">全国房价走势地图</a>；其余为公开报道的定性描述，不是本页数据得出的结论。</p>
 
-  <h2>数据来源</h2>
+  <h2 id="sec1">数据来源</h2>
   <ul class="links">
     <li><a href="https://data.worldbank.org/" rel="noopener">World Bank Open Data</a> — GDP（现价美元）、人均 GDP（2015 年不变价）、总储蓄、资本形成、对外直接投资净流出，均为各国官方上报口径</li>
+    <li>同一套接口另取三条：私人部门信贷占 GDP（<code>FS.AST.PRVT.GD.ZS</code>）、65 岁以上人口占比（<code>SP.POP.65UP.TO.ZS</code>）、人均 GDP 购买力平价（<code>NY.GDP.PCAP.PP.KD</code>，2021 年不变价国际元）—— 规格表、信贷对比、老龄化轨迹与相对收入图用的是这三条。各指标的最新年份不齐：德国的私人信贷只到 2023 年，其余多数到 2024–2025 年</li>
     <li><a href="./data/catchup.json" rel="noopener">catchup.json</a> — 本页用的派生数据</li>
     <li>框架出处：辜朝明《被追赶的经济体》（原书 <em>The Other Half of Macroeconomics and the Fate of Globalization</em> 的修订版），概念首见于《大衰退年代》</li>
   </ul>
@@ -229,16 +283,172 @@
     invest: '国内资本形成占 GDP 的比重。持续下滑意味着国内的投资机会在减少。',
     savings: '总储蓄占 GDP。这条线通常很稳 —— 会变的是投资那一边，不是储蓄。',
     credit: '辜朝明机制的直接检验。日本 2000→2010 掉了 48 个百分点，那是企业在净还债；中国同期一路上行，2024 年创新高 —— 方向相反。',
-    relUS: '按购买力平价算，各国人均收入相当于美国的百分之多少。日本被追上时在 81%，中国现在 31% —— 被追赶发生在完全不同的收入位置上。'
+    relUS: '按购买力平价算，各国人均收入相当于美国的百分之多少。日本被追上时在 81%，中国 2025 年 32.6% —— 被追赶发生在完全不同的收入位置上。'
   };
 
   var data = null, ratioChart = null, indChart = null;
   var pairSel = document.getElementById('pair');
   var metricSel = document.getElementById('metric');
 
+
+  // ---- 规格表 ----
+  // One row per testable claim, four economies as columns. Bars normalise within
+  // a row so the comparison is positional; flags say whether that economy
+  // matches what the framework predicts, including where it does not.
+  var SHEET_ISO = ['JPN', 'DEU', 'USA', 'CHN'];
+  var SHEET_C = { JPN: '#2a78d6', DEU: '#eda100', USA: '#1baf7a', CHN: '#e34948' };
+
+  function sheetLast(arr) {
+    for (var i = arr.length - 1; i >= 0; i--) if (arr[i] != null) return { v: arr[i], i: i };
+    return null;
+  }
+  function sheetBar(frac, color, signed) {
+    var w = Math.max(2, Math.min(50, Math.abs(frac) * 50));
+    var left = signed ? (frac >= 0 ? 50 : 50 - w) : 0;
+    var width = signed ? w : Math.max(2, Math.min(100, frac * 100));
+    return '<div class="bar">' + (signed ? '<i style="left:50%;width:1px;background:' + GRAY + ';opacity:.5"></i>' : '')
+      + '<i style="left:' + left + '%;width:' + width.toFixed(1) + '%;background:' + color + '"></i></div>';
+  }
+  function sheetFlag(kind, text) {
+    var g = { yes: '✓', no: '✗', mid: '~', na: '—' }[kind];
+    return '<div class="flag"><span class="g ' + kind + '">' + g + '</span>' + text + '</div>';
+  }
+  function sheetSpark(arr, color, years) {
+    var pts = [], lo = Infinity, hi = -Infinity;
+    arr.forEach(function (v) { if (v != null) { lo = Math.min(lo, v); hi = Math.max(hi, v); } });
+    if (!isFinite(lo) || hi === lo) return '';
+    var W = 100, H = 28, zeroY = (H - (0 - lo) / (hi - lo) * H);
+    arr.forEach(function (v, i) {
+      if (v == null) return;
+      pts.push((i / (arr.length - 1) * W).toFixed(1) + ',' + (H - (v - lo) / (hi - lo) * H).toFixed(1));
+    });
+    var zero = (lo < 0 && hi > 0)
+      ? '<line x1="0" y1="' + zeroY.toFixed(1) + '" x2="100" y2="' + zeroY.toFixed(1) + '" stroke="' + GRAY + '" stroke-opacity=".45" stroke-dasharray="2 2" stroke-width="1" vector-effect="non-scaling-stroke"/>' : '';
+    return '<svg class="spark" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" aria-hidden="true">'
+      + zero + '<polyline points="' + pts.join(' ') + '" fill="none" stroke="' + color + '" stroke-width="1.6" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></svg>';
+  }
+
+  function drawSheet(d) {
+    var C = d.countries, Y = d.years;
+    var corr = {};
+    d.stats.creditVsGap.forEach(function (x) { corr[x.iso] = x; });
+    var relLast = {}, gapLast = {}, credLast = {}, oldLast = {}, invLast = {}, fdiLast = {};
+    SHEET_ISO.forEach(function (k) {
+      relLast[k] = sheetLast(C[k].relUS); gapLast[k] = sheetLast(C[k].gap);
+      credLast[k] = sheetLast(C[k].credit); oldLast[k] = sheetLast(C[k].old65);
+      invLast[k] = sheetLast(C[k].invest); fdiLast[k] = sheetLast(C[k].fdiOut);
+    });
+    // Ten-year change in private credit: the direction is the point.
+    var cred10 = {};
+    SHEET_ISO.forEach(function (k) {
+      var a = credLast[k]; if (!a) { cred10[k] = null; return; }
+      var j = a.i - 10, prev = null;
+      for (; j >= 0; j--) if (C[k].credit[j] != null) { prev = C[k].credit[j]; break; }
+      cred10[k] = prev == null ? null : a.v - prev;
+    });
+
+    var ROWS = [
+      { dim: '相对美国收入', sub: '人均 GDP（PPP），美国 = 100',
+        num: function (k) { return relLast[k] ? relLast[k].v : 0; },
+        cell: function (k) { var x = relLast[k];
+          return { val: x ? x.v.toFixed(1) : '—', sub: x ? Y[x.i] + ' 年' : '' }; } },
+      { dim: '被谁追上过', sub: '框架的前提：先被追赶',
+        cell: function (k) { return ({
+          JPN: { html: sheetFlag('yes', '中国 2010'), sub: '总量被超过；德国 2023 再超' },
+          DEU: { html: sheetFlag('yes', '中国、印度在追'), sub: '2023 总量超过日本' },
+          USA: { html: sheetFlag('yes', '中国长期追赶'), sub: '被追赶最久的一个' },
+          CHN: { html: sheetFlag('mid', '既在追也被追'), sub: '印度在后面' } })[k]; } },
+      { dim: '储蓄投资缺口', sub: '框架预言：被追赶后转正（钱投不出去）',
+        cell: function (k) { var x = gapLast[k];
+          return { html: sheetSpark(C[k].gap, SHEET_C[k], Y)
+            + '<div class="cval">' + (x ? (x.v > 0 ? '+' : '') + x.v.toFixed(2) + '%' : '—') + '</div>',
+            sub: x ? Y[x.i] + ' 年 · 占 GDP' : '' }; } },
+      { dim: '缺口方向是否符合', sub: '被追赶 → 缺口为正',
+        cell: function (k) { var x = gapLast[k]; if (!x) return { html: sheetFlag('na', '无数据'), sub: '' };
+          if (k === 'USA') return { html: sheetFlag('no', '不符合'), sub: '被追赶最久，缺口却是 ' + x.v.toFixed(2) + '%' };
+          return { html: sheetFlag(x.v > 0 ? 'yes' : 'no', x.v > 0 ? '符合' : '不符合'),
+                   sub: (x.v > 0 ? '缺口为正 ' : '缺口为负 ') + x.v.toFixed(2) + '%' }; } },
+      { dim: '私人信贷 / GDP', sub: '框架预言：企业不借钱，信贷收缩',
+        cell: function (k) { var x = credLast[k];
+          return { html: sheetSpark(C[k].credit, SHEET_C[k], Y)
+            + '<div class="cval">' + (x ? x.v.toFixed(0) + '%' : '—') + '</div>',
+            sub: x ? Y[x.i] + ' 年' : '' }; } },
+      // Deliberately the most recent ten years, not the post-bubble decade. Japan
+      // reads positive here, which is not a contradiction of the framework's
+      // story - that contraction happened in the 1990s, outside this window -
+      // but side by side with the folded section it would look like one.
+      { dim: '信贷十年变化', sub: '最近十年，正为扩张', signed: true,
+        num: function (k) { return cred10[k] || 0; },
+        cell: function (k) { var v = cred10[k];
+          return { val: v == null ? '—' : (v > 0 ? '+' : '') + v.toFixed(0) + 'pp',
+                   sub: k === 'JPN' ? '日本的收缩在 1990 年代，不在此窗口' : '近十年' }; } },
+      { dim: '信贷与缺口相关', sub: '框架若成立，各国符号应一致', signed: true,
+        num: function (k) { return corr[k] ? corr[k].r : 0; },
+        cell: function (k) { var x = corr[k];
+          return { val: x ? (x.r > 0 ? '+' : '') + x.r.toFixed(2) : '—', sub: x ? 'n=' + x.n : '' }; } },
+      { dim: '符号是否一致', sub: '这是框架最难解释的一行',
+        cell: function (k) { var x = corr[k]; if (!x) return { html: sheetFlag('na', '—'), sub: '' };
+          return { html: sheetFlag(x.r < -0.3 ? 'yes' : (x.r > 0.3 ? 'no' : 'mid'),
+                     x.r < -0.3 ? '负相关' : (x.r > 0.3 ? '正相关' : '几乎无关')),
+                   sub: '德国 −0.84、韩国 +0.45，方向相反' }; } },
+      { dim: '投资率', sub: '资本形成占 GDP',
+        num: function (k) { return invLast[k] ? invLast[k].v : 0; },
+        cell: function (k) { var x = invLast[k];
+          return { val: x ? x.v.toFixed(1) + '%' : '—', sub: x ? Y[x.i] + ' 年' : '' }; } },
+      { dim: '对外直接投资', sub: '资本往外走的强度',
+        num: function (k) { return fdiLast[k] ? Math.abs(fdiLast[k].v) : 0; },
+        cell: function (k) { var x = fdiLast[k];
+          return { val: x ? x.v.toFixed(2) + '%' : '—', sub: x ? Y[x.i] + ' 年 · 占 GDP' : '' }; } },
+      { dim: '65 岁以上占比', sub: '中国的额外约束：未富先老',
+        num: function (k) { return oldLast[k] ? oldLast[k].v : 0; },
+        cell: function (k) { var x = oldLast[k];
+          return { val: x ? x.v.toFixed(1) + '%' : '—', sub: x ? Y[x.i] + ' 年' : '' }; } },
+      { dim: '被追赶时的收入', sub: '日本当年 vs 中国现在',
+        cell: function (k) { return ({
+          JPN: { html: sheetFlag('yes', '高位被追'), sub: '1990 年代已接近美国水平' },
+          DEU: { html: sheetFlag('yes', '高位被追'), sub: '当前 ' + (relLast.DEU ? relLast.DEU.v.toFixed(0) : '—') + '（美国=100）' },
+          USA: { html: sheetFlag('na', '基准'), sub: '定义为 100' },
+          CHN: { html: sheetFlag('no', '低位被追'), sub: '仅 ' + (relLast.CHN ? relLast.CHN.v.toFixed(0) : '—') + '，差一个量级' } })[k]; } }
+    ];
+
+    var html = ['<div class="srow head"><div class="sdim"></div>'
+      + SHEET_ISO.map(function (k) {
+          return '<div class="cty"><i style="background:' + SHEET_C[k] + '"></i>' + C[k].name + '</div>';
+        }).join('') + '</div>'];
+
+    ROWS.forEach(function (r) {
+      var max = 0;
+      if (r.num) SHEET_ISO.forEach(function (k) { max = Math.max(max, Math.abs(r.num(k)) || 0); });
+      html.push('<div class="srow"><div class="sdim"><b>' + r.dim + '</b>' + (r.sub || '') + '</div>'
+        + SHEET_ISO.map(function (k) {
+            var c = r.cell(k);
+            var main = c.html || ('<div class="cval">' + c.val + '</div>');
+            var b = (r.num && max) ? sheetBar(r.num(k) / max, SHEET_C[k], !!r.signed) : '';
+            return '<div class="cell">' + main + b + (c.sub ? '<div class="csub">' + c.sub + '</div>' : '') + '</div>';
+          }).join('') + '</div>');
+    });
+    document.getElementById('sheet').innerHTML = html.join('');
+
+    var usa = gapLast.USA;
+    document.getElementById('sheet-note').textContent =
+      '这张表里最要命的是第四行和第八行：被追赶最久的美国，缺口是 ' + (usa ? usa.v.toFixed(2) + '%' : '—')
+      + '（负的，钱并没有投不出去）；而信贷与缺口的相关系数在德国是 −0.84、韩国是 +0.45，方向相反。'
+      + '一个框架如果在最该成立的样本上不成立、在不同样本上符号还相反，它更像是对日本一国的事后描述，而不是一条可外推的规律。';
+
+    // Park the sticky header under whatever chrome is above it.
+    var setTop = function () {
+      var bar = document.querySelector('.zb') || document.querySelector('.statusbar');
+      document.documentElement.style.setProperty('--sheet-top',
+        (bar ? Math.round(bar.getBoundingClientRect().height) : 0) + 'px');
+    };
+    setTop();
+    addEventListener('resize', setTop);
+    setTimeout(setTop, 400);
+  }
+
   fetch('./data/catchup.json', { cache: 'no-cache' })
     .then(function (r) { if (!r.ok) throw new Error('catchup.json ' + r.status); return r.json(); })
-    .then(function (d) { data = d; boot(); })
+    .then(function (d) { data = d; boot(); drawSheet(d); })
     .catch(function (err) {
       document.getElementById('ratio-note').textContent = '数据加载失败：' + err.message;
     });

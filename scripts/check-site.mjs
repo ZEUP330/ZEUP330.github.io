@@ -61,6 +61,60 @@ for (const p of pages) {
   if (!workflows.includes(`${p}/data`)) note(`/${p}/ has data but no workflow commits ${p}/data`);
 }
 
+// The shared status bar lists datasets by hand. A page can ship data, have a
+// workflow, and still be missing from the bar - which is how it ended up
+// reporting "5 datasets" while six existed.
+const bar = existsSync('assets/statusbar.js') ? readFileSync('assets/statusbar.js', 'utf8') : '';
+for (const p of pages) {
+  if (!existsSync(join(p, 'data', 'status.json'))) continue;
+  if (!bar.includes(`/${p}/data/status.json`)) note(`/${p}/ publishes status.json but the status bar does not list it`);
+}
+
+// An id starting with a digit is legal HTML but not a valid CSS selector, so
+// document.querySelector('#50-dsr') throws. Cheap to prevent, annoying to find.
+for (const file of htmlFiles) {
+  const html = readFileSync(file, 'utf8');
+  for (const m of html.matchAll(/\sid="([^"]+)"/g)) {
+    if (/^[0-9]/.test(m[1])) note(`${file}: id "${m[1]}" starts with a digit and breaks querySelector`);
+  }
+}
+
+// Duplicate ids have now broken two pages the same way: a section anchor and a
+// canvas sharing a name, so getElementById hands Chart.js an <h2> and every
+// chart after it dies. Cheap to check, invisible until it bites.
+for (const file of htmlFiles) {
+  const html = readFileSync(file, 'utf8');
+  const seen = new Map();
+  for (const m of html.matchAll(/\sid="([^"]+)"/g)) {
+    seen.set(m[1], (seen.get(m[1]) || 0) + 1);
+  }
+  for (const [id, n] of seen) if (n > 1) note(`${file}: duplicate id "${id}" (${n}x)`);
+}
+
+// Every chart on these pages is drawn by an inline <script>, and a single bad
+// character there takes out the whole page silently: the HTML still renders,
+// the canvases stay blank.
+//
+// This catches syntax errors only. It does NOT catch the bug that prompted it -
+// a shell quoting slip shipped setN(n-cities, ...) instead of
+// setN('n-cities', ...), which parses fine as a subtraction and only throws
+// ReferenceError when it runs. Catching that statically needs scope analysis;
+// instead assets/theme.js now shows a banner when a page throws at run time.
+for (const file of htmlFiles) {
+  const html = readFileSync(file, 'utf8');
+  for (const m of html.matchAll(/<script(?![^>]*\ssrc=)[^>]*>([\s\S]*?)<\/script>/g)) {
+    const body = m[1];
+    if (!body.trim()) continue;
+    try {
+      // Function() compiles without executing, so this is a parse check only.
+      new Function(body);
+    } catch (err) {
+      const line = html.slice(0, m.index).split('\n').length;
+      note(`${file}: inline <script> at line ~${line} does not parse - ${err.message}`);
+    }
+  }
+}
+
 console.log(`${pages.length} pages: ${pages.join(', ')}`);
 console.log(`${htmlFiles.length} html files checked`);
 

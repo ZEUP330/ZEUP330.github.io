@@ -66,9 +66,11 @@
     .hide-sm { display: none; }
   }
 </style>
+<link rel="stylesheet" href="/assets/rail.css">
 <link rel="stylesheet" href="/assets/statusbar.css">
 <script src="/assets/statusbar.js" defer></script>
 <script src="/assets/theme.js" defer></script>
+<script src="/assets/rail.js" defer></script>
 </head>
 <body>
 <main>
@@ -87,7 +89,7 @@
 
   <div id="body" hidden>
 
-    <h2>先看数据本身</h2>
+    <h2 id="s-data" data-rail="数据">先看数据本身</h2>
 
     <section class="block" data-rise="0">
       <h3>非农就业：每月新增多少个岗位</h3>
@@ -166,7 +168,7 @@
       <p class="hint note">用的是纳斯达克 100 <b>指数</b>的月末收盘，不是 NQ 期货合约。期货有展期价差，长序列拼接口径不一，指数更适合做这种跨二十年的统计。</p>
     </section>
 
-    <h2>数据变化之后，纳指怎么走</h2>
+    <h2 id="s-stat" data-rail="对纳指">数据变化之后，纳指怎么走</h2>
 
     <p>下面四组统计是这一页真正想说的部分。做法是：把过去二十多年的<strong>每一个月</strong>，按当时市场已经知道的经济数据分成几档，然后比较纳指在各档里的月度收益。</p>
 
@@ -214,13 +216,13 @@
       <p class="hint note">四象限是把前两组交叉起来。样本一分为四之后每格只剩几十个月，差异要更大才算得上有意义 —— 别把这张图当成信号。</p>
     </section>
 
-    <h2>怎么读这些统计</h2>
+    <h2 id="s-how" data-rail="怎么读">怎么读这些统计</h2>
     <p><strong>一、这是分档平均，不是预测。</strong>每一档里都有涨得很好和跌得很惨的月份，标准差那一列就是在提醒这件事：差异往往比档与档之间的均值差大一个数量级。看均值不看离散度，是这类统计最常见的误用。</p>
     <p><strong>二、样本量决定了能说多重的话。</strong>二十多年只有二百多个月，切成四档之后每格几十个。几十个样本的均值差几个百分点，很可能只是噪音。表里给了月数，请连着看。</p>
     <p><strong>三、同一个数据在不同环境里含义相反。</strong>「非农超预期」在担心衰退的年份是利好，在担心通胀、担心美联储不降息的年份就是利空 —— 2022 到 2023 年反复出现过。任何一个「强数据 = 涨」的规则都会在某个阶段翻车，所以这页只给分档统计，不给结论式的规则。</p>
     <p><strong>四、这里比的是月度，不是发布当天。</strong>发布当天的跳动需要精确到分钟的行情和逐次的发布时间表，那是另一套数据。月度口径回答的是「这一档环境里，指数整体倾向如何」，回答不了「非农超预期那一刻 NQ 跳了多少点」。</p>
 
-    <h2>信息来源</h2>
+    <h2 id="s-src" data-rail="来源">信息来源</h2>
     <ul class="links">
       <li><a href="https://fred.stlouisfed.org/series/PAYEMS" rel="noopener">PAYEMS</a> · <a href="https://fred.stlouisfed.org/series/UNRATE" rel="noopener">UNRATE</a> — 非农就业与失业率，美国劳工统计局，经 FRED 分发</li>
       <li><a href="https://fred.stlouisfed.org/series/CPIAUCSL" rel="noopener">CPIAUCSL</a> · <a href="https://fred.stlouisfed.org/series/CPILFESL" rel="noopener">CPILFESL</a> · <a href="https://fred.stlouisfed.org/series/PCEPILFE" rel="noopener">PCEPILFE</a> — CPI、核心 CPI 与核心 PCE</li>
@@ -333,11 +335,11 @@
     new Chart(el('c-payrolls'), {
       type: 'bar',
       data: { labels: pay.map(function (r) { return r.d; }), datasets: [
-        { data: pay.map(function (r) { return r.v; }), backgroundColor: pay.map(function (r) { return r.v < 0 ? RED : BLUE; }), borderWidth: 0, order: 2 },
-        Object.assign({ type: 'line', order: 1 }, line(GREY, payMa, { borderDash: [5, 4] }))
+        { data: pay.map(function (r) { return +wan(r.v); }), backgroundColor: pay.map(function (r) { return r.v < 0 ? RED : BLUE; }), borderWidth: 0, order: 2 },
+        Object.assign({ type: 'line', order: 1 }, line(GREY, payMa.map(function (v) { return v == null ? null : +wan(v); }), { borderDash: [5, 4] }))
       ] },
-      options: Object.assign(base('千人'), { plugins: { legend: { display: false }, tooltip: { callbacks: {
-        label: function (c) { return (c.datasetIndex ? '12 个月均值：' : '当月新增：') + wan(c.parsed.y) + ' 万人'; } } } } })
+      options: Object.assign(base('万人'), { plugins: { legend: { display: false }, tooltip: { callbacks: {
+        label: function (c) { return (c.datasetIndex ? '12 个月均值：' : '当月新增：') + fmt(c.parsed.y) + ' 万人'; } } } } })
     });
 
     var un = S.unrate.slice(-300), sa = S.sahm.slice(-300);

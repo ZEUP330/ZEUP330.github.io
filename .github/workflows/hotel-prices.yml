@@ -1,12 +1,16 @@
 name: hotel prices
 
 on:
-  schedule:
-    # Hourly, as asked. Worth knowing what this is up against: these are
-    # datacenter IPs hitting a booking site, so blocks and rate limits are
-    # expected rather than surprising. The job is fail-soft - a blocked run
-    # keeps the previous snapshot and the page shows how old it is.
-    - cron: '21 * * * *'
+  # Hourly was the ask, and it was tried. Trip.com redirects GitHub's
+  # datacenter IPs to /account/signin, so every scheduled run just hit a login
+  # wall - six for six. Booking.com answers 202 with a challenge page,
+  # Hotels.com answers 429, and Agoda serves a JS shell whose only "price"
+  # strings are feature flags and i18n templates. None of them can be read
+  # server-side without an authenticated session, which would mean putting
+  # someone's OTA credentials in this repo.
+  #
+  # So the schedule is off rather than pounding a login wall 24 times a day.
+  # Run it by hand if you want to check whether that has changed.
   workflow_dispatch:
 
 permissions:

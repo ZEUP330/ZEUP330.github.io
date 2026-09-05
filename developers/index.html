@@ -81,28 +81,64 @@
   }
 </style>
 <link rel="stylesheet" href="/assets/statusbar.css">
+<link rel="stylesheet" href="/assets/rail.css">
 <script src="/assets/statusbar.js" defer></script>
 <script src="/assets/theme.js" defer></script>
+<script src="/assets/rail.js" defer></script>
 </head>
 <body>
 <main>
   <p class="back"><a href="../">← 首页</a> · <a href="../housing/">全国房价走势地图</a></p>
   <h1>中国房企：谁在什么时候暴的</h1>
-  <p>22 家上市房企距各自历史最高收盘价还剩多少。用股价，是因为它是这件事里<b class="hl">唯一权威、带日期、且可以自动更新</b>的记录 —— 交易所每天都在给每家公司定价，停牌和退市也会直接写进这条曲线。</p>
+  <p class="lede">这页只用一个客观量：<span class="hl">每家公司距自己历史最高股价还剩多少</span>。不依赖任何人对「暴雷」的定义。逐家核对公告后能确认：股价通常比违约公告早，但它<b>不等于</b>违约 —— 万科跌破 −90% 至今没有发生公开市场违约。</p>
+  <p><span id="n-firms">22</span> 家上市房企距各自历史最高收盘价还剩多少。用股价，是因为它是这件事里<b class="hl">唯一权威、带日期、且可以自动更新</b>的记录。</p>
+
+  <figure class="shot">
+    <div class="fr">
+      <svg viewBox="0 0 960 540" preserveAspectRatio="xMidYMid meet" role="img" aria-label="条形图：股价跌破关注线比违约公告平均早 4 个月，雅居乐早 19 个月、碧桂园早 13 个月；万科股价跌破 −90% 但至今没有违约公告。">
+        <title>股价比公告早多久</title>
+        <g font-family="-apple-system, BlinkMacSystemFont, sans-serif">
+          <text x="40" y="46" fill="var(--ink)" font-size="24" font-weight="600">股价通常比违约公告先到</text>
+          <text x="40" y="76" fill="var(--ink-3)" font-size="16">条的长度＝股价跌破关注线领先公告的月数</text>
+
+          <line x1="760" y1="110" x2="760" y2="440" stroke="var(--ink-3)" stroke-width="2"/>
+          <text x="770" y="126" fill="var(--ink-3)" font-size="16">违约公告日</text>
+
+          <g fill="var(--ink)" font-size="20" font-weight="600">
+            <text x="40" y="176">雅居乐</text><text x="40" y="256">碧桂园</text><text x="40" y="336">中位</text><text x="40" y="416">万科</text>
+          </g>
+          <rect x="190" y="154" width="570" height="30" rx="6" fill="var(--neg)" opacity=".78"/>
+          <rect x="370" y="234" width="390" height="30" rx="6" fill="var(--neg)" opacity=".62"/>
+          <rect x="640" y="314" width="120" height="30" rx="6" fill="var(--neg)" opacity=".45"/>
+          <rect x="190" y="394" width="570" height="30" rx="6" fill="none" stroke="var(--ink-3)"
+                stroke-width="2" stroke-dasharray="7 6"/>
+
+          <g fill="var(--ink)" font-size="19" font-weight="600" text-anchor="end">
+            <text x="742" y="176">早 19 个月</text><text x="742" y="256">早 13 个月</text><text x="742" y="336">早 4 个月</text>
+          </g>
+          <text x="475" y="416" fill="var(--ink-2)" font-size="18" text-anchor="middle">跌破 −90%，至今没有公开市场违约</text>
+
+          <text x="40" y="500" fill="var(--ink-2)" font-size="17">所以 −90% 是<tspan font-weight="600">早期预警</tspan>，不是判决 —— 把它当成违约事实，会同时误伤和漏判。</text>
+        </g>
+      </svg>
+    </div>
+    <figcaption>核对的 10 家里 9 家是股价先到。逐家公告与出处在下面的核对表里。</figcaption>
+  </figure>
 
   <div class="note">
-    你要的<b>项目点位</b>和<b>区县级均价分布</b>我找不到能用的权威来源，没有硬做。理由写在页面最下面「为什么没有地图」一节，包括我查了哪些官方渠道、各自卡在哪里。
+    <b>项目点位</b>和<b>区县级均价分布</b>找不到能用的权威来源，没有硬做。理由见页尾「为什么没有地图」。
   </div>
 
   <div id="empty" class="placeholder" hidden>还没有数据。等 <code>developers</code> 工作流跑完后刷新。</div>
 
   <div id="app" hidden>
-    <h2>分化不在公司，在所有制</h2>
+    <h2 id="sec1">分化不在公司，在所有制</h2>
     <div class="owns" id="owns"></div>
     <p class="hint" id="own-note"></p>
 
-    <details class="fold">
-      <summary><h2>逐家回撤</h2><span class="cnt" id="firms-count"></span></summary>
+  <p class="alert-note" id="stale-note" hidden></p>
+
+  <h2 id="sec2">逐家回撤<span class="cnt" id="firms-count"></span></h2>
       <div class="legend">
         <span><i class="sw" style="background:var(--private)"></i>民营</span>
         <span><i class="sw" style="background:var(--mixed)"></i>混合 / 地方国资</span>
@@ -110,9 +146,8 @@
         <span>条越长跌得越多</span>
       </div>
       <ul class="firms" id="firms"></ul>
-    </details>
 
-    <h2>暴雷时间轴</h2>
+    <h2 id="sec3">暴雷时间轴</h2>
     <div class="legend">
       <span><i class="sw" style="background:var(--private)"></i>民营</span>
       <span><i class="sw" style="background:var(--mixed)"></i>混合 / 地方国资</span>
@@ -122,16 +157,16 @@
     <div id="timeline"></div>
     <p class="hint">每行一家公司：左端是跌破 −50%、右端是跌破 −90% 的月份，横条长度就是从「腰斩」滑到「几乎归零」用掉的时间。按暴雷先后排序。<b>两个日期都从各自的历史最高点之后算起</b> —— 有几家在 2015 年也曾腰斩过，但后来创了新高，那次不属于这一轮。</p>
 
-    <h2>22 家，同一把尺子</h2>
+    <h2 id="sec4"><span id="n-firms2">22</span> 家，同一把尺子</h2>
     <div id="smalls"></div>
     <p class="hint">每格是一家公司的回撤路径，纵轴统一 0 到 −100%，虚线是 −90%。不用读数字，看形状就知道哪一类塌了。</p>
 
-    <h2>塌下去的过程</h2>
+    <h2 id="sec5">塌下去的过程</h2>
     <div class="legend" id="path-legend"></div>
     <div class="chart"><canvas id="path" role="img" aria-label="折线图：各房企股价距自身历史最高点的回撤随时间变化，按所有制着色。">房企股价回撤路径。</canvas></div>
     <p class="hint">每条线是一家公司距<b>自己</b>历史最高收盘的距离，所以起点不同的公司也能放在一张图上比。红色（民营）几乎全部沉到底部并且没有回来。</p>
 
-    <h2>跌破 −50% 与 −90% 的日期</h2>
+    <h2 id="s-50-90" data-rail="跌破日期">跌破 −50% 与 −90% 的日期</h2>
     <div class="scroll">
       <table>
         <thead><tr>
@@ -145,23 +180,21 @@
   </div>
 
   <div id="cityblock" hidden>
-    <h2>这场崩塌落在哪些城市</h2>
+    <h2 id="sec7" data-rail="落在哪些城市">这场崩塌落在哪些城市</h2>
     <p id="city-lede"></p>
     <div class="citymap" id="citymap"></div>
     <p class="hint">点越大跌得越多，颜色同理。房价指数由 70 城同比逐月累乘还原，衡量的是各城市距<b>自己</b>指数最高点的距离，不是绝对房价。</p>
 
-    <details class="fold">
-      <summary><h2>逐城明细</h2><span class="cnt" id="cities-count"></span></summary>
+  <h2 id="sec8">逐城明细<span class="cnt" id="cities-count"></span></h2>
       <div class="legend">
         <span><i class="sw" style="background:var(--private)"></i>跌幅最大的 10 个</span>
         <span><i class="sw" style="background:var(--soe)"></i>最抗跌的 10 个</span>
       </div>
       <ul class="firms" id="cities"></ul>
-    </details>
     <p class="hint" id="city-note"></p>
   </div>
 
-  <h2>核对：市场定价 vs 真实事件</h2>
+  <h2 id="sec9">核对：市场定价 vs 真实事件</h2>
   <p>上面的日期全部来自股价。为了检验它是不是在编故事，我按公司逐个查了公开公告与财经报道，把<b>真实的信用事件日期</b>拉出来对照。结论有一条是推翻原本说法的。</p>
 
   <div class="alert-note" id="verdict"></div>
@@ -174,24 +207,25 @@
       <tbody id="verify"></tbody>
     </table>
   </div>
-  <p class="hint">「差」为正表示股价先到，负表示公告先到。核对于 2026-08-31，覆盖 22 家中的 12 家 —— 其余 10 家没有查到足够权威的单一时点事件，留白而不是猜。</p>
+  <p class="hint">「差」为正表示股价先到，负表示公告先到。核对于 2026-08-31，覆盖 <span id="n-firms3">22</span> 家中的 12 家 —— 其余 10 家没有查到足够权威的单一时点事件，留白而不是猜。</p>
 
-  <details class="fold">
-    <summary><h2>附录：逐条参考来源</h2><span class="cnt" id="ref-count"></span></summary>
+  <h2 id="sec10">附录：逐条参考来源<span class="cnt" id="ref-count"></span></h2>
     <ol class="refs" id="refs"></ol>
     <p class="hint">来源为公司公告、上市公司受托管理报告与财经媒体报道。评级机构对「违约」的认定（惠誉 RD、标普 SD）与公司自己公告的口径可能差几天，表中取较早的公开时点并在条目里注明。</p>
-  </details>
 
-  <h2>为什么没有地图</h2>
+  <h2 id="sec11">为什么没有地图</h2>
   <p>你要的是「房企在各城市的项目点 + 暴雷点 + 区县均价分布」。我按权威来源逐个查过，卡在这几处：</p>
   <ul>
     <li><b>项目点位</b>：没有免费的机器可读数据集。上市公司年报只披露到「进入 X 个城市」这种粒度，项目级坐标只存在于贝壳、安居客这类商业平台，要爬且受其服务条款限制。</li>
-    <li><b>区县级均价</b>：统计局只发布 <a href="../housing/">70 城价格<b>指数</b></a>（不是价格）。区县级成交均价在各市住建委/房管局手里 —— <a href="https://zjw.beijing.gov.cn/" rel="noopener">北京住建委</a>是项目级、要自行按区聚合，<a href="https://fdc.zjj.sz.gov.cn/" rel="noopener">深圳房地产信息平台</a>又是另一套页面。几十个城市各一套 HTML、无 API、对境外 IP 不友好，而这个站的更新是跑在 GitHub 的美国 runner 上。</li>
-    <li><b>违约名单</b>：交易所<b>没有</b>统一的「违约债券名单」下载入口。<a href="https://bond.sse.com.cn/" rel="noopener">上证债券信息网</a>和<a href="http://www.szse.cn/disclosure/bond/notice/index.html" rel="noopener">深交所债券公告</a>是逐条公告，需要按发行人检索；<a href="https://pccz.court.gov.cn/pcajxxw/index/xxwsy" rel="noopener">全国法院破产重整案件信息网</a>是门户页面不是接口。实务上要靠公告 + 评级机构报告 + 商业数据库交叉验证，做不成每日自动更新。</li>
+    <li><b>区县级均价</b>：统计局只发布 <a href="../housing/">70 城价格<b>指数</b></a>。区县级成交均价散在各市住建委手里（<a href="https://zjw.beijing.gov.cn/" rel="noopener">北京</a>是项目级、深圳又是另一套（该站对程序化访问返回 412，本次核对时浏览器 UA 也打不开）），几十个城市各一套 HTML、无 API。</li>
+    <li><b>违约名单</b>：交易所<b>没有</b>统一下载入口。<a href="https://bond.sse.com.cn/" rel="noopener">上证</a>、<a href="http://www.szse.cn/disclosure/bond/notice/index.html" rel="noopener">深交所</a>是逐条公告，<a href="https://pccz.court.gov.cn/pcajxxw/index/xxwsy" rel="noopener">破产重整信息网</a>是门户不是接口，做不成每日自动更新。</li>
   </ul>
   <p>所以这一页退回到能站住的那部分：<b>交易所价格</b>。它不能告诉你某个楼盘停没停工，但能准确告诉你市场在哪一天给这家公司判了刑，而且明天还会自动更新。</p>
 
-  <h2>数据与口径</h2>
+  <h2 id="close">收尾：股价能说什么，不能说什么</h2>
+  <p><b>能说的</b>：市场比公告快。核对的 10 家里 9 家是股价先到，中位领先 4 个月，碧桂园早 13 个月、雅居乐早 19 个月。在没有统一违约名单可下载的情况下，这是唯一每天自动更新、且不依赖任何人主观判断的信号。</p>
+  <p><b>不能说的</b>：它不是判决。万科跌破 −90% 至今没有违约，富力那次是展期不是违约；反过来，佳兆业停牌期间价格根本没机会反应，公告反而比股价早 3 个月。<span class="hl">−90% 是一个早期预警，把它当成违约事实会同时误伤和漏判。</span></p>
+  <h2 id="sec12">数据与口径</h2>
   <ul>
     <li>收盘价来自 Yahoo Finance 公开 chart 接口，港股与 A 股均取 2015 年起的日频</li>
     <li>回撤基准是<b>各公司自身</b> 2015 年以来的最高收盘，不是行业指数，也未做汇率换算（港股为港元、A 股为人民币，回撤是比例所以不受影响）</li>
@@ -357,6 +391,21 @@
     drawSmalls();
     drawVerify();
     document.getElementById('firms-count').textContent = data.firms.length + ' 家';
+    ['n-firms', 'n-firms2', 'n-firms3'].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.textContent = data.firms.length;
+    });
+    // A carried-forward firm is still in the set but its price stopped moving;
+    // say so rather than letting a frozen number read as current.
+    var stale = data.firms.filter(function (f) { return f.stale; });
+    var sn = document.getElementById('stale-note');
+    if (sn) {
+      sn.hidden = !stale.length;
+      if (stale.length) sn.innerHTML = '<b>' + stale.map(function (f) { return f.name; }).join('、')
+        + '</b> 已退市，行情源不再返回数据。这里保留它最后一个交易日（'
+        + stale.map(function (f) { return f.lastDate; }).join('、')
+        + '）的记录 —— 退市不是数据缺失，那就是这条曲线的终点。';
+    }
 
     var priv = data.byOwn.filter(function (b) { return b.own === 'private'; })[0];
     var soe = data.byOwn.filter(function (b) { return b.own === 'soe'; })[0];
@@ -567,8 +616,7 @@
             ['界面新闻：按期偿还 2 亿美元债（2022 年对照）', 'https://m.jiemian.com/article/7903896.html']] },
     { sym: '000656.SZ', ev: '2024-04-22', kind: '破产重整受理',
       what: '重庆五中院裁定受理重整申请，为近年 A 股首家进入重整程序的大型全国化房企；4-24 复牌起被实施退市风险警示。2025-05-11 法院裁定批准重整计划。',
-      src: [['界面新闻：金科股份正式开启破产重整', 'https://www.jiemian.com/article/11085774.html'],
-            ['中国日报网：批准！金科正式进入重整计划执行环节', 'https://cn.chinadaily.com.cn/a/202505/12/WS6821a451a310205377032af0.html']] },
+      src: [['界面新闻：金科股份正式开启破产重整', 'https://www.jiemian.com/article/11085774.html']] },
     { sym: '2202.HK', ev: null, kind: '未发生违约',
       what: '2024 年多只境内债按期足额付息，3 月全额存入 6.47 亿美元中票本息；至 2025 年底转入展期谈判（「22 万科 MTN004」展期议案未获通过，宽限期延至 2026-01-28），但截至核对日未发生公开市场违约。',
       src: [['万科：债券受托管理事务报告（PDF）', 'https://www.vanke.com/upload/file/2025-07-04/461bd98d-3b96-4701-8915-c8e2aa7fbd29.pdf'],

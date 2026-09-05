@@ -1,0 +1,46 @@
+/* Frozen section rail, parked directly under the shared status bar. Same
+   translucent material as that bar so the two stacked layers read as one piece
+   of chrome rather than a strip glued under a pane of glass. */
+.rail {
+  position: sticky;
+  top: var(--rail-top, 0px);
+  z-index: 15;
+  background: var(--material);
+  border-bottom: 1px solid var(--line);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .rail { background: var(--bg); }
+}
+.rail-in {
+  max-width: 820px;
+  margin: 0 auto;
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 6px 1.25rem;
+}
+.rail-in::-webkit-scrollbar { display: none; }
+.rail a {
+  flex: none;
+  font-size: 13px;
+  color: var(--ink-3);
+  text-decoration: none;
+  padding: 4px 12px;
+  border-radius: 999px;
+  white-space: nowrap;
+  transition: color var(--t) var(--ease), background-color var(--t) var(--ease);
+}
+.rail a:hover { color: var(--ink); text-decoration: none; }
+.rail a[aria-current="true"] { background: var(--accent); color: #fff; }
+
+/* Anchors carry their own offset. theme.css sets a global scroll-padding for
+   the status bar alone; with a second sticky layer that gap has to grow, and
+   applying both would double it. */
+html:has(.rail) { scroll-padding-top: 0; }
+.rail ~ main h2[id],
+.rail ~ main h1[id] {
+  scroll-margin-top: calc(var(--rail-top, 0px) + var(--rail-h, 44px) + 12px);
+}

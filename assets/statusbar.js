@@ -43,6 +43,24 @@
       // catchup.yml: '40 4 5 * *'
       cron: { monthDays: [5], times: [[4, 40]] },
       note: '世界银行年度数据，每月核一次'
+    },
+    {
+      id: 'mortgage', name: '中日韩房价', url: '/mortgage/data/status.json', page: '/mortgage/',
+      // Built by housing.yml, same schedule: '20 3 18,20,24 * *'
+      cron: { monthDays: [18, 20, 24], times: [[3, 20]] },
+      note: 'BIS 季度发布，随房价流水线每月核一次'
+    },
+    {
+      id: 'income', name: '工资与房价', url: '/income/data/status.json', page: '/income/',
+      // Built by housing.yml after the two datasets it reads, same schedule.
+      cron: { monthDays: [18, 20, 24], times: [[3, 20]] },
+      note: '统计局季度收入发布，随房价流水线每月核一次'
+    },
+    {
+      id: 'district', name: '区级房价与各省工资', url: '/district/data/status.json', page: '/district/',
+      // district.yml: '10 5 6,16,26 * *'
+      cron: { monthDays: [6, 16, 26], times: [[5, 10]] },
+      note: '房天下挂牌口径，每月 3 次；省级收入随抓随补'
     }
   ];
 

@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>房贷计算器：月供、总利息与剩余本金</title>
+<meta name="description" content="等额本息月供计算器：三个滑块看月供下限、总利息与剩余本金，另有年限×利率的 3D 曲面。">
+<link rel="stylesheet" href="/assets/theme.css">
+<style>
+  :root { --ok: #12855c; --danger: #cf3520; }
+  @media (prefers-color-scheme: dark) {
+    :root { --ok: #30d158; --danger: #ff6b5a; }
+  }
+
+  main { max-width: 760px; margin: 0 auto; }
+
+  .controls { display: grid; gap: 14px; margin: 1.75rem 0; }
+  .row { display: grid; grid-template-columns: 5.5em 1fr 6.5em; align-items: center; gap: 12px; }
+  .row label { font-size: 14px; color: var(--ink-2); }
+  .row output { font-size: 14px; font-variant-numeric: tabular-nums; text-align: right; color: var(--ink); }
+
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin: 1.5rem 0; }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 18px; font-size: 12px; color: var(--ink-2); margin-bottom: 8px; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .swatch { width: 16px; height: 2px; background: var(--accent); }
+  .swatch.dash { background: none; border-top: 2px dashed var(--ink-3); }
+  .swatch.amber { background: #eda100; }
+  .swatch.red { background: var(--danger); }
+  .chart { position: relative; height: 360px; }
+  .chart3d { height: 460px; margin-top: -8px; }
+  .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 1.75rem 0 .75rem; }
+
+  .zpick { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-3); }
+  .zpick[hidden] { display: none; }
+
+  /* One tile per lending regime. Each is a button that drives the same two
+     sliders, so the comparison is the page you are already looking at rather
+     than a second chart. */
+  #topkeys { grid-template-columns: repeat(auto-fit, minmax(166px, 1fr)); }
+
+  /* Figures are drawn inline rather than shipped as images: an SVG in the
+     document can use var(--ink) and follows light/dark for free, which a PNG
+     of a chart never will. */
+  figure { margin: 1.6rem 0; }
+  figure svg { width: 100%; height: auto; display: block; }
+  .fig { background: var(--card); border: 1px solid var(--line); border-radius: var(--r);
+    box-shadow: var(--shadow-1); padding: 1rem 1.1rem .95rem; }
+  .fig-t { font-size: .85rem; font-weight: 600; color: var(--ink); letter-spacing: -.006em;
+    margin: 0 0 .12rem; }
+  .fig-s { font-size: .72rem; color: var(--ink-3); margin: 0 0 .75rem; letter-spacing: .006em; }
+  .fig figcaption { font-size: .76rem; color: var(--ink-3); margin: .7rem 0 0; line-height: 1.6; }
+  .fig .cn { fill: var(--accent); }
+  .fig .jp { fill: var(--ok); }
+  .fig .kr { fill: var(--danger); }
+  .fkey { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: .72rem; color: var(--ink-2);
+    margin: 0 0 .6rem; }
+  .fkey span { display: inline-flex; align-items: center; gap: 6px; }
+  .fkey i { width: 14px; height: 3px; border-radius: 2px; flex: none; }
+  .fkey i.cn { background: var(--accent); }
+  .fkey i.jp { background: var(--ok); }
+  .fkey i.kr { background: var(--danger); }
+  .fkey i.dash { background: none; border-top: 2px dashed var(--ink-3); height: 0; }
+
+  .regimes { display: grid; grid-template-columns: repeat(auto-fit, minmax(205px, 1fr));
+    gap: 10px; margin: 1rem 0 1.4rem; }
+  .regime { display: block; text-align: left; padding: .7rem .9rem; border-radius: var(--r-sm);
+    line-height: 1.45; }
+  .regime[aria-pressed="true"] { background: var(--accent); border-color: transparent;
+    box-shadow: var(--shadow-2); }
+  .regime .rn { display: block; font-size: .875rem; font-weight: 600; color: var(--ink);
+    letter-spacing: -.008em; }
+  .regime .rv { display: block; font-size: .8rem; color: var(--ink-2); margin-top: 1px;
+    font-variant-numeric: tabular-nums; }
+  .regime .rd { display: block; font-size: .7rem; color: var(--ink-3); letter-spacing: .006em; }
+  .regime[aria-pressed="true"] .rn { color: #fff; }
+  .regime[aria-pressed="true"] .rv { color: rgba(255, 255, 255, .92); }
+  .regime[aria-pressed="true"] .rd { color: rgba(255, 255, 255, .68); }
+  .regime .cc { font-weight: 500; color: var(--ink-3); }
+  .regime[aria-pressed="true"] .cc { color: rgba(255, 255, 255, .72); }
+
+  tr.now td { background: var(--accent-soft); }
+  tr.now td:first-child { font-weight: 600; color: var(--ink); }
+  td.gone { color: var(--ink-3); }
+
+  table.policy td:nth-child(2) { text-align: right; white-space: nowrap; font-weight: 500; }
+  table.policy td:last-child, table.policy th:last-child { text-align: left; color: var(--ink-3); font-size: 13px; }
+  /* Both comparison tables carry more columns than a phone is wide. Give them
+     a floor and let .scroll take over, rather than letting every cell wrap
+     into two lines. */
+  table.cmp { min-width: 30rem; }
+  table.cmp td:nth-child(2), table.cmp th:nth-child(2) { white-space: nowrap; }
+  table.cross { min-width: 40rem; }
+  table.cross td:first-child { white-space: nowrap; }
+  table.cross td, table.cross th { text-align: left; vertical-align: top; }
+  .asof { font-size: 12px; color: var(--ink-3); margin: -.35rem 0 1rem; }
+  ul.links { padding-left: 1.1rem; margin: 0; }
+  ul.links li { color: var(--ink-3); font-size: 14px; margin-bottom: .5rem; }
+  ul.links a { color: var(--accent); text-decoration: none; }
+  ul.links a:hover { text-decoration: underline; }
+
+  @media (max-width: 640px) {
+    .row { grid-template-columns: 4.5em 1fr 5em; gap: 8px; }
+    .row label, .row output { font-size: 13px; }
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .regimes, #topkeys { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .fig { padding: .8rem .85rem .8rem; }
+    .scroll figure svg { min-width: 560px; }
+    .chart { height: 250px; }
+    .chart3d { height: 330px; }
+    table { font-size: 13px; }
+    th, td { padding: 6px 4px; }
+    table.policy td:last-child, table.policy th:last-child { font-size: 12px; white-space: normal; }
+    .toolbar { gap: 8px; }
+  }
+</style>
+<link rel="stylesheet" href="/assets/statusbar.css">
+<link rel="stylesheet" href="/assets/rail.css">
+<script src="/assets/statusbar.js" defer></script>
+<script src="/assets/theme.js" defer></script>
+<script src="/assets/rail.js" defer></script>
+</head>
+<body>
+<main>
+  <p class="back"><a href="../">← 首页</a> · <a href="../mortgage/">房贷年限：中日韩对照</a></p>
+  <h1>房贷计算器</h1>
+  <p class="lede">三个滑块，看月供、总利息和剩余本金怎么随年限和利率变。<span class="hl">月供有下限</span> —— 等于本金 × 月利率的纯利息（当前 <strong id="lede-floor">4,167</strong> 元），年限拉到 1000 年也降不下去。三国为什么把上限定在 30/40/50 年，在<a href="../mortgage/">对照那页</a>。</p>
+
+  <figure class="shot">
+    <div class="fr">
+      <svg viewBox="0 0 960 540" preserveAspectRatio="xMidYMid meet" role="img" aria-label="曲线图：100 万本金、年利率 3.5% 时，月供随贷款年限延长而下降，10 年 9,889 元、30 年 4,490 元、40 年 3,874 元、100 年 3,008 元，始终停在 2,917 元这条纯利息地板之上。">
+        <title>月供的地板</title>
+        <g font-family="-apple-system, BlinkMacSystemFont, sans-serif">
+          <text x="40" y="46" fill="var(--ink)" font-size="24" font-weight="600">年限拉多长，月供都过不去这条线</text>
+          <text x="40" y="74" fill="var(--ink-3)" font-size="16">100 万本金 · 年利率 3.5% · 等额本息</text>
+
+          <g stroke="var(--line)" stroke-width="1">
+            <line x1="110" y1="470" x2="920" y2="470"/>
+            <line x1="110" y1="100" x2="110" y2="470"/>
+          </g>
+          <g fill="var(--ink-3)" font-size="15" text-anchor="end">
+            <text x="98" y="70">1 万</text>
+            <text x="98" y="275">5,000</text>
+            <text x="98" y="476">0</text>
+          </g>
+          <g fill="var(--ink-3)" font-size="15" text-anchor="middle">
+            <text x="110" y="498">10 年</text><text x="290" y="498">30</text>
+            <text x="470" y="498">50</text><text x="650" y="498">70</text><text x="920" y="498">100</text>
+          </g>
+
+          <polyline fill="none" stroke="var(--accent)" stroke-width="3.5" stroke-linejoin="round"
+            points="110,65 155,177 200,232 245,265 290,286 380,311 470,325 560,334 650,339 740,343 830,345 920,347"/>
+
+          <line x1="110" y1="350" x2="920" y2="350" stroke="var(--ink-3)" stroke-width="2" stroke-dasharray="7 6"/>
+          <text x="920" y="374" fill="var(--ink-2)" font-size="17" text-anchor="end">地板 2,917 元 ＝ 本金 × 月利率，全是利息</text>
+
+          <g fill="var(--accent)">
+            <circle cx="290" cy="286" r="6"/><circle cx="380" cy="311" r="6"/><circle cx="920" cy="347" r="6"/>
+          </g>
+          <g fill="var(--ink)" font-size="17">
+            <text x="300" y="272">30 年 4,490 元</text>
+            <text x="392" y="300">40 年 3,874</text>
+            <text x="912" y="333" text-anchor="end">100 年 3,008</text>
+          </g>
+        </g>
+      </svg>
+    </div>
+    <figcaption>前 30 年砍掉的月供最多，之后每加十年只省一两百块，总利息却一路线性往上加。</figcaption>
+  </figure>
+
+  <div class="controls">
+    <div class="row">
+      <label for="p">贷款本金</label>
+      <input type="range" id="p" min="10" max="1000" step="10" value="100">
+      <output id="p-out">100 万</output>
+    </div>
+    <div class="row">
+      <label for="r">年利率</label>
+      <input type="range" id="r" min="1" max="8" step="0.01" value="3.5">
+      <output id="r-out">3.50%</output>
+    </div>
+    <div class="row">
+      <label for="n">贷款年限</label>
+      <input type="range" id="n" min="5" max="100" step="1" value="30">
+      <output id="n-out">30 年</output>
+    </div>
+  </div>
+
+  <div class="keys" id="topkeys">
+    <div class="key key--lead">
+      <span class="kk">月供</span>
+      <span class="kv" id="s-pay">5,368<span class="ku">元/月</span></span>
+      <p class="kd" id="d-pay">总还款 193 万。</p>
+    </div>
+    <div class="key">
+      <span class="kk">月供下限</span>
+      <span class="kv" id="s-floor">4,167<span class="ku">元/月</span></span>
+      <p class="kd">本金 × 月利率，纯利息。年限拉到多长，月供都过不去这条线。</p>
+    </div>
+    <div class="key">
+      <span class="kk">总利息</span>
+      <span class="kv" id="s-int">93<span class="ku">万</span></span>
+      <p class="kd" id="d-int">占总还款的 48%。</p>
+    </div>
+    <div class="key key--cost">
+      <span class="kk">30 → 40 年每月少</span>
+      <span class="kv" id="s-save">732<span class="ku">元/月</span></span>
+      <p class="kd" id="d-save">代价是总利息多付 40 万。</p>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <button id="toggle3d" type="button">切换 3D 曲面</button>
+    <label class="zpick" id="zpick" hidden>Z 轴
+      <select id="zdim">
+        <option value="pay">月供</option>
+        <option value="interest">总利息</option>
+        <option value="total">总还款</option>
+      </select>
+    </label>
+  </div>
+
+  <div class="legend" id="legend2d">
+    <span><i class="swatch"></i>月供（等额本息）</span>
+    <span><i class="swatch dash"></i>渐近线 = 纯月息</span>
+  </div>
+  <div class="chart" id="wrap2d">
+    <canvas id="chart" role="img" aria-label="折线图：贷款年限对等额本息月供的影响，月供先陡降后逼近纯利息水平线。">
+      月供随年限增加而下降，但收敛到本金乘月利率的水平，不会更低。
+    </canvas>
+  </div>
+  <div class="legend" id="legend2di">
+    <span><i class="swatch amber"></i>总利息</span>
+    <span><i class="swatch dash"></i>贷款本金</span>
+  </div>
+  <div class="chart" id="wrap2di">
+    <canvas id="chartInt" role="img" aria-label="折线图：贷款年限对总利息的影响，总利息随年限接近线性增长。">
+      总利息随年限增加而持续上升，月供省下的部分全部转成了利息。
+    </canvas>
+  </div>
+  <p class="hint" id="cross">利息追平本金的年限。</p>
+
+  <div class="legend" id="legend2db">
+    <span><i class="swatch"></i>30 年</span>
+    <span><i class="swatch amber"></i>40 年</span>
+    <span><i class="swatch red"></i>50 年</span>
+    <span><i class="swatch dash"></i>还掉一半本金</span>
+  </div>
+  <div class="chart" id="wrap2db">
+    <canvas id="chartBal" role="img" aria-label="折线图：三种年限下剩余本金占比随已还年数的变化，年限越长本金下降越慢。">
+      年限越长，前期几乎全在还利息，本金余额下降得越慢。
+    </canvas>
+  </div>
+  <p class="hint" id="balnote">按当前利率计算，三种年限下的剩余本金。</p>
+
+  <p class="hint" id="hint3d" hidden>拖动旋转，滚轮缩放。X 轴年限、Y 轴年利率，曲面高度是所选指标；红点是当前滑块位置。</p>
+  <div class="chart chart3d" id="wrap3d" hidden></div>
+
+  <h2 id="sec1">月供的数学：它有下限</h2>
+
+  <h3>关键档位</h3>
+  <table>
+    <thead><tr><th>年限</th><th>月供</th><th>每多贷 10 年省</th><th>总还款</th><th>总利息</th></tr></thead>
+    <tbody id="tbody"></tbody>
+  </table>
+
+  <h3>为什么会有下限</h3>
+  <p>等额本息月供公式 <code>M = P·i / (1 − (1+i)<sup>−n</sup>)</code>，i 是月利率，n 是总月数。n 越大，<code>(1+i)<sup>−n</sup></code> 越接近 0，分母越接近 1，于是 <code>M → P·i</code>。</p>
+  <p>P·i 就是第一个月产生的利息。月供压到这个数，意味着每期还的钱刚好抵掉当期利息，本金余额永远不动 —— 这是一笔还不完的贷款。所以年限再长也突破不了它。</p>
+  <p>曲线前 20 年陡降，30 年后基本贴地。每多贷 10 年，月供降幅大约砍半（几何衰减），总利息却接近线性增长。</p>
+
+  <h2 id="close">收尾：三个滑块说明的一件事</h2>
+  <p>月供的下降是几何衰减，总利息的上升接近线性。20 年到 30 年，月供降幅最大，这一段是实打实把「买得起／买不起」的门槛往下推；30 年之后再加，几乎只剩在付利息。</p>
+  <p>所以「贷多少年」不是一个越大越好的旋钮，它在 30 年附近就已经把好处用完了。<span class="hl">真正决定一笔长期贷是保险还是敞口的，是利率形态和配套约束，不是年限本身</span> —— 那部分在<a href="../mortgage/">中日韩对照</a>那页。</p>
+
+  <footer>纯利息与复利模型计算，不含税费、保险、提前还款、浮动利率重定价和公积金组合贷。仅作数学演示，不构成任何投资或贷款建议。</footer>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+(function () {
+  var P = document.getElementById('p'), R = document.getElementById('r'), N = document.getElementById('n');
+  var fmt = function (v) { return Math.round(v).toLocaleString('en-US'); };
+  var wan = function (v) { return (v / 10000).toFixed(v < 100000 ? 1 : 0) + ' 万'; };
+
+  function model() {
+    var principal = +P.value * 10000, i = (+R.value / 100) / 12;
+    return {
+      principal: principal, i: i, floor: principal * i,
+      pay: function (years) { return principal * i / (1 - Math.pow(1 + i, -12 * years)); }
+    };
+  }
+
+  var YEARS = [];
+  for (var y = 5; y <= 100; y++) YEARS.push(y);
+
+  // What each market actually offers, with the rate and the date it was
+  // checked. Clicking a tile drives the same two sliders the rest of the page
+  // runs on - there is no second model hiding behind this table.
+  var REGIMES = [
+    { cc: '中国', name: '商贷 30 年',        years: 30, rate: 3.10, note: '2026-07 新发放加权平均' },
+    { cc: '中国', name: '商贷 40 年 · 新上限', years: 40, rate: 3.10, note: '2026-08-28 起可协商' },
+    { cc: '中国', name: '公积金首套',        years: 30, rate: 2.60, note: '2025-05-08 起执行' },
+    { cc: '日本', name: '変動型（主流）',     years: 35, rate: 1.20, note: '2026-08 主要行中位数' },
+    { cc: '日本', name: 'フラット35 固定', years: 35, rate: 3.46, note: '2026-09 最低金利' },
+    { cc: '日本', name: 'フラット50 固定', years: 50, rate: 3.32, note: '2026-07 最频金利' },
+    { cc: '韩国', name: '首都圈 30 年上限',   years: 30, rate: 3.18, note: '2026-07 新规 COFIX' },
+    { cc: '韩国', name: '보금자리론 10 年',   years: 10, rate: 3.60, note: '全期间固定 · 这是最低的一档；50 年档利率明显更高' }
+  ];
+
+  var picked = -1;
+  var regWrap = document.getElementById('regimes');
+
+  if (regWrap) REGIMES.forEach(function (g, idx) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'regime';
+    b.setAttribute('aria-pressed', 'false');
+    b.innerHTML = '<span class="rn"><span class="cc">' + g.cc + '</span> ' + g.name + '</span>'
+                + '<span class="rv">' + g.years + ' 年 · ' + g.rate.toFixed(2) + '%</span>'
+                + '<span class="rd">' + g.note + '</span>';
+    b.addEventListener('click', function () { pickRegime(idx); });
+    regWrap.appendChild(b);
+  });
+
+  function paintPicks() {
+    if (!regWrap) return;
+    Array.prototype.forEach.call(regWrap.children, function (b, i) {
+      b.setAttribute('aria-pressed', i === picked ? 'true' : 'false');
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('#cmp-body tr'), function (tr, i) {
+      tr.classList.toggle('now', i === picked);
+    });
+  }
+
+  function pickRegime(i) {
+    var g = REGIMES[i];
+    picked = i;
+    R.value = g.rate;
+    N.value = g.years;
+    // Assigning .value does not fire input, so the slider fills need a nudge.
+    window.dispatchEvent(new Event('zb:sliders'));
+    render();
+    if (is3d && gl) render3d();
+  }
+
+  // Balance still owed after k payments, straight from the amortisation
+  // identity. Used for the "principal repaid after five years" column, which
+  // is where a long term actually costs you something you can feel.
+  function balanceAfter(amt, i, pay, k) {
+    var g = Math.pow(1 + i, k);
+    return amt * g - pay * (g - 1) / i;
+  }
+
+  function compare(m) {
+    if (!document.getElementById('cmp-body')) return;
+    var amt = m.principal, rows = '';
+    REGIMES.forEach(function (g) {
+      var i = (g.rate / 100) / 12, n = g.years * 12;
+      var pay = amt * i / (1 - Math.pow(1 + i, -n));
+      var left = balanceAfter(amt, i, pay, 60);
+      rows += '<tr><td>' + g.cc + ' · ' + g.name + '</td>'
+            + '<td>' + g.years + ' 年</td>'
+            + '<td>' + g.rate.toFixed(2) + '%</td>'
+            + '<td>' + fmt(pay) + '</td>'
+            + '<td>' + wan(pay * n - amt) + '</td>'
+            + '<td>' + ((amt - left) / amt * 100).toFixed(1) + '%</td></tr>';
+    });
+    document.getElementById('cmp-body').innerHTML = rows;
+    document.getElementById('cmp-note').textContent =
+      '按本金 ' + wan(amt) + '统一计算。最后一列是交满 60 期时已归还的本金比例 —— '
+      + '同样还了五年，年限越长攒下的净值越少，房价回调时也就越早掉进负资产。'
+      + 'COFIX 与 LPR 是定价基准，不是最终执行利率。';
+    paintPicks();
+  }
+
+  function shockLine(m) {
+    var el = document.getElementById('shock');
+    if (!el) return;
+    var r = +R.value;
+    var payAt = function (rate, years) {
+      var i = (rate / 100) / 12;
+      return m.principal * i / (1 - Math.pow(1 + i, -12 * years));
+    };
+    var a30 = payAt(r, 30), b30 = payAt(r + 1, 30);
+    var a40 = payAt(r, 40), b40 = payAt(r + 1, 40);
+    el.textContent = '当前本金与利率下，重定价时利率再涨 1 个百分点：30 年期月供从 '
+      + fmt(a30) + ' 涨到 ' + fmt(b30) + '（+' + ((b30 / a30 - 1) * 100).toFixed(1) + '%），'
+      + '40 年期从 ' + fmt(a40) + ' 涨到 ' + fmt(b40) + '（+' + ((b40 / a40 - 1) * 100).toFixed(1)
+      + '%）—— 同一次加息，年限越长咬得越深。';
+  }
+
+  // Draws the policy context straight onto the plot: the old 30-year ceiling,
+  // the new 40-year one, and the band the 2026-08-28 rule opened up. Labels are
+  // dropped on narrow screens where they would collide with the axis.
+  var policyBands = {
+    id: 'policyBands',
+    beforeDatasetsDraw: function (c) {
+      var x = c.scales.x, y = c.scales.y, ctx = c.ctx;
+      if (!x || !y) return;
+      var x30 = x.getPixelForValue(30), x40 = x.getPixelForValue(40);
+      var css = getComputedStyle(document.documentElement);
+      var ink3 = css.getPropertyValue('--ink-3').trim() || '#898781';
+      ctx.save();
+      ctx.fillStyle = 'rgba(42,120,214,.10)';
+      ctx.fillRect(x30, y.top, x40 - x30, y.bottom - y.top);
+      ctx.setLineDash([5, 4]);
+      ctx.lineWidth = 1;
+      [[x30, '旧上限 30 年'], [x40, '新上限 40 年']].forEach(function (pair, i) {
+        ctx.strokeStyle = ink3;
+        ctx.beginPath();
+        ctx.moveTo(pair[0], y.top);
+        ctx.lineTo(pair[0], y.bottom);
+        ctx.stroke();
+        if (c.width < 420) return;
+        ctx.setLineDash([]);
+        ctx.fillStyle = ink3;
+        ctx.font = '11px -apple-system, sans-serif';
+        ctx.textAlign = i ? 'left' : 'right';
+        ctx.fillText(pair[1], pair[0] + (i ? 5 : -5), y.top + 12);
+        ctx.setLineDash([5, 4]);
+      });
+      // Japan's two ceilings. Short ticks rising off the axis rather than full
+      // height lines: 35 falls inside the 30-40 band, and a third full line
+      // through it turns that band into noise. Labels sit above the tick, clear
+      // of both the axis and the asymptote running along the bottom.
+      if (c.width >= 560) {
+        ctx.globalAlpha = .62;
+        ctx.setLineDash([]);
+        ctx.strokeStyle = ink3;
+        ctx.fillStyle = ink3;
+        ctx.font = '11px -apple-system, sans-serif';
+        ctx.textAlign = 'center';
+        [[35, '日本 35'], [50, '日本 50']].forEach(function (pair) {
+          var px = x.getPixelForValue(pair[0]);
+          ctx.beginPath();
+          ctx.moveTo(px, y.bottom);
+          ctx.lineTo(px, y.bottom - 26);
+          ctx.stroke();
+          ctx.fillText(pair[1], px, y.bottom - 33);
+        });
+      }
+      ctx.restore();
+    }
+  };
+
+  var chart = new Chart(document.getElementById('chart'), {
+    type: 'line',
+    plugins: [policyBands],
+    data: {
+      labels: YEARS,
+      datasets: [
+        { label: '月供', data: [], borderColor: '#3b82f6', borderWidth: 2, tension: .25,
+          pointRadius: 0, pointHoverRadius: 0 },
+        { label: '渐近线', data: [], borderColor: '#8a8a8a', borderWidth: 2, borderDash: [6, 4],
+          pointRadius: 0, pointHoverRadius: 0 },
+        { label: '当前选择', data: [], borderColor: 'transparent', pointRadius: 6,
+          pointBackgroundColor: '#3b82f6', pointBorderColor: '#8a8a8a', pointBorderWidth: 2, showLine: false }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, animation: { duration: 200 },
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          filter: function (c) { return c.datasetIndex < 2; },
+          callbacks: {
+            title: function (t) { return t[0].label + ' 年'; },
+            label: function (c) { return c.dataset.label + '：' + fmt(c.parsed.y) + ' 元/月'; }
+          }
+        }
+      },
+      scales: {
+        x: { title: { display: true, text: '贷款年限（年）', color: '#8a8a8a' },
+             ticks: { color: '#8a8a8a', maxTicksLimit: 11 }, grid: { display: false } },
+        y: { title: { display: true, text: '月供（元）', color: '#8a8a8a' },
+             ticks: { color: '#8a8a8a', callback: function (v) { return v.toLocaleString('en-US'); } },
+             grid: { color: 'rgba(138,138,138,.22)' } }
+      }
+    }
+  });
+
+  var chartInt = new Chart(document.getElementById('chartInt'), {
+    type: 'line',
+    plugins: [policyBands],
+    data: {
+      labels: YEARS,
+      datasets: [
+        { label: '总利息', data: [], borderColor: '#eda100', borderWidth: 2, tension: .25,
+          fill: true, backgroundColor: 'rgba(237,161,0,.10)', pointRadius: 0, pointHoverRadius: 0 },
+        { label: '贷款本金', data: [], borderColor: '#8a8a8a', borderWidth: 2, borderDash: [6, 4],
+          pointRadius: 0, pointHoverRadius: 0 },
+        { label: '当前选择', data: [], borderColor: 'transparent', pointRadius: 6,
+          pointBackgroundColor: '#eda100', pointBorderColor: '#8a8a8a', pointBorderWidth: 2, showLine: false }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, animation: { duration: 200 },
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          filter: function (c) { return c.datasetIndex < 2; },
+          callbacks: {
+            title: function (t) { return t[0].label + ' 年'; },
+            label: function (c) { return c.dataset.label + '：' + c.parsed.y.toFixed(0) + ' 万'; }
+          }
+        }
+      },
+      scales: {
+        x: { title: { display: true, text: '贷款年限（年）', color: '#8a8a8a' },
+             ticks: { color: '#8a8a8a', maxTicksLimit: 11 }, grid: { display: false } },
+        y: { beginAtZero: true, title: { display: true, text: '总利息（万元）', color: '#8a8a8a' },
+             ticks: { color: '#8a8a8a' }, grid: { color: 'rgba(138,138,138,.22)' } }
+      }
+    }
+  });
+
+  // How fast the principal actually comes down. This is where a long term
+  // costs something the monthly figure never shows: at 50 years the balance
+  // barely moves for a decade.
+  var BYEARS = [];
+  for (var by = 0; by <= 50; by++) BYEARS.push(by);
+
+  var chartBal = new Chart(document.getElementById('chartBal'), {
+    type: 'line',
+    data: {
+      labels: BYEARS,
+      datasets: [
+        { label: '30 年', data: [], borderColor: '#0a84ff', borderWidth: 2, tension: .2, pointRadius: 0, pointHoverRadius: 0 },
+        { label: '40 年', data: [], borderColor: '#eda100', borderWidth: 2, tension: .2, pointRadius: 0, pointHoverRadius: 0 },
+        { label: '50 年', data: [], borderColor: '#e8503a', borderWidth: 2, tension: .2, pointRadius: 0, pointHoverRadius: 0 },
+        { label: '还掉一半', data: [], borderColor: '#8a8a8a', borderWidth: 2, borderDash: [6, 4], pointRadius: 0, pointHoverRadius: 0 }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, animation: { duration: 200 },
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          filter: function (c) { return c.datasetIndex < 3 && c.parsed.y !== null; },
+          callbacks: {
+            title: function (t) { return '已还 ' + t[0].label + ' 年'; },
+            label: function (c) { return c.dataset.label + '：还剩 ' + c.parsed.y.toFixed(1) + '% 本金'; }
+          }
+        }
+      },
+      scales: {
+        x: { title: { display: true, text: '已还年数', color: '#8a8a8a' },
+             ticks: { color: '#8a8a8a', maxTicksLimit: 11 }, grid: { display: false } },
+        y: { min: 0, max: 100, title: { display: true, text: '剩余本金（%）', color: '#8a8a8a' },
+             ticks: { color: '#8a8a8a', callback: function (v) { return v + '%'; } },
+             grid: { color: 'rgba(138,138,138,.22)' } }
+      }
+    }
+  });
+
+  function render() {
+    var m = model(), years = +N.value, pay = m.pay(years), total = pay * 12 * years;
+    var interestOf = function (y) { return (m.pay(y) * 12 * y - m.principal) / 10000; };
+
+    P.nextElementSibling.textContent = wan(m.principal);
+    R.nextElementSibling.textContent = (+R.value).toFixed(2) + '%';
+    N.nextElementSibling.textContent = years + ' 年';
+
+    // The number and its unit are separate spans: the unit stays at text size
+    // while the figure runs at display size, so only the digits get big.
+    var num = function (id, v, unit) {
+      document.getElementById(id).innerHTML = v + '<span class="ku">' + unit + '</span>';
+    };
+    var p30 = m.pay(30), p40 = m.pay(40);
+    var i30 = p30 * 12 * 30 - m.principal, i40 = p40 * 12 * 40 - m.principal;
+
+    num('s-pay', fmt(pay), '元/月');
+    num('s-floor', fmt(m.floor), '元/月');
+    num('s-int', wan(total - m.principal).replace(' 万', ''), '万');
+    num('s-save', fmt(p30 - p40), '元/月');
+    document.getElementById('d-pay').textContent =
+      '总还款 ' + wan(total) + '，其中利息 ' + wan(total - m.principal) + '。';
+    document.getElementById('d-int').textContent =
+      '占总还款的 ' + ((total - m.principal) / total * 100).toFixed(0) + '%。'
+      + (pay - m.floor < m.floor * 0.12 ? '月供已经贴着纯利息，本金几乎不动。' : '');
+    document.getElementById('d-save').textContent =
+      '这是 40 年新上限的全部好处。代价是总利息从 ' + wan(i30) + '涨到 ' + wan(i40)
+      + '，多付 ' + wan(i40 - i30) + '。';
+    document.getElementById('lede-floor').textContent = fmt(m.floor);
+
+    chart.data.datasets[0].data = YEARS.map(m.pay);
+    chart.data.datasets[1].data = YEARS.map(function () { return m.floor; });
+    chart.data.datasets[2].data = YEARS.map(function (y) { return y === years ? pay : null; });
+    chart.options.scales.y.min = Math.floor(m.floor * 0.9);
+    chart.options.scales.y.max = Math.ceil(m.pay(5) * 1.05);
+    chart.update();
+
+    chartInt.data.datasets[0].data = YEARS.map(interestOf);
+    chartInt.data.datasets[1].data = YEARS.map(function () { return m.principal / 10000; });
+    chartInt.data.datasets[2].data = YEARS.map(function (y) { return y === years ? interestOf(y) : null; });
+    chartInt.update();
+
+    var cross = YEARS.find(function (y) { return interestOf(y) * 10000 >= m.principal; });
+    document.getElementById('cross').textContent = cross
+      ? '贷到约 ' + cross + ' 年，付出的利息就追平了本金 —— 房子买了两次，一次给自己，一次给银行。'
+      : '在这个利率下，100 年内利息都追不平本金。';
+
+    var pd = document.getElementById('policy-delta');
+    if (pd) pd.textContent =
+      '当前参数下月供从 ' + fmt(p30) + ' 降到 ' + fmt(p40) + '，每月少还 ' + fmt(p30 - p40)
+      + '；代价是总利息从 ' + wan(i30) + '涨到 ' + wan(i40) + '，多付 ' + wan(i40 - i30);
+
+    var rows = '', prev = null, prevY = null;
+    [20, 30, 40, 50, 60, 100].forEach(function (y) {
+      var v = m.pay(y), t = v * 12 * y;
+      rows += '<tr><td>' + y + ' 年</td><td>' + fmt(v) + '</td><td>'
+            + (y - prevY === 10 ? '−' + fmt(prev - v) : '—') + '</td><td>'
+            + wan(t) + '</td><td>' + wan(t - m.principal) + '</td></tr>';
+      prev = v; prevY = y;
+    });
+    document.getElementById('tbody').innerHTML = rows;
+
+    var curve = function (yrs) {
+      var pay = m.pay(yrs);
+      return BYEARS.map(function (k) {
+        if (k > yrs) return null;
+        return balanceAfter(m.principal, m.i, pay, k * 12) / m.principal * 100;
+      });
+    };
+    chartBal.data.datasets[0].data = curve(30);
+    chartBal.data.datasets[1].data = curve(40);
+    chartBal.data.datasets[2].data = curve(50);
+    chartBal.data.datasets[3].data = BYEARS.map(function () { return 50; });
+    chartBal.update();
+
+    var half = function (yrs) {
+      var pay = m.pay(yrs);
+      for (var k = 1; k <= yrs * 12; k++) {
+        if (balanceAfter(m.principal, m.i, pay, k) <= m.principal / 2) return (k / 12).toFixed(1);
+      }
+      return '—';
+    };
+    document.getElementById('balnote').textContent =
+      '按当前利率 ' + (+R.value).toFixed(2) + '% 计算，还掉一半本金要：30 年期 ' + half(30)
+      + ' 年、40 年期 ' + half(40) + ' 年、50 年期 ' + half(50)
+      + ' 年。年限每加十年，前半程就拖长一大截 —— 这段时间里房价一跌，净值是负的。';
+
+    compare(m);
+    shockLine(m);
+  }
+
+  var is3d = false, glReady = null, gl = null;
+  var btn = document.getElementById('toggle3d'), zsel = document.getElementById('zdim');
+  var wrap3d = document.getElementById('wrap3d'), zpick = document.getElementById('zpick');
+  var hint3d = document.getElementById('hint3d');
+
+  var Z = {
+    pay:      { label: '月供（元）',   unit: '元/月', f: function (m, y) { return m.pay(y); } },
+    interest: { label: '总利息（万元）', unit: '万元', f: function (m, y) { return (m.pay(y) * 12 * y - m.principal) / 10000; } },
+    total:    { label: '总还款（万元）', unit: '万元', f: function (m, y) { return m.pay(y) * 12 * y / 10000; } }
+  };
+
+  function script(src) {
+    return new Promise(function (ok, fail) {
+      var s = document.createElement('script');
+      s.src = src; s.onload = ok; s.onerror = fail;
+      document.head.appendChild(s);
+    });
+  }
+
+  function loadGL() {
+    if (!glReady) {
+      glReady = script('https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js')
+        .then(function () { return script('https://cdn.jsdelivr.net/npm/echarts-gl@2.0.9/dist/echarts-gl.min.js'); });
+    }
+    return glReady;
+  }
+
+  function render3d() {
+    var principal = +P.value * 10000, z = Z[zsel.value];
+    var at = function (years, rate) {
+      var i = (rate / 100) / 12;
+      return z.f({ principal: principal, pay: function (yy) { return principal * i / (1 - Math.pow(1 + i, -12 * yy)); } }, years);
+    };
+    var lo = Infinity, hi = -Infinity;
+    for (var sy = 5; sy <= 100; sy += 5) {
+      for (var sr = 1; sr <= 8.001; sr += 0.5) {
+        var v = at(sy, sr);
+        if (v < lo) lo = v;
+        if (v > hi) hi = v;
+      }
+    }
+    var curYears = +N.value, curRate = +R.value, curZ = at(curYears, curRate);
+    if (!gl) { gl = echarts.init(wrap3d, null, { renderer: 'canvas' }); requestAnimationFrame(function () { gl.resize(); }); }
+
+    gl.setOption({
+      backgroundColor: 'transparent',
+      tooltip: {},
+      visualMap: {
+        show: false, dimension: 2, min: lo, max: hi,
+        inRange: { color: ['#1b3a6b', '#2a78d6', '#5dcaa5', '#eda100', '#e34948'] }
+      },
+      xAxis3D: { type: 'value', name: '年限', min: 5, max: 100 },
+      yAxis3D: { type: 'value', name: '利率 %', min: 1, max: 8 },
+      zAxis3D: { type: 'value', name: z.label.replace(/（.*/, ''), min: Math.floor(lo) },
+      grid3D: {
+        boxWidth: 118, boxDepth: 85, boxHeight: 70, top: -30,
+        axisLine: { lineStyle: { color: '#8a8a8a' } },
+        axisLabel: { color: '#8a8a8a', fontSize: 11 },
+        axisPointer: { lineStyle: { color: '#e34948' } },
+        splitLine: { lineStyle: { color: 'rgba(138,138,138,.25)' } },
+        environment: 'auto',
+        light: { main: { intensity: 1.4, shadow: true, alpha: 38, beta: 40 }, ambient: { intensity: .35 } },
+        viewControl: { alpha: 22, beta: 42, distance: 205, autoRotate: false, damping: .85 }
+      },
+      series: [
+        {
+          type: 'surface', shading: 'realistic', silent: false,
+          realisticMaterial: { roughness: .5, metalness: 0 },
+          wireframe: { show: false },
+          equation: {
+            x: { min: 5, max: 100, step: 1 },
+            y: { min: 1, max: 8, step: .1 },
+            z: at
+          }
+        },
+        {
+          type: 'scatter3D', symbolSize: 15, shading: 'color',
+          data: [[curYears, curRate, curZ + (hi - lo) * .06]],
+          itemStyle: { color: '#e34948', opacity: 1 },
+          emphasis: { label: { show: false } },
+          tooltip: {
+            formatter: function () {
+              return '当前：' + curYears + ' 年 · ' + curRate.toFixed(2) + '%<br>'
+                   + z.label.replace(/（.*/, '') + '：' + fmt(curZ) + ' ' + z.unit;
+            }
+          }
+        }
+      ]
+    });
+  }
+
+  btn.addEventListener('click', function () {
+    is3d = !is3d;
+    btn.textContent = is3d ? '回到 2D 曲线' : '切换 3D 曲面';
+    ['wrap2d', 'legend2d', 'wrap2di', 'legend2di', 'cross',
+     'wrap2db', 'legend2db', 'balnote'].forEach(function (id) {
+      document.getElementById(id).hidden = is3d;
+    });
+    [wrap3d, zpick, hint3d].forEach(function (el) { el.hidden = !is3d; });
+    if (is3d) loadGL().then(render3d, function () { hint3d.textContent = '3D 组件加载失败，检查网络后刷新页面。'; });
+  });
+
+  window.addEventListener('resize', function () { if (gl) gl.resize(); });
+  zsel.addEventListener('change', function () { if (is3d && gl) render3d(); });
+  [P, R, N].forEach(function (el) {
+    el.addEventListener('input', function () {
+      if (el !== P) picked = -1;   // the principal is yours to set under any regime
+      render();
+      if (is3d && gl) render3d();
+    });
+  });
+  render();
+})();
+</script>
+</body>
+</html>

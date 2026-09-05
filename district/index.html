@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>区级房价与各省工资：能查到多细，就查到多细</title>
+<meta name="description" content="约 200 个城市、660 多个区县的挂牌均价，19 个省的城镇可支配收入，以及把两边相除得到的各省房价收入比。">
+<link rel="stylesheet" href="/assets/theme.css">
+<style>
+  main { max-width: 880px; margin: 0 auto; }
+  .chart { position: relative; height: 340px; }
+  .chart.tall { height: 520px; }
+  .chart.xtall { height: 640px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 16px; font-size: 12px; color: var(--ink-2); margin-bottom: 8px; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .swatch { width: 11px; height: 11px; border-radius: 2px; background: var(--accent); display: inline-block; }
+  .swatch.line { height: 2px; width: 16px; border-radius: 0; }
+  .hint { font-size: 12px; color: var(--ink-3); margin: .5rem 0 1rem; }
+  .keys { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin: 1.1rem 0; }
+  .key { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: .75rem .9rem;
+    box-shadow: var(--shadow-1); }
+  .key .kk { font-size: 12px; color: var(--ink-3); }
+  .key .kv { font-size: 1.35rem; font-weight: 600; font-variant-numeric: tabular-nums; margin-top: 2px; }
+  .key .kd { font-size: 11.5px; color: var(--ink-3); margin: 2px 0 0; }
+  .scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; max-height: 460px; overflow-y: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; font-variant-numeric: tabular-nums; }
+  th, td { padding: 7px 6px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap; }
+  th { color: var(--ink-3); font-weight: 400; font-size: 12px; position: sticky; top: 0; background: var(--bg); }
+  th:first-child, td:first-child, th:nth-child(2), td:nth-child(2) { text-align: left; }
+  td.dim { color: var(--ink-3); }
+  .alert { background: var(--card); border: 1px solid var(--line); border-left: 3px solid var(--warn);
+    border-radius: 0 8px 8px 0; padding: .8rem 1rem; margin: 0 0 1.2rem; font-size: 14px; color: var(--ink-2);
+    box-shadow: var(--shadow-1); }
+  .alert strong { color: var(--ink); }
+  ul.links { padding-left: 1.1rem; margin: 0; }
+  ul.links li { color: var(--ink-3); font-size: 14px; margin-bottom: .5rem; }
+  ul.links a { color: var(--accent); text-decoration: none; }
+  ul.links a:hover { text-decoration: underline; }
+  .srcgrid { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; font-size: 13.5px; margin: 1rem 0; }
+  .srcgrid dt { color: var(--ink); font-weight: 500; white-space: nowrap; }
+  .srcgrid dd { margin: 0; color: var(--ink-3); }
+  .no { color: var(--danger); } .yes { color: var(--ok); }
+  @media (max-width: 640px) { .chart { height: 280px; } .chart.tall { height: 460px; } .chart.xtall { height: 560px; }
+    th, td { padding: 5px 4px; font-size: 12px; } .srcgrid { grid-template-columns: 1fr; gap: 2px 0; }
+    .srcgrid dd { margin-bottom: .5rem; } }
+</style>
+<link rel="stylesheet" href="/assets/statusbar.css">
+<link rel="stylesheet" href="/assets/rail.css">
+<script src="/assets/statusbar.js" defer></script>
+<script src="/assets/theme.js" defer></script>
+<script src="/assets/rail.js" defer></script>
+</head>
+<body>
+<main>
+  <p class="back"><a href="../">← 首页</a> · <a href="../income/">工资与房价</a> · <a href="../housing/">房价地图</a></p>
+  <h1 id="top">区级房价与各省工资</h1>
+  <p class="lede">上一页说“区级数据拿不到”。那是我找得不够。这页把能找到的都摆出来：<span class="hl"><b id="n-cities">200</b> 个城市、<b id="n-districts">665</b> 个区县的挂牌均价，和 <b id="n-prov">19</b> 个省的城镇可支配收入</span>。把两边相除，各省的房价收入比差了将近四倍。</p>
+
+  <figure class="shot">
+    <div class="fr">
+      <svg viewBox="0 0 960 540" preserveAspectRatio="xMidYMid meet" role="img" aria-label="区间条形图：一座城市内部最贵的区与最便宜的区的倍数，青岛 6.5 倍、天津 4.9 倍、广州 3.9 倍。">
+        <title>城市内部的价差</title>
+        <g font-family="-apple-system, BlinkMacSystemFont, sans-serif">
+          <text x="40" y="46" fill="var(--ink)" font-size="24" font-weight="600">城市内部的差距，比城市之间还大</text>
+          <text x="40" y="76" fill="var(--ink-3)" font-size="16">条的左端＝该市最便宜的区，右端＝最贵的区（只在公布的 10 个区里比）</text>
+
+          <line x1="317" y1="120" x2="317" y2="430" stroke="var(--line)" stroke-dasharray="6 5"/>
+          <text x="317" y="462" fill="var(--ink-3)" font-size="15" text-anchor="middle">最便宜的区＝1×</text>
+
+          <g fill="var(--ink)" font-size="21" font-weight="600">
+            <text x="40" y="190">青岛</text><text x="40" y="290">天津</text><text x="40" y="390">广州</text>
+          </g>
+          <rect x="317" y="166" width="534" height="30" rx="15" fill="var(--accent)"/>
+          <rect x="317" y="266" width="379" height="30" rx="15" fill="var(--accent)" opacity=".72"/>
+          <rect x="317" y="366" width="282" height="30" rx="15" fill="var(--accent)" opacity=".55"/>
+          <g fill="var(--ink)" font-size="22" font-weight="600">
+            <text x="865" y="190">6.5×</text><text x="710" y="290">4.9×</text><text x="613" y="390">3.9×</text>
+          </g>
+
+          <text x="40" y="500" fill="var(--ink-2)" font-size="17">665 个区县的挂牌均价能拿到；<tspan font-weight="600">工资只到省级</tspan> —— 区级工资没有公开的机器可读来源。</text>
+        </g>
+      </svg>
+    </div>
+    <figcaption>用「某某市房价」做决策，等于把这几倍的差异抹平了。</figcaption>
+  </figure>
+
+  <div class="keys" id="keys"></div>
+
+  <div class="alert">
+    <strong>先说这份数据是什么。</strong>房价是<b>挂牌参考均价</b>（房天下按在售房源算），高于成交价；每城只公布<b>最贵的 10 个区县</b>；收入是<b>省级</b>的——区级工资没有公开的机器可读来源，详见<a href="#edge">第七节</a>。
+  </div>
+
+  <h2 id="cities" data-rail="200 城">一、200 个城市：头部有多陡</h2>
+  <p>先看全国分布。横轴是城市排名，纵轴是挂牌均价 —— 注意纵轴是<b>对数</b>的，否则后面 150 个城市会被压成一条贴地的线。</p>
+  <div class="legend" id="city-legend"></div>
+  <div class="chart"><canvas id="city-chart" role="img" aria-label="折线图：200 个城市的二手房挂牌均价，按价格排序，纵轴为对数刻度。">城市房价分布。</canvas></div>
+  <p class="hint" id="city-note"></p>
+
+  <h2 id="spread" data-rail="城市内部">二、一座城市内部，比城市之间还悬殊</h2>
+  <p>每根横条是一座城市：左端是它最便宜的区，右端是最贵的区（都只在公布的 10 个区里比）。这张图想说的是 —— <b>“某某市房价”这个说法本身就很粗糙</b>。</p>
+  <div class="legend" id="spread-legend"></div>
+  <div class="chart xtall"><canvas id="spread-chart" role="img" aria-label="横向浮动条形图：各城市最便宜区与最贵区的挂牌均价区间。">城市内部价格区间。</canvas></div>
+  <p class="hint" id="spread-note"></p>
+
+  <h2 id="expensive" data-rail="最贵的区">三、全国最贵的 30 个区</h2>
+  <div class="legend" id="rank-legend"></div>
+  <div class="chart tall"><canvas id="rank-chart" role="img" aria-label="横向条形图：全国挂牌均价最高的 30 个区县。">最贵的区县。</canvas></div>
+  <p class="hint" id="rank-note"></p>
+
+  <h2 id="wage" data-rail="各省工资">四、各省的城镇可支配收入</h2>
+  <p>这是从 19 个省统计局各自的《国民经济和社会发展统计公报》里逐篇抓出来的，实打实的元。全国的分省查询接口一律 403（境内外出口 IP 都试过，都被拦），统计年鉴里的分省表是扫描图片，所以只能一个省一个省地抓。</p>
+  <div class="legend" id="wage-legend"></div>
+  <div class="chart tall"><canvas id="wage-chart" role="img" aria-label="横向条形图：各省城镇居民人均可支配收入。">各省城镇可支配收入。</canvas></div>
+  <p class="hint" id="wage-note"></p>
+
+  <h2 id="ratio" data-rail="房价收入比">五、把两边相除：各省的房价收入比</h2>
+  <p>用<b>省会城市</b>的挂牌均价代表该省房价，除以<b>该省</b>城镇双职工家庭的年收入，得到买 100 平方米要不吃不喝多少年。这是全页的核心结果。</p>
+  <div class="legend" id="ratio-legend"></div>
+  <div class="chart tall"><canvas id="ratio-chart" role="img" aria-label="横向条形图：各省省会房价对应的房价收入比。">各省房价收入比。</canvas></div>
+  <p class="hint" id="ratio-note"></p>
+  <p><b>这个比值系统性偏高：</b>分子是省会房价，分母是全省收入，而省会收入高于全省平均。绝对值都偏大，<span class="hl">但各省排序仍可比</span>——偏差方向一致。</p>
+
+  <h2 id="sqm" data-rail="能买几平米">六、一年家庭收入，在各省会能买几平米</h2>
+  <p>同一件事换个说法，不用比值用面积 —— 这个更好想象：双职工一整年不吃不喝，买得下多大一块地板。</p>
+  <div class="legend" id="sqm-legend"></div>
+  <div class="chart tall"><canvas id="sqm-chart" role="img" aria-label="横向条形图：各省双职工家庭一年收入在省会能购买的建筑面积。">一年收入能买的面积。</canvas></div>
+  <p class="hint" id="sqm-note"></p>
+
+  <h2 id="edge" data-rail="边界">七、能查到多细：逐个来源的结果</h2>
+  <p>“精确到区”这件事，我把能想到的来源都试了一遍。结果是<b>房价能到区，工资到省为止</b>。下面是逐个的实际结果，不是推测。</p>
+  <dl class="srcgrid">
+    <dt class="yes">房天下 fangjia.fang.com</dt>
+    <dd><b>可用，本页的房价来源。</b>纯 HTML、无反爬，且验证过从非中国大陆 IP 同样返回数据（GitHub Actions 跑在美国节点）。每城给出城市均价 + 房价最高的 10 个区。</dd>
+    <dt class="no">安居客</dt>
+    <dd>数据最全（全部区 + 城市 12 个月历史），但 58 同城的反爬在<b>同一 IP 的第二次请求</b>就触发，返回 antibot 验证页。做不了多城市抓取。</dd>
+    <dt class="no">中国房价行情 creprice.cn</dt>
+    <dd>会跳转到 authcode.cityre.cn 做 IP 验证；页面本身是 JS 壳，HTML 里没有数据。</dd>
+    <dt class="no">链家 / 贝壳</dt>
+    <dd>第一次请求就跳验证码。</dd>
+    <dt class="yes">各省统计局统计公报</dt>
+    <dd><b>可用，本页的收入来源。</b>19 个省抓到，最长的福建有 24 年。发现方式是通用的：首页找“统计公报”链接 → 年份归档 → 逐篇解析，因为全国用的是同一句话「城镇居民人均可支配收入XXXXX元」。</dd>
+    <dt class="no">统计局分省查询 data.stats.gov.cn</dt>
+    <dd>easyquery.htm 对境外 IP 一律 <b>403</b>；主机首页却是 200，所以是对查询接口的定向封锁，不是宕机。</dd>
+    <dt class="no">中国统计年鉴的分省表</dt>
+    <dd>是<b>扫描图片</b>（html/C06-08.jpg 这种）。不做统计数字的 OCR。</dd>
+    <dt class="no">区级工资</dt>
+    <dd>不存在公开的机器可读来源。各区确实各自发统计公报，但那是数千个区政府网站，各一套结构，且多数不在归档里。城市级同理：只在各市公报里，七十多个站点各一套。</dd>
+  </dl>
+  <p><b>已知脏数据，不藏着。</b>房天下把<b>莆田</b>发布为 67,350 元/平，约是其他来源的五倍，本页原样保留但标记。<b>广东</b>只抓到 2017 年、<b>云南</b>只到 2019 年，第五、六节排除这两省。</p>
+
+  <h2 id="table" data-rail="全表">八、全部 <span id="n-districts2">665</span> 个区</h2>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>#</th><th>城市</th><th>区县</th><th>挂牌均价</th><th>环比</th><th>相对本市</th></tr></thead>
+      <tbody id="all-rows"></tbody>
+    </table>
+  </div>
+
+  <h2 id="close" data-rail="收尾">收尾：三句话</h2>
+  <p><b>一、房价的颗粒度能到区，工资的颗粒度到省为止。</b>这不是懒得找 —— 是区级工资在公开渠道里确实没有机器可读的形态。所以任何“某区房价收入比”的说法，分母都是估的。</p>
+  <p><b>二、城市内部的差距，比大多数人以为的大。</b>青岛最贵的区是最便宜的区的 6.5 倍，天津 4.9 倍，广州 3.9 倍。用“一座城市的房价”做决策，等于把这几倍的差异抹平了。</p>
+  <p><b>三、各省的房价收入比差了将近四倍。</b>同样是双职工、同样买 100 平方米，在省会买房要花掉的年数，最高的省是最低的省的三到四倍。<span class="hl">「房价高不高」这个问题，没有全国统一的答案</span>。</p>
+
+  <h2 id="src" data-rail="来源">数据与来源</h2>
+  <ul class="links">
+    <li><a href="https://fangjia.fang.com/" rel="noopener">房天下·房价</a> — 城市与区县二手房挂牌参考均价、环比、同比，每月抓一次</li>
+    <li>各省统计局《国民经济和社会发展统计公报》— 城镇居民人均可支配收入，逐省逐年，具体链接在数据文件的每一行里</li>
+    <li>口径：双职工家庭（省城镇人均可支配收入 × 2）、100 平方米、省会房价代表该省</li>
+    <li>相关：<a href="../income/">全国口径的工资与房价</a>（15 年收入 + 房价收入比）、<a href="../housing/">70 城指数地图</a>、<a href="../story/">价格是怎么被推高的</a></li>
+  </ul>
+
+  <footer>挂牌均价不等于成交价，且每城仅覆盖房价最高的 10 个区县，不构成对任何城市、区县或楼盘的估值。收入为省级口径，与省会城市的实际收入不同。本页只做数据呈现，不构成购房、投资或贷款建议。</footer>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+(function () {
+  var GRAY = '#8a8a8a', BLUE = '#2a78d6', RED = '#e34948', GREEN = '#1baf7a', AMBER = '#eda100', PURPLE = '#8b5cf6';
+  var grid = 'rgba(138,138,138,.22)';
+  var yuan = function (v) { return Math.round(v).toLocaleString('en-US'); };
+  var wan = function (v) { return v >= 1e4 ? (v / 1e4).toFixed(1) + ' 万' : yuan(v); };
+  var lg = function (id, items) {
+    var el = document.getElementById(id);
+    if (el) el.innerHTML = items.map(function (x) {
+      return '<span><i class="swatch' + (x[2] ? ' line' : '') + '" style="background:' + x[0] + '"></i>' + x[1] + '</span>';
+    }).join('');
+  };
+  var base = { responsive: true, maintainAspectRatio: false, animation: { duration: 200 },
+    plugins: { legend: { display: false } } };
+  // Provincial capitals stand in for their province's price. Municipalities are
+  // their own capital.
+  var CAP = { 北京: '北京', 天津: '天津', 上海: '上海', 重庆: '重庆', 河北: '石家庄', 山西: '太原',
+    内蒙古: '呼和浩特', 辽宁: '沈阳', 吉林: '长春', 黑龙江: '哈尔滨', 江苏: '南京', 浙江: '杭州',
+    安徽: '合肥', 福建: '福州', 江西: '南昌', 山东: '济南', 河南: '郑州', 湖北: '武汉', 湖南: '长沙',
+    广东: '广州', 广西: '南宁', 海南: '海口', 四川: '成都', 贵州: '贵阳', 云南: '昆明', 西藏: '拉萨',
+    陕西: '西安', 甘肃: '兰州', 青海: '西宁', 宁夏: '银川', 新疆: '乌鲁木齐' };
+
+  Promise.all([
+    fetch('./data/district-price.json', { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : null; }),
+    fetch('./data/province-income.json', { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : null; })
+  ]).catch(function () { return [null, null]; })
+    .then(function (x) { if (x && x[0]) draw(x[0], x[1]); });
+
+  function draw(d, inc) {
+    var good = d.cities.filter(function (c) { return !c.suspect; });
+    var withD = good.filter(function (c) { return c.districts.length >= 2; });
+    var flat = [];
+    good.forEach(function (c) {
+      c.districts.forEach(function (x) { flat.push({ city: c.name, cityPrice: c.price, name: x.name, price: x.price, mom: x.mom }); });
+    });
+    flat.sort(function (a, b) { return b.price - a.price; });
+
+    // --- key figures ---
+    document.getElementById('keys').innerHTML = [
+      ['城市', good.length + ' 个', '有挂牌均价'],
+      ['区县', flat.length + ' 个', '每城最多 10 个'],
+      ['省份', (inc ? new Set(inc.rows.map(function (r) { return r.province; })).size : 0) + ' 个', '有收入数据'],
+      ['最贵的区', flat.length ? flat[0].city + flat[0].name : '—', flat.length ? yuan(flat[0].price) + ' 元/平' : ''],
+      ['数据月份', d.period || '—', '房天下挂牌口径']
+    ].map(function (x) {
+      return '<div class="key"><div class="kk">' + x[0] + '</div><div class="kv">' + x[1]
+        + '</div><p class="kd">' + x[2] + '</p></div>';
+    }).join('');
+
+    var setN = function (id, v) { var e = document.getElementById(id); if (e) e.textContent = v; };
+    setN('n-cities', good.length); setN('n-districts', flat.length); setN('n-districts2', flat.length);
+    setN('n-prov', inc ? new Set(inc.rows.map(function (r) { return r.province; })).size : 0);
+
+    // --- 1. city distribution, log scale ---
+    var sorted = good.slice().sort(function (a, b) { return b.price - a.price; });
+    lg('city-legend', [[BLUE, '城市二手房挂牌均价（元/平，对数轴）', 1]]);
+    new Chart(document.getElementById('city-chart'), {
+      type: 'line',
+      data: { labels: sorted.map(function (c) { return c.name; }),
+        datasets: [{ data: sorted.map(function (c) { return c.price; }), borderColor: BLUE,
+          borderWidth: 2, pointRadius: 0, tension: .1, fill: true, backgroundColor: 'rgba(42,120,214,.10)' }] },
+      options: Object.assign({}, base, {
+        plugins: { legend: { display: false }, tooltip: { callbacks: {
+          label: function (c) { return yuan(c.parsed.y) + ' 元/平'; } } } },
+        scales: { x: { ticks: { color: GRAY, maxTicksLimit: 12, autoSkip: true }, grid: { display: false } },
+          y: { type: 'logarithmic', ticks: { color: GRAY, callback: function (v) {
+            return [2000, 5000, 10000, 20000, 50000].indexOf(v) >= 0 ? yuan(v) : ''; } },
+            grid: { color: grid }, title: { display: true, text: '元/平（对数）', color: GRAY } } } })
+    });
+    var mid = sorted[Math.floor(sorted.length / 2)];
+    document.getElementById('city-note').textContent =
+      '最高 ' + sorted[0].name + ' ' + yuan(sorted[0].price) + ' 元/平，中位数 ' + mid.name + ' '
+      + yuan(mid.price) + ' 元/平，最低 ' + sorted[sorted.length - 1].name + ' '
+      + yuan(sorted[sorted.length - 1].price) + ' 元/平 —— 头尾差 '
+      + (sorted[0].price / sorted[sorted.length - 1].price).toFixed(0) + ' 倍。'
+      + '全国的“平均房价”落在这条曲线很靠右的位置，因为绝大多数城市都在中位数附近。';
+
+    // --- 2. intra-city spread, floating bars ---
+    var spread = withD.map(function (c) {
+      var ps = c.districts.map(function (x) { return x.price; });
+      var lo = Math.min.apply(null, ps), hi = Math.max.apply(null, ps);
+      return { name: c.name, lo: lo, hi: hi, ratio: hi / lo,
+        loName: c.districts.filter(function (x) { return x.price === lo; })[0].name,
+        hiName: c.districts.filter(function (x) { return x.price === hi; })[0].name };
+    }).sort(function (a, b) { return b.ratio - a.ratio; }).slice(0, 22);
+    lg('spread-legend', [[AMBER, '该市最便宜的区 → 最贵的区（仅限已公布的 10 个区）']]);
+    new Chart(document.getElementById('spread-chart'), {
+      type: 'bar',
+      data: { labels: spread.map(function (s) { return s.name; }),
+        datasets: [{ data: spread.map(function (s) { return [s.lo, s.hi]; }),
+          backgroundColor: AMBER, borderRadius: 3, barPercentage: .72 }] },
+      options: Object.assign({}, base, {
+        indexAxis: 'y',
+        plugins: { legend: { display: false }, tooltip: { callbacks: {
+          label: function (c) {
+            var s = spread[c.dataIndex];
+            return s.loName + ' ' + yuan(s.lo) + ' → ' + s.hiName + ' ' + yuan(s.hi)
+              + '（' + s.ratio.toFixed(2) + ' 倍）';
+          } } } },
+        scales: { x: { ticks: { color: GRAY, callback: yuan }, grid: { color: grid },
+                       title: { display: true, text: '元/平', color: GRAY } },
+                  y: { ticks: { color: GRAY }, grid: { display: false } } } })
+    });
+    document.getElementById('spread-note').textContent =
+      spread[0].name + ' 内部差距最大：' + spread[0].loName + ' ' + yuan(spread[0].lo) + ' 元/平，'
+      + spread[0].hiName + ' ' + yuan(spread[0].hi) + ' 元/平，相差 ' + spread[0].ratio.toFixed(2)
+      + ' 倍。注意这还只是各市公布的前 10 个区之间的差距 —— 真实的最低价区没有进榜，实际差距只会更大。';
+
+    // --- 3. most expensive districts ---
+    var top = flat.slice(0, 30);
+    lg('rank-legend', [[RED, '区县挂牌均价（元/平）']]);
+    new Chart(document.getElementById('rank-chart'), {
+      type: 'bar',
+      data: { labels: top.map(function (x) { return x.city + ' · ' + x.name; }),
+        datasets: [{ data: top.map(function (x) { return x.price; }), backgroundColor: RED,
+          borderRadius: 3, barPercentage: .78 }] },
+      options: Object.assign({}, base, {
+        indexAxis: 'y',
+        plugins: { legend: { display: false }, tooltip: { callbacks: {
+          label: function (c) { return yuan(c.parsed.x) + ' 元/平（本市均价 ' + yuan(top[c.dataIndex].cityPrice) + '）'; } } } },
+        scales: { x: { ticks: { color: GRAY, callback: yuan }, grid: { color: grid } },
+                  y: { ticks: { color: GRAY, font: { size: 11 } }, grid: { display: false } } } })
+    });
+    var cityCount = new Set(top.map(function (x) { return x.city; })).size;
+    document.getElementById('rank-note').textContent =
+      '最贵的 30 个区来自 ' + cityCount + ' 座城市。第一名 ' + top[0].city + top[0].name + ' '
+      + yuan(top[0].price) + ' 元/平，是全国城市中位数（' + yuan(mid.price) + '）的 '
+      + (top[0].price / mid.price).toFixed(0) + ' 倍。';
+
+    if (!inc || !inc.rows.length) return;
+
+    // --- 4. provincial income, latest year per province ---
+    var latest = {};
+    inc.rows.forEach(function (r) { if (!latest[r.province] || r.year > latest[r.province].year) latest[r.province] = r; });
+    var provs = Object.keys(latest).map(function (p) { return latest[p]; })
+      .sort(function (a, b) { return b.urban - a.urban; });
+    var newest = Math.max.apply(null, provs.map(function (r) { return r.year; }));
+    lg('wage-legend', [[GREEN, '城镇居民人均可支配收入（元）'], [GRAY, '收入年份早于 ' + newest + ' 年']]);
+    new Chart(document.getElementById('wage-chart'), {
+      type: 'bar',
+      data: { labels: provs.map(function (r) { return r.province + (r.year < newest ? ' (' + r.year + ')' : ''); }),
+        datasets: [{ data: provs.map(function (r) { return r.urban; }),
+          backgroundColor: provs.map(function (r) { return r.year < newest ? GRAY : GREEN; }),
+          borderRadius: 3, barPercentage: .78 }] },
+      options: Object.assign({}, base, {
+        indexAxis: 'y',
+        plugins: { legend: { display: false }, tooltip: { callbacks: {
+          label: function (c) { return yuan(c.parsed.x) + ' 元（' + provs[c.dataIndex].year + ' 年）'; } } } },
+        scales: { x: { ticks: { color: GRAY, callback: yuan }, grid: { color: grid } },
+                  y: { ticks: { color: GRAY }, grid: { display: false } } } })
+    });
+    var cur = provs.filter(function (r) { return r.year === newest; });
+    document.getElementById('wage-note').textContent =
+      newest + ' 年有数据的 ' + cur.length + ' 个省里，最高 ' + cur[0].province + ' ' + yuan(cur[0].urban)
+      + ' 元，最低 ' + cur[cur.length - 1].province + ' ' + yuan(cur[cur.length - 1].urban) + ' 元，相差 '
+      + (cur[0].urban / cur[cur.length - 1].urban).toFixed(2) + ' 倍 —— 远小于房价的差距。'
+      + '灰色的是收入年份落后的省，后面两节把它们排除。';
+
+    // --- 5. price-to-income by province ---
+    var cityBy = {};
+    good.forEach(function (c) { cityBy[c.name] = c; });
+    var joined = cur.map(function (r) {
+      var c = cityBy[CAP[r.province]];
+      if (!c) return null;
+      var household = r.urban * 2, total = c.price * 100;
+      return { province: r.province, capital: c.name, price: c.price, income: r.urban,
+        household: household, ratio: total / household, sqm: household / c.price };
+    }).filter(Boolean).sort(function (a, b) { return b.ratio - a.ratio; });
+
+    lg('ratio-legend', [[PURPLE, '买 100㎡ 需要的家庭年收入倍数（省会房价 ÷ 全省城镇收入）']]);
+    new Chart(document.getElementById('ratio-chart'), {
+      type: 'bar',
+      data: { labels: joined.map(function (j) { return j.province + ' · ' + j.capital; }),
+        datasets: [{ data: joined.map(function (j) { return +j.ratio.toFixed(2); }),
+          backgroundColor: PURPLE, borderRadius: 3, barPercentage: .78 }] },
+      options: Object.assign({}, base, {
+        indexAxis: 'y',
+        plugins: { legend: { display: false }, tooltip: { callbacks: {
+          label: function (c) {
+            var j = joined[c.dataIndex];
+            return j.ratio.toFixed(2) + ' 年（房价 ' + yuan(j.price) + ' 元/平，家庭年收入 ' + yuan(j.household) + ' 元）';
+          } } } },
+        scales: { x: { ticks: { color: GRAY }, grid: { color: grid },
+                       title: { display: true, text: '不吃不喝的年数', color: GRAY } },
+                  y: { ticks: { color: GRAY, font: { size: 11 } }, grid: { display: false } } } })
+    });
+    var hi = joined[0], lo = joined[joined.length - 1];
+    document.getElementById('ratio-note').textContent =
+      '最高 ' + hi.province + '（' + hi.capital + '）' + hi.ratio.toFixed(1) + ' 年，最低 '
+      + lo.province + '（' + lo.capital + '）' + lo.ratio.toFixed(1) + ' 年，相差 '
+      + (hi.ratio / lo.ratio).toFixed(1) + ' 倍。同样是双职工、同样买 100 平方米，'
+      + '在 ' + hi.capital + ' 要花掉在 ' + lo.capital + ' 的 ' + (hi.ratio / lo.ratio).toFixed(1) + ' 倍时间。';
+
+    // --- 6. square metres per year of household income ---
+    var bySqm = joined.slice().sort(function (a, b) { return b.sqm - a.sqm; });
+    lg('sqm-legend', [[AMBER, '一年家庭收入能买到的建筑面积（㎡）']]);
+    new Chart(document.getElementById('sqm-chart'), {
+      type: 'bar',
+      data: { labels: bySqm.map(function (j) { return j.province + ' · ' + j.capital; }),
+        datasets: [{ data: bySqm.map(function (j) { return +j.sqm.toFixed(1); }),
+          backgroundColor: AMBER, borderRadius: 3, barPercentage: .78 }] },
+      options: Object.assign({}, base, {
+        indexAxis: 'y',
+        plugins: { legend: { display: false }, tooltip: { callbacks: {
+          label: function (c) { return c.parsed.x.toFixed(1) + ' ㎡'; } } } },
+        scales: { x: { ticks: { color: GRAY }, grid: { color: grid },
+                       title: { display: true, text: '平方米', color: GRAY } },
+                  y: { ticks: { color: GRAY, font: { size: 11 } }, grid: { display: false } } } })
+    });
+    document.getElementById('sqm-note').textContent =
+      '双职工一年的收入，在 ' + bySqm[0].capital + ' 能买 ' + bySqm[0].sqm.toFixed(1) + ' ㎡，在 '
+      + bySqm[bySqm.length - 1].capital + ' 只能买 ' + bySqm[bySqm.length - 1].sqm.toFixed(1)
+      + ' ㎡ —— 一个是一间卧室，一个是一张床的大小。';
+
+    // --- full table ---
+    document.getElementById('all-rows').innerHTML = flat.map(function (x, i) {
+      var rel = x.price / x.cityPrice;
+      return '<tr><td class="dim">' + (i + 1) + '</td><td>' + x.city + '</td><td>' + x.name
+        + '</td><td>' + yuan(x.price) + '</td><td class="dim">' + (x.mom > 0 ? '+' : '') + x.mom
+        + '%</td><td class="dim">' + rel.toFixed(2) + '×</td></tr>';
+    }).join('');
+  }
+})();
+</script>
+</body>
+</html>

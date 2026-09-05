@@ -80,14 +80,68 @@
   }
 </style>
 <link rel="stylesheet" href="/assets/statusbar.css">
+<link rel="stylesheet" href="/assets/rail.css">
 <script src="/assets/statusbar.js" defer></script>
 <script src="/assets/theme.js" defer></script>
+<script src="/assets/rail.js" defer></script>
 </head>
 <body>
 <main>
   <p class="back"><a href="../">← 首页</a></p>
   <h1>美股期权 Wheel 筛选器</h1>
+  <p class="lede">Wheel 的两条腿：先卖现金担保看跌，被指派后卖备兑看涨。这页从 22 个标的里筛出候选，附年化、Delta、缓冲与流动性。<span class="hl">按年化排序，榜首基本恒定是杠杆 ETF —— 那是风险的标价，不是白捡的收益</span>。</p>
   <p>覆盖七姐妹、指数与行业 ETF、杠杆 ETF。GitHub Actions 在美股交易时段定时抓 Cboe 延迟行情，在 runner 里筛完再把结果提交进仓库 —— 页面只读静态 JSON，没有后端。</p>
+
+  <figure class="shot">
+    <div class="fr">
+      <svg viewBox="0 0 960 540" preserveAspectRatio="xMidYMid meet" role="img" aria-label="流程图：Wheel 策略的循环。手里是现金时卖出现金担保看跌；没被指派则收下权利金回到现金，被指派则按行权价接到股票；持股后卖出备兑看涨；被行权则卖出股票回到现金，没被行权则继续卖看涨。">
+        <title>Wheel 的一圈</title>
+        <defs>
+          <marker id="wh-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--ink-3)"/>
+          </marker>
+        </defs>
+        <g font-family="-apple-system, BlinkMacSystemFont, sans-serif">
+          <text x="40" y="44" fill="var(--ink)" font-size="24" font-weight="600">一圈四步，两条腿各收一次权利金</text>
+
+          <path d="M650 128 C 560 66, 300 66, 212 126" stroke="var(--ink-3)" stroke-width="2"
+                stroke-dasharray="7 6" fill="none" marker-end="url(#wh-a)"/>
+          <text x="430" y="116" fill="var(--ink-2)" font-size="16" text-anchor="middle">没被指派：权利金落袋，回到 ①</text>
+
+          <g stroke="var(--ink-3)" stroke-width="2.5" fill="none" marker-end="url(#wh-a)">
+            <path d="M330 188 H600"/>
+            <path d="M750 248 V318"/>
+            <path d="M610 382 H352"/>
+            <path d="M200 325 V250"/>
+          </g>
+
+          <g>
+            <rect x="80" y="135" width="240" height="105" rx="14" fill="var(--card)" stroke="var(--line)"/>
+            <rect x="620" y="135" width="260" height="105" rx="14" fill="var(--card)" stroke="var(--put)"/>
+            <rect x="620" y="330" width="260" height="105" rx="14" fill="var(--card)" stroke="var(--line)"/>
+            <rect x="80" y="330" width="260" height="105" rx="14" fill="var(--card)" stroke="var(--call)"/>
+          </g>
+
+          <g fill="var(--ink)" font-size="21" font-weight="600" text-anchor="middle">
+            <text x="200" y="178">① 手里是现金</text>
+            <text x="750" y="178">② 卖现金担保看跌</text>
+            <text x="750" y="373">③ 按行权价接到股票</text>
+            <text x="210" y="373">④ 卖备兑看涨</text>
+          </g>
+          <g fill="var(--ink-3)" font-size="16" text-anchor="middle">
+            <text x="200" y="208">留足行权价 × 100 的现金</text>
+            <text x="750" y="208">CSP · 收权利金</text>
+            <text x="750" y="403">成本 ＝ 行权价 − 权利金</text>
+            <text x="210" y="403">CC · 再收一次权利金</text>
+          </g>
+
+          <text x="480" y="474" fill="var(--ink-2)" font-size="16" text-anchor="middle">被行权：股票卖出，回到 ①；没被行权：继续卖 ④</text>
+          <text x="480" y="510" fill="var(--put)" font-size="17" text-anchor="middle">整圈唯一没被定价的风险：③ 那天你还愿不愿意持有它</text>
+        </g>
+      </svg>
+    </div>
+    <figcaption>年化只描述 ② 和 ④ 两步收到的权利金，描述不了 ③ 那一步接下来的股票值多少 —— 那是整圈里唯一要自己判断的地方。</figcaption>
+  </figure>
 
   <div class="note" id="stale">
     <b class="hl hl--warn">这是延迟行情快照，不是实时报价</b>；盘后与周末的卖价常被挂得很宽，年化收益会因此偏低或偏高。所有数字是公开数据的机械计算，不是投资建议。
@@ -113,10 +167,10 @@
       </label>
     </div>
     <ul class="syms" id="syms"></ul>
-    <p class="hint">年化 = 卖价 ÷ 行权价 × 365 ÷ 剩余天数，即现金担保看跌的资金年化回报（按最保守的买价成交计算）。点一行看细节。</p>
+    <p class="hint">年化 = 买价 ÷ 行权价 × 365 ÷ 剩余天数，即现金担保看跌的资金年化回报（用买价而不是中间价，那是立刻能成交的一侧）。点一行看细节。</p>
     <p class="hint">按年化排序，榜首基本恒定是杠杆 ETF —— 高年化就是高隐含波动率的另一种写法，那是风险的标价，不是找到了便宜。换成「年化 ÷ IV30」能看出谁在单位波动率上给得更多；wheel 的前提是这个标的跌下来你愿意接，这一条任何排序都替你判断不了。</p>
 
-    <h2>全市场候选排行</h2>
+    <h2 id="sec1">全市场候选排行</h2>
     <p>把 22 个标的的候选合起来排，而不是只看每个标的的第一名。CSP = cash-secured put（现金担保看跌，入场腿），CC = covered call（备兑看涨，出场腿）。</p>
     <div class="toolbar">
       <div class="chips" style="margin:0">
@@ -148,9 +202,9 @@
       <span class="pageinfo" id="rank-info">—</span>
       <button id="rank-next" type="button">下一页 →</button>
     </div>
-    <p class="hint">风险标签是机械判定：<b>杠杆</b> = 三倍杠杆 ETF，<b>Δ高</b> = |Δ| ≥ 0.30（被指派概率约三成以上），<b>缓冲薄</b> = 行权价离现价不到 5%，<b>价差宽</b> = 超过中间价 15%，<b>临期</b> = DTE ≤ 7，<b>IV极高</b> = IV30 &gt; 60。标签越多不等于不能做，只说明这一张的钱是从哪儿来的。</p>
+    <p class="hint">风险标签是机械判定：<b>杠杆</b> = 三倍杠杆 ETF（名单里的 SQQQ 是 <b>−3 倍反向</b>，方向与其余四只相反），<b>Δ高</b> = |Δ| ≥ 0.30（被指派概率约三成以上），<b>缓冲薄</b> = 行权价离现价不到 5%，<b>价差宽</b> = 超过中间价 15%，<b>临期</b> = DTE ≤ 7，<b>IV极高</b> = IV30 &gt; 60。标签越多不等于不能做，只说明这一张的钱是从哪儿来的。</p>
 
-    <h2>两个标的对比</h2>
+    <h2 id="sec2">两个标的对比</h2>
     <p>直接比「各自年化最高的那张」没有意义 —— Δ 不同、DTE 不同，等于拿不同的风险换不同的钱。这里按<b>同一个 Δ 目标</b>各挑一张最接近的合约来比，价格轴也统一成 行权价／现价，两个价位差十倍的标的才放得到一张图上。</p>
     <div class="toolbar">
       <label>A <select id="cmp-a"></select></label>
@@ -205,7 +259,7 @@
       <div class="scroll">
         <table>
           <thead><tr>
-            <th>到期</th><th>天</th><th>行权价</th><th>卖价</th><th>年化</th>
+            <th>到期</th><th>天</th><th>行权价</th><th>买价</th><th>年化</th>
             <th>Δ</th><th>距现价</th><th class="hide-sm">盈亏平衡</th><th class="hide-sm">OI</th><th class="hide-sm">价差</th>
           </tr></thead>
           <tbody id="d-puts"></tbody>
@@ -217,7 +271,7 @@
       <div class="scroll">
         <table>
           <thead><tr>
-            <th>到期</th><th>天</th><th>行权价</th><th>卖价</th><th>年化</th>
+            <th>到期</th><th>天</th><th>行权价</th><th>买价</th><th>年化</th>
             <th>Δ</th><th>上涨空间</th><th class="hide-sm">OI</th><th class="hide-sm">价差</th>
           </tr></thead>
           <tbody id="d-calls"></tbody>
@@ -256,23 +310,28 @@
     </div>
   </div>
 
-  <h2>这些数字在 wheel 里是什么意思</h2>
+  <h2 id="wheel" data-rail="名词解释">这些数字在 wheel 里是什么意思</h2>
   <dl class="gloss">
     <dt>年化（看跌）</dt>
-    <dd>卖出一张现金担保看跌，要冻结 行权价×100 的现金。年化 = 卖价 ÷ 行权价 × 365 ÷ 剩余天数，就是这笔冻结资金的回报率。用买价而不是中间价，因为那是立刻能成交的一侧。</dd>
+    <dd>卖出一张现金担保看跌，要冻结 行权价×100 的现金。年化 = 买价 ÷ 行权价 × 365 ÷ 剩余天数，就是这笔冻结资金的回报率。用买价而不是中间价，因为那是立刻能成交的一侧。</dd>
+    <dt>年化（看涨）</dt>
+    <dd>备兑看涨的股票已经在手上，所以回报按<b>现价</b>算：年化 = 买价 ÷ 现价 × 365 ÷ 剩余天数。分母和看跌那条（行权价）不是一个东西，两列数字不要直接相减。</dd>
     <dt>Δ（Delta）</dt>
     <dd>看跌的 Δ 绝对值粗略等于到期被指派的概率。−0.30 就是大约三成概率接到股票。wheel 的常见区间是 −0.30 到 −0.15：收得到权利金，又不至于经常被指派。</dd>
     <dt>距现价 / 盈亏平衡</dt>
-    <dd>距现价是行权价离当前价的缓冲。盈亏平衡 = 行权价 − 卖价，跌破它这一轮才真的亏钱。</dd>
+    <dd>距现价是行权价离当前价的缓冲。盈亏平衡 = 行权价 − 买价，跌破它这一轮才真的亏钱。</dd>
     <dt>上涨空间（看涨）</dt>
     <dd>备兑看涨被行权时，股票按行权价被卖走。上涨空间就是你放弃的那段涨幅。</dd>
     <dt>价差</dt>
     <dd>(卖价−买价)÷中间价。越宽越难按理想价格成交。盘后快照的价差普遍虚高，盘中再看一次。</dd>
   </dl>
 
-  <h2>数据与口径</h2>
+  <h2 id="close">收尾：这张表能替你做什么</h2>
+  <p><b>能做的</b>：把「同样卖 0.25 Delta 的看跌，各标的分别给多少年化」这个横向比较自动化，并把流动性（未平仓、成交量、买卖价差）摆在同一行里，让不可成交的高年化露出原形。</p>
+  <p><b>不能做的</b>：替你判断愿不愿意接这只股票。Wheel 的前提是<b>跌下来你愿意持有</b>，这一条任何排序都算不出来。按年化排，榜首恒定是杠杆 ETF；换成「年化 ÷ IV30」，排在前面的通常换成七姐妹里的个股，杠杆 ETF 掉下去几位 —— 但掉不干净，波动最高的那只往往还留在前列。<span class="hl">高年化不是找到了便宜，是市场给这段波动开的价。</span></p>
+  <h2 id="sec4">数据与口径</h2>
   <ul class="links">
-    <li><a href="https://www.cboe.com/delayed_quotes/" rel="noopener">Cboe 延迟行情</a> — 用的是公开的 <code>delayed_quotes/options</code> 接口，IV 与希腊字母取交易所计算值，不是自己反解</li>
+    <li><a href="https://www.cboe.com/delayed_quotes/" rel="noopener">Cboe 延迟行情</a> — 用的是公开的 <code>delayed_quotes/options</code> 接口，IV 与希腊字母取交易所计算值，不是自己反解。这是网页背后的公开端点，不是官方开放 API：它随时可能改结构或限流，这页也随时可能因此空掉</li>
     <li>筛选条件：剩余 5–70 天，看跌 Δ 在 −0.35–−0.10、看涨 Δ 在 0.10–0.35，买价 ≥ 0.05，未平仓或成交量 ≥ 25，价差 ≤ 0.10 或 ≤ 中间价的 30%</li>
     <li>曲面按 OTM 惯例取值（低于现价用看跌、高于用看涨），插值到 行权价／现价 0.8–1.2 的统一网格</li>
     <li><a href="./data/options.json" rel="noopener">options.json</a> · <a href="./data/history.json" rel="noopener">history.json</a> — 原始快照</li>
