@@ -8,7 +8,7 @@
 // the four official regions, so that is the finest real price granularity
 // available here. A province is coloured by its region, not by itself, and the
 // page says so.
-import { writeFileSync, mkdirSync } from 'node:fs';
+import { writeFileSync, mkdirSync, readFileSync } from 'node:fs';
 
 const BASE = 'https://www.stats.gov.cn/sj/zxfb/';
 const MAX_PAGES = 40;          // release list pages to walk back through
@@ -87,10 +87,16 @@ function salesRows(html) {
 }
 
 let misses = 0;
+// Article fetches had no failure cap, only list pages did. When the site
+// refuses us wholesale every article burns its full timeout, and 40 pages of
+// ~20 links each is hours of that. A run of failures is not bad luck, it is a
+// block; stop and keep whatever the first pages already yielded.
+let deadInARow = 0;
+let blocked = false;
 const seen = new Set();
 const records = [];
 
-for (let page = 0; page < MAX_PAGES; page++) {
+for (let page = 0; page < MAX_PAGES && !blocked; page++) {
   const listUrl = page === 0 ? BASE : `${BASE}index_${page}.html`;
   let list;
   // Listing pages 404 intermittently; one bad page should not truncate the
@@ -126,14 +132,39 @@ for (let page = 0; page < MAX_PAGES; page++) {
       if (records.some((r) => `${r.year}-${r.through}` === key)) continue;
       records.push({ ...period, url, prices });
       console.log(`${period.label.padEnd(14)} 全国 ${prices['全国']} 东部 ${prices['东部']} 中部 ${prices['中部']} 西部 ${prices['西部']} 东北 ${prices['东北']}`);
+      deadInARow = 0;
     } catch (err) {
       console.log(`fail ${url}: ${err.message}`);
+      if (++deadInARow >= 8) {
+        console.log(`  ${deadInARow} article fetches failed in a row - treating this as a block and stopping`);
+        blocked = true;
+        break;
+      }
     }
     await new Promise((r) => setTimeout(r, 700));
   }
 }
 
-if (!records.length) throw new Error('no releases parsed - the page layout probably changed');
+if (!records.length) {
+  // Two very different faults used to report the same way. Say which one.
+  throw new Error(blocked
+    ? 'no releases parsed: every article fetch failed, the site is refusing this runner'
+    : 'no releases parsed - the page layout probably changed');
+}
+
+// A crawl cut short by a block still writes, but it must not quietly replace a
+// fuller history with a handful of recent releases. Compare against what is
+// already committed and refuse to shrink the series by more than a couple of
+// entries.
+try {
+  const prev = JSON.parse(readFileSync('housing/data/house-price.json', 'utf8'));
+  if (prev.records && records.length < prev.records.length - 2) {
+    throw new Error(`only ${records.length} releases parsed against ${prev.records.length} already committed`
+      + ' - refusing to overwrite a fuller snapshot with a truncated crawl');
+  }
+} catch (err) {
+  if (err.code !== 'ENOENT') throw err;   // first run, nothing to compare with
+}
 
 records.sort((a, b) => (a.year - b.year) || (a.through - b.through));
 const latest = records[records.length - 1];
