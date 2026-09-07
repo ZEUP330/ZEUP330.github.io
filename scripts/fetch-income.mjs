@@ -22,7 +22,7 @@ const GAZETTE = 'https://www.stats.gov.cn/sj/tjgb/ndtjgb/qgndtjgb/';
 const isChallenge = (html) => /Please enable JavaScript/i.test(html) || html.length < 4000;
 
 async function get(url) {
-  const res = await fetch(url, UA);
+  const res = await fetch(url, { ...UA, signal: AbortSignal.timeout(30000) });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   const html = await res.text();
   if (isChallenge(html)) throw new Error('anti-bot challenge page');
@@ -92,7 +92,7 @@ if (!incomeRows.length) console.log(`fetched 0 new; carrying ${merged.length} fo
 // says so.
 async function worldBank(indicator) {
   const url = `https://api.worldbank.org/v2/country/CHN/indicator/${indicator}?format=json&per_page=200`;
-  const res = await fetch(url, UA);
+  const res = await fetch(url, { ...UA, signal: AbortSignal.timeout(30000) });
   if (!res.ok) throw new Error(`${indicator} -> HTTP ${res.status}`);
   const body = await res.json();
   return body[1].filter((r) => r.value != null).map((r) => ({ y: +r.date, v: r.value }))

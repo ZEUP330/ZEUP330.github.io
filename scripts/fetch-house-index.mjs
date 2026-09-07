@@ -46,7 +46,8 @@ const num = (v) => (v === '' || v == null ? null : +v);
 // numbers small in JSON and is what the reader actually wants to see.
 const delta = (v) => (v == null ? null : +(v - 100).toFixed(1));
 
-const res = await fetch(CSV, { headers: { 'user-agent': 'zeup330.github.io house index' } });
+const res = await fetch(CSV, { headers: { 'user-agent': 'zeup330.github.io house index' },
+  signal: AbortSignal.timeout(60000) });
 if (!res.ok) throw new Error(`CSV -> HTTP ${res.status}`);
 const rows = parse(await res.text());
 console.log(`rows=${rows.length} cols=${Object.keys(rows[0]).join(',')}`);

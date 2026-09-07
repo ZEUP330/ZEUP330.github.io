@@ -36,7 +36,8 @@ const ym = (d) => d.slice(0, 7);
 async function csv(id) {
   const url = 'https://fred.stlouisfed.org/graph/fredgraph.csv?id=' + encodeURIComponent(id);
   const res = await fetch(url, {
-    headers: { 'user-agent': 'Mozilla/5.0 (compatible; zeup330.github.io macro)' }
+    headers: { 'user-agent': 'Mozilla/5.0 (compatible; zeup330.github.io macro)' },
+    signal: AbortSignal.timeout(30000)
   });
   if (!res.ok) throw new Error(`${id} -> HTTP ${res.status}`);
   const text = await res.text();

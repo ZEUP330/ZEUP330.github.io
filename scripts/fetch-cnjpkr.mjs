@@ -15,7 +15,8 @@ const SERIES = [
 
 async function fred(id) {
   const res = await fetch(`https://fred.stlouisfed.org/graph/fredgraph.csv?id=${id}`, {
-    headers: { 'user-agent': 'zeup330.github.io house price comparison' }
+    headers: { 'user-agent': 'zeup330.github.io house price comparison' },
+    signal: AbortSignal.timeout(30000)
   });
   if (!res.ok) throw new Error(`${id} -> HTTP ${res.status}`);
   const rows = (await res.text()).trim().split(/\r?\n/).slice(1);

@@ -66,7 +66,8 @@ function parseOcc(code) {
 
 async function chain(symbol) {
   const res = await fetch(`${FEED}/${symbol}.json`, {
-    headers: { 'user-agent': 'zeup330.github.io wheel screener' }
+    headers: { 'user-agent': 'zeup330.github.io wheel screener' },
+    signal: AbortSignal.timeout(30000)
   });
   if (!res.ok) throw new Error(`${symbol} -> HTTP ${res.status}`);
   return res.json();

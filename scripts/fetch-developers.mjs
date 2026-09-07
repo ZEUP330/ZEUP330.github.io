@@ -44,7 +44,8 @@ const iso = (ms) => new Date(ms).toISOString().slice(0, 10);
 async function history(sym) {
   const url = 'https://query1.finance.yahoo.com/v8/finance/chart/' + encodeURIComponent(sym)
     + '?period1=' + START + '&period2=' + Math.floor(Date.now() / 1000) + '&interval=1d';
-  const res = await fetch(url, { headers: { 'user-agent': 'Mozilla/5.0 (compatible; zeup330.github.io developers)' } });
+  const res = await fetch(url, { headers: { 'user-agent': 'Mozilla/5.0 (compatible; zeup330.github.io developers)' },
+    signal: AbortSignal.timeout(30000) });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   const body = await res.json();
   if (body.chart && body.chart.error) throw new Error(body.chart.error.code || 'chart error');
@@ -188,7 +189,8 @@ try {
     if (!py) continue;
     if (!geoCache.has(py)) {
       try {
-        const res = await fetch(`https://cdn.jsdelivr.net/npm/echarts@4.9.0/map/json/province/${py}.json`);
+        const res = await fetch(`https://cdn.jsdelivr.net/npm/echarts@4.9.0/map/json/province/${py}.json`,
+          { signal: AbortSignal.timeout(30000) });
         geoCache.set(py, res.ok ? await res.json() : null);
       } catch { geoCache.set(py, null); }
       await new Promise((r) => setTimeout(r, 120));
@@ -207,7 +209,8 @@ try {
   const stillMissing = cities.filter((c) => c.lng == null);
   if (stillMissing.length) {
     try {
-      const res = await fetch('https://cdn.jsdelivr.net/npm/echarts@4.9.0/map/json/china.json');
+      const res = await fetch('https://cdn.jsdelivr.net/npm/echarts@4.9.0/map/json/china.json',
+        { signal: AbortSignal.timeout(30000) });
       const cn = res.ok ? await res.json() : null;
       if (cn) {
         for (const c of stillMissing) {

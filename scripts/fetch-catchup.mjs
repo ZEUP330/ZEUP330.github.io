@@ -43,7 +43,8 @@ const PAIRS = [
 async function series(code) {
   const url = `${API}/country/${Object.keys(COUNTRIES).join(';')}/indicator/${code}`
     + `?format=json&per_page=20000&date=${FROM}:${TO}`;
-  const res = await fetch(url, { headers: { 'user-agent': 'zeup330.github.io catchup' } });
+  const res = await fetch(url, { headers: { 'user-agent': 'zeup330.github.io catchup' },
+    signal: AbortSignal.timeout(30000) });
   if (!res.ok) throw new Error(`${code} -> HTTP ${res.status}`);
   const body = await res.json();
   if (!Array.isArray(body) || !body[1]) throw new Error(`${code} -> empty payload`);

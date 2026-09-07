@@ -23,7 +23,9 @@ const iso = (ms) => new Date(ms).toISOString().slice(0, 10);
 async function history(sym) {
   const url = 'https://query1.finance.yahoo.com/v8/finance/chart/'
     + encodeURIComponent(sym) + '?period1=0&period2=' + Math.floor(Date.now() / 1000) + '&interval=1d';
-  const res = await fetch(url, { headers: { 'user-agent': 'Mozilla/5.0 (compatible; zeup330.github.io drawdown)' } });
+  // 60s, not 30: this one pulls the full daily history, several MB per index.
+  const res = await fetch(url, { headers: { 'user-agent': 'Mozilla/5.0 (compatible; zeup330.github.io drawdown)' },
+    signal: AbortSignal.timeout(60000) });
   if (!res.ok) throw new Error(`${sym} -> HTTP ${res.status}`);
   const body = await res.json();
   if (body.chart && body.chart.error) throw new Error(`${sym} -> ${JSON.stringify(body.chart.error)}`);

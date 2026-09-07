@@ -26,7 +26,7 @@ const REGION = {
 const UA = { 'user-agent': 'Mozilla/5.0 (compatible; zeup330.github.io house price)' };
 
 async function get(url) {
-  const res = await fetch(url, { headers: UA });
+  const res = await fetch(url, { headers: UA, signal: AbortSignal.timeout(30000) });
   if (!res.ok) throw new Error(`${url} -> HTTP ${res.status}`);
   return res.text();
 }
