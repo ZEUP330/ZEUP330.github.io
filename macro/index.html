@@ -99,7 +99,7 @@
         <span><i style="background:#8a8a8a"></i>近 12 个月均值</span>
       </div>
       <div class="chart"><canvas id="c-payrolls" role="img" aria-label="柱状图：美国非农就业每月新增人数，以及近 12 个月的均值。"></canvas></div>
-      <p class="hint note">非农是「全部非农就业人数」这个存量的月度差分。市场看的是差分，不是存量。</p>
+      <p class="hint note">非农是「全部非农就业人数」这个存量的月度差分，市场看的是差分不是存量。图上只画最近五年：2020 年 4 月单月 −2047 万，画进来会把其余每一根柱子压成一条平线。</p>
     </section>
 
     <section class="block" data-rise="1">
@@ -124,7 +124,7 @@
         <span><i class="dash"></i>2% 目标</span>
       </div>
       <div class="chart"><canvas id="c-infl" role="img" aria-label="折线图：CPI、核心 CPI 与核心 PCE 的同比涨幅，以及 2% 目标线。"></canvas></div>
-      <p class="hint note">美联储的目标口径是核心 PCE，不是 CPI；CPI 出得早、波动大，所以市场先交易 CPI，但政策落在 PCE 上。两者长期能差 0.3 个百分点上下。</p>
+      <p class="hint note">美联储的目标口径是核心 PCE，不是 CPI；CPI 出得早、波动大，所以市场先交易 CPI，但政策落在 PCE 上。两者的差不是常数，上面那句话里的均值和占比都是按当前这段序列现算的。</p>
     </section>
 
     <section class="block" data-rise="3">
@@ -249,8 +249,9 @@
   var fmt = function (v, d) { return (+v).toFixed(d == null ? 1 : d); };
   var sign = function (v, d) { return (v > 0 ? '+' : '') + fmt(v, d); };
   var kn = function (v) { return Math.round(v).toLocaleString('en-US'); };
-  // FRED gives payrolls in thousands of persons; 万 is what reads naturally here
-  var wan = function (kPersons) { return (kPersons / 100).toFixed(1); };
+  // FRED gives payrolls in THOUSANDS of persons. 万 is ten thousand, so the
+  // divisor is 10, not 100 - at 100 the headline number came out 10x small.
+  var wan = function (kPersons) { return (kPersons / 10).toFixed(1); };
   // 2026-08 -> 2026 年 8 月; the leading zero is for sorting, not for reading
   var mLabel = function (m) { return +m.slice(0, 4) + ' 年 ' + (+m.slice(5, 7)) + ' 月'; };
 
@@ -299,7 +300,10 @@
       dl.textContent = ' — 本页用的全部派生数据，可直接下载';
       dl.insertBefore(a, dl.firstChild);
     }
-    el('asof').innerHTML = '数据截至 <b>' + mLabel(j.asOf) + '</b>（就业与物价口径）· 抓取于 '
+    // Payrolls and CPI do not land in the same week, so one "as of" month
+    // would be wrong for one of them.
+    el('asof').innerHTML = '就业数据截至 <b>' + mLabel(L.payrolls.d) + '</b>，物价截至 <b>'
+      + mLabel(L.core.d) + '</b>，纳指与利差到 ' + L.curve.d + '。抓取于 '
       + new Date(j.fetched).toLocaleString('zh-CN', { hour12: false })
       + (j.failures && j.failures.length ? ' · 有 ' + j.failures.length + ' 个序列本次没取到' : '');
 
@@ -309,7 +313,7 @@
     var keys = [
       ['非农新增', wan(L.payrolls.v), '万人', '近 12 个月均值 ' + wan(p12) + ' 万人 · ' + mLabel(L.payrolls.d), L.payrolls.v >= p12 ? '' : ' key--cost'],
       ['失业率', fmt(L.unrate.v), '%', 'Sahm 指标 ' + (L.sahm ? fmt(L.sahm.v, 2) : '—') + '（0.50 为触发线）', L.sahm && L.sahm.v >= 0.5 ? ' key--risk' : ''],
-      ['核心 CPI 同比', fmt(L.core.v), '%', L.corepce ? '核心 PCE ' + fmt(L.corepce.v) + '%，目标 2%' : '目标 2%', L.core.v > 3 ? ' key--cost' : ''],
+      ['核心 CPI 同比', fmt(L.core.v), '%', (L.corepce ? '核心 PCE ' + fmt(L.corepce.v) + '%，' : '') + '目标 2% · ' + mLabel(L.core.d), L.core.v > 3 ? ' key--cost' : ''],
       ['联邦基金利率', fmt(L.ff.v, 2), '%', '有效利率月均，' + mLabel(L.ff.d), ''],
       ['纳指距高点', fmt(dd, 1), '%', '月末收盘口径，' + mLabel(L.ndx.d), dd < -10 ? ' key--risk' : ' key--lead']
     ];
@@ -320,11 +324,19 @@
     }).join('');
 
     // ---- the six data blocks --------------------------------------------
-    var pay = S.payrolls.slice(-120);
-    var payMa = pay.map(function (_, i, a) {
+    // Five years, not ten. April 2020 was -2,047 万 in a single month; drawn on
+    // the same axis it squashes every other bar into a flat line and the chart
+    // stops answering the question it exists to answer. The footnote says so.
+    // The moving average is computed on the full series first, so the line is
+    // complete from the very first bar rather than starting eleven months in.
+    var payAll = S.payrolls;
+    var maAll = payAll.map(function (_, i, a) {
       if (i < 11) return null;
       var s = 0; for (var k = i - 11; k <= i; k++) s += a[k].v; return s / 12;
     });
+    var WIN = 60;
+    var pay = payAll.slice(-WIN);
+    var payMa = maAll.slice(-WIN);
     el('t-payrolls').innerHTML =
       '最新一期非农新增 <b>' + wan(L.payrolls.v) + ' 万人</b>（' + mLabel(L.payrolls.d) + '），'
       + '近 12 个月的平均是 ' + wan(p12) + ' 万人，'
@@ -369,13 +381,29 @@
 
     var ci = S.core.slice(-300), cpiMap = new Map(S.cpi.map(function (r) { return [r.d, r.v]; }));
     var pceMap = new Map(S.corepce.map(function (r) { return [r.d, r.v]; }));
+    var coreMap = new Map(S.core.map(function (r) { return [r.d, r.v]; }));
+    // How the two core measures usually sit, straight from the series - the
+    // textbook line is "PCE runs below CPI", and it is worth saying how often
+    // that actually holds and whether it holds this month.
+    var gaps = S.corepce.map(function (r) {
+      return coreMap.has(r.d) ? r.v - coreMap.get(r.d) : null;
+    }).filter(function (v) { return v != null; });
+    var gapMean = gaps.reduce(function (a, b) { return a + b; }, 0) / gaps.length;
+    var gapBelow = gaps.filter(function (v) { return v < 0; }).length / gaps.length * 100;
+    var nowGap = (L.corepce && L.core) ? L.corepce.v - L.core.v : null;
     el('t-infl').innerHTML =
       '核心 CPI 同比 <b>' + fmt(L.core.v) + '%</b>，整体 CPI ' + fmt(L.cpi.v) + '%'
-      + (L.corepce ? '，核心 PCE ' + fmt(L.corepce.v) + '%' : '') + '。'
+      + (L.corepce ? '，核心 PCE ' + fmt(L.corepce.v) + '%' : '') + '（' + mLabel(L.core.d) + '）。'
       + '三条线里，<b>核心</b>剔除了食品和能源，所以它转向得慢，但转向之后更难反转；'
       + '整体 CPI 会被油价一个月拉高一个百分点，然后下个月还回去。'
-      + '真正决定政策的是核心 PCE：它是美联储 2% 目标的口径，而且通常比 CPI 低一截，'
-      + '所以「CPI 还有 3%」和「已经接近目标」可以同时成立。';
+      + '真正决定政策的是核心 PCE —— 它才是美联储 2% 目标的口径：'
+      + '这段样本里它平均比核心 CPI 低 ' + fmt(Math.abs(gapMean), 2) + ' 个百分点，'
+      + fmt(gapBelow, 0) + '% 的月份都更低'
+      + (nowGap == null ? '。'
+         : nowGap < 0 ? '，现在也是（低 ' + fmt(-nowGap, 2) + ' 个百分点）。'
+         : '，<b>但现在反过来了</b>：核心 PCE 反而高出 ' + fmt(nowGap, 2)
+           + ' 个百分点，属于那 ' + fmt(100 - gapBelow, 0) + '% 的少数情形，'
+           + '两个口径给出的「离目标还有多远」这次并不一致。');
     new Chart(el('c-infl'), {
       type: 'line',
       data: { labels: ci.map(function (r) { return r.d; }), datasets: [
