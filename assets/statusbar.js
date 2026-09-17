@@ -39,6 +39,12 @@
       note: '非农与 CPI 发布后各取一次'
     },
     {
+      id: 'rates', name: '利率与美债', url: '/rates/data/status.json', page: '/rates/',
+      // rates.yml: '30 3 26 * *'
+      cron: { monthDays: [26], times: [[3, 30]] },
+      note: '各央行、H.15、金管局等官方数据，每月取一次'
+    },
+    {
       id: 'catchup', name: '被追赶的经济体', url: '/catchup/data/status.json', page: '/catchup/',
       // catchup.yml: '40 4 5 * *'
       cron: { monthDays: [5], times: [[4, 40]] },
@@ -271,7 +277,7 @@
           dot.className = 'zb-dot warn';
           return;
         }
-        var STALE = { developers: 4 * 86400000, housing: 40 * 86400000, drawdown: 4 * 86400000, options: 26 * 3600000 };
+        var STALE = { developers: 4 * 86400000, housing: 40 * 86400000, rates: 40 * 86400000, drawdown: 4 * 86400000, options: 26 * 3600000 };
         var staleAfter = function (s) { return STALE[s.id] || 26 * 3600000; };
         // On a page that owns a dataset the headline is about that dataset; on
         // the rest, picking one arbitrarily would be noise, so summarise instead.

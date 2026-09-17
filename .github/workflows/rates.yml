@@ -1,0 +1,54 @@
+name: rates snapshot
+
+# Once a month, on the 26th. Two reasons for that day: FDIC posts its national
+# deposit rates on the third Monday (15th-21st), and no FOMC decision has taken
+# effect on the 25th or 26th in the last eight years, so the Fed table, prime
+# (H.15 prints a business day late) and the HK base rate are all caught up.
+# 03:30 UTC is after the previous day's H.15 release and the HKMA daily figures.
+on:
+  schedule:
+    - cron: '30 3 26 * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: rates-snapshot
+  cancel-in-progress: false
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build rate series from the publishers
+        run: node scripts/fetch-rates.mjs
+
+      - name: Commit snapshot
+        run: |
+          set -euo pipefail
+          git config user.name 'ZEUP330'
+          git config user.email '37589028+ZEUP330@users.noreply.github.com'
+          git add rates/data
+          if git diff --cached --quiet; then
+            echo 'no change'
+            exit 0
+          fi
+          # Amend onto the previous snapshot so the ~20KB file does not pile up in
+          # history every month. Only when HEAD is itself a snapshot commit, so a
+          # hand-written commit is never rewritten.
+          if git log -1 --pretty=%s | grep -q '^data: rates snapshot$'; then
+            git commit --amend --no-edit --date=now
+            git push --force-with-lease origin HEAD:main
+          else
+            git commit -m 'data: rates snapshot'
+            git push origin HEAD:main
+          fi
