@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>电影挣钱吗？一张票走到谁的口袋</title>
+<meta name="description" content="从项目立项、拍摄花钱、院线分账到片方回本，用近期真实票房与可复算例子解释电影行业怎么挣钱，以及新人如何开始。">
+<link rel="stylesheet" href="/assets/theme.css">
+<style>
+  main { max-width: 800px; margin: 0 auto; }
+  .back { margin-bottom: 1.2rem; }
+  .lede { max-width: 720px; }
+  .thread { margin: 2rem 0; padding: 0; list-style: none; counter-reset: step; }
+  .thread li { counter-increment: step; position: relative; padding: 0 0 2.1rem 3.4rem; }
+  .thread li::before { content: counter(step); position: absolute; left: 0; top: .05rem; display: grid; place-items: center;
+    width: 2rem; height: 2rem; border-radius: 50%; color: var(--accent); background: var(--accent-soft); font-size: .9rem; font-weight: 700; }
+  .thread li:not(:last-child)::after { content: ""; position: absolute; left: .96rem; top: 2.25rem; bottom: .1rem; border-left: 1px dashed var(--line); }
+  .thread h2 { margin: 0 0 .45rem; font-size: 1.15rem; }
+  .thread p { margin: 0; }
+  .film-fig { margin: 1rem 0 0; padding: .75rem; border: 1px solid var(--line); border-radius: var(--r); background: var(--card); }
+  .film-fig svg { display: block; width: 100%; height: auto; max-height: 210px; }
+  .film-fig figcaption { margin: .4rem .25rem 0; color: var(--ink-3); font-size: .8rem; line-height: 1.55; }
+  .film-q { display: inline-grid; place-items: center; width: 1.25rem; height: 1.25rem; margin-left: .25rem; padding: 0;
+    border: 1px solid var(--accent); border-radius: 50%; background: transparent; color: var(--accent); font: inherit;
+    font-size: .76rem; line-height: 1; vertical-align: .08rem; cursor: pointer; }
+  .film-q:hover, .film-q:focus-visible { background: var(--accent); color: var(--card); outline: 2px solid color-mix(in srgb,var(--accent) 28%,transparent); }
+  .section { margin-top: 2.6rem; }
+  .data-grid, .case-grid, .path-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; margin: .9rem 0 1.2rem; }
+  .data-card, .case-card, .path-card { padding: .9rem; border: 1px solid var(--line); border-radius: var(--r-sm); background: var(--card); }
+  .data-card h3, .case-card h3, .path-card h3 { margin: 0 0 .45rem; font-size: .98rem; }
+  .data-card p, .case-card p, .path-card p { margin: 0; font-size: .88rem; }
+  .stat { display: flex; align-items: baseline; gap: .5rem; flex-wrap: wrap; margin: .25rem 0 .5rem; }
+  .stat b { color: var(--accent); font-size: 1.4rem; }
+  .stat span { color: var(--ink-3); font-size: .8rem; }
+  .math { margin: .55rem 0 0; color: var(--ink-3); font-size: .76rem; line-height: 1.6; }
+  .film-table { width: 100%; border-collapse: collapse; font-size: .82rem; }
+  .film-table th, .film-table td { padding: .42rem .28rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+  .film-table th { color: var(--ink-3); font-weight: 500; }
+  .path-grid { grid-template-columns: repeat(3,minmax(0,1fr)); }
+  .path-card b { color: var(--accent); }
+  .callout { margin: 1.2rem 0; padding: 1rem 1.1rem; border-left: 3px solid var(--accent); border-radius: var(--r-sm); background: var(--bg-2); }
+  .callout p { margin: 0; }
+  .source { margin-top: 2rem; color: var(--ink-3); font-size: .8rem; line-height: 1.7; }
+  .source a { overflow-wrap: anywhere; }
+  dialog.film-dialog { width: min(34rem, calc(100vw - 2rem)); max-width: none; padding: 1.25rem; border: 1px solid var(--line);
+    border-radius: var(--r); color: var(--ink); background: var(--card); box-shadow: var(--shadow-3); }
+  dialog.film-dialog::backdrop { background: rgb(10 15 25 / .46); backdrop-filter: blur(2px); }
+  .dialog-head h2 { margin: 0; font-size: 1.1rem; }
+  .dialog-body { margin: .8rem 0 1.2rem; color: var(--ink-2); line-height: 1.75; white-space: pre-line; }
+  .dialog-actions { display: flex; justify-content: flex-end; }
+  .dialog-actions button { min-width: 4rem; }
+  @media (max-width: 580px) { .data-grid,.case-grid { grid-template-columns: 1fr; } .path-grid { grid-template-columns: 1fr; } }
+</style>
+<link rel="stylesheet" href="/assets/statusbar.css">
+<link rel="stylesheet" href="/assets/rail.css">
+<script src="/assets/statusbar.js" defer></script>
+<script src="/assets/theme.js" defer></script>
+<script src="/assets/rail.js" defer></script>
+</head>
+<body>
+<main>
+  <p class="back"><a href="../">← 首页</a> · <a href="../bigtech-ai/">科技行业</a></p>
+  <h1 id="top">电影挣钱吗？一张票走到谁的口袋</h1>
+  <p class="lede">电影先花钱，后收票房；观众买的 100 元票，不会有 100 元进制片方口袋。<b>挣钱的关键，是片方最后收回来的钱，能不能超过拍摄、宣传和发行的总成本。</b>看故事线，再点问号看补充解释。</p>
+
+  <ol class="thread">
+    <li>
+      <h2>先把故事变成一个项目</h2>
+      <p>制片人先估算观众是谁、要花多少钱、靠什么回款，再找编剧、导演、演员和出资方；此时还没有一张电影票收入。<button class="film-q" data-topic="roles" aria-label="解释电影项目里谁负责什么">?</button></p>
+      <figure class="film-fig"><svg viewBox="0 0 680 126" role="img" aria-label="创意、剧本、预算和团队组成一个可执行的电影项目">
+        <g fill="var(--bg-2)" stroke="var(--line)"><rect x="10" y="23" width="145" height="76" rx="10"/><rect x="180" y="23" width="145" height="76" rx="10"/><rect x="350" y="23" width="145" height="76" rx="10"/><rect x="520" y="23" width="145" height="76" rx="10"/></g>
+        <g text-anchor="middle" fill="var(--ink)"><text x="82" y="53" font-size="16">观众</text><text x="82" y="76" fill="var(--ink-3)" font-size="12">谁会买票？</text><text x="252" y="53" font-size="16">故事</text><text x="252" y="76" fill="var(--ink-3)" font-size="12">为什么想看？</text><text x="422" y="53" font-size="16">预算</text><text x="422" y="76" fill="var(--ink-3)" font-size="12">要花多少钱？</text><text x="592" y="53" font-size="16">团队</text><text x="592" y="76" fill="var(--ink-3)" font-size="12">谁把它拍出来？</text></g>
+        <path d="M157 61H174M327 61H344M497 61H514" stroke="var(--accent)" stroke-width="2.5"/>
+      </svg><figcaption>立项时先做出一份“拍得出来、讲得清楚、算得明白”的方案。</figcaption></figure>
+    </li>
+    <li>
+      <h2>拍摄期间，钱一笔笔花出去</h2>
+      <p>制作费付给剧组工资、场地、设备、道具、交通、餐食和后期；宣传发行还可能再花一笔。预算超支一分，回本线也跟着往上走。<button class="film-q" data-topic="costs" aria-label="展开电影预算具体包含什么">?</button></p>
+      <figure class="film-fig"><svg viewBox="0 0 680 140" role="img" aria-label="电影成本从开发制作流向拍摄剧组、后期制作、宣传和发行">
+        <defs><marker id="f1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--accent)"/></marker></defs>
+        <rect x="12" y="35" width="145" height="70" rx="10" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="84" y="65" text-anchor="middle" fill="var(--ink)" font-size="16">项目资金</text><text x="84" y="87" text-anchor="middle" fill="var(--ink-3)" font-size="12">预算 / 投资</text>
+        <g fill="var(--bg-2)" stroke="var(--line)"><rect x="214" y="16" width="135" height="48" rx="8"/><rect x="214" y="78" width="135" height="48" rx="8"/><rect x="414" y="16" width="116" height="48" rx="8"/><rect x="414" y="78" width="116" height="48" rx="8"/><rect x="574" y="47" width="94" height="48" rx="8"/></g>
+        <g text-anchor="middle" fill="var(--ink)" font-size="13"><text x="281" y="46">拍摄：工资与设备</text><text x="281" y="108">后期：剪辑与声音</text><text x="472" y="46">宣传：物料与广告</text><text x="472" y="108">发行：拷贝与排片</text><text x="621" y="76">上映市场</text></g>
+        <path d="M162 70H199M350 40H398M350 102H398M532 40L566 59M532 102L566 83" fill="none" stroke="var(--accent)" stroke-width="2.2" marker-end="url(#f1)"/>
+      </svg><figcaption>电影未上映前，投资已经变成了劳动、服务和制作成果。</figcaption></figure>
+    </li>
+    <li>
+      <h2>上映后，票房先分给不同环节</h2>
+      <p>影院先收观众的票钱，再按规定缴纳电影专项资金和税费，剩下的钱才按影院、院线、发行方和片方之间的合同分账。<button class="film-q" data-topic="waterfall" aria-label="展开一张票如何分账">?</button></p>
+      <figure class="film-fig"><svg viewBox="0 0 680 190" role="img" aria-label="以100元票房示例，扣除5元电影专项资金和3.3元税费，91.7元净票房再按影院与片方合同分账">
+        <text x="20" y="25" fill="var(--ink)" font-size="15" font-weight="600">一张 ¥100 电影票：示意分账</text>
+        <rect x="20" y="42" width="640" height="25" rx="8" fill="var(--line)"/>
+        <rect x="20" y="42" width="32" height="25" rx="8" fill="var(--neg)"/><rect x="52" y="42" width="21" height="25" fill="var(--good)"/><rect x="73" y="42" width="333" height="25" fill="var(--ink-3)" opacity=".48"/><rect x="406" y="42" width="254" height="25" rx="8" fill="var(--accent)"/>
+        <g fill="var(--ink-2)" font-size="12"><text x="20" y="88">专项资金 ¥5</text><text x="178" y="88">税费示例 ¥3.30</text><text x="352" y="88">影院与院线约 ¥52.27</text><text x="522" y="88">片方+发行约 ¥39.43</text></g>
+        <text x="20" y="127" fill="var(--ink-3)" font-size="12">¥91.70 可分账票房 × 57% ≈ ¥52.27；× 43% ≈ ¥39.43</text>
+        <text x="20" y="156" fill="var(--accent)" font-size="15" font-weight="600">所以：¥100 票房 ≠ 制片方赚到 ¥100</text>
+      </svg><figcaption>用于说明钱怎么分的常见简化模型；税务口径、影院合同、进口片规则和发行费会改变实际分账。</figcaption></figure>
+    </li>
+    <li>
+      <h2>最后才算回本，其他收入也会帮忙</h2>
+      <p>片方收入还可能来自流媒体、电视、海外发行、品牌授权和衍生品；把这些收入加起来，再减去制作、宣传、发行、融资和分成，才接近项目的最终盈亏。<button class="film-q" data-topic="profit" aria-label="解释电影利润和回本线怎么算">?</button></p>
+      <figure class="film-fig"><svg viewBox="0 0 680 132" role="img" aria-label="电影最终利润等于院线回款、版权和衍生收入减去所有制作发行成本">
+        <g fill="var(--bg-2)" stroke="var(--line)"><rect x="10" y="18" width="196" height="88" rx="10"/><rect x="244" y="18" width="196" height="88" rx="10"/><rect x="478" y="18" width="192" height="88" rx="10"/></g>
+        <g text-anchor="middle" fill="var(--ink)"><text x="108" y="51" font-size="16">回款</text><text x="108" y="76" fill="var(--ink-3)" font-size="12">票房 + 版权 + 衍生品</text><text x="342" y="51" font-size="16">减掉</text><text x="342" y="76" fill="var(--ink-3)" font-size="12">全部成本与融资成本</text><text x="574" y="51" font-size="16">结果</text><text x="574" y="76" fill="var(--accent)" font-size="12">赚到 / 亏掉</text></g>
+        <path d="M210 62H236M444 62H470" stroke="var(--accent)" stroke-width="3"/>
+      </svg><figcaption>一部电影可以票房很高但成本更高；票房普通也可能靠低成本和版权收入回本。</figcaption></figure>
+    </li>
+  </ol>
+
+  <section class="section" id="market">
+    <h2>现在的行业：钱多，但集中在少数影片</h2>
+    <p>国家电影局公布，2025 年全国票房 ¥518.32 亿元、观影 12.38 亿人次；国产片票房占 79.67%。按总票房除观影人次，平均每次购票约 ¥41.9。<button class="film-q" data-topic="stats" aria-label="展开年度数据口径">?</button></p>
+    <div class="data-grid">
+      <article class="data-card"><h3>国内市场总盘子</h3><div class="stat"><b>¥518.32 亿</b><span>2025 全年票房</span></div><p>全国市场大，不代表每一部电影都能赚钱。</p></article>
+      <article class="data-card"><h3>一个超大爆款</h3><div class="stat"><b>¥154.4 亿</b><span>《哪吒之魔童闹海》中国票房</span></div><p>约占 2025 年全国票房的 29.8%；这种级别是极端成功案例，不是新人项目的合理预算依据。</p></article>
+    </div>
+    <figure class="film-fig"><svg viewBox="0 0 680 150" role="img" aria-label="2025年哪吒2一部电影约占全年全国票房29.8%，其余电影合计约70.2%">
+      <text x="20" y="26" fill="var(--ink)" font-size="14">2025 年票房：单片集中度示意（同一比例尺）</text>
+      <rect x="20" y="45" width="640" height="32" rx="9" fill="var(--line)"/><rect x="20" y="45" width="191" height="32" rx="9" fill="var(--accent)"/>
+      <text x="24" y="101" fill="var(--accent)" font-size="14" font-weight="600">《哪吒2》约 29.8%</text><text x="475" y="101" fill="var(--ink-3)" font-size="14">其他影片约 70.2%</text>
+      <text x="20" y="130" fill="var(--ink-3)" font-size="12">总票房 ¥518.32 亿；单片票房约 ¥154.4 亿。票房不等于制片方净利润。</text>
+    </svg><figcaption>高票房只能证明观众买票多，制作预算、营销支出和最终分账没有公开，就不能据此精确算出片方赚了多少。</figcaption></figure>
+    <div class="callout"><p><b>另一面：</b>《白雪公主》(2025) 的制作预算数据库估值约 US$269.4m，全球票房约 US$205.7m，票房/制作预算约 0.76 倍。<button class="film-q" data-topic="examples" aria-label="查看票房成功与失利案例来源与限制">?</button></p></div>
+  </section>
+
+  <section class="section" id="math">
+    <h2>一张算账图：¥1 亿成本，大概要卖多少票？</h2>
+    <p>把制作、宣传、发行等片方承担的总成本设为 ¥1 亿，并沿用上面的简化分账模型，片方和发行端每 ¥100 总票房约留 ¥39.43。按这个假设，光靠院线回款要做到约 ¥2.54 亿总票房才碰到回本线。<button class="film-q" data-topic="waterfall" aria-label="展开票房回本算式与分账假设">?</button></p>
+    <table class="film-table"><thead><tr><th>院线总票房</th><th>片方+发行示意回款</th><th>减掉 ¥1 亿成本后</th></tr></thead><tbody>
+      <tr><td>¥1 亿</td><td>约 ¥3,943 万</td><td>约 −¥6,057 万</td></tr>
+      <tr><td>¥2.54 亿</td><td>约 ¥1 亿</td><td>约打平</td></tr>
+      <tr><td>¥3 亿</td><td>约 ¥1.18 亿</td><td>约 +¥1,829 万</td></tr>
+    </tbody></table>
+    <p class="math">这只是教学模型，不是投资预测：没有计入版权收入、补贴、所得税、利息、发行费差异、投资人优先回收和团队分红；真实回本线要按项目合同重算。</p>
+  </section>
+
+  <section class="section" id="start">
+    <h2>想入行或拍一部电影：先做小片，再做大项目</h2>
+    <p>新人第一步不用先凑几千万元。先用一支短片证明“故事有人愿意看、团队能按计划交付”，再拿作品集去应聘或找制片人合作。<button class="film-q" data-topic="roles" aria-label="展开影视岗位分工">?</button></p>
+    <div class="path-grid">
+      <article class="path-card"><h3><b>第 1 步</b>：选一个岗位</h3><p>编剧、导演、摄影、录音、剪辑、制片或宣发，先选一项并完成可展示作品。</p></article>
+      <article class="path-card"><h3><b>第 2 步</b>：拍 3 分钟练习片</h3><p>示例：1 个地点、3 位演员、1 天拍摄，预算上限 ¥1.5 万；先用借来的设备和学生/朋友团队。成本是练习项目估算，不是行业统一报价。</p></article>
+      <article class="path-card"><h3><b>第 3 步</b>：找真实反馈</h3><p>找 10 位目标观众看粗剪，记录“哪里走神、哪里看懂”，改完再投短片展或用作求职样片。</p></article>
+    </div>
+    <figure class="film-fig"><svg viewBox="0 0 680 162" role="img" aria-label="一部电影从剧本和权利确认、筹备融资、拍摄后期、审查许可，到发行宣传和分账结算">
+      <line x1="55" y1="65" x2="625" y2="65" stroke="var(--line)" stroke-width="4"/>
+      <g fill="var(--accent)"><circle cx="64" cy="65" r="10"/><circle cx="202" cy="65" r="10"/><circle cx="340" cy="65" r="10"/><circle cx="478" cy="65" r="10"/><circle cx="616" cy="65" r="10"/></g>
+      <g text-anchor="middle" fill="var(--ink)"><text x="64" y="31" font-size="13">剧本 / 权利</text><text x="202" y="31" font-size="13">预算 / 融资</text><text x="340" y="31" font-size="13">筹备 / 拍摄</text><text x="478" y="31" font-size="13">剪辑 / 送审</text><text x="616" y="31" font-size="13">发行 / 结算</text><text x="64" y="105" font-size="11" fill="var(--ink-3)">先定故事</text><text x="202" y="105" font-size="11" fill="var(--ink-3)">合同写清钱</text><text x="340" y="105" font-size="11" fill="var(--ink-3)">控制超支</text><text x="478" y="105" font-size="11" fill="var(--ink-3)">处理权利与许可</text><text x="616" y="105" font-size="11" fill="var(--ink-3)">看回款与报表</text></g>
+      <text x="340" y="146" text-anchor="middle" fill="var(--ink-3)" font-size="12">长片周期常以年计；下方问号里有新人可照着走的项目清单。</text>
+    </svg><figcaption>把大项目拆成关卡：每一关没解决清楚，不要把下一笔钱押上去。</figcaption></figure>
+  </section>
+
+  <p>正式拍摄前先核对手续，想继续学制片可以从行业手册入门。<button class="film-q" data-topic="legal" aria-label="查看电影拍摄备案与公映许可说明">?</button><button class="film-q" data-topic="books" aria-label="查看制片和电影生意参考书">?</button></p>
+  <div class="callout"><p><b>结论：</b>电影能挣钱，但它是高风险项目生意。先控制成本、算清片方回款比例、验证观众，再决定是否把练习片升级成长片。</p></div>
+  <p class="source">数据截至 2026-10-01。中国年度总票房：《<a href="https://www.chinafilm.gov.cn/xwzx/gzdt/202601/t20260105_944809.html" target="_blank" rel="noopener">国家电影局：2025 年全国电影票房 518.32 亿元</a>》；《哪吒2》票房：<a href="https://english.news.cn/20250630/0914e780e44b443d8740fc49e6f4ac99/c.html" target="_blank" rel="noopener">新华社报道</a>。海外案例：<a href="https://www.boxofficemojo.com/title/tt6208148/" target="_blank" rel="noopener">Box Office Mojo《Snow White》票房</a>、<a href="https://www.the-numbers.com/movie/Disneys-Snow-White-(2025)" target="_blank" rel="noopener">The Numbers 制作预算估值</a>。国内备案与许可可从<a href="https://www.chinafilm.gov.cn/xxgk/zcfg/" target="_blank" rel="noopener">国家电影局法规栏目</a>核对。分账比例为简化行业示意，不构成投资建议。</p>
+</main>
+
+<dialog class="film-dialog" id="film-dialog" aria-labelledby="film-dialog-title">
+  <div class="dialog-head"><h2 id="film-dialog-title"></h2></div>
+  <p class="dialog-body" id="film-dialog-body"></p>
+  <div class="dialog-actions"><button type="button" id="film-dialog-ok">OK</button></div>
+</dialog>
+<script>
+const notes = {
+  roles: ['谁在一个电影项目里做什么？', '制片人管项目、预算、合同和团队；导演负责把故事拍出来；编剧写故事；摄影、灯光、录音、美术、剪辑和声音团队完成具体工作；发行负责把片子送进影院或平台，宣传负责让观众知道它。新人可以先选一项做练习片，再去剧组从助理或实习岗位积累作品和信用。'],
+  costs: ['电影预算具体花在哪？', '常见成本分三块：开发（剧本、版权、调研）、制作（主创酬劳、演员、剧组工资、场地、器材、交通、保险、服装道具、视效）、发行宣传（预告片、海报、媒体宣传、路演、发行服务）。大制作的视效重拍会加钱；延期、超时、天气和档期变化也会增加成本。合同里要写清预算上限、付款节点、超支由谁批准、未拍完怎么办。'],
+  waterfall: ['票房分账模型怎么读？', '这个页面按一个常见的简化示意演算：每 ¥100 总票房先扣 ¥5 电影专项资金和约 ¥3.30 税费，剩下 ¥91.70 作为可分账票房；假设影院与院线拿 57%，片方与发行端合计拿 43%。所以片方加发行约收 ¥39.43。各地税务、影院合同、影片类型、进口片和发行服务费都可能不同，应以实际合同和结算单为准。示例总成本 ¥1 亿，则 ¥1 亿 ÷ 39.43% ≈ ¥2.54 亿总票房回本；不把影片的版权销售等其他收入算进去。'],
+  profit: ['“回本”和“利润”不是一个数字', '先看项目公司实际收款：院线分账、流媒体版权、电视播映权、海外发行、品牌合作和衍生品。再减去全部制作、宣发、发行、利息、税费和合同承诺；最后还要按投资协议分给出资方、主创和合作方。新闻报道的总票房、平台结算票房、制作公司营业收入和投资人净利润是不同口径。'],
+  stats: ['2025 年电影市场数字怎么读？', '国家电影局公布：2025 年全国票房 ¥518.32 亿元、城市院线观影 12.38 亿人次、国产影片票房 ¥412.93 亿元，占 79.67%。把总票房除以观影人次，约为 ¥41.9/人次；这是平均值，不代表每张票都卖这个价。2026 年暑期档截至 8 月 22 日，CGTN 报道票房超过 ¥112 亿元；这是截至当天的档期累计值，不是全年最终票房。'],
+  examples: ['两个近年的例子，哪些数能核实？', '《哪吒之魔童闹海》在中国上映票房约 ¥154.4 亿元，新华社报道票房平台数据；这证明它是极少数超大成功影片，但片方成本和最后利润没有公开审计数字，所以不把票房冒充净利润。《白雪公主》(2025) 的 The Numbers 数据库估算制作预算约 US$269.4m，Box Office Mojo 记录全球票房约 US$205.7m，票房约为制作预算的 0.76 倍。因为院线票房还要分给影院，且没有计入营销等成本，单靠院线回款不足以覆盖这项制作预算；这不是迪士尼审计披露的最终亏损金额。'],
+  start: ['新人可以照着做的 14 天练习', '第 1–2 天：选一个自己熟悉的主题，写一句故事梗概和目标观众；第 3–5 天：写成 3–5 分钟剧本，删到一个地点、三位以内演员；第 6–8 天：找团队、确认场地、角色授权、音乐与拍摄同意，列一张不超过 ¥1.5 万的预算；第 9–10 天：排练和分镜；第 11 天：拍摄一天；第 12–14 天：剪粗剪，找 10 位目标观众记录哪里看不懂、哪里走神。这个节奏和预算是练习项目的示例，不是行业报价。'],
+  legal: ['在中国公开发行电影要过哪些关？', '商业影片要按主管部门要求处理剧本（梗概）备案或立项、拍摄制作管理和公映许可；联合摄制、进口影片和网络视听内容还可能有不同规则。开始融资前先核对国家电影局法规、备案公示和所在地主管部门最新要求，并由有经验的制片人或法律顾问核对合同。不要把“拍完了”当成“自动可以公开放映”。'],
+  books: ['几本适合继续读的制片与电影生意书', 'Eve Light Honthaner, The Complete Film Production Handbook（Focal Press）：预算、日程和片场执行参考。Jason E. Squire 编，The Movie Business Book（Routledge）：电影开发、融资、发行和市场案例。John W. Cones, 43 Ways to Finance Your Feature Film（Michael Wiese Productions）：长片融资结构的入门工具书。书里的行业案例有年代和地区差异，市场数字仍以官方统计和当期合同为准。']
+};
+const dialog = document.getElementById('film-dialog');
+const title = document.getElementById('film-dialog-title');
+const body = document.getElementById('film-dialog-body');
+document.querySelectorAll('.film-q').forEach((button) => button.addEventListener('click', () => {
+  const [heading, explanation] = notes[button.dataset.topic];
+  title.textContent = heading;
+  body.textContent = explanation;
+  dialog.showModal();
+}));
+document.getElementById('film-dialog-ok').addEventListener('click', () => dialog.close());
+dialog.addEventListener('click', (event) => { if (event.target === dialog) dialog.close(); });
+</script>
+</body>
+</html>
