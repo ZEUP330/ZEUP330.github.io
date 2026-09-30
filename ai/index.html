@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>从感知机到大模型：多条技术路线怎样汇合</title>
+<meta name="description" content="从 1957 年感知机开始，按时间线讲神经网络、CNN、RNN、强化学习、深度学习、ResNet、Transformer 和大模型怎样一步步发展。">
+<link rel="stylesheet" href="/assets/theme.css">
+<style>
+  main { max-width: 820px; margin: 0 auto; }
+  .back { margin-bottom: 1.2rem; }
+  .lede { max-width: 740px; }
+  .timeline { list-style: none; margin: 1.1rem 0 1.6rem; padding: 0; border-left: 2px solid var(--line); }
+  .timeline li { position: relative; display: grid; grid-template-columns: 5.2rem 1fr; gap: .35rem .7rem; padding: 0 0 .8rem 1rem; }
+  .timeline li::before { content: ""; position: absolute; left: -.42rem; top: .38rem; width: .7rem; height: .7rem; border-radius: 50%; background: var(--accent); }
+  .timeline time { color: var(--accent); font-variant-numeric: tabular-nums; font-weight: 700; }
+  .timeline span { color: var(--ink-2); font-size: .9rem; }
+  .branch-note { margin: -.5rem 0 1.5rem; color: var(--ink-3); font-size: .82rem; }
+  .story { margin: 2.5rem 0; }
+  .story h2 { margin: 0 0 .45rem; font-size: 1.18rem; }
+  .story p { margin: 0; }
+  .ai-fig { margin: 1rem 0 0; padding: .75rem; border: 1px solid var(--line); border-radius: var(--r); background: var(--card); }
+  .ai-fig svg { display: block; width: 100%; height: auto; max-height: 230px; }
+  .ai-fig figcaption { margin: .4rem .25rem 0; color: var(--ink-3); font-size: .8rem; line-height: 1.55; }
+  .ai-q { display: inline-grid; place-items: center; width: 1.25rem; height: 1.25rem; margin-left: .25rem; padding: 0;
+    border: 1px solid var(--accent); border-radius: 50%; background: transparent; color: var(--accent); font: inherit;
+    font-size: .76rem; line-height: 1; vertical-align: .08rem; cursor: pointer; }
+  .ai-q:hover,.ai-q:focus-visible { background: var(--accent); color: var(--card); outline: 2px solid color-mix(in srgb,var(--accent) 28%,transparent); }
+  .ai-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 9px; margin: .8rem 0; }
+  .ai-card { padding: .85rem; border: 1px solid var(--line); border-radius: var(--r-sm); background: var(--card); }
+  .ai-card h3 { margin: 0 0 .3rem; font-size: .95rem; }
+  .ai-card p { margin: 0; color: var(--ink-2); font-size: .83rem; }
+  .family-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px; margin: .9rem 0; }
+  .family-card { padding: .7rem; border: 1px solid var(--line); border-radius: var(--r-sm); background: var(--card); }
+  .family-card h3 { margin: 0 0 .25rem; color: var(--accent); font-size: .9rem; }
+  .family-card p { margin: .25rem 0 0; color: var(--ink-3); font-size: .75rem; }
+  .family-card svg { display: block; width: 100%; height: 64px; }
+  .tag-row { display: flex; flex-wrap: wrap; gap: .4rem; margin: .8rem 0; }
+  .tag-row span { padding: .27rem .58rem; border: 1px solid var(--line); border-radius: 999px; color: var(--ink-2); font-size: .78rem; }
+  .callout { margin: 1.2rem 0; padding: 1rem 1.1rem; border-left: 3px solid var(--accent); border-radius: var(--r-sm); background: var(--bg-2); }
+  .callout p { margin: 0; }
+  .sources { margin-top: 1.7rem; color: var(--ink-3); font-size: .8rem; }
+  .sources summary { cursor: pointer; color: var(--ink-2); }
+  .sources li { margin: .4rem 0; }
+  .sources a { overflow-wrap: anywhere; }
+  dialog.ai-dialog { width: min(35rem,calc(100vw - 2rem)); max-width: none; padding: 1.2rem; border: 1px solid var(--line);
+    border-radius: var(--r); color: var(--ink); background: var(--card); box-shadow: var(--shadow-3); }
+  dialog.ai-dialog::backdrop { background: rgb(10 15 25 / .46); backdrop-filter: blur(2px); }
+  .dialog-head h2 { margin: 0; font-size: 1.1rem; }
+  .dialog-body { max-height: min(58vh,32rem); overflow: auto; margin: .8rem 0 1.2rem; color: var(--ink-2); line-height: 1.75; white-space: pre-line; }
+  .dialog-actions { display: flex; justify-content: flex-end; }
+  .dialog-actions button { min-width: 4rem; }
+  @media (max-width: 540px) { .ai-grid,.family-grid { grid-template-columns: 1fr; } .timeline li { grid-template-columns: 4.2rem 1fr; } }
+</style>
+<link rel="stylesheet" href="/assets/statusbar.css">
+<link rel="stylesheet" href="/assets/rail.css">
+<script src="/assets/statusbar.js" defer></script>
+<script src="/assets/theme.js" defer></script>
+<script src="/assets/rail.js" defer></script>
+</head>
+<body>
+<main>
+  <p class="back"><a href="../">← 首页</a> · <a href="../film/">影视行业：一张票走到谁的口袋</a></p>
+  <h1 id="top">从感知机到大模型：不是一条直线</h1>
+  <p class="lede">神经网络不是某一天突然变成大模型的：神经元、学习算法、图像和语言网络、芯片、数据、开源工具和产品实践，几十年里被许多人接着往前推。<b>点问号看细节；下面的路线图按时间读。</b></p>
+
+  <h2 id="timeline" data-rail="时间线">先看时间线：提出者和关键一步</h2>
+  <p class="branch-note">主线从 1957 年的感知机讲起；人工神经元的数学构想更早可追到 1943 年 McCulloch 与 Pitts。</p>
+  <ol class="timeline">
+    <li><time>1957–58</time><span>Frank Rosenblatt：提出并展示 Perceptron（感知机），让机器用样例调整权重。</span></li>
+    <li><time>1969</time><span>Marvin Minsky 与 Seymour Papert：指出单层感知机的能力边界；之后研究热度下降，但并非单一原因。</span></li>
+    <li><time>1980</time><span>Kunihiko Fukushima：提出 Neocognitron，为后来 CNN 的分层视觉识别提供先例。</span></li>
+    <li><time>1982</time><span>John Hopfield：提出可联想记忆的循环网络；1980–90 年代 RNN 开始处理序列。</span></li>
+    <li><time>1986</time><span>David Rumelhart、Geoffrey Hinton、Ronald Williams：推广反向传播训练多层网络。</span></li>
+    <li><time>1989–98</time><span>Yann LeCun 等人：发展 CNN 和 LeNet，用于识别手写数字等图像。</span></li>
+    <li><time>1989</time><span>Chris Watkins：提出 Q-learning，让智能体依据奖励学习行动策略。</span></li>
+    <li><time>1990</time><span>Jeff Elman：用简单循环网络研究语言等随时间变化的序列。</span></li>
+    <li><time>1997</time><span>Sepp Hochreiter、Jürgen Schmidhuber：提出 LSTM，改善长序列记忆。</span></li>
+    <li><time>2006</time><span>Geoffrey Hinton 等人：用深度置信网络和逐层预训练推动深层网络复兴。</span></li>
+    <li><time>2012</time><span>Krizhevsky、Sutskever、Hinton 用 AlexNet 展示深层 CNN、数据和 GPU 的合力。</span></li>
+    <li><time>2015–16</time><span>He 等人提出 ResNet；DeepMind 用深度网络、搜索和强化学习训练 AlphaGo。</span></li>
+    <li><time>2017</time><span>Vaswani 等人提出 Transformer：用 Attention 并行处理序列信息。</span></li>
+    <li><time>2018–20</time><span>Google 的 Devlin 团队提出 BERT，OpenAI 发展 GPT 系列；GPT-3 论文报告 1750 亿参数。</span></li>
+    <li><time>2022</time><span>OpenAI 的 InstructGPT 与 ChatGPT，让指令跟随和人类反馈进入主流产品。</span></li>
+    <li><time>2023–26</time><span>多模态、工具调用和推理模型继续扩展；研究者仍在追问怎样让能力更通用、更可靠。</span></li>
+  </ol>
+  <p class="branch-note">不是每一项都排队“淘汰”上一项：CNN、RNN、强化学习、残差网络解决不同问题，后来在更大的系统里组合使用。<button class="ai-q" data-topic="timeline" aria-label="解释神经网络历史的分支关系">?</button></p>
+  <figure class="ai-fig"><svg viewBox="0 0 720 162" role="img" aria-label="神经元、学习算法、CNN、RNN、残差网络、强化学习和Transformer多条路线汇合到现代大模型">
+    <defs><marker id="a1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--accent)"/></marker></defs>
+    <g fill="var(--bg-2)" stroke="var(--line)"><rect x="10" y="52" width="114" height="54" rx="9"/><rect x="164" y="18" width="115" height="42" rx="8"/><rect x="164" y="68" width="115" height="42" rx="8"/><rect x="164" y="118" width="115" height="34" rx="8"/><rect x="328" y="18" width="115" height="42" rx="8"/><rect x="328" y="68" width="115" height="42" rx="8"/><rect x="328" y="118" width="115" height="34" rx="8"/><rect x="492" y="52" width="105" height="54" rx="9"/><rect x="624" y="52" width="86" height="54" rx="9" fill="var(--accent-soft)" stroke="var(--accent)"/></g>
+    <g text-anchor="middle" fill="var(--ink)" font-size="12"><text x="67" y="75">人工神经元</text><text x="67" y="93" fill="var(--ink-3)">感知机</text><text x="221" y="44">多层网络</text><text x="221" y="94">CNN / RNN</text><text x="221" y="140">强化学习</text><text x="385" y="44">深度学习</text><text x="385" y="94">残差连接</text><text x="385" y="140">GPU + 数据</text><text x="544" y="76">Attention</text><text x="544" y="94" fill="var(--ink-3)">Transformer</text><text x="667" y="75">大模型</text><text x="667" y="93" fill="var(--ink-3)" font-size="10">预训练 + 后训练</text></g>
+    <g fill="none" stroke="var(--accent)" stroke-width="2" marker-end="url(#a1)"><path d="M128 78L157 39"/><path d="M128 80L157 89"/><path d="M128 84L157 135"/><path d="M285 39L320 39"/><path d="M285 89L320 89"/><path d="M285 135L320 135"/><path d="M450 39L485 65"/><path d="M450 89L485 83"/><path d="M450 135L485 97"/><path d="M601 79H616"/></g>
+  </svg><figcaption>现代大模型是多条研究路线、工程进步和应用反馈共同叠加的结果。</figcaption></figure>
+
+  <section class="story" id="neuron">
+    <h2>1. 神经元与感知机：先学会一个简单判断</h2>
+    <p>感知机把几个输入乘上权重、加总，再输出一个判断；它能学一些边界，但单层结构无法解决所有问题。<button class="ai-q" data-topic="perceptron" aria-label="解释神经元、权重和感知机">?</button></p>
+    <figure class="ai-fig"><svg viewBox="0 0 680 150" role="img" aria-label="感知机把多个输入乘权重后加总，通过激活函数输出分类结果">
+      <g fill="var(--bg-2)" stroke="var(--line)"><rect x="12" y="18" width="95" height="30" rx="7"/><rect x="12" y="60" width="95" height="30" rx="7"/><rect x="12" y="102" width="95" height="30" rx="7"/><circle cx="298" cy="75" r="43" fill="var(--accent-soft)" stroke="var(--accent)"/><rect x="532" y="50" width="132" height="50" rx="9"/></g>
+      <g fill="var(--ink)" text-anchor="middle" font-size="13"><text x="59" y="38">输入 x₁</text><text x="59" y="80">输入 x₂</text><text x="59" y="122">输入 x₃</text><text x="298" y="72" font-size="15">加权求和</text><text x="298" y="91" fill="var(--ink-3)" font-size="11">Σ(w·x)+b</text><text x="598" y="80">输出：猫 / 非猫</text></g>
+      <g fill="none" stroke="var(--accent)" stroke-width="2"><path d="M111 33L255 62"/><path d="M111 75H254"/><path d="M111 117L255 87"/><path d="M341 75H526"/></g><text x="180" y="25" fill="var(--ink-3)" font-size="11">每条线有可学习的权重 w</text>
+    </svg><figcaption>许多这样的单元连起来，才成为神经网络；权重是训练中逐步调整的数字。</figcaption></figure>
+  </section>
+
+  <section class="story" id="deep">
+    <h2>2. 深度学习：多叠几层，让表示更丰富</h2>
+    <p>多层网络能把简单特征逐级组合；反向传播则把“错了多少”传回去，调整每层权重。<button class="ai-q" data-topic="deep" aria-label="解释深度学习与反向传播">?</button></p>
+    <figure class="ai-fig"><svg viewBox="0 0 680 142" role="img" aria-label="深度神经网络有输入层、多个隐藏层和输出层，训练误差沿反方向更新权重">
+      <g fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.5"><circle cx="72" cy="48" r="13"/><circle cx="72" cy="96" r="13"/><circle cx="220" cy="32" r="12"/><circle cx="220" cy="72" r="12"/><circle cx="220" cy="112" r="12"/><circle cx="368" cy="32" r="12"/><circle cx="368" cy="72" r="12"/><circle cx="368" cy="112" r="12"/><circle cx="532" cy="50" r="13"/><circle cx="532" cy="96" r="13"/></g>
+      <g stroke="var(--line)" stroke-width="1"><path d="M85 48L208 32M85 48L208 72M85 48L208 112M85 96L208 32M85 96L208 72M85 96L208 112M232 32L356 32M232 32L356 72M232 32L356 112M232 72L356 32M232 72L356 72M232 72L356 112M232 112L356 32M232 112L356 72M232 112L356 112M380 32L519 50M380 72L519 50M380 112L519 96M380 32L519 96M380 72L519 96M380 112L519 50"/></g>
+      <path d="M535 124C400 138 210 138 75 123" fill="none" stroke="var(--neg)" stroke-width="2" stroke-dasharray="5 4"/><text x="306" y="137" text-anchor="middle" fill="var(--neg)" font-size="11">反向传播误差，微调权重</text>
+      <g text-anchor="middle" fill="var(--ink-3)" font-size="11"><text x="72" y="20">输入</text><text x="220" y="14">隐藏层</text><text x="368" y="14">隐藏层</text><text x="532" y="20">输出</text></g>
+    </svg><figcaption>层数增加后，机器可以学更复杂的组合模式；也更需要数据、算力和防止过拟合的方法。</figcaption></figure>
+  </section>
+
+  <section class="story" id="cnn">
+    <h2>3. CNN：让网络看图时关注局部，再拼整体</h2>
+    <p>卷积神经网络（CNN）用一小块一小块的滤镜扫过图像，先找边缘和纹理，再组合成物体。<button class="ai-q" data-topic="cnn" aria-label="解释卷积神经网络">?</button></p>
+    <figure class="ai-fig"><svg viewBox="0 0 680 150" role="img" aria-label="图像经卷积滤镜得到边缘和纹理特征，再汇总为分类结果">
+      <rect x="18" y="30" width="112" height="88" rx="8" fill="var(--bg-2)" stroke="var(--line)"/><g stroke="var(--line)" stroke-width="1"><path d="M46 30V118M74 30V118M102 30V118M18 52H130M18 74H130M18 96H130"/></g><g fill="var(--accent)"><rect x="46" y="52" width="28" height="22" opacity=".45"/></g>
+      <text x="74" y="133" text-anchor="middle" fill="var(--ink-3)" font-size="11">图片像素</text>
+      <path d="M136 74H190M297 74H348M455 74H506" stroke="var(--accent)" stroke-width="2.5"/><path d="M181 68L191 74L181 80M339 68L349 74L339 80M497 68L507 74L497 80" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
+      <g fill="var(--bg-2)" stroke="var(--line)"><rect x="197" y="30" width="100" height="88" rx="8"/><rect x="355" y="30" width="100" height="88" rx="8"/><rect x="514" y="30" width="148" height="88" rx="8"/></g>
+      <g text-anchor="middle" fill="var(--ink)"><text x="247" y="65" font-size="15">边缘</text><text x="247" y="88" fill="var(--ink-3)" font-size="11">滤镜滑动</text><text x="405" y="65" font-size="15">纹理 / 部件</text><text x="405" y="88" fill="var(--ink-3)" font-size="11">层层组合</text><text x="588" y="64" font-size="15">识别结果</text><text x="588" y="89" fill="var(--accent)" font-size="13">这是一只猫</text></g>
+    </svg><figcaption>CNN 在 2012 年 AlexNet 之后迅速成为视觉任务的重要工具。</figcaption></figure>
+  </section>
+
+  <section class="story" id="rnn">
+    <h2>4. RNN / LSTM：处理一段一段来的东西</h2>
+    <p>循环神经网络（RNN）把前一步的信息带到下一步；LSTM 加上门，尽量记住较远处的重要内容。<button class="ai-q" data-topic="rnn" aria-label="解释循环网络和LSTM">?</button></p>
+    <figure class="ai-fig"><svg viewBox="0 0 680 148" role="img" aria-label="RNN把每一步的隐藏状态传到下一步；LSTM通过输入、遗忘和输出门控制记忆">
+      <g fill="var(--bg-2)" stroke="var(--line)"><rect x="20" y="42" width="125" height="62" rx="9"/><rect x="277" y="42" width="125" height="62" rx="9"/><rect x="534" y="42" width="125" height="62" rx="9"/></g>
+      <g text-anchor="middle" fill="var(--ink)"><text x="82" y="67" font-size="15">我</text><text x="82" y="88" fill="var(--ink-3)" font-size="11">时刻 1</text><text x="339" y="67" font-size="15">看到</text><text x="339" y="88" fill="var(--ink-3)" font-size="11">时刻 2</text><text x="596" y="67" font-size="15">猫</text><text x="596" y="88" fill="var(--ink-3)" font-size="11">时刻 3</text></g>
+      <path d="M148 73H266M405 73H523" stroke="var(--accent)" stroke-width="3"/><path d="M258 66L268 73L258 80M515 66L525 73L515 80" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
+      <path d="M80 37C160 2 520 2 600 37" fill="none" stroke="var(--ink-3)" stroke-width="2" stroke-dasharray="5 4"/><text x="340" y="20" text-anchor="middle" fill="var(--ink-3)" font-size="11">隐藏状态 h 把前文信息往后传</text>
+      <text x="340" y="132" text-anchor="middle" fill="var(--accent)" font-size="12">LSTM 的门：该记住什么、忘掉什么、输出什么</text>
+    </svg><figcaption>RNN/LSTM 适合顺序数据，后来语言模型也曾大量使用；训练长文本时并行度受限。</figcaption></figure>
+  </section>
+
+  <section class="story" id="resnet">
+    <h2>5. 深网、ResNet 和强化学习：加深结构，也学会试错</h2>
+    <p>ResNet 用“跳连”让信息跨过若干层；强化学习则让智能体在环境里行动、收奖励，再逐步改策略。<button class="ai-q" data-topic="residual" aria-label="解释深度学习和残差网络">?</button><button class="ai-q" data-topic="rl" aria-label="解释强化学习和AlphaGo">?</button></p>
+    <figure class="ai-fig"><svg viewBox="0 0 680 176" role="img" aria-label="残差网络让输入绕过中间层与计算结果相加；强化学习让行动、环境和奖励形成循环">
+      <text x="170" y="18" text-anchor="middle" fill="var(--ink)" font-size="14" font-weight="600">ResNet：信息有一条近路</text>
+      <g fill="var(--bg-2)" stroke="var(--line)"><rect x="14" y="59" width="85" height="46" rx="8"/><rect x="207" y="59" width="92" height="46" rx="8"/><rect x="331" y="59" width="75" height="46" rx="8"/></g>
+      <text x="56" y="87" text-anchor="middle" fill="var(--ink)" font-size="12">输入 x</text><text x="253" y="87" text-anchor="middle" fill="var(--ink)" font-size="12">若干层 F(x)</text><text x="368" y="87" text-anchor="middle" fill="var(--ink)" font-size="12">相加</text>
+      <path d="M101 82H199M301 82H323M57 54V36H369V53" fill="none" stroke="var(--accent)" stroke-width="2.5"/><path d="M361 47L369 55L377 47" fill="none" stroke="var(--accent)" stroke-width="2"/><text x="211" y="33" text-anchor="middle" fill="var(--accent)" font-size="11">跳跃连接：F(x)+x</text>
+      <line x1="440" y1="30" x2="440" y2="148" stroke="var(--line)" stroke-width="1.5"/>
+      <text x="558" y="18" text-anchor="middle" fill="var(--ink)" font-size="14" font-weight="600">强化学习：试做再调整</text>
+      <g fill="var(--bg-2)" stroke="var(--line)"><rect x="464" y="55" width="82" height="43" rx="8"/><rect x="575" y="55" width="82" height="43" rx="8"/></g><text x="505" y="81" text-anchor="middle" fill="var(--ink)" font-size="12">智能体</text><text x="616" y="81" text-anchor="middle" fill="var(--ink)" font-size="12">环境</text>
+      <path d="M549 65H568M568 89H549" stroke="var(--accent)" stroke-width="2"/><text x="557" y="123" text-anchor="middle" fill="var(--ink-3)" font-size="11">行动 → 奖励 → 更新策略</text><text x="557" y="144" text-anchor="middle" fill="var(--ink-3)" font-size="10">AlphaGo 把深网、搜索、强化学习组合起来</text>
+    </svg><figcaption>这些是并行发展的工具箱：ResNet 不是 Transformer 的前一代，强化学习也不是所有模型都要走的步骤。</figcaption></figure>
+  </section>
+
+  <section class="story" id="transformer">
+    <h2>6. Transformer：让每个词都能“看”其他词</h2>
+    <p>Transformer 用自注意力计算词与词之间的关系，可以并行处理整段文本，为大规模预训练提供更合适的结构。<button class="ai-q" data-topic="transformer" aria-label="解释注意力与Transformer">?</button></p>
+    <figure class="ai-fig"><svg viewBox="0 0 680 176" role="img" aria-label="Transformer以自注意力连接序列中的各个词，汇聚上下文后预测下一个词">
+      <g fill="var(--bg-2)" stroke="var(--line)"><rect x="24" y="33" width="112" height="45" rx="8"/><rect x="180" y="33" width="112" height="45" rx="8"/><rect x="336" y="33" width="112" height="45" rx="8"/><rect x="492" y="33" width="152" height="45" rx="8" fill="var(--accent-soft)" stroke="var(--accent)"/></g>
+      <g text-anchor="middle" fill="var(--ink)" font-size="14"><text x="80" y="61">小狗</text><text x="236" y="61">追着</text><text x="392" y="61">球</text><text x="568" y="61">跑</text></g>
+      <g stroke="var(--accent)" stroke-width="1.7" opacity=".85"><path d="M80 84L236 115M80 84L392 115M80 84L568 115M236 84L80 115M236 84L392 115M236 84L568 115M392 84L80 115M392 84L236 115M392 84L568 115M568 84L80 115M568 84L236 115M568 84L392 115"/></g>
+      <text x="340" y="137" text-anchor="middle" fill="var(--ink)" font-size="14">自注意力：按语境给不同词分配关注度</text><text x="340" y="160" text-anchor="middle" fill="var(--ink-3)" font-size="12">下一步可以猜“起来”，也可以猜其他合理词</text>
+    </svg><figcaption>2017 年 Transformer 论文的核心，是 Attention is All You Need。</figcaption></figure>
+  </section>
+
+  <section class="story" id="llm">
+    <h2>7. BERT、GPT 和 ChatGPT：同一种结构，也能训练成不同角色</h2>
+    <p>BERT 擅长读懂两边语境，GPT 擅长从左到右续写；ChatGPT 是经过指令训练和对话产品化的模型，不等于单一网络结构。<button class="ai-q" data-topic="bertgpt" aria-label="解释BERT、GPT和ChatGPT的差别">?</button></p>
+    <div class="family-grid">
+      <article class="family-card"><h3>BERT · 填空式理解</h3><svg viewBox="0 0 160 64" role="img" aria-label="BERT同时读取遮挡词语左右两边的上下文"><path d="M18 34H142" stroke="var(--line)" stroke-width="3"/><g fill="var(--bg-2)" stroke="var(--line)"><rect x="8" y="20" width="37" height="27" rx="5"/><rect x="61" y="20" width="38" height="27" rx="5"/><rect x="116" y="20" width="37" height="27" rx="5"/></g><text x="26" y="38" text-anchor="middle" fill="var(--ink)" font-size="8">我</text><text x="80" y="38" text-anchor="middle" fill="var(--accent)" font-size="8">[MASK]</text><text x="134" y="38" text-anchor="middle" fill="var(--ink)" font-size="8">苹果</text><path d="M46 52H112" stroke="var(--accent)" stroke-width="2"/><text x="80" y="62" text-anchor="middle" fill="var(--ink-3)" font-size="7">左右文一起看</text></svg><p>训练目标：补出被遮住的词。</p></article>
+      <article class="family-card"><h3>GPT · 下一词预测</h3><svg viewBox="0 0 160 64" role="img" aria-label="GPT从左到右根据已读词语预测下一个词"><path d="M15 35H144" stroke="var(--line)" stroke-width="3"/><g fill="var(--bg-2)" stroke="var(--line)"><rect x="7" y="20" width="39" height="27" rx="5"/><rect x="56" y="20" width="39" height="27" rx="5"/><rect x="105" y="20" width="48" height="27" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/></g><g text-anchor="middle" fill="var(--ink)" font-size="8"><text x="26" y="38">今天天气</text><text x="75" y="38">很好</text><text x="129" y="38" fill="var(--accent)">所以…</text></g><path d="M18 53H93" stroke="var(--accent)" stroke-width="2"/><text x="56" y="62" text-anchor="middle" fill="var(--ink-3)" font-size="7">只看前文</text></svg><p>训练目标：猜接下来的 token。</p></article>
+      <article class="family-card"><h3>ChatGPT · 对话助手</h3><svg viewBox="0 0 160 64" role="img" aria-label="ChatGPT由预训练模型再经指令和反馈训练，接入对话界面"><g fill="var(--bg-2)" stroke="var(--line)"><rect x="3" y="22" width="44" height="25" rx="5"/><rect x="58" y="22" width="44" height="25" rx="5"/><rect x="113" y="22" width="44" height="25" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/></g><g text-anchor="middle" fill="var(--ink)" font-size="7"><text x="25" y="38">预训练</text><text x="80" y="38">指令+反馈</text><text x="135" y="38">聊天界面</text></g><path d="M48 34H55M103 34H110" stroke="var(--accent)" stroke-width="2"/><text x="80" y="60" text-anchor="middle" fill="var(--ink-3)" font-size="7">模型能力 + 产品功能</text></svg><p>训练模型之外，还有产品、工具和安全策略。</p></article>
+    </div>
+  </section>
+
+  <section class="story" id="llm-training">
+    <h2>8. 大模型：结构、数据和算力一起放大</h2>
+    <p>大语言模型先在大量文本上学“下一个词是什么”，再通过指令示例和反馈学会更按要求回答；参数是它内部学到的连接强度。<button class="ai-q" data-topic="parameters" aria-label="解释大模型参数是什么意思">?</button><button class="ai-q" data-topic="training" aria-label="解释预训练和后训练">?</button></p>
+    <figure class="ai-fig"><svg viewBox="0 0 720 176" role="img" aria-label="文本经过筛选后用于预训练，再经监督微调与偏好对齐成为可用模型，评估后选择版本部署">
+      <defs><marker id="a2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--accent)"/></marker></defs>
+      <g fill="var(--bg-2)" stroke="var(--line)"><rect x="8" y="39" width="124" height="72" rx="9"/><rect x="163" y="39" width="124" height="72" rx="9"/><rect x="318" y="39" width="124" height="72" rx="9"/><rect x="473" y="39" width="110" height="72" rx="9"/><rect x="614" y="39" width="96" height="72" rx="9" fill="var(--accent-soft)" stroke="var(--accent)"/></g>
+      <g text-anchor="middle" fill="var(--ink)" font-size="13"><text x="70" y="68">资料</text><text x="70" y="90" fill="var(--ink-3)" font-size="10">筛选、去重</text><text x="225" y="68">预训练</text><text x="225" y="90" fill="var(--ink-3)" font-size="10">学语言规律</text><text x="380" y="68">后训练</text><text x="380" y="90" fill="var(--ink-3)" font-size="10">学指令、偏好</text><text x="528" y="68">评测</text><text x="528" y="90" fill="var(--ink-3)" font-size="10">安全、能力</text><text x="662" y="68">部署</text><text x="662" y="90" fill="var(--ink-3)" font-size="10">推理服务</text></g>
+      <g stroke="var(--accent)" stroke-width="2.5" marker-end="url(#a2)"><path d="M136 75H155"/><path d="M291 75H310"/><path d="M446 75H465"/><path d="M587 75H606"/></g>
+      <path d="M528 123C430 169 270 169 224 122" fill="none" stroke="var(--ink-3)" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#a2)"/><text x="375" y="157" text-anchor="middle" fill="var(--ink-3)" font-size="10">评测发现短板 → 补数据 / 调训练 → 再测</text>
+    </svg><figcaption>参数数量只是规模指标之一，数据质量、算力、训练方法和评测同样决定效果。</figcaption></figure>
+  </section>
+
+  <section class="story" id="everyone">
+    <h2>9. 这不是一个人或一家公司单独造出来的</h2>
+    <p>理论研究者、芯片与云计算工程师、数据标注者、开源社区、产品团队和各行业用户每天各推进一点，技术才从实验室走到工作和生活里。<button class="ai-q" data-topic="industry" aria-label="展开产业协作说明">?</button></p>
+    <figure class="ai-fig"><svg viewBox="0 0 680 150" role="img" aria-label="数学与算法、芯片与系统、数据与标注、开源与评测、多行业反馈共同推动AI模型发展">
+      <g fill="var(--bg-2)" stroke="var(--line)"><rect x="15" y="16" width="190" height="46" rx="9"/><rect x="245" y="16" width="190" height="46" rx="9"/><rect x="475" y="16" width="190" height="46" rx="9"/><rect x="15" y="83" width="190" height="46" rx="9"/><rect x="245" y="83" width="190" height="46" rx="9"/><rect x="475" y="83" width="190" height="46" rx="9" fill="var(--accent-soft)" stroke="var(--accent)"/></g>
+      <g text-anchor="middle" fill="var(--ink)" font-size="13"><text x="110" y="44">数学与算法</text><text x="340" y="44">芯片与云系统</text><text x="570" y="44">数据与标注</text><text x="110" y="111">开源与评测</text><text x="340" y="111">行业产品反馈</text><text x="570" y="111" fill="var(--accent)">更有用的模型</text></g>
+      <g stroke="var(--line)" stroke-width="1.5"><path d="M110 64L110 78M340 64V78M570 64V78M205 39H238M435 39H468M205 106H238M435 106H468"/></g>
+    </svg><figcaption>每次突破都站在前面的研究和工程成果之上。</figcaption></figure>
+  </section>
+
+  <section class="story" id="agi">
+    <h2>10. AGI 是长期愿景，不是大模型的别名</h2>
+    <p>很多团队希望 AI 能跨任务、可靠地学习和行动；但“AGI”没有公认的一条统一测试线，今天的大模型仍会犯错、缺少稳定的现实理解，也不等于已经实现 AGI。<button class="ai-q" data-topic="agi" aria-label="展开AGI愿景和过拟合说法的解释">?</button></p>
+    <figure class="ai-fig"><svg viewBox="0 0 680 142" role="img" aria-label="今天的大模型在语言、图像、代码等多个领域很强，通用智能仍是更远的研究目标">
+      <circle cx="340" cy="70" r="54" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="2"/><text x="340" y="66" text-anchor="middle" fill="var(--ink)" font-size="16" font-weight="600">大模型</text><text x="340" y="88" text-anchor="middle" fill="var(--ink-3)" font-size="11">强，但会犯错</text>
+      <g fill="var(--bg-2)" stroke="var(--line)"><rect x="20" y="19" width="116" height="38" rx="9"/><rect x="20" y="83" width="116" height="38" rx="9"/><rect x="544" y="19" width="116" height="38" rx="9"/><rect x="544" y="83" width="116" height="38" rx="9"/></g>
+      <g text-anchor="middle" fill="var(--ink-2)" font-size="12"><text x="78" y="43">语言</text><text x="78" y="107">代码</text><text x="602" y="43">图像 / 声音</text><text x="602" y="107">工具任务</text></g><g stroke="var(--line)" stroke-width="2"><path d="M140 39L286 59M140 101L286 82M540 39L394 59M540 101L394 82"/></g>
+      <path d="M228 131H452" stroke="var(--accent)" stroke-width="2" stroke-dasharray="5 5"/><text x="340" y="139" text-anchor="middle" fill="var(--ink-3)" font-size="11">更通用、可靠、自主的系统仍是开放研究目标</text>
+    </svg><figcaption>目标在往前走，距离仍很长；“人人只做 AGI”或“所有模型都过拟合”都不是严谨的事实描述。</figcaption></figure>
+  </section>
+
+  <div class="callout"><p><b>一句话：</b>神经网络的历史是多条路线接力并汇合的历史；大模型是重要阶段，不是人工智能的终点。</p></div>
+
+  <details class="sources"><summary>展开：原始论文与进一步阅读</summary><ol>
+    <li>McCulloch & Pitts, “A logical calculus of the ideas immanent in nervous activity,” 1943. <a href="https://doi.org/10.1007/BF02478259" target="_blank" rel="noopener">DOI</a></li>
+    <li>Rosenblatt, “The Perceptron: A Probabilistic Model for Information Storage and Organization in the Brain,” 1958. <a href="https://doi.org/10.1037/h0042519" target="_blank" rel="noopener">DOI</a></li>
+    <li>Fukushima, “Neocognitron,” 1980. <a href="https://doi.org/10.1007/BF00344251" target="_blank" rel="noopener">DOI</a></li>
+    <li>Minsky & Papert, Perceptrons, 1969；Rumelhart, Hinton & Williams, “Learning representations by back-propagating errors,” 1986. <a href="https://doi.org/10.1038/323533a0" target="_blank" rel="noopener">反向传播论文</a></li>
+    <li>LeCun et al., “Gradient-Based Learning Applied to Document Recognition,” 1998. <a href="https://doi.org/10.1109/5.726791" target="_blank" rel="noopener">DOI</a></li>
+    <li>Watkins & Dayan, “Q-learning,” 1992. <a href="https://doi.org/10.1007/BF00992698" target="_blank" rel="noopener">DOI</a>; Elman, “Finding Structure in Time,” 1990. <a href="https://doi.org/10.1207/s15516709cog1402_1" target="_blank" rel="noopener">DOI</a></li>
+    <li>Hochreiter & Schmidhuber, “Long Short-Term Memory,” 1997. <a href="https://doi.org/10.1162/neco.1997.9.8.1735" target="_blank" rel="noopener">DOI</a></li>
+    <li>Hinton, Osindero & Teh, “A Fast Learning Algorithm for Deep Belief Nets,” 2006. <a href="https://doi.org/10.1162/neco.2006.18.7.1527" target="_blank" rel="noopener">DOI</a></li>
+    <li>Krizhevsky, Sutskever & Hinton, “ImageNet Classification with Deep Convolutional Neural Networks,” 2012. <a href="https://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks" target="_blank" rel="noopener">论文</a></li>
+    <li>He et al., “Deep Residual Learning for Image Recognition,” 2015. <a href="https://arxiv.org/abs/1512.03385" target="_blank" rel="noopener">arXiv</a></li>
+    <li>Silver et al., “Mastering the game of Go with deep neural networks and tree search,” 2016. <a href="https://doi.org/10.1038/nature16961" target="_blank" rel="noopener">DOI</a></li>
+    <li>Vaswani et al., “Attention Is All You Need,” 2017. <a href="https://arxiv.org/abs/1706.03762" target="_blank" rel="noopener">arXiv</a></li>
+    <li>Devlin et al., BERT, 2018. <a href="https://arxiv.org/abs/1810.04805" target="_blank" rel="noopener">arXiv</a>; Brown et al., GPT-3, 2020. <a href="https://arxiv.org/abs/2005.14165" target="_blank" rel="noopener">arXiv</a>; Ouyang et al., InstructGPT, 2022. <a href="https://arxiv.org/abs/2203.02155" target="_blank" rel="noopener">arXiv</a></li>
+    <li>2026 暑期档截至 8 月 22 日的票房数据：<a href="https://news.cgtn.com/news/2026-08-22/How-China-s-film-industry-is-creating-new-growth-beyond-the-box-office-1POE0iWx6Za/p.html" target="_blank" rel="noopener">CGTN 报道</a>。</li>
+    <li>入门书：Goodfellow、Bengio、Courville, Deep Learning（MIT Press, 2016）；Melanie Mitchell, Artificial Intelligence: A Guide for Thinking Humans（2019）。</li>
+  </ol></details>
+  <p class="source">时间线说明：年份表示论文、演示或广泛应用出现的时间；技术通常更早有前身，也会并行发展。核对日期：2026-10-01。</p>
+</main>
+
+<dialog class="ai-dialog" id="ai-dialog" aria-labelledby="ai-dialog-title">
+  <div class="dialog-head"><h2 id="ai-dialog-title"></h2></div>
+  <p class="dialog-body" id="ai-dialog-body"></p>
+  <div class="dialog-actions"><button type="button" id="ai-dialog-ok">OK</button></div>
+</dialog>
+<script>
+const notes = {
+  timeline: ['这些模型是按顺序替代的吗？', '不是。感知机、CNN、RNN、强化学习和 Transformer 是解决不同问题的路线，有些先后启发彼此，有些一直并行。常见的“大模型语言路线”是：神经网络与反向传播 → 更大规模的预训练 → Transformer → 指令后训练与工具使用。视觉、控制、语音等领域的技术也不断加入。1957 年常作为感知机主线的起点；人工神经元的数学模型更早在 1943 年发表。1969 年 Minsky 和 Papert 指出了单层感知机的局限，但神经网络研究降温还有多种历史原因，不能归结为一本书。'],
+  perceptron: ['人工神经元、感知机和参数是什么？', 'McCulloch-Pitts 神经元用数学规则模仿“输入达到阈值就激活”的简化想法。Rosenblatt 的感知机把每个输入乘以权重 w，加上偏置 b，再用一个函数给出结果。权重和偏置就是最早一类可学习参数。单层感知机能分开一些简单类别，却不能解决例如 XOR 这样的非线性问题；多层网络和合适的训练方法后来扩展了能力。'],
+  deep: ['深度学习和反向传播各是什么？', '“深度”说的是网络有多层，不是模型拥有意识。反向传播用微积分把输出错误的影响逐层算回去，再用梯度下降稍微调整每个权重。训练重复许多轮，让预测误差在训练目标上变小；效果能否推广到新数据，还要用没有参与训练的数据测试。'],
+  cnn: ['CNN 为什么擅长看图？', '卷积滤镜只观察图像的一小块，并在不同位置重复使用同一组权重，所以参数比“每个像素都单独连到下一层”少很多。早期层常学边缘和颜色块，深层可把它们组合成眼睛、轮子或物体的一部分。2012 年 AlexNet 的成功也依赖 ImageNet 数据集、GPU 训练、ReLU 和工程实现，不是一个网络结构单独造成的。'],
+  rnn: ['RNN、Hopfield 网络和 LSTM 的区别？', '这些网络都有反馈或循环连接，但用途不完全相同。Hopfield 网络研究联想记忆；RNN 把前一步的隐藏状态带到下一步，适合文本、语音等序列；LSTM 用输入门、遗忘门、输出门控制记忆，缓解长序列中早期信息难以保留的问题。RNN 逐步读数据，训练难以像 Transformer 一样整段并行。'],
+  residual: ['什么是深度学习和 ResNet？', '深度学习指用多层网络学习表示。ResNet（Residual Network，残差网络）让输入可以跳过几层，直接与这些层算出的变化量相加，写成 y=F(x)+x。它帮助很深的视觉网络更容易训练；残差连接不是“跳过学习”，而是让网络可以学习“在原输入上改多少”。'],
+  rl: ['强化学习是什么？AlphaGo 用了它吗？', '强化学习让智能体在环境里选动作、收到奖励或惩罚，再改进策略。它不一定需要人工标出每个正确答案，但需要明确的环境和奖励设计。AlphaGo 把深度神经网络、蒙特卡洛树搜索和强化学习组合起来；这展示了多种方法协作，并不表示普通语言模型都通过围棋式强化学习训练。'],
+  transformer: ['Transformer 和注意力是什么？', '注意力机制会按当前语境计算哪些其他词更相关。“我把杯子放到桌上，因为它不稳”里，模型要判断“它”更可能指什么。Transformer 将注意力与前馈网络等结构堆叠，能够并行处理训练序列，所以更适合扩展到很大的文本数据和模型。'],
+  parameters: ['模型有多少参数，参数是什么？', '参数是训练出来的权重和偏置，像模型内部连接的刻度。参数数量是容量和成本的一个尺度，不等于知识条目数、准确率或智商。比如 GPT-3 论文报告 1750 亿参数；新模型不一定只靠参数变大取胜，数据质量、算力、架构、训练方法和评估同样重要。注意参数（学出来的 weight）与超参数（层数、学习率、批量大小等人为设定）不是一回事。'],
+  training: ['预训练、参数筛选、后训练如何接起来？', '① 先选模型结构和训练预算，设定层数、学习率、数据配比等超参数。② 预训练在大量筛选、去重的数据上预测下一个 token，通过反向传播更新数十亿或更多权重。③ 训练团队定期保存检查点，用验证集、能力和安全评测选出表现合适的版本；这通常才是“挑参数/挑模型”，不是人工逐个挑出有用的权重。④ 后训练用指令示例、偏好数据、监督微调，或 RLHF/DPO 等方法调整模型，让它更会按要求回答。⑤ 部署后继续测试成本、速度、错误和安全。量化、剪枝是压缩部署模型的办法，不等于预训练。'],
+  bertgpt: ['BERT、GPT 和 ChatGPT 是什么关系？', 'BERT 与 GPT 都基于 Transformer，但训练目标不同：BERT 常通过遮挡词预测学习双向语境表示；GPT 常预测下一个 token，并从左到右生成。ChatGPT 是把 GPT 类基座模型经过指令微调和偏好对齐，再接入聊天产品形成的助手。它还可能连接工具或安全策略，所以“ChatGPT”不只是网络结构的名字。'],
+  industry: ['大模型是一个行业共同做出来的吗？', '是长期接力，不是一家公司从零造出全部东西：研究者提出算法，芯片团队提高算力，数据工程师清理和标注资料，开源社区做框架与工具，云平台把训练变成可用服务，产品团队和行业用户不断反馈问题。每项改进都依赖前面的理论、硬件、数据和软件。模型训练还需要版权、隐私和安全治理。'],
+  agi: ['大模型是不是 AGI？“过拟合”说法准确吗？', '不是。AGI（通用人工智能）没有全行业统一的定义和验收线；很多实验室把更通用、可靠、能跨任务学习的系统当作长期愿景，但 AI 研究并非只有一个方向。现有大模型能处理很多任务，却仍会编造、犯错、对环境变化脆弱，也缺乏人类式的持续学习与自主行动能力，所以不能仅凭参数大就称为 AGI。“一个领域的小模型”有时可用来打比方，但过拟合在机器学习里有严格含义：训练数据表现好、未见数据泛化差。不是所有专业模型都过拟合，也不是每个大模型都只会一个小领域。'],
+  books: ['适合继续读的入门书', 'Goodfellow、Bengio、Courville 的 Deep Learning（MIT Press, 2016）系统讲神经网络、CNN、序列模型和优化；Melanie Mitchell 的 Artificial Intelligence: A Guide for Thinking Humans（2019）帮助理解“智能”和 AGI 的争论。原始论文链接在页面底部。']
+};
+const dialog = document.getElementById('ai-dialog');
+const title = document.getElementById('ai-dialog-title');
+const body = document.getElementById('ai-dialog-body');
+document.querySelectorAll('.ai-q').forEach((button) => button.addEventListener('click', () => {
+  const [heading, explanation] = notes[button.dataset.topic];
+  title.textContent = heading;
+  body.textContent = explanation;
+  dialog.showModal();
+}));
+document.getElementById('ai-dialog-ok').addEventListener('click', () => dialog.close());
+dialog.addEventListener('click', (event) => { if (event.target === dialog) dialog.close(); });
+</script>
+</body>
+</html>
