@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>互联网大战与 AI：几家大厂的不同打法</title>
+<meta name="description" content="从腾讯的合规边界、阿里的组织能力、字节的流量竞争，聊到大厂 AI 竞速的新阶段。个人观察与公开事实分开写。">
+<link rel="stylesheet" href="/assets/theme.css">
+<style>
+  :root { --ai: #eb6834; --human: #1baf7a; }
+  @media (prefers-color-scheme: dark) { :root { --ai: #d95926; --human: #199e70; } }
+  main { max-width: 720px; margin: 0 auto; }
+  .meta { font-size: 13px; color: var(--ink-3); margin: 0 0 1.75rem; }
+  figure { margin: 1.65rem 0; }
+  figure svg { width: 100%; max-width: 430px; height: auto; display: block; margin: 0 auto; }
+  figcaption { font-size: 12.5px; color: var(--ink-3); margin-top: .7rem; line-height: 1.7; }
+  ul.src { padding-left: 1.1rem; margin: 0; }
+  ul.src li { color: var(--ink-3); font-size: 14px; margin-bottom: .6rem; }
+  ul.src a { text-decoration: none; }
+  ul.src a:hover { text-decoration: underline; }
+</style>
+<link rel="stylesheet" href="/assets/statusbar.css">
+<link rel="stylesheet" href="/assets/rail.css">
+<script src="/assets/statusbar.js" defer></script>
+<script src="/assets/theme.js" defer></script>
+<script src="/assets/rail.js" defer></script>
+</head>
+<body>
+<main>
+  <p class="back"><a href="../">← 首页</a></p>
+  <h1>互联网大战与 AI：几家大厂的不同打法</h1>
+  <p class="meta">一份个人观察 · 公开资料核对至 2026-09-30</p>
+
+  <p class="lede">我看中国互联网大厂，常常会把竞争拆成三件事：边界由谁来定，组织怎么协作，用户习惯又会被谁重新定价。腾讯、阿里、字节给人的印象，分别更像是把边界经营好、把大组织调度好、把新流量跑出来。这个归纳是观察框架，不是三家公司的官方自我介绍。</p>
+
+  <figure class="shot"><div class="fr"><svg viewBox="0 0 720 300" role="img" aria-label="三种大厂竞争能力：规则边界、组织协调、流量重定价"><g font-family="-apple-system,BlinkMacSystemFont,sans-serif" text-anchor="middle"><text x="360" y="40" fill="var(--ink)" font-size="23" font-weight="600">同一场竞争，三种强项</text><g><rect x="35" y="90" width="190" height="130" rx="16" fill="var(--card)" stroke="var(--line)"/><rect x="265" y="90" width="190" height="130" rx="16" fill="var(--card)" stroke="var(--line)"/><rect x="495" y="90" width="190" height="130" rx="16" fill="var(--card)" stroke="var(--line)"/><text x="130" y="135" fill="var(--accent)" font-size="21" font-weight="600">腾讯</text><text x="130" y="173" fill="var(--ink-2)" font-size="16">边界与生态</text><text x="360" y="135" fill="var(--ai)" font-size="21" font-weight="600">阿里</text><text x="360" y="173" fill="var(--ink-2)" font-size="16">组织与协同</text><text x="590" y="135" fill="var(--human)" font-size="21" font-weight="600">字节</text><text x="590" y="173" fill="var(--ink-2)" font-size="16">流量与重定价</text></g><path d="M225 155H255M455 155H485" stroke="var(--ink-3)" stroke-width="2"/><text x="360" y="270" fill="var(--ink-3)" font-size="15">是理解竞争的一种镜头，不代表公司只有这一种能力</text></g></svg></div><figcaption>概念图：按本文讨论的竞争方式归纳，不是市场份额或公司能力排名。</figcaption></figure>
+
+  <h2>一、腾讯：先把能做的边界看清</h2>
+  <p>我长期观察腾讯，会觉得它整体偏保守：一件事若法规已经讲清楚可以做，就在许可范围内长期经营；讲清楚不能做，就尽量不碰；规则还没讲清楚时，往往先找有牌照、有责任主体的合作结构。这里说的是我从公开业务形态得到的印象，不等于腾讯从未进入监管尚在形成的领域。</p>
+  <p>微粒贷是一个好例子，但需要把主体说准确：提供这项小额信贷服务的是微众银行，微众银行是腾讯等发起设立的民营银行，获批于 2014 年。用户看到的是腾讯生态里的入口，授信、放款和银行责任则落在持牌机构及其合作安排中。这样的结构把金融业务放进明确的持牌框架，并不意味着风险因此消失。</p>
+  <p>这和早期大量互联网金融、P2P 平台在监管规则尚未统一时快速扩张，形成了很强的对照。P2P 风险集中暴露后，监管部门推动专项整治和清退；后来网络小额贷款也逐步有了更明确的监管要求。腾讯这类“把业务放在牌照主体里做”的选择，慢一些，却让谁负责、按什么规则经营更容易被识别。</p>
+  <figure><div class="fr"><svg viewBox="0 0 720 310" role="img" aria-label="金融业务从互联网入口到持牌银行，再到用户，监管责任落在明确主体"><g font-family="-apple-system,BlinkMacSystemFont,sans-serif" text-anchor="middle"><text x="360" y="38" fill="var(--ink)" font-size="22" font-weight="600">入口与金融责任可以分开</text><g stroke="var(--ink-3)" stroke-width="2" fill="none"><path d="M190 150H265M455 150H530"/><path d="M360 205V245" stroke-dasharray="5 5"/></g><rect x="35" y="95" width="155" height="110" rx="14" fill="var(--card)" stroke="var(--line)"/><rect x="265" y="95" width="190" height="110" rx="14" fill="var(--accent)" opacity=".16" stroke="var(--accent)"/><rect x="530" y="95" width="155" height="110" rx="14" fill="var(--card)" stroke="var(--line)"/><text x="112" y="140" fill="var(--ink)" font-size="18" font-weight="600">腾讯生态</text><text x="112" y="171" fill="var(--ink-3)" font-size="14">产品入口</text><text x="360" y="140" fill="var(--accent)" font-size="19" font-weight="600">微众银行</text><text x="360" y="171" fill="var(--ink-2)" font-size="14">持牌机构 / 微粒贷</text><text x="607" y="140" fill="var(--ink)" font-size="18" font-weight="600">用户</text><text x="607" y="171" fill="var(--ink-3)" font-size="14">申请与还款</text><text x="360" y="278" fill="var(--ink-3)" font-size="15">牌照明确责任主体；不代表信用风险被消除</text></g></svg></div><figcaption>示意关系图，具体授信与资金安排以产品协议、银行披露和监管规则为准。</figcaption></figure>
+
+  <p>腾讯的谨慎也能从它的生态型生意里看到：社交关系、支付、内容和游戏都靠长期信任，一次监管或信任事件可能影响多个业务。游戏版号和未成年人保护规则变化后，腾讯需要按审批、时长和消费限制调整产品，而不是只靠流量把规模推上去。它的优势因此不只是“敢不敢做”，也是在边界内把已有关系和服务继续做深。</p>
+  <p>当然，“保守”不是没有代价：新市场早期可能让给更激进的对手，组织也可能因为既有业务太成功而行动变慢。腾讯更适合利用微信、支付、内容和游戏之间的连接做复利式经营。这个策略的回报慢，但它不必每次都从零买用户。</p>
+  <p>所以我会把腾讯的特征说成“边界感强的生态经营”，而不是简单说它从来不冒险。真正值得学的地方，是把监管责任、产品入口和长期用户关系一起考虑。微粒贷只是能看见这种选择的一扇窗，不应拿一个案例概括整家公司。</p>
+  <figure><div class="fr"><svg viewBox="0 0 720 290" role="img" aria-label="腾讯生态中的社交、支付、内容和游戏相互连接，中心是长期用户关系"><g font-family="-apple-system,BlinkMacSystemFont,sans-serif" text-anchor="middle"><text x="360" y="38" fill="var(--ink)" font-size="22" font-weight="600">生态业务的复利来自连接</text><circle cx="360" cy="160" r="50" fill="var(--accent)" opacity=".18" stroke="var(--accent)" stroke-width="2"/><text x="360" y="155" fill="var(--ink)" font-size="17" font-weight="600">用户关系</text><text x="360" y="180" fill="var(--ink-3)" font-size="13">长期信任</text><g stroke="var(--line)" stroke-width="2"><path d="M317 132 230 91M403 132 490 91M310 187 225 228M410 187 495 228"/></g><g fill="var(--card)" stroke="var(--line)"><rect x="100" y="55" width="130" height="66" rx="12"/><rect x="490" y="55" width="130" height="66" rx="12"/><rect x="100" y="197" width="130" height="66" rx="12"/><rect x="490" y="197" width="130" height="66" rx="12"/></g><text x="165" y="96" fill="var(--ink-2)" font-size="17">社交</text><text x="555" y="96" fill="var(--ink-2)" font-size="17">支付</text><text x="165" y="238" fill="var(--ink-2)" font-size="17">内容</text><text x="555" y="238" fill="var(--ink-2)" font-size="17">游戏</text></g></svg></div><figcaption>概念图：社交、支付、内容和游戏之间的协同关系；没有表示各业务的收入占比。</figcaption></figure>
+
+  <h2>二、阿里：大公司真正难的是组织</h2>
+  <p>我也常觉得阿里最值得研究的，不是“技术人员是不是最多”，而是它怎样在巨大规模下反复调整组织。员工数量的横向排名受统计口径、年份和并购影响，很难用一句话证明谁“最多”。但阿里多次公开重组业务、划分经营单元，这些动作确实提供了观察管理方式的材料。</p>
+  <p>2023 年阿里宣布“1+6+N”组织变革，把集团拆成六个业务集团和多家业务公司，并提出各业务集团可独立融资或上市。它不只是画一张新组织图，更是把经营责任、资本路径和决策边界往业务单元下放。2024 年阿里又调整这一安排，回到更集中协同的管理结构，说明分权本身也需要随着市场和业务条件修正。</p>
+  <p>从管理角度看，拆分的价值是让经营结果更接近决策者，减少跨层汇报；风险是资源重复、业务互相抢人，或集团整体协同变弱。再集中可以复用技术、品牌和客户资源，但可能让审批链变长。管理没有“一拆就快”或“一合就强”的通用答案，重要的是权力、责任和资源是否匹配。</p>
+  <figure><div class="fr"><svg viewBox="0 0 720 300" role="img" aria-label="组织结构在分权与协同之间摆动，分权提升单元决策速度，集中便于共享资源"><g font-family="-apple-system,BlinkMacSystemFont,sans-serif" text-anchor="middle"><text x="360" y="38" fill="var(--ink)" font-size="22" font-weight="600">组织设计是在两种成本间找平衡</text><rect x="55" y="90" width="250" height="145" rx="15" fill="var(--card)" stroke="var(--line)"/><rect x="415" y="90" width="250" height="145" rx="15" fill="var(--card)" stroke="var(--line)"/><text x="180" y="128" fill="var(--ai)" font-size="20" font-weight="600">分权</text><text x="180" y="162" fill="var(--ink-2)" font-size="15">决策更靠近业务</text><text x="180" y="190" fill="var(--ink-3)" font-size="14">代价：重复建设 / 协同变弱</text><text x="540" y="128" fill="var(--accent)" font-size="20" font-weight="600">集中</text><text x="540" y="162" fill="var(--ink-2)" font-size="15">资源更容易共享</text><text x="540" y="190" fill="var(--ink-3)" font-size="14">代价：审批链 / 等待增加</text><path d="M308 163H411" stroke="var(--ink-3)" stroke-width="2"/><path d="m400 153 12 10-12 10" fill="none" stroke="var(--ink-3)" stroke-width="2"/><text x="360" y="270" fill="var(--ink-3)" font-size="15">阿里的历次调整可看作对业务阶段的持续校准</text></g></svg></div><figcaption>概念图：组织设计取舍，不是对阿里当前内部决策流程的实测。</figcaption></figure>
+
+  <p>阿里的管理经验对我有启发，是因为它一直要协调电商、云、物流、支付和本地服务等差异很大的业务。不同业务的客户、现金流和技术周期并不一样，统一用一套 KPI 或汇报节奏，可能让某些团队失去合适的速度。管理能力的核心，是知道哪些能力应该共用、哪些决策必须留在业务现场。</p>
+  <p>这也是为什么“大公司病”不只是开会多，而是决策的收益由一个团队拿、成本由另一个团队承担。一个有效的责任单元，至少得同时看得到目标、资源和结果。若每件事都要总办拍板，小团队会退化成等指令的执行组；若谁都能自立门户，集团又会失去规模优势。</p>
+  <p>因此我会把阿里的强项概括为“组织设计能力”，但不把它写成已经被证明的唯一最强项。公开重组记录能证明公司在持续改组织，不能直接证明每次变化都成功。要判断成效，还得看具体业务的客户留存、效率和财务表现。</p>
+  <figure><div class="fr"><svg viewBox="0 0 720 280" role="img" aria-label="业务单元需要同时拥有目标、资源和结果责任，才能形成闭环"><g font-family="-apple-system,BlinkMacSystemFont,sans-serif" text-anchor="middle"><text x="360" y="38" fill="var(--ink)" font-size="22" font-weight="600">责任闭环：目标、资源、结果在同一单元</text><g fill="var(--card)" stroke="var(--line)" stroke-width="1.5"><rect x="65" y="92" width="165" height="96" rx="14"/><rect x="278" y="92" width="165" height="96" rx="14"/><rect x="491" y="92" width="165" height="96" rx="14"/></g><text x="147" y="135" fill="var(--accent)" font-size="19" font-weight="600">目标</text><text x="147" y="163" fill="var(--ink-3)" font-size="14">要交付什么</text><text x="360" y="135" fill="var(--ai)" font-size="19" font-weight="600">资源</text><text x="360" y="163" fill="var(--ink-3)" font-size="14">团队能调用什么</text><text x="573" y="135" fill="var(--human)" font-size="19" font-weight="600">结果</text><text x="573" y="163" fill="var(--ink-3)" font-size="14">谁承担成败</text><path d="M230 140H273M443 140H486" stroke="var(--ink-3)" stroke-width="2"/><path d="M575 196C500 250 216 250 145 196" fill="none" stroke="var(--ink-3)" stroke-width="2" stroke-dasharray="5 5"/><text x="360" y="252" fill="var(--ink-3)" font-size="14">复盘后回到目标，而不是只增加汇报层级</text></g></svg></div><figcaption>概念图：用于解释组织责任如何闭环。</figcaption></figure>
+
+  <h2>三、字节：免费改变的往往是整个行业的价格</h2>
+  <p>我说字节像“行业百草枯”，说的是它进入新领域时常把流量分发和广告变现带进去，迫使原有产品重新定价；这是一种带情绪的比喻，不是对它每次进入都造成行业衰退的事实判断。番茄小说就是容易看见的例子：它采用免费阅读、广告变现的模式，用户不用先为章节付费。对用户来说，付费门槛降低了，对平台来说，阅读时长和广告库存变成新的经营变量。</p>
+  <p>起点中文网等平台长期以章节付费、订阅和作者分成为重要模式，读者付费习惯与作者收入在其中互相支撑。免费广告模式扩大了可触达用户，也把竞争焦点从“愿不愿为下一章付钱”转到“愿不愿看广告、能否留在平台”。这会给老平台带来压力，但免费模式并不自动等于质量差，付费模式也不自动等于作者收入有保障。</p>
+  <p>你提到番茄整体对字节可能是亏的、却能给集团带来流量倾斜，这个解释在战略上说得通，但没有公开的产品线独立利润表，我不能把它写成已证实的财务事实。同样，“起点、微信读书因此基本不挣钱”也缺少可比的公开口径。更稳妥的结论是：当一个平台把阅读补贴、广告和推荐分发连在一起，靠单本书订阅收入的旧模型就得重新回答作者怎么分账、平台怎样留住好作品。</p>
+  <figure><div class="fr"><svg viewBox="0 0 720 320" role="img" aria-label="付费阅读与免费广告阅读的价值链对比"><g font-family="-apple-system,BlinkMacSystemFont,sans-serif" text-anchor="middle"><text x="360" y="37" fill="var(--ink)" font-size="22" font-weight="600">读者成本变了，平台收入链也跟着变</text><text x="180" y="84" fill="var(--accent)" font-size="18" font-weight="600">章节付费</text><text x="540" y="84" fill="var(--ai)" font-size="18" font-weight="600">免费 + 广告</text><g fill="var(--card)" stroke="var(--line)"><rect x="45" y="104" width="270" height="64" rx="11"/><rect x="405" y="104" width="270" height="64" rx="11"/><rect x="45" y="186" width="270" height="64" rx="11"/><rect x="405" y="186" width="270" height="64" rx="11"/></g><text x="180" y="143" fill="var(--ink-2)" font-size="16">读者付费 → 平台 / 作者分账</text><text x="540" y="143" fill="var(--ink-2)" font-size="16">用户时长 → 广告收入</text><text x="180" y="225" fill="var(--ink-2)" font-size="15">习惯：为章节直接付钱</text><text x="540" y="225" fill="var(--ink-2)" font-size="15">习惯：用注意力换免费内容</text><path d="M180 168V180M540 168V180" stroke="var(--ink-3)" stroke-width="2"/><text x="360" y="286" fill="var(--ink-3)" font-size="14">作者收入、内容质量与平台补贴，取决于实际分账和留存数据</text></g></svg></div><figcaption>商业模式示意图；未表示番茄、起点或微信读书的实际利润及作者收入规模。</figcaption></figure>
+
+  <p>类似的机制也发生在短视频与长视频之间，但不能把 B 站、爱奇艺和优酷的经营结果都归结为字节一个对手。短视频平台拿走用户时间后，长视频面对的压力包括版权成本、会员续费、广告库存和内容供给；平台之间也会互相学习产品形式。行业的变化常常是竞争者、资本成本、监管和用户偏好一起作用的结果。</p>
+  <p>字节的组织方式常被外界描述为数据驱动、产品迭代快、业务之间共享推荐和广告能力。外部能观察到的是产品和业务结果，内部真实决策效率不可能只凭宣传或少数离职帖就完全还原。更可以验证的判断是：当推荐、广告和内容理解能力能跨产品复用，进入新赛道的试错成本会变低。</p>
+  <p>这套打法的代价也落在内容供给端：若平台主要奖励点击和停留，创作者可能更愿意生产高频、强刺激、容易分发的内容。好的写手能否长期获得稳定收入，最终看平台如何分账、读者是否愿意付费，以及内容能不能形成差异化。流量能快速做大市场，也可能把行业收益挤到少数分发平台手里。</p>
+  <figure><div class="fr"><svg viewBox="0 0 720 300" role="img" aria-label="平台流量扩张会在用户增长、广告收入、内容供给和创作者回报之间形成反馈环"><g font-family="-apple-system,BlinkMacSystemFont,sans-serif" text-anchor="middle"><text x="360" y="37" fill="var(--ink)" font-size="22" font-weight="600">流量飞轮与内容生态的拉扯</text><g fill="var(--card)" stroke="var(--line)"><rect x="278" y="65" width="164" height="58" rx="12"/><rect x="493" y="142" width="164" height="58" rx="12"/><rect x="278" y="220" width="164" height="58" rx="12"/><rect x="63" y="142" width="164" height="58" rx="12"/></g><text x="360" y="101" fill="var(--accent)" font-size="16">用户时长</text><text x="575" y="178" fill="var(--ai)" font-size="16">广告收入</text><text x="360" y="256" fill="var(--ink-2)" font-size="16">内容供给</text><text x="145" y="178" fill="var(--human)" font-size="16">创作者回报</text><path d="M442 98 493 145M575 200 442 228M278 248 227 198M145 142 278 95" fill="none" stroke="var(--ink-3)" stroke-width="2"/><text x="360" y="162" fill="var(--ink-3)" font-size="14">推荐分发</text><text x="360" y="193" fill="var(--ink-3)" font-size="13">分账决定飞轮能否回到创作者</text></g></svg></div><figcaption>概念图：流量商业化如何反馈到内容生产；方向和强弱需具体数据验证。</figcaption></figure>
+
+  <h2>四、AI：竞争从模型参数转到组织执行</h2>
+  <p>最近 AI 的变化，已经不只是“谁的模型榜单高一点”。模型能力在快速追赶，真正拉开产品差异的部分逐渐变成工具调用、记忆、数据权限、稳定性和推理成本。对大公司来说，AI 不是一个团队发布模型就结束，而是业务线能不能持续把模型接进真实流程。</p>
+  <p>这正好解释了你说的“大公司汇报慢、小团队跑得快”：大组织有更多用户、数据和算力，却也有更多审批、既有系统和预算责任。若 AI 负责人只拿到一个研究头衔，没有跨部门资源和产品决策权，团队很容易做出模型，却没人把它放进核心业务。反过来，权力集中能缩短决策路径，也会增加关键人判断失误时的影响范围。</p>
+  <p>你提到的腾讯姚顺雨、以及小米的罗福莉，确实是外界关注的 AI 人才与组织变化；但职务名称和授权范围会更新，应以公司公告或本人公开信息为准。把个人任命解读为“AI 方向开始集中”是合理观察，不代表整个公司已经实现协同。最后要看他们能否把研究、工程和产品团队带到同一个可交付目标上。</p>
+  <figure><div class="fr"><svg viewBox="0 0 720 310" role="img" aria-label="AI产品交付需要模型、工具与数据权限、产品工作流、评估反馈四层闭环"><g font-family="-apple-system,BlinkMacSystemFont,sans-serif" text-anchor="middle"><text x="360" y="38" fill="var(--ink)" font-size="22" font-weight="600">模型只是 AI 产品链的第一层</text><g><rect x="170" y="70" width="380" height="45" rx="10" fill="var(--accent)" opacity=".2" stroke="var(--accent)"/><rect x="170" y="128" width="380" height="45" rx="10" fill="var(--card)" stroke="var(--line)"/><rect x="170" y="186" width="380" height="45" rx="10" fill="var(--card)" stroke="var(--line)"/><rect x="170" y="244" width="380" height="45" rx="10" fill="var(--card)" stroke="var(--line)"/></g><text x="360" y="99" fill="var(--accent)" font-size="17" font-weight="600">基础模型：理解与生成</text><text x="360" y="157" fill="var(--ink-2)" font-size="16">工具与权限：能安全地执行</text><text x="360" y="215" fill="var(--ink-2)" font-size="16">业务流程：嵌入真实工作</text><text x="360" y="273" fill="var(--human)" font-size="16">评估反馈：发现错误并持续修正</text><path d="M570 91V265" stroke="var(--ink-3)" stroke-width="2" stroke-dasharray="4 5"/><path d="M562 258 570 267 578 258" fill="none" stroke="var(--ink-3)" stroke-width="2"/></g></svg></div><figcaption>概念图：Agent 产品需要从模型能力走到可用流程，并通过评估持续改进。</figcaption></figure>
+
+  <p>AI Agent 的机会在于让模型不只回答问题，还能在权限允许的范围内调用搜索、代码、数据库和业务系统。它的难点也因此转向了失败恢复、操作审计、权限最小化和如何判断任务真的完成。一个能演示的 Agent 不等于一个可托付给客户或员工的 Agent。</p>
+  <p>海外领先模型提供了清晰的产品参照，也让追赶者不用从零猜测交互形态；但路线并非完全已知。训练成本、芯片供应、开源模型、数据合规和用户付费，都会改变哪类公司更有优势。追赶不是照着前面跑就行，还要判断哪些环节值得自研、哪些能力可以买、哪些业务根本不需要大模型。</p>
+  <p>所以我认同你关于“一个有话语权的人带队持续奔跑”的观察，但把它补成一个组织条件：高层方向要清晰，业务团队要有预算和接口，评估要能揭示真实失败，安全和合规要能跟上。只靠负责人拍板，项目会快启动，也可能更快变成演示工程。AI 时代的大厂竞争，最后比的是把模型接进组织之后还能不能持续交付。</p>
+  <figure><div class="fr"><svg viewBox="0 0 720 290" role="img" aria-label="AI落地由方向授权、跨部门团队、真实业务试点、持续评估四步组成"><g font-family="-apple-system,BlinkMacSystemFont,sans-serif" text-anchor="middle"><text x="360" y="38" fill="var(--ink)" font-size="22" font-weight="600">从高层方向到真实交付</text><g fill="var(--card)" stroke="var(--line)"><rect x="38" y="105" width="145" height="86" rx="12"/><rect x="211" y="105" width="145" height="86" rx="12"/><rect x="384" y="105" width="145" height="86" rx="12"/><rect x="557" y="105" width="125" height="86" rx="12"/></g><text x="110" y="141" fill="var(--accent)" font-size="15" font-weight="600">明确方向</text><text x="110" y="166" fill="var(--ink-3)" font-size="13">授权与取舍</text><text x="283" y="141" fill="var(--ai)" font-size="15" font-weight="600">组建团队</text><text x="283" y="166" fill="var(--ink-3)" font-size="13">研究 + 工程 + 业务</text><text x="456" y="141" fill="var(--human)" font-size="15" font-weight="600">接入流程</text><text x="456" y="166" fill="var(--ink-3)" font-size="13">从小范围试点</text><text x="619" y="141" fill="var(--ink-2)" font-size="15" font-weight="600">评估</text><text x="619" y="166" fill="var(--ink-3)" font-size="13">看错误与成本</text><g stroke="var(--ink-3)" stroke-width="2"><path d="M183 148H205M356 148H378M529 148H551"/></g><text x="360" y="245" fill="var(--ink-3)" font-size="14">任命是起点，持续交付才证明组织方式有效</text></g></svg></div><figcaption>概念图：对“AI 负责人权力变大”这一观察补上可验证的组织链条。</figcaption></figure>
+
+  <h2>结尾：别只看谁抢到了用户</h2>
+  <p>腾讯、阿里和字节看起来像三种公司，其实都在回答同一组问题：新机会值得冒多大风险，应该由谁来做决定，收入最终由谁获得。腾讯的案例提醒我先看牌照、责任主体和长期关系；阿里的组织变化提醒我，规模越大越需要把目标、资源和责任放在一起；字节的免费内容提醒我，改变价格会重写创作者和平台之间的分账。</p>
+  <p>到了 AI 阶段，过去积累的流量、云、模型和人才都会成为筹码，但没有一项单独等于胜利。模型可以被追上，产品可以被模仿，真正慢的是组织学习：承认失败、改掉流程、把可靠能力复制到多个业务。大厂所谓的“大战”，最终会落在用户体验、创作者收入、员工效率和监管责任这些具体结果上。</p>
+
+  <h2>出处与核对边界</h2>
+  <ul class="src">
+    <li><a href="https://www.webank.com/" rel="noopener">微众银行官网</a>：机构定位、银行产品及其持牌主体信息。</li>
+    <li><a href="https://www.gov.cn/zhengce/content/2020-09/16/content_5543686.htm" rel="noopener">国务院办公厅：《关于加强小额贷款公司监督管理的通知》</a>（2020-09-16）：网络小额贷款监管框架。</li>
+    <li><a href="https://www.gov.cn/xinwen/2020-11/27/content_5565251.htm" rel="noopener">国务院金融稳定发展委员会办公室：网络借贷风险专项整治工作座谈会</a>：P2P 网贷机构清零进展。</li>
+    <li><a href="https://www.samr.gov.cn/xw/zj/202104/t20210410_327702.html" rel="noopener">市场监管总局：对阿里巴巴集团涉嫌垄断行为调查处理</a>（2021-04-10）：平台经济反垄断案例。</li>
+    <li><a href="https://www.alibabagroup.com/en-US/document-1494483759990786048" rel="noopener">阿里巴巴集团：1+6+N 组织变革公告</a>（2023-03-28）；以及<a href="https://www.alibabagroup.com/en-US/document-1611875963288440832" rel="noopener">集团管理层调整说明</a>（2024-03-28）。以公告为准，文中不推断重组的内部成效。</li>
+    <li><a href="https://www.chinawriter.com.cn/n1/2019/0719/c404023-31244365.html" rel="noopener">中国作家网：网络文学平台免费阅读模式观察</a>：行业商业模式背景。具体产品利润、作者分账差异未有可比公开数据，本文不作金额推断。</li>
+    <li><a href="https://www.tencent.com/zh-cn/investors/financial-reports.html" rel="noopener">腾讯投资者关系：财报与公告</a>；AI 人事与产品动态以腾讯正式公告、研究页面及当事人公开资料为准。</li>
+    <li><a href="https://www.mi.com/" rel="noopener">小米官网</a>：罗福莉相关职务以小米公司公告和本人公开资料为准。</li>
+  </ul>
+  <footer>本文是个人观察，不是三家公司的内部材料或行业财务研究。可核实事实、个人判断和未公开的经营推断已尽量分开；若后续公告提供新的财务或任职信息，应以新资料更新。</footer>
+</main>
+</body>
+</html>
