@@ -28,6 +28,9 @@
   .ai-q:hover,.ai-q:focus-visible { background: var(--accent); color: var(--card); outline: 2px solid color-mix(in srgb,var(--accent) 24%,transparent); }
   .branch-note,.source { color: var(--ink-3); font-size: .8rem; line-height: 1.6; }
   .branch-note { margin: .4rem 0 1.3rem; }
+  .analysis-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: .65rem; margin: .8rem 0; }
+  .analysis-grid h3 { margin: 0 0 .45rem; font-size: .95rem; }
+  .analysis-grid .time-card p { margin: 0; }
   .source { margin: 1rem 0; }
   .source a { overflow-wrap: anywhere; }
   dialog.ai-dialog { width: min(35rem,calc(100vw - 2rem)); max-width: none; padding: 1.2rem; border: 1px solid var(--line); border-radius: var(--r); color: var(--ink); background: var(--card); box-shadow: var(--shadow-3); }
@@ -36,7 +39,7 @@
   .dialog-body { max-height: min(58vh,32rem); overflow: auto; margin: .8rem 0 1.2rem; color: var(--ink-2); line-height: 1.75; white-space: pre-line; }
   .dialog-actions { display: flex; justify-content: flex-end; }
   .dialog-actions button { min-width: 4rem; }
-  @media (max-width: 540px) { .time-point { padding-left: 1.25rem; } .time-card { padding: .72rem; } .time-head { gap: .4rem; } .time-head time { min-width: 4.25rem; } }
+  @media (max-width: 540px) { .time-point { padding-left: 1.25rem; } .time-card { padding: .72rem; } .time-head { gap: .4rem; } .time-head time { min-width: 4.25rem; } .analysis-grid { grid-template-columns: 1fr; } }
 </style>
 <link rel="stylesheet" href="/assets/statusbar.css">
 <link rel="stylesheet" href="/assets/rail.css">
@@ -79,13 +82,31 @@
   </ol>
 
   <p class="branch-note">一条时间线里有多条支线；有些方法今天仍在使用，有些组合出新模型。底下的补充说明和论文链接可按兴趣展开。</p>
+  <section class="analysis" aria-labelledby="analysis-title">
+    <h2 id="analysis-title">把时间线串起来：今天的大模型是怎样被造出来的？</h2>
+    <p class="branch-note">不是一个网络把前面的网络全部淘汰；研究者把结构、训练办法、数据、芯片和产品反馈不断组合。</p>
+    <div class="analysis-grid">
+      <article class="time-card"><h3>网络结构：各自擅长不同输入</h3><p>CNN 擅长利用图像局部结构；RNN/LSTM 按顺序传递状态；Transformer 用注意力并行整合上下文；扩散模型逐步去噪生成内容；MoE 用路由激活部分专家。结构解决“信息怎样流动”，强化学习解决“怎样根据行动结果改进”，两者不是同一类东西。<button class="ai-q" data-topic="families" aria-label="比较主要网络结构和训练方法">?</button></p></article>
+      <article class="time-card"><h3>参数：先定模型大小，再让训练学出权重</h3><p>建模前先选网络结构、层数、宽度和训练预算；训练时再由大量样本和优化算法逐步调整参数。研究者通常比较不同配置在验证数据上的效果、成本和可靠性，不会人工逐个筛选数十亿个参数。<button class="ai-q" data-topic="parameters" aria-label="解释参数规模与训练选择">?</button></p></article>
+      <article class="time-card"><h3>预训练：先学会语言和内容规律</h3><p>原始资料要经过授权与质量筛选、去重、格式处理和分词；模型再通过预测下一个 token 等训练目标学习。训练数据有偏差、重复、污染或缺少代表性，都会影响学到的能力。<button class="ai-q" data-topic="data" aria-label="解释预训练数据筛选及其影响">?</button></p></article>
+      <article class="time-card"><h3>后训练：把“会续写”变成“会按要求帮忙”</h3><p>监督微调用高质量示例教模型回答格式和任务；偏好训练让答案更符合人类评审的选择；安全训练、工具调用和评测再补上产品需要。后训练通常在预训练模型基础上继续调整，不是重新读完所有互联网资料。<button class="ai-q" data-topic="training" aria-label="解释预训练与后训练的区别">?</button></p></article>
+      <article class="time-card"><h3>上线：模型权重只是完整系统的一部分</h3><p>用户看到的系统还可能包括检索库、工具、提示词、审核、缓存、量化和监控。量化/剪枝是压缩或加速手段；RAG 是把外部资料送进上下文；工具调用让模型请求外部程序执行动作。三者都不等于基础模型参数自动变聪明。<button class="ai-q" data-topic="deployment" aria-label="解释模型上线后的系统组件">?</button></p></article>
+      <article class="time-card"><h3>离 AGI 还差什么？</h3><p>模型能写、能看、会用工具，不等于在陌生环境里始终正确、能长期规划、持续学习并对行动负责。AGI 没有统一的验收标准；“所有模型都是某个细分领域过拟合”是提醒能力有边界的比喻，不是严格结论。<button class="ai-q" data-topic="agi" aria-label="解释 AGI 能力缺口和过拟合的严格含义">?</button></p></article>
+    </div>
+    <figure class="time-fig"><svg viewBox="0 0 720 112" role="img" aria-label="大模型从数据筛选、预训练、能力评测、后训练，进入上线系统并持续监控">
+      <g fill="var(--bg-2)" stroke="var(--line)"><rect x="6" y="27" width="112" height="49" rx="8"/><rect x="151" y="27" width="112" height="49" rx="8"/><rect x="296" y="27" width="112" height="49" rx="8"/><rect x="441" y="27" width="112" height="49" rx="8"/><rect x="586" y="27" width="126" height="49" rx="8" fill="var(--accent-soft)" stroke="var(--accent)"/></g>
+      <g text-anchor="middle" fill="var(--ink)" font-size="11"><text x="62" y="48">筛选数据</text><text x="62" y="64" fill="var(--ink-3)" font-size="9">质量 / 权利 / 去重</text><text x="207" y="48">预训练</text><text x="207" y="64" fill="var(--ink-3)" font-size="9">学习通用表示</text><text x="352" y="48">评测选型</text><text x="352" y="64" fill="var(--ink-3)" font-size="9">能力 / 成本 / 风险</text><text x="497" y="48">后训练</text><text x="497" y="64" fill="var(--ink-3)" font-size="9">指令 / 偏好 / 安全</text><text x="649" y="48">部署与监控</text><text x="649" y="64" fill="var(--ink-3)" font-size="9">系统持续迭代</text></g><g stroke="var(--accent)" stroke-width="2"><path d="M120 51H144M265 51H289M410 51H434M555 51H579"/></g>
+    </svg><figcaption>模型不是只靠“参数筛选”变强：从训练数据到上线反馈，每一步都会改变能力、成本与风险。</figcaption></figure>
+  </section>
   <details class="sources"><summary>展开：原始论文与进一步阅读</summary><ol>
     <li>McCulloch & Pitts (1943), “A logical calculus…” <a href="https://doi.org/10.1007/BF02478259" target="_blank" rel="noopener">DOI</a>; Rosenblatt (1958), “The Perceptron.” <a href="https://doi.org/10.1037/h0042519" target="_blank" rel="noopener">DOI</a></li>
     <li>Fukushima (1980), Neocognitron. <a href="https://doi.org/10.1007/BF00344251" target="_blank" rel="noopener">DOI</a>; Rumelhart et al. (1986), Backpropagation. <a href="https://doi.org/10.1038/323533a0" target="_blank" rel="noopener">DOI</a></li>
     <li>LeCun et al. (1998), CNN/LeNet. <a href="https://doi.org/10.1109/5.726791" target="_blank" rel="noopener">DOI</a>; Watkins & Dayan (1992), Q-learning. <a href="https://doi.org/10.1007/BF00992698" target="_blank" rel="noopener">DOI</a></li>
     <li>Hochreiter & Schmidhuber (1997), LSTM. <a href="https://doi.org/10.1162/neco.1997.9.8.1735" target="_blank" rel="noopener">DOI</a>; Hinton et al. (2006), Deep Belief Nets. <a href="https://doi.org/10.1162/neco.2006.18.7.1527" target="_blank" rel="noopener">DOI</a></li>
     <li>AlexNet (2012). <a href="https://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks" target="_blank" rel="noopener">论文</a>; ResNet (2015). <a href="https://arxiv.org/abs/1512.03385" target="_blank" rel="noopener">arXiv</a>; AlphaGo (2016). <a href="https://doi.org/10.1038/nature16961" target="_blank" rel="noopener">DOI</a></li>
-    <li>Transformer (2017). <a href="https://arxiv.org/abs/1706.03762" target="_blank" rel="noopener">arXiv</a>; BERT (2018). <a href="https://arxiv.org/abs/1810.04805" target="_blank" rel="noopener">arXiv</a>; GPT-3 (2020). <a href="https://arxiv.org/abs/2005.14165" target="_blank" rel="noopener">arXiv</a>; InstructGPT (2022). <a href="https://arxiv.org/abs/2203.02155" target="_blank" rel="noopener">arXiv</a></li>
+    <li>GAN (2014). <a href="https://arxiv.org/abs/1406.2661" target="_blank" rel="noopener">arXiv</a>; Transformer (2017). <a href="https://arxiv.org/abs/1706.03762" target="_blank" rel="noopener">arXiv</a>; 混合专家 (2017). <a href="https://arxiv.org/abs/1701.06538" target="_blank" rel="noopener">arXiv</a>; BERT (2018). <a href="https://arxiv.org/abs/1810.04805" target="_blank" rel="noopener">arXiv</a></li>
+    <li>GPT-3 (2020). <a href="https://arxiv.org/abs/2005.14165" target="_blank" rel="noopener">arXiv</a>; Scaling Laws (2020). <a href="https://arxiv.org/abs/2001.08361" target="_blank" rel="noopener">arXiv</a>; RAG (2020). <a href="https://arxiv.org/abs/2005.11401" target="_blank" rel="noopener">arXiv</a>; Diffusion (2020). <a href="https://arxiv.org/abs/2006.11239" target="_blank" rel="noopener">arXiv</a></li>
+    <li>InstructGPT (2022). <a href="https://arxiv.org/abs/2203.02155" target="_blank" rel="noopener">arXiv</a>; Chinchilla (2022). <a href="https://arxiv.org/abs/2203.15556" target="_blank" rel="noopener">arXiv</a></li>
     <li>Goodfellow、Bengio、Courville, Deep Learning（MIT Press, 2016）；Melanie Mitchell, Artificial Intelligence: A Guide for Thinking Humans（2019）。</li>
   </ol></details>
   <p class="source">时间线以提出论文、公开演示或广泛应用年份为准；技术常有更早前身，也会并行发展。核对日期：2026-10-01。</p>
@@ -99,6 +120,8 @@
 <script>
 const notes = {
   mcp: ['人工神经元的早期来源', 'McCulloch 与 Pitts 在 1943 年提出了逻辑化神经元模型。它是数学抽象，不是完整的大脑模型；神经网络思想此后还依赖感知机、可训练权重和计算硬件才发展成现代机器学习。'],
+  families: ['网络结构和训练范式是两条不同的轴', 'CNN、RNN/LSTM、Transformer、Diffusion 和 MoE 描述信息怎样经过网络或生成内容；监督学习、自监督学习、强化学习描述模型怎样从数据或反馈中改进。它们可以组合：AlphaGo 用卷积网络评估棋局并结合强化学习和搜索；语言模型可用 Transformer 做预训练，再用监督微调或偏好优化。不是每种大模型都必须经过同一条网络结构或强化学习步骤。'],
+  data: ['预训练数据如何筛选，为什么会影响结果？', '常见处理包括确认收集和使用权限、去重、过滤乱码与低质量页面、识别语言和格式、清理个人信息，并通过抽样检查代表性。过滤太少会留下垃圾、重复或污染评测答案的内容；过滤太狠又可能删掉少数语言、专业知识和长尾材料。数据治理只能降低风险，不能保证语料完整、无偏或无版权争议。'],
   perceptron: ['感知机的权重怎么学？它能做什么？', '感知机把输入乘以权重，加上偏置，再通过阈值函数给出类别。若猜错了，就按学习规则调整权重。单层感知机能解决线性可分问题，但像 XOR 这样的关系需要多层或别的结构。'],
   limits: ['1969 年的批评意味着神经网络失败了吗？', 'Minsky 与 Papert 的 Perceptrons 详细分析了单层感知机的局限，影响了当时对连接主义的期待；后来常被简化成“一个报告导致 AI 冬天”，这是过度简化。算力不足、数据少、资金转向等都参与了研究周期变化；多层网络和反向传播后来再次推进研究。'],
   cnn: ['CNN / Neocognitron 的核心组件？', 'Neocognitron 是 Fukushima 1980 年提出的层级视觉模型，为卷积网络提供先例。现代 CNN 常见组件是卷积层（局部滤镜共享权重）、非线性激活、下采样或池化、若干层特征组合和分类头。网络不是“只认图片”，卷积也可处理声音、视频或其他有局部结构的数据。'],
@@ -116,6 +139,7 @@ const notes = {
   gpt: ['GPT 为什么按顺序一个词一个词写？', 'GPT 使用因果掩码，让预测当前位置时只能看到前面的 token，不会偷看后文答案。生成时先根据前文计算下一个 token 的概率，再选一个 token 接上去重复这个过程。它和 BERT 的“左右文填空”训练目标不同。'],
   parameters: ['模型参数有多少，表示什么？', '参数是从数据训练得到的权重与偏置。GPT-3 论文报告 1750 亿参数，但参数数目不等于事实数、可靠度或通用智能。架构/参数规模、训练 token 数、数据质量、训练算力与推理成本需要一起评估；更多参数通常也意味着更高训练和部署成本。'],
   training: ['参数选择、预训练、后训练的顺序', '先选架构、参数规模和超参数（例如层数、学习率、训练 token 预算）；训练时权重由反向传播逐步学出。预训练常预测下一个 token，让模型从大量筛选后的文本学语言统计规律。后训练用指令示例做监督微调，再用偏好数据、RLHF/DPO 等让回答更符合人类意图。团队通过验证集、能力与安全评测选择检查点；并非人工逐个筛出“有用参数”。量化和剪枝主要是部署压缩。'],
+  deployment: ['为什么上线系统不只是一个模型文件？', '模型服务要处理输入、上下文长度、并发、缓存、拒答和监控；检索系统要管文档来源、权限和更新；工具调用还要校验参数、授权、执行结果和失败回退。量化可减少内存和推理成本，通常需要重新评估速度与输出质量。运行中发现的错误可以形成新的评测样本，再用于修复系统或训练下一版模型。'],
   industry: ['为什么说多个行业每天一起推进？', '研究者提出算法和理论；芯片团队改善算力与能效；数据工作者整理、筛选和标注语料；开源社区维护训练框架；评测团队暴露弱点；产品团队和各行业用户提供真实需求与错误反馈。每一环都让下一轮模型更容易训练、更便宜或更可用。数据权利、隐私和安全同样需要治理。'],
   agi: ['AGI 是什么？“所有模型都过拟合”准确吗？', 'AGI（通用人工智能）没有统一的操作定义，也没有一项全行业通用的通过测试。许多实验室把跨任务学习、可靠推理和自主完成复杂目标作为长期愿景；现有大模型依旧会幻觉、遇到分布变化会失准，也缺少稳定的长期规划，因此大模型不等于 AGI。“过拟合”有严格含义：训练集表现好、未见数据泛化差。专业系统可以是能力范围较窄，但不一定过拟合；这句话更适合当比喻，不是严格的技术结论。']
 };
