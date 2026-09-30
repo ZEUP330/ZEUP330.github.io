@@ -16,7 +16,9 @@
     width: 2rem; height: 2rem; border-radius: 50%; color: var(--accent); background: var(--accent-soft);
     font-size: .9rem; font-weight: 700; }
   .thread li:not(:last-child)::after { content: ""; position: absolute; left: .96rem; top: 2.25rem; bottom: .15rem; border-left: 1px dashed var(--line); }
-  .thread h2 { margin: 0 0 .45rem; font-size: 1.18rem; }
+  .thread h2 { display: flex; align-items: center; gap: .5rem; margin: 0 0 .45rem; font-size: 1.18rem; }
+  .thread h2 svg,.case-card h3 svg,.compare b svg { width: 1.35rem; height: 1.35rem; flex: none; color: var(--accent); }
+  .case-card h3 { display: flex; align-items: center; gap: .45rem; }
   .thread p { margin: 0; }
   .story-fig { margin: 1rem 0 0; padding: .75rem; border: 1px solid var(--line); border-radius: var(--r); background: var(--card); }
   .story-fig svg { display: block; width: 100%; height: auto; max-height: 190px; }
@@ -38,10 +40,13 @@
   .case-table th,.case-table td { padding: .4rem .25rem; text-align: left; border-bottom: 1px solid var(--line); }
   .case-table th { color: var(--ink-3); font-weight: 500; }
   .case-math { margin: .55rem 0 0; color: var(--ink-3); font-size: .75rem; line-height: 1.55; }
+  .mini-chart { margin: .7rem 0 .25rem; padding: .35rem .45rem; border-radius: var(--r-xs); background: var(--bg-2); }
+  .mini-chart svg { display: block; width: 100%; height: auto; }
   .big-stat { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; margin: .8rem 0; }
   .big-stat > div { padding: .75rem; border-radius: var(--r-sm); background: var(--bg-2); text-align: center; }
   .big-stat b { display: block; color: var(--accent); font-size: 1.2rem; }
   .big-stat span { color: var(--ink-3); font-size: .75rem; }
+  .rent-note { margin: .75rem 0; color: var(--ink-3); font-size: .8rem; line-height: 1.6; }
   .source { margin-top: 2rem; color: var(--ink-3); font-size: .82rem; }
   .source a { overflow-wrap: anywhere; }
   dialog.debt-dialog { width: min(32rem, calc(100vw - 2rem)); max-width: none; padding: 1.25rem;
@@ -68,7 +73,7 @@
 
   <ol class="thread">
     <li>
-      <h2>城市想先把事情建起来</h2>
+      <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 10h18M5 10v10m4-10v10m6-10v10m4-10v10M3 20h18M4 7l8-4 8 4v3H4z"/></svg>城市想先把事情建起来</h2>
       <p>修路、地铁和水利要先花钱，收益却要很多年才慢慢出现；地方因此向银行或债券投资人借钱。<button class="debt-q" data-topic="borrow" aria-label="解释谁借钱、谁出钱">?</button></p>
       <figure class="story-fig"><svg viewBox="0 0 680 128" role="img" aria-label="银行和债券投资人把今天的钱借给地方，用于现在的建设">
         <defs><marker id="a1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--accent)"/></marker></defs>
@@ -78,7 +83,7 @@
       </svg><figcaption>借钱把未来的收入提前用到今天。</figcaption></figure>
     </li>
     <li>
-      <h2>借来的钱变成了工程、设备和工资</h2>
+      <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 20h18M5 20V9l7-5 7 5v11M9 20v-6h6v6M8 10h.01M16 10h.01"/></svg>借来的钱变成了工程、设备和工资</h2>
       <p>资金流到施工单位、材料商和工人，最后留下道路、厂房等资产；钱已经花进真实的东西里，不会原样等在账上。<button class="debt-q" data-topic="platform" aria-label="解释地方融资平台">?</button></p>
       <figure class="story-fig"><svg viewBox="0 0 680 132" role="img" aria-label="资金支付给施工方和工人，形成道路等资产和工资收入">
         <rect x="12" y="22" width="150" height="84" rx="10" fill="var(--bg-2)" stroke="var(--line)"/><text x="87" y="57" text-anchor="middle" fill="var(--ink)" font-size="16">建设资金</text><text x="87" y="81" text-anchor="middle" fill="var(--ink-3)" font-size="12">借来的钱</text>
@@ -87,7 +92,7 @@
       </svg><figcaption>借款流向了建设，也流进了企业和家庭的收入。</figcaption></figure>
     </li>
     <li>
-      <h2>原计划：用未来收入慢慢还</h2>
+      <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 6v12m4-8H9.5a2 2 0 0 0 0 4h5a2 2 0 0 1 0 4H8"/></svg>原计划：用未来收入慢慢还</h2>
       <p>地方可以靠税收、项目回款和土地出让收入偿还。房地产景气时，开发商买地、施工和销售都更活跃，土地收入也曾成为不少地方的重要财源。<button class="debt-q" data-topic="land" aria-label="解释土地收入和房地产的关系">?</button></p>
       <figure class="story-fig"><svg viewBox="0 0 680 130" role="img" aria-label="房地产交易带来土地收入和相关就业税收，成为部分地方偿债来源">
         <g fill="var(--bg-2)" stroke="var(--line)"><rect x="8" y="28" width="160" height="72" rx="10"/><rect x="260" y="28" width="160" height="72" rx="10"/><rect x="512" y="28" width="160" height="72" rx="10"/></g>
@@ -96,7 +101,7 @@
       </svg><figcaption>房地产和地方财政通过土地、就业与税收连在一起。</figcaption></figure>
     </li>
     <li>
-      <h2>转折：收入慢下来了，还款日却没变</h2>
+      <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 5v14h16M7 9l4 3 3-2 5 5"/><path d="M15 15h4v-4"/></svg>转折：收入慢下来了，还款日却没变</h2>
       <p>房屋销售和土地交易降温后，部分地方收入变少、项目回款变慢，但借款仍要按合同还；如果只能不断借新钱还旧钱，利息会继续占用未来预算。<button class="debt-q" data-topic="cashflow" aria-label="解释现金流和滚动借债">?</button></p>
       <figure class="story-fig"><svg viewBox="0 0 680 142" role="img" aria-label="收入下降而债务仍到期，形成现金缺口，不处理会拖欠款项或继续借新还旧">
         <g fill="var(--bg-2)" stroke="var(--line)"><rect x="8" y="22" width="180" height="72" rx="10"/><rect x="250" y="22" width="180" height="72" rx="10"/><rect x="492" y="22" width="180" height="72" rx="10"/></g>
@@ -105,7 +110,7 @@
       </svg><figcaption>收入下降，不会让合同上的还款日自动延期。</figcaption></figure>
     </li>
     <li>
-      <h2>化债：给旧债换个更能承受的还法</h2>
+      <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 8h14l-3-3m5 11H6l3 3"/><path d="M18 8l2 2-2 2M6 16l-2-2 2-2"/></svg>化债：给旧债换个更能承受的还法</h2>
       <p>常见做法是把利息高、到期急的隐性债务，置换成期限较长、利息较低、纳入预算管理的政府债券。债务仍在，只是还款压力降低、账目更清楚。<button class="debt-q" data-topic="methods" aria-label="查看化债方式">?</button></p>
       <figure class="story-fig"><svg viewBox="0 0 680 137" role="img" aria-label="旧的短期高息债务被置换为期限较长、利息较低的显性债务，债务并未消失">
         <rect x="12" y="23" width="230" height="78" rx="11" fill="var(--bg-2)" stroke="var(--line)"/><text x="127" y="56" text-anchor="middle" fill="var(--ink)" font-size="17">旧债</text><text x="127" y="80" text-anchor="middle" fill="var(--ink-3)" font-size="13">高息 · 到期急 · 难看清</text>
@@ -115,7 +120,7 @@
       </svg><figcaption>像把高息欠款改成长期分期：喘口气，之后仍要还。</figcaption></figure>
     </li>
     <li>
-      <h2>中国的安排：先缓解地方的旧账压力</h2>
+      <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 3h10l4 4v14H5zM15 3v5h4M8 12h8M8 16h8"/></svg>中国的安排：先缓解地方的旧账压力</h2>
       <p>2024 年公布的方案，包含 6 万亿元地方债限额用于置换，以及五年合计 4 万亿元专项债资源用于化债。它给地方争取时间、减少利息，但不会自动带来新收入，也不等于债务被免除。<button class="debt-q" data-topic="china" aria-label="查看中国化债政策数字与口径">?</button></p>
       <figure class="story-fig"><svg viewBox="0 0 680 120" role="img" aria-label="中国2024年化债方案由三年六万亿元债务限额置换和五年四万亿元专项债资源组成">
         <rect x="38" y="18" width="274" height="74" rx="11" fill="var(--bg-2)" stroke="var(--line)"/><rect x="368" y="18" width="274" height="74" rx="11" fill="var(--bg-2)" stroke="var(--line)"/>
@@ -124,7 +129,7 @@
       </svg><figcaption>数字依据财政部 2024 年 11 月发布会；详情和当时的测算请点问号。</figcaption></figure>
     </li>
     <li>
-      <h2>最后，影响才传到普通人</h2>
+      <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 11 12 4l9 7M5 10v10h14V10M9 20v-6h6v6"/><circle cx="18" cy="5" r="2"/></svg>最后，影响才传到普通人</h2>
       <p>如果利息省下来用于支付工程款、保障服务，企业和居民可能受益；如果未来预算长期拿来还债，或化债伴随支出收紧，公共服务和地方订单也可能受影响。生活拮据还和就业、收入、家庭负债、房价等有关，不能只归因于化债。<button class="debt-q" data-topic="people" aria-label="展开化债对普通人和房价的影响">?</button></p>
       <figure class="story-fig"><svg viewBox="0 0 680 132" role="img" aria-label="化债可能改善工程款和公共服务，也可能压缩未来预算；房地产通过地方收入、就业和家庭资产产生影响">
         <rect x="233" y="12" width="214" height="42" rx="10" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="340" y="39" text-anchor="middle" fill="var(--ink)" font-size="16">化债后的预算空间</text>
@@ -135,27 +140,35 @@
   </ol>
 
   <h2 id="example">把主线落到一个人的账本：月薪 1 万元，工作一年</h2>
-  <p>用“2024 年 12 月到 2025 年 12 月”做一笔可复算的示例：税前月薪 10,000 元，假设到手 8,500 元、每月生活支出 5,500 元。<button class="debt-q" data-topic="example" aria-label="查看年轻人收入和支出假设">?</button></p>
+  <p>先用房租看每月压力，再用整篮子生活消费计算长期购买力。示例假设税前月薪 10,000 元、到手 8,500 元，月租 3,000 元，其他支出 2,500 元。<button class="debt-q" data-topic="example" aria-label="查看年轻人收入和支出假设">?</button></p>
   <div class="case-grid">
     <article class="case-card">
-      <h3>银行账户：每月留下 3,000 元</h3>
+      <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 10h18M5 10v10m4-10v10m6-10v10m4-10v10M3 20h18M4 7l8-4 8 4v3H4z"/></svg>银行账户：每月留下 3,000 元</h3>
       <table class="case-table"><thead><tr><th>一年里的变化</th><th>金额</th></tr></thead><tbody>
         <tr><td>期初余额（假设）</td><td>20,000 元</td></tr>
         <tr><td>工资到手：8,500 × 12</td><td>+102,000 元</td></tr>
-        <tr><td>生活支出：5,500 × 12</td><td>−66,000 元</td></tr>
+        <tr><td>房租：3,000 × 12</td><td>−36,000 元</td></tr>
+        <tr><td>其他支出：2,500 × 12</td><td>−30,000 元</td></tr>
         <tr><td><b>期末余额，不计利息</b></td><td><b>56,000 元</b></td></tr>
       </tbody></table>
-      <p class="case-math">算式：20,000 + (8,500 − 5,500) × 12 = 56,000 元。房租、所在城市、社保和个税会改变实际结果。</p>
+      <p class="case-math">算式：20,000 + (8,500 − 3,000 − 2,500) × 12 = 56,000 元。房租是这份假设预算里最大的单项支出。</p>
     </article>
     <article class="case-card">
-      <h3>购买力：同样的到手工资能买多少肉</h3>
-      <table class="case-table"><thead><tr><th>批发价观察日</th><th>猪肉 / 月</th><th>牛肉 / 月</th></tr></thead><tbody>
-        <tr><td>2024-12-23</td><td>约 371 kg</td><td>约 142 kg</td></tr>
-        <tr><td>2025-12-31</td><td>约 483 kg</td><td>约 129 kg</td></tr>
+      <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 8h16l-1 12H5L4 8zM8 8a4 4 0 0 1 8 0M8 13h.01M12 13h.01M16 13h.01"/></svg>购买力：一篮子生活消费</h3>
+      <table class="case-table"><thead><tr><th>同样一篮子东西</th><th>需要的钱</th></tr></thead><tbody>
+        <tr><td>2014 年价格水平</td><td>100 元</td></tr>
+        <tr><td>2024 年价格水平</td><td>约 116.93 元</td></tr>
+        <tr><td>固定到手月薪 8,500 元</td><td>相当于约 7,270 元</td></tr>
       </tbody></table>
-      <p class="case-math">只买这一种肉的理论上限：8,500 元 ÷ 全国批发均价。猪肉 22.91 → 17.59 元/公斤；牛肉 59.95 → 65.87 元/公斤。<button class="debt-q" data-topic="meat" aria-label="展开肉价购买力算法和口径说明">?</button></p>
+      <figure class="mini-chart"><svg viewBox="0 0 360 88" role="img" aria-label="同一消费篮子从2014年的100元涨到2024年的约116.93元">
+        <text x="4" y="25" fill="var(--ink-2)" font-size="12">2014</text><rect x="54" y="11" width="230" height="20" rx="6" fill="var(--line)"/><text x="294" y="26" fill="var(--ink-2)" font-size="12">¥100</text>
+        <text x="4" y="62" fill="var(--ink-2)" font-size="12">2024</text><rect x="54" y="48" width="269" height="20" rx="6" fill="var(--accent)"/><text x="330" y="63" fill="var(--accent)" font-size="11">¥117</text>
+        <text x="54" y="84" fill="var(--ink-3)" font-size="10">标尺：同一篮子居民消费品与服务</text>
+      </svg></figure>
+      <p class="case-math">国家统计局 CPI 推算：2015—2024 年累计约 +16.9%；同样的 8,500 元，购买力约少 14.5%。<button class="debt-q" data-topic="inflation" aria-label="展开CPI计算方法">?</button></p>
     </article>
   </div>
+  <p class="rent-note"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--accent)" stroke-width="1.8" aria-hidden="true" style="vertical-align:-4px"><path d="M3 11 12 4l9 7M5 10v10h14V10M9 20v-6h6v6"/></svg> 房租确实占预算大头，但不保证年年涨：全国 2024 年 12 月租赁房房租同比下降 0.3%；全国 2025 年全年 CPI 与上年持平。最近价格平稳或回落，不会把过去累积的涨幅自动还原。<button class="debt-q" data-topic="rent" aria-label="展开房租数据和局部涨跌说明">?</button></p>
   <figure class="story-fig"><svg viewBox="0 0 680 128" role="img" aria-label="一千名月薪一万元的年轻人每人每月存三千元，一年可形成三千六百万元存款">
     <g fill="var(--bg-2)" stroke="var(--line)"><rect x="12" y="24" width="176" height="78" rx="10"/><rect x="252" y="24" width="176" height="78" rx="10"/><rect x="492" y="24" width="176" height="78" rx="10"/></g>
     <g text-anchor="middle" fill="var(--ink)"><text x="100" y="54" font-size="16">1,000 人</text><text x="100" y="78" fill="var(--ink-3)" font-size="12">每人每月存 3,000 元</text><text x="340" y="54" font-size="16">银行存款增加</text><text x="340" y="78" fill="var(--ink-3)" font-size="12">合计每月 300 万元</text><text x="580" y="54" fill="var(--accent)" font-size="20" font-weight="700">3,600 万元</text><text x="580" y="78" fill="var(--ink-3)" font-size="12">一年新增存款</text></g>
@@ -166,10 +179,10 @@
 
   <h2>各地做法不完全一样</h2>
   <p>相同点是重新安排债务的时间与成本；不同点是财政和货币制度。<button class="debt-q" data-topic="world" aria-label="展开中美日欧化债策略比较">?</button></p>
-  <div class="compare" aria-label="各地债务处理方式"><div><b>中国</b>地方债置换、纳入预算</div><div><b>美国</b>滚动发国债、财政与央行分工</div><div><b>日本</b>长期发债、央行买债调节</div><div><b>欧洲</b>央行工具、共同救助贷款</div></div>
+  <div class="compare" aria-label="各地债务处理方式"><div><b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 10h18M5 10v10m4-10v10m6-10v10m4-10v10M3 20h18M4 7l8-4 8 4v3H4z"/></svg>中国</b>地方债置换、纳入预算</div><div><b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 6v12m4-8H9.5a2 2 0 0 0 0 4h5a2 2 0 0 1 0 4H8"/></svg>美国</b>滚动发国债、财政与央行分工</div><div><b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M15 8c-.6-.7-1.5-1-3-1-3.2 0-3.2 3 0 3s3.2 3 0 3c-1.4 0-2.4-.3-3-1M12 5v14"/></svg>日本</b>长期发债、央行买债调节</div><div><b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 5h16v14H4zM8 9h8M8 13h8M8 17h4"/><circle cx="18" cy="18" r="3" fill="var(--card)"/></svg>欧洲</b>央行工具、共同救助贷款</div></div>
 
   <div class="callout"><p><b>一句话：</b>化债是给旧债找一个可承受的还法，为解决问题争取时间；能不能真正好转，要看新增债务是否受控、收入和项目回报能否跟上。</p></div>
-  <p class="source">政策：财政部<a href="https://www.mof.gov.cn/zhengwuxinxi/caizhengxinwen/202411/t20241109_3947230.htm" target="_blank" rel="noopener">2024 年化债发布会文字实录</a>。金融数据：人民银行<a href="https://www.pbc.gov.cn/" target="_blank" rel="noopener">金融统计数据</a>，2024 年报告。肉价：农业农村部全国农产品批发市场日均价；2024-12-23 与 2025-12-31 的年末单日观察值，不是全年平均零售价。示例的工资、期初存款和支出是为演示而设。核对日期：2026-09-30。本文解释公共财政，不构成投资建议。</p>
+  <p class="source">政策：财政部<a href="https://www.mof.gov.cn/zhengwuxinxi/caizhengxinwen/202411/t20241109_3947230.htm" target="_blank" rel="noopener">2024 年化债发布会文字实录</a>。购买力：国家统计局<a href="https://www.stats.gov.cn/" target="_blank" rel="noopener">居民消费价格指数（CPI）</a>历年年度涨幅连乘。房租：国家统计局<a href="https://www.stats.gov.cn/sj/zxfb/202501/t20250109_1958170.html" target="_blank" rel="noopener">2024 年 12 月 CPI 发布</a>。金融数据：人民银行<a href="https://www.pbc.gov.cn/" target="_blank" rel="noopener">金融统计数据</a>，2024 年报告。工资和租金金额是演示假设。核对日期：2026-09-30。本文解释公共财政，不构成投资建议。</p>
 </main>
 
 <dialog class="debt-dialog" id="debt-dialog" aria-labelledby="debt-dialog-title">
@@ -187,8 +200,9 @@ const notes = {
   china: ['2024 年方案里的数字怎么读？', '财政部发布会称：2023 年底经甄别的地方隐性债务余额为 14.3 万亿元；新增 6 万亿元地方政府债务限额，2024—2026 年每年 2 万亿元用于置换；另从 2024 年起连续五年每年安排 8000 亿元新增专项债资源用于化债，合计 4 万亿元。官方当时估算，2028 年前地方需自行消化的隐性债务降至 2.3 万亿元、五年节约利息约 6000 亿元。这些是发布时的计划与测算，不代表今天已全部完成。置换降低部分地方的短期偿还压力，但政府仍要偿还显性债务。'],
   people: ['普通人、房地产和化债是什么关系？', '化债可能让地方更快支付工程款、减少拖欠，也可能让未来预算长期承担利息和本金。房地产会影响土地收入、建筑就业、抵押品价值和家庭财富感受，因此和地方债务相互影响。一个人觉得生活拮据，还可能来自就业、工资、家庭负债、物价和房价等多种因素；仅凭生活感受，不能判断化债是主要原因。'],
   world: ['中、美、日、欧分别怎么处理？', '中国这次重点是地方债置换、纳入预算和控制新增隐性债。美国联邦政府主要滚动发行国债，财政部负责融资、国会决定预算和债务上限；美联储用买卖国债实施货币政策，不替财政部免债。日本长期滚动发债，日本央行曾大量买入国债来维持宽松金融环境。欧元区成员国不能单独发行欧元，欧洲央行维护市场和货币政策传导，欧洲稳定机制可向成员国提供附条件的救助贷款；希腊曾进行债务重组。制度不同，不能简单照搬。'],
-  example: ['这位年轻人的数字哪些是现实、哪些是设定？', '月薪税前 10,000 元来自题目给定的例子；到手 8,500 元、每月支出 5,500 元、期初余额 20,000 元都是演示假设，不是官方平均值。真实到手工资取决于城市、社保公积金、个税专项扣除等。期末余额按每月存下 3,000 元计算，不计利息、奖金、失业或大额支出。'],
-  meat: ['肉价怎么换算成购买力？', '同一公式按月比较：到手工资 ÷ 每公斤价格 = 理论公斤数。例子用农业农村部监测的全国农产品批发市场日均价：2024-12-23 猪肉 22.91 元/公斤、牛肉 59.95 元/公斤；2025-12-31 猪肉 17.59 元/公斤、牛肉 65.87 元/公斤。两次都是年末单日，间隔 373 天，并非全年平均；批发价也不是超市零售价。按 8,500 元都买一种肉计算只是购买力尺子，不是生活预算；想衡量日常生活，应使用同一城市、同一部位、同一零售渠道的月均价格，并把房租、交通、税费等一起算入。'],
+  example: ['这位年轻人的数字哪些是现实、哪些是设定？', '月薪税前 10,000 元来自题目给定的例子；到手 8,500 元、每月房租 3,000 元、其他支出 2,500 元、期初余额 20,000 元都是演示假设，不是官方平均值。真实到手工资取决于城市、社保公积金、个税专项扣除等。期末余额按每月存下 3,000 元计算，不计利息、奖金、失业或大额支出。'],
+  inflation: ['“货币贬值”在这里怎样量？', '这里指同样的人民币能买到的居民消费品和服务变少，不是人民币对美元等外币的汇率变化。国家统计局 CPI 衡量一篮子居民日常商品和服务的价格变化。按国家统计局 2015—2024 年年度 CPI 涨幅连乘：1.4%、2.0%、1.6%、2.1%、2.9%、2.5%、0.9%、2.0%、0.2%、0.2%，累计约上涨 16.9%。所以 2014 年需要 100 元的一篮子东西，2024 年约需 116.93 元；固定 8,500 元工资折回 2014 年购买力约为 7,270 元，下降约 14.5%。2025 年全年 CPI 与上年持平，表示那一年总体价格水平大致没变，不会自动回到十年前。CPI 是全国平均，个人花销和城市会不同。'],
+  rent: ['为什么还用房租？它不是全国一直涨吗？', '房租是许多年轻人每月最大的一笔支出，适合看“收入有多少被住房占走”；但它不能证明全国物价一直上涨。国家统计局数据显示，2024 年 12 月租赁房房租同比下降 0.3%，而 2025 年全年 CPI 与上年持平，说明近年部分成本确实平稳或回落。示例里 3,000 元月租占 8,500 元到手收入的 35.3%；若同类房源涨到 3,300 元且工资不变，占比会变成 38.8%——这是演示，不是全国租金涨幅。要看个人所在城市，比较同一区域、相近面积和条件、相同季节的实际合同租金，再除以当月到手工资。全国 CPI 累计上涨与本地房租短期下跌可以同时发生。'],
   banking: ['普通人的存款怎样进入融资？', '示例里 1,000 人每人每月存 3,000 元，一年合计 3,600 万元，是一个清楚的“规模感”假设。银行把许多存款和其他资金纳入资产负债管理，再按资本、流动性、风险和借款需求决定贷款；并不存在把这 3,600 万原封不动交给某个企业的对应关系。人民银行公布的 2024 年总量是住户存款增加 14.26 万亿元、人民币贷款增加 18.09 万亿元；其中企事业单位贷款增加 14.33 万亿元、住户贷款增加 2.72 万亿元。贷款发放还会同时形成借款人存款，因此不能把存款增量与贷款增量一一配对。可参阅英格兰银行《现代经济中的货币创造》。'],
   books: ['继续读：三本解释资金与债务的书', '兰小欢《置身事内：中国政府与经济发展》（上海人民出版社，2021）：从地方政府、土地和财政关系读懂中国建设融资。Richard C. Koo, The Holy Grail of Macroeconomics: Lessons from Japan’s Great Recession（Wiley, 2008）：理解资产价格下跌后，企业和家庭为何优先还债、经济为何变慢。Atif Mian 与 Amir Sufi, House of Debt（University of Chicago Press, 2014）：理解家庭负债如何影响消费、就业和经济。书中的解释框架不替代最新统计数据。']
 };
