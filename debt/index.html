@@ -3,42 +3,61 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>化债：钱从哪里来，又卡在了哪里</title>
-<meta name="description" content="用一条资金流向故事讲清化债是什么、为什么中国地方政府要化债、各方如何参与，以及它怎样影响普通人的生活。">
+<title>化债：一笔钱走过的路</title>
+<meta name="description" content="沿着地方建设资金的一生，简明解释化债为什么发生、怎样进行，以及普通人会受到什么影响。">
 <link rel="stylesheet" href="/assets/theme.css">
 <style>
-  main { max-width: 820px; margin: 0 auto; }
+  main { max-width: 780px; margin: 0 auto; }
   .back { margin-bottom: 1.2rem; }
-  .lede { max-width: 720px; }
-  .chapter { margin-top: 3.2rem; }
-  .chapter h2 { scroll-margin-top: 1rem; }
-  .debt-figure { margin: 1.1rem 0 1.5rem; padding: 1rem 1rem .65rem; border: 1px solid var(--line);
-    border-radius: var(--r); background: var(--card); box-shadow: var(--shadow-1); }
-  .debt-figure svg { display: block; width: 100%; height: auto; max-height: 300px; }
-  .debt-figure figcaption, .note { color: var(--ink-3); font-size: .84rem; line-height: 1.65; margin: .65rem .15rem 0; }
-  .debt-figure text { font-family: inherit; }
-  .debt-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; margin: 1rem 0; }
-  .debt-card { padding: .9rem 1rem; border: 1px solid var(--line); border-radius: var(--r-sm); background: var(--card); }
-  .debt-card h3 { margin: 0 0 .35rem; font-size: 1rem; }
-  .debt-card p { margin: 0; font-size: .91rem; }
-  .debt-card svg { display: block; width: 100%; height: 44px; margin-top: .6rem; }
-  .flow { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 8px; margin: 1rem 0; }
-  .flow > div { padding: .65rem; border-radius: var(--r-sm); text-align: center; background: var(--bg-2); font-size: .85rem; }
-  .flow b { display: block; color: var(--accent); font-size: .8rem; margin-bottom: .2rem; }
-  .debt-table { width: 100%; border-collapse: collapse; font-size: .9rem; }
-  .debt-table th, .debt-table td { padding: .65rem .55rem; text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); }
-  .debt-table th { color: var(--ink-3); font-size: .8rem; font-weight: 600; }
-  .sources { padding-left: 1.2rem; }
-  .sources li { margin: .45rem 0; font-size: .88rem; }
-  .sources a { overflow-wrap: anywhere; }
-  .chapter-nav { display: flex; flex-wrap: wrap; gap: .45rem; margin: 1.2rem 0 2rem; }
-  .chapter-nav a { color: var(--ink-2); background: var(--bg-2); border: 1px solid var(--line); border-radius: 999px; padding: .32rem .7rem; font-size: .8rem; text-decoration: none; }
-  @media (max-width: 560px) {
-    .debt-grid { grid-template-columns: 1fr; }
-    .flow { grid-template-columns: repeat(2,minmax(0,1fr)); }
-    .debt-table { font-size: .82rem; }
-    .debt-figure { padding: .65rem .55rem; }
-  }
+  .lede { max-width: 700px; }
+  .thread { margin: 2rem 0; padding: 0; list-style: none; counter-reset: step; }
+  .thread li { counter-increment: step; position: relative; padding: 0 0 2.2rem 3.4rem; }
+  .thread li::before { content: counter(step); position: absolute; left: 0; top: .05rem; display: grid; place-items: center;
+    width: 2rem; height: 2rem; border-radius: 50%; color: var(--accent); background: var(--accent-soft);
+    font-size: .9rem; font-weight: 700; }
+  .thread li:not(:last-child)::after { content: ""; position: absolute; left: .96rem; top: 2.25rem; bottom: .15rem; border-left: 1px dashed var(--line); }
+  .thread h2 { display: flex; align-items: center; gap: .5rem; margin: 0 0 .45rem; font-size: 1.18rem; }
+  .thread h2 svg,.case-card h3 svg,.compare b svg { width: 1.35rem; height: 1.35rem; flex: none; color: var(--accent); }
+  .case-card h3 { display: flex; align-items: center; gap: .45rem; }
+  .thread p { margin: 0; }
+  .story-fig { margin: 1rem 0 0; padding: .75rem; border: 1px solid var(--line); border-radius: var(--r); background: var(--card); }
+  .story-fig svg { display: block; width: 100%; height: auto; max-height: 190px; }
+  .story-fig figcaption { margin: .4rem .25rem 0; color: var(--ink-3); font-size: .8rem; }
+  .debt-q { display: inline-grid; place-items: center; width: 1.25rem; height: 1.25rem; margin-left: .25rem;
+    padding: 0; border: 1px solid var(--accent); border-radius: 50%; background: transparent; color: var(--accent);
+    font: inherit; font-size: .76rem; line-height: 1; vertical-align: .08rem; cursor: pointer; }
+  .debt-q:hover, .debt-q:focus-visible { background: var(--accent); color: var(--card); outline: 2px solid color-mix(in srgb,var(--accent) 28%,transparent); }
+  .callout { margin: 1.2rem 0; padding: 1rem 1.1rem; border-left: 3px solid var(--accent); border-radius: var(--r-sm);
+    background: var(--bg-2); }
+  .callout p { margin: 0; }
+  .compare { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 8px; margin: .8rem 0 1.2rem; }
+  .compare div { padding: .7rem; border: 1px solid var(--line); border-radius: var(--r-sm); background: var(--card); font-size: .83rem; }
+  .compare b { display: block; margin-bottom: .2rem; color: var(--accent); }
+  .case-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; margin: .9rem 0; }
+  .case-card { padding: .9rem; border: 1px solid var(--line); border-radius: var(--r-sm); background: var(--card); }
+  .case-card h3 { margin: 0 0 .55rem; font-size: .98rem; }
+  .case-table { width: 100%; border-collapse: collapse; font-size: .82rem; }
+  .case-table th,.case-table td { padding: .4rem .25rem; text-align: left; border-bottom: 1px solid var(--line); }
+  .case-table th { color: var(--ink-3); font-weight: 500; }
+  .case-math { margin: .55rem 0 0; color: var(--ink-3); font-size: .75rem; line-height: 1.55; }
+  .mini-chart { margin: .7rem 0 .25rem; padding: .35rem .45rem; border-radius: var(--r-xs); background: var(--bg-2); }
+  .mini-chart svg { display: block; width: 100%; height: auto; }
+  .big-stat { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; margin: .8rem 0; }
+  .big-stat > div { padding: .75rem; border-radius: var(--r-sm); background: var(--bg-2); text-align: center; }
+  .big-stat b { display: block; color: var(--accent); font-size: 1.2rem; }
+  .big-stat span { color: var(--ink-3); font-size: .75rem; }
+  .rent-note { margin: .75rem 0; color: var(--ink-3); font-size: .8rem; line-height: 1.6; }
+  .source { margin-top: 2rem; color: var(--ink-3); font-size: .82rem; }
+  .source a { overflow-wrap: anywhere; }
+  dialog.debt-dialog { width: min(32rem, calc(100vw - 2rem)); max-width: none; padding: 1.25rem;
+    border: 1px solid var(--line); border-radius: var(--r); color: var(--ink); background: var(--card); box-shadow: var(--shadow-3); }
+  dialog.debt-dialog::backdrop { background: rgb(10 15 25 / .46); backdrop-filter: blur(2px); }
+  .dialog-head { display: flex; align-items: start; justify-content: space-between; gap: 1rem; }
+  .dialog-head h2 { margin: 0; font-size: 1.1rem; }
+  .dialog-body { margin: .8rem 0 1.2rem; color: var(--ink-2); line-height: 1.75; }
+  .dialog-actions { display: flex; justify-content: flex-end; }
+  .dialog-actions button { min-width: 4rem; }
+  @media (max-width: 560px) { .compare { grid-template-columns: repeat(2,minmax(0,1fr)); } .case-grid { grid-template-columns: 1fr; } }
 </style>
 <link rel="stylesheet" href="/assets/statusbar.css">
 <link rel="stylesheet" href="/assets/rail.css">
@@ -48,177 +67,156 @@
 </head>
 <body>
 <main>
-  <p class="back"><a href="../">← 首页</a> · <a href="../story/">一套房的一生</a> · <a href="../housing/">全国房价走势</a></p>
-  <h1 id="top">化债：钱从哪里来，又卡在了哪里</h1>
-  <p class="lede">先记住一句话：<span class="hl">化债不是把欠的钱变没，而是想办法让它还得起、还得稳、账目看得清。</span>这页沿着一笔钱走过的路，讲中国地方债怎么积累、为什么现在要处理，以及普通人会在哪里感受到它。</p>
-  <p class="note">资料核对日期：2026 年 9 月 30 日。中国政策数字采用财政部 2024 年 11 月发布会原文；国际部分讲制度和典型做法，不把不同国家的债务简单排成高低榜。本文用于解释公共财政，不构成投资建议。</p>
-  <nav class="chapter-nav" aria-label="章节导航"><a href="#meaning">化债是什么</a><a href="#origin">钱怎么走</a><a href="#need">为什么要化</a><a href="#roles">谁参与</a><a href="#china">中国怎么做</a><a href="#world">其他经济体</a><a href="#people">普通人</a><a href="#view">怎么看</a></nav>
+  <p class="back"><a href="../">← 首页</a> · <a href="../story/">一套房的一生</a></p>
+  <h1 id="top">化债：一笔钱走过的路</h1>
+  <p class="lede">先看故事：地方借钱建设，盼着未来收入还钱；后来收入慢了、还款到了，于是要给债务重新排时间、降成本。<b>这就是“化债”的主线。</b>需要补充解释的词，点问号。</p>
 
-  <section class="chapter" id="meaning">
-    <h2 data-rail="先把词说清楚">一、先把“化债”说清楚</h2>
-    <p>借钱就是今天先用一笔钱，答应以后还本金和利息。政府借钱可以修路、建水利、补公共服务，也可以填暂时的收支缺口；债务本身不等于坏事，关键看借了多少、拿去做什么、未来靠什么还。</p>
-    <figure class="debt-figure"><svg viewBox="0 0 720 180" role="img" aria-label="债务是今天拿到资金、未来偿还本金和利息的约定">
-      <defs><marker id="d1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--accent)"/></marker></defs>
-      <rect x="18" y="40" width="190" height="92" rx="14" fill="var(--bg-2)" stroke="var(--line)"/><text x="113" y="78" text-anchor="middle" fill="var(--ink)" font-size="20" font-weight="600">今天借到钱</text><text x="113" y="106" text-anchor="middle" fill="var(--ink-3)" font-size="15">先修路、建学校、周转</text>
-      <path d="M222 86H488" stroke="var(--accent)" stroke-width="4" marker-end="url(#d1)"/><text x="355" y="68" text-anchor="middle" fill="var(--ink-3)" font-size="15">形成项目、服务或收入</text>
-      <rect x="512" y="40" width="190" height="92" rx="14" fill="var(--bg-2)" stroke="var(--line)"/><text x="607" y="78" text-anchor="middle" fill="var(--ink)" font-size="20" font-weight="600">未来还本付息</text><text x="607" y="106" text-anchor="middle" fill="var(--ink-3)" font-size="15">用收入、税收或新债偿还</text>
-      <text x="360" y="162" text-anchor="middle" fill="var(--ink-3)" font-size="13">债务把未来的钱提前搬到今天，也把今天的决定留给未来。</text>
-    </svg><figcaption>最重要的判断：项目带来的长期收益，能不能覆盖未来的还款安排？</figcaption></figure>
-    <p>“化债”是“化解债务风险”的简称，通常指把已经难以平稳偿还的债务重新安排：换成利息更低、期限更长、管理更透明的债，或者用预算收入、资产收入逐步偿还。若欠款确实还不上，也可能谈判减记、重组甚至依法破产。</p>
-    <p><b>债务置换会改变债的形式和还款节奏，不会自动让公共部门的总负担消失。</b>比如把一笔利率高、到期急的借款换成低息、长期的政府债券，眼前压力会轻一些，但本金最终仍要还。</p>
-    <figure class="debt-figure"><svg viewBox="0 0 720 170" role="img" aria-label="化债把短期高息的债换成长久低息的债，债务仍然存在">
-      <rect x="24" y="35" width="250" height="92" rx="12" fill="var(--bg-2)" stroke="var(--line)"/><text x="149" y="69" text-anchor="middle" fill="var(--ink)" font-size="18" font-weight="600">旧债：期限短、利息高</text><text x="149" y="99" text-anchor="middle" fill="var(--ink-3)" font-size="14">今年就要还 100 元</text>
-      <path d="M295 81H421" stroke="var(--accent)" stroke-width="4"/><path d="M405 72L423 81L405 90" fill="none" stroke="var(--accent)" stroke-width="4"/>
-      <rect x="446" y="35" width="250" height="92" rx="12" fill="var(--bg-2)" stroke="var(--line)"/><text x="571" y="69" text-anchor="middle" fill="var(--ink)" font-size="18" font-weight="600">新债：期限长、利息低</text><text x="571" y="99" text-anchor="middle" fill="var(--ink-3)" font-size="14">分几年慢慢还，本金还在</text>
-      <text x="360" y="153" text-anchor="middle" fill="var(--accent)" font-size="14" font-weight="600">减轻眼前压力 ≠ 债务凭空消失</text>
-    </svg><figcaption>置换像把信用卡高息欠款转成分期：每月轻松些，但仍需按计划还款。</figcaption></figure>
-  </section>
+  <ol class="thread">
+    <li>
+      <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 10h18M5 10v10m4-10v10m6-10v10m4-10v10M3 20h18M4 7l8-4 8 4v3H4z"/></svg>城市想先把事情建起来</h2>
+      <p>修路、地铁和水利要先花钱，收益却要很多年才慢慢出现；地方因此向银行或债券投资人借钱。<button class="debt-q" data-topic="borrow" aria-label="解释谁借钱、谁出钱">?</button></p>
+      <figure class="story-fig"><svg viewBox="0 0 680 128" role="img" aria-label="银行和债券投资人把今天的钱借给地方，用于现在的建设">
+        <defs><marker id="a1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--accent)"/></marker></defs>
+        <g fill="var(--bg-2)" stroke="var(--line)"><rect x="8" y="27" width="170" height="70" rx="12"/><rect x="255" y="27" width="170" height="70" rx="12"/><rect x="502" y="27" width="170" height="70" rx="12"/></g>
+        <g text-anchor="middle" fill="var(--ink)"><text x="93" y="58" font-size="17">银行 / 投资人</text><text x="93" y="79" font-size="12" fill="var(--ink-3)">今天的钱</text><text x="340" y="58" font-size="17">地方借款</text><text x="340" y="79" font-size="12" fill="var(--ink-3)">先拿来建设</text><text x="587" y="58" font-size="17">公共项目</text><text x="587" y="79" font-size="12" fill="var(--ink-3)">路、水利、园区</text></g>
+        <path d="M185 62H247M432 62H494" stroke="var(--accent)" stroke-width="3" marker-end="url(#a1)"/>
+      </svg><figcaption>借钱把未来的收入提前用到今天。</figcaption></figure>
+    </li>
+    <li>
+      <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 20h18M5 20V9l7-5 7 5v11M9 20v-6h6v6M8 10h.01M16 10h.01"/></svg>借来的钱变成了工程、设备和工资</h2>
+      <p>资金流到施工单位、材料商和工人，最后留下道路、厂房等资产；钱已经花进真实的东西里，不会原样等在账上。<button class="debt-q" data-topic="platform" aria-label="解释地方融资平台">?</button></p>
+      <figure class="story-fig"><svg viewBox="0 0 680 132" role="img" aria-label="资金支付给施工方和工人，形成道路等资产和工资收入">
+        <rect x="12" y="22" width="150" height="84" rx="10" fill="var(--bg-2)" stroke="var(--line)"/><text x="87" y="57" text-anchor="middle" fill="var(--ink)" font-size="16">建设资金</text><text x="87" y="81" text-anchor="middle" fill="var(--ink-3)" font-size="12">借来的钱</text>
+        <path d="M168 64H221M458 64H510" stroke="var(--accent)" stroke-width="3"/><path d="M213 57L223 64L213 71M502 57L512 64L502 71" fill="none" stroke="var(--accent)" stroke-width="3"/>
+        <g fill="var(--bg-2)" stroke="var(--line)"><rect x="228" y="22" width="220" height="84" rx="10"/><rect x="518" y="22" width="150" height="84" rx="10"/></g><text x="338" y="56" text-anchor="middle" fill="var(--ink)" font-size="16">施工方、材料商、工人</text><text x="338" y="81" text-anchor="middle" fill="var(--ink-3)" font-size="12">收到工程款和工资</text><text x="593" y="56" text-anchor="middle" fill="var(--ink)" font-size="16">道路、园区</text><text x="593" y="81" text-anchor="middle" fill="var(--ink-3)" font-size="12">建成的资产</text>
+      </svg><figcaption>借款流向了建设，也流进了企业和家庭的收入。</figcaption></figure>
+    </li>
+    <li>
+      <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 6v12m4-8H9.5a2 2 0 0 0 0 4h5a2 2 0 0 1 0 4H8"/></svg>原计划：用未来收入慢慢还</h2>
+      <p>地方可以靠税收、项目回款和土地出让收入偿还。房地产景气时，开发商买地、施工和销售都更活跃，土地收入也曾成为不少地方的重要财源。<button class="debt-q" data-topic="land" aria-label="解释土地收入和房地产的关系">?</button></p>
+      <figure class="story-fig"><svg viewBox="0 0 680 130" role="img" aria-label="房地产交易带来土地收入和相关就业税收，成为部分地方偿债来源">
+        <g fill="var(--bg-2)" stroke="var(--line)"><rect x="8" y="28" width="160" height="72" rx="10"/><rect x="260" y="28" width="160" height="72" rx="10"/><rect x="512" y="28" width="160" height="72" rx="10"/></g>
+        <g text-anchor="middle" fill="var(--ink)"><text x="88" y="59" font-size="16">卖地 / 建房</text><text x="88" y="80" font-size="12" fill="var(--ink-3)">房地产活跃</text><text x="340" y="59" font-size="16">收入与就业</text><text x="340" y="80" font-size="12" fill="var(--ink-3)">企业、居民、地方</text><text x="592" y="59" font-size="16">未来偿债</text><text x="592" y="80" font-size="12" fill="var(--ink-3)">税收、土地收入</text></g>
+        <path d="M174 64H252M426 64H504" stroke="var(--accent)" stroke-width="3"/>
+      </svg><figcaption>房地产和地方财政通过土地、就业与税收连在一起。</figcaption></figure>
+    </li>
+    <li>
+      <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 5v14h16M7 9l4 3 3-2 5 5"/><path d="M15 15h4v-4"/></svg>转折：收入慢下来了，还款日却没变</h2>
+      <p>房屋销售和土地交易降温后，部分地方收入变少、项目回款变慢，但借款仍要按合同还；如果只能不断借新钱还旧钱，利息会继续占用未来预算。<button class="debt-q" data-topic="cashflow" aria-label="解释现金流和滚动借债">?</button></p>
+      <figure class="story-fig"><svg viewBox="0 0 680 142" role="img" aria-label="收入下降而债务仍到期，形成现金缺口，不处理会拖欠款项或继续借新还旧">
+        <g fill="var(--bg-2)" stroke="var(--line)"><rect x="8" y="22" width="180" height="72" rx="10"/><rect x="250" y="22" width="180" height="72" rx="10"/><rect x="492" y="22" width="180" height="72" rx="10"/></g>
+        <g text-anchor="middle" fill="var(--ink)"><text x="98" y="53" font-size="16">收入减少</text><text x="98" y="75" font-size="12" fill="var(--ink-3)">税、卖地、回款</text><text x="340" y="53" font-size="16">旧债到期</text><text x="340" y="75" font-size="12" fill="var(--ink-3)">本金和利息</text><text x="582" y="53" font-size="16">现金缺口</text><text x="582" y="75" font-size="12" fill="var(--ink-3)">钱不够准时还</text></g>
+        <path d="M194 58H242M436 58H484" stroke="var(--neg)" stroke-width="3"/><text x="340" y="128" text-anchor="middle" fill="var(--ink-3)" font-size="13">风险可能传给施工企业、供应商、银行和公共服务</text>
+      </svg><figcaption>收入下降，不会让合同上的还款日自动延期。</figcaption></figure>
+    </li>
+    <li>
+      <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 8h14l-3-3m5 11H6l3 3"/><path d="M18 8l2 2-2 2M6 16l-2-2 2-2"/></svg>化债：给旧债换个更能承受的还法</h2>
+      <p>常见做法是把利息高、到期急的隐性债务，置换成期限较长、利息较低、纳入预算管理的政府债券。债务仍在，只是还款压力降低、账目更清楚。<button class="debt-q" data-topic="methods" aria-label="查看化债方式">?</button></p>
+      <figure class="story-fig"><svg viewBox="0 0 680 137" role="img" aria-label="旧的短期高息债务被置换为期限较长、利息较低的显性债务，债务并未消失">
+        <rect x="12" y="23" width="230" height="78" rx="11" fill="var(--bg-2)" stroke="var(--line)"/><text x="127" y="56" text-anchor="middle" fill="var(--ink)" font-size="17">旧债</text><text x="127" y="80" text-anchor="middle" fill="var(--ink-3)" font-size="13">高息 · 到期急 · 难看清</text>
+        <path d="M260 62H416" stroke="var(--accent)" stroke-width="3"/><path d="M405 54L419 62L405 70" fill="none" stroke="var(--accent)" stroke-width="3"/><text x="340" y="48" text-anchor="middle" fill="var(--ink-3)" font-size="12">置换 / 展期</text>
+        <rect x="438" y="23" width="230" height="78" rx="11" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="553" y="56" text-anchor="middle" fill="var(--ink)" font-size="17">新债</text><text x="553" y="80" text-anchor="middle" fill="var(--ink-3)" font-size="13">低息 · 时间长 · 纳入预算</text>
+        <text x="340" y="126" text-anchor="middle" fill="var(--accent)" font-size="14" font-weight="600">换了还款节奏，不是欠款消失</text>
+      </svg><figcaption>像把高息欠款改成长期分期：喘口气，之后仍要还。</figcaption></figure>
+    </li>
+    <li>
+      <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 3h10l4 4v14H5zM15 3v5h4M8 12h8M8 16h8"/></svg>中国的安排：先缓解地方的旧账压力</h2>
+      <p>2024 年公布的方案，包含 6 万亿元地方债限额用于置换，以及五年合计 4 万亿元专项债资源用于化债。它给地方争取时间、减少利息，但不会自动带来新收入，也不等于债务被免除。<button class="debt-q" data-topic="china" aria-label="查看中国化债政策数字与口径">?</button></p>
+      <figure class="story-fig"><svg viewBox="0 0 680 120" role="img" aria-label="中国2024年化债方案由三年六万亿元债务限额置换和五年四万亿元专项债资源组成">
+        <rect x="38" y="18" width="274" height="74" rx="11" fill="var(--bg-2)" stroke="var(--line)"/><rect x="368" y="18" width="274" height="74" rx="11" fill="var(--bg-2)" stroke="var(--line)"/>
+        <text x="175" y="50" text-anchor="middle" fill="var(--accent)" font-size="25" font-weight="700">6 万亿元</text><text x="175" y="75" text-anchor="middle" fill="var(--ink-3)" font-size="13">三年置换限额</text><text x="505" y="50" text-anchor="middle" fill="var(--accent)" font-size="25" font-weight="700">4 万亿元</text><text x="505" y="75" text-anchor="middle" fill="var(--ink-3)" font-size="13">五年专项债资源</text>
+        <text x="340" y="113" text-anchor="middle" fill="var(--ink-3)" font-size="12">两种政策工具，不能当作一次性发出 10 万亿现金</text>
+      </svg><figcaption>数字依据财政部 2024 年 11 月发布会；详情和当时的测算请点问号。</figcaption></figure>
+    </li>
+    <li>
+      <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 11 12 4l9 7M5 10v10h14V10M9 20v-6h6v6"/><circle cx="18" cy="5" r="2"/></svg>最后，影响才传到普通人</h2>
+      <p>如果利息省下来用于支付工程款、保障服务，企业和居民可能受益；如果未来预算长期拿来还债，或化债伴随支出收紧，公共服务和地方订单也可能受影响。生活拮据还和就业、收入、家庭负债、房价等有关，不能只归因于化债。<button class="debt-q" data-topic="people" aria-label="展开化债对普通人和房价的影响">?</button></p>
+      <figure class="story-fig"><svg viewBox="0 0 680 132" role="img" aria-label="化债可能改善工程款和公共服务，也可能压缩未来预算；房地产通过地方收入、就业和家庭资产产生影响">
+        <rect x="233" y="12" width="214" height="42" rx="10" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="340" y="39" text-anchor="middle" fill="var(--ink)" font-size="16">化债后的预算空间</text>
+        <path d="M275 56L150 91M340 56V91M405 56L530 91" stroke="var(--line)" stroke-width="2.5"/>
+        <g fill="var(--bg-2)" stroke="var(--line)"><rect x="20" y="88" width="220" height="36" rx="9"/><rect x="230" y="88" width="220" height="36" rx="9"/><rect x="440" y="88" width="220" height="36" rx="9"/></g><g text-anchor="middle" fill="var(--ink)" font-size="13"><text x="130" y="111">企业订单和工资</text><text x="340" y="111">公共服务</text><text x="550" y="111">未来偿债支出</text></g>
+      </svg><figcaption>关键不是“化债”两个字，而是省下的钱用在哪里、未来的收入有没有跟上。</figcaption></figure>
+    </li>
+  </ol>
 
-  <section class="chapter" id="origin">
-    <h2 data-rail="钱是怎么流动的">二、钱是怎么流动的：从建设热潮到还款压力</h2>
-    <p>地方要发展，常常先修路、建地铁、园区和供水设施。地方政府可以发行依法纳入预算的政府债券；地方融资平台则是地方国有企业，过去也常通过银行贷款、债券等方式筹钱，替地方承担建设或融资任务。</p>
-    <p>借来的钱付给施工单位、材料商、设备商和员工，也可能流向买地、建房和配套设施。建成后留下的是路、桥、厂房、土地整理等资产；钱已经变成了工程、设备和工资，不会原封不动躺在某个账户里。</p>
-    <figure class="debt-figure"><svg viewBox="0 0 760 255" role="img" aria-label="资金从储户和投资人经银行或债券流向地方项目，再转化为工程资产、就业收入和土地收入">
-      <defs><marker id="d2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--accent)"/></marker></defs>
-      <g fill="var(--bg-2)" stroke="var(--line)"><rect x="12" y="18" width="155" height="63" rx="10"/><rect x="211" y="18" width="155" height="63" rx="10"/><rect x="410" y="18" width="155" height="63" rx="10"/><rect x="609" y="18" width="139" height="63" rx="10"/><rect x="211" y="158" width="155" height="63" rx="10"/><rect x="410" y="158" width="155" height="63" rx="10"/><rect x="609" y="158" width="139" height="63" rx="10"/></g>
-      <g fill="var(--ink)" font-size="15" text-anchor="middle"><text x="89" y="46">居民存款</text><text x="89" y="67" fill="var(--ink-3)" font-size="12">和投资资金</text><text x="288" y="46">银行 / 债券市场</text><text x="288" y="67" fill="var(--ink-3)" font-size="12">提供融资</text><text x="487" y="46">地方政府 / 平台</text><text x="487" y="67" fill="var(--ink-3)" font-size="12">借钱并组织项目</text><text x="678" y="46">施工与土地</text><text x="678" y="67" fill="var(--ink-3)" font-size="12">拿到资金</text><text x="288" y="186">道路、园区、住房</text><text x="288" y="207" fill="var(--ink-3)" font-size="12">变成实体资产</text><text x="487" y="186">工资、订单、税收</text><text x="487" y="207" fill="var(--ink-3)" font-size="12">形成经济活动</text><text x="678" y="186">土地出让收入</text><text x="678" y="207" fill="var(--ink-3)" font-size="12">曾是重要财源</text></g>
-      <g stroke="var(--accent)" stroke-width="3" marker-end="url(#d2)"><path d="M169 49H205"/><path d="M368 49H404"/><path d="M567 49H603"/><path d="M678 85V143"/><path d="M603 190H571"/><path d="M404 190H372"/></g>
-      <path d="M288 154V106" stroke="var(--ink-3)" stroke-width="2" stroke-dasharray="5 5" marker-end="url(#d2)"/><text x="310" y="133" fill="var(--ink-3)" font-size="11">项目回款</text>
-    </svg><figcaption>一笔贷款会沿着很多人的账户走，最后变成资产、收入和服务；债务到期时，钱要从未来财政收入或项目回款里回来。</figcaption></figure>
-    <p>如果土地卖得顺、房屋卖得动、项目带来税收和就业，资金就容易继续周转。若土地收入下滑、项目回款慢、税收低于预期，而债务本金和利息到了约定日期，原本“未来慢慢回钱”的计划就会遇到现金缺口。</p>
-    <p>于是地方可能再借一笔新钱还旧钱，短期避免逾期，但若新债利息更高、到期更近，雪球会越滚越难。房地产调整会通过卖地收入、开发投资、建筑就业、土地抵押价值等渠道加重部分地方的压力，但各地依赖土地的程度和债务状况差异很大。</p>
-    <figure class="debt-figure"><svg viewBox="0 0 700 195" role="img" aria-label="收入减少、旧债到期和高息使地方出现现金缺口，新借还旧债会滚动扩大压力">
-      <g fill="var(--bg-2)" stroke="var(--line)"><rect x="12" y="25" width="190" height="65" rx="10"/><rect x="255" y="25" width="190" height="65" rx="10"/><rect x="498" y="25" width="190" height="65" rx="10"/></g>
-      <g text-anchor="middle" fill="var(--ink)"><text x="107" y="53" font-size="17">土地 / 税收收入↓</text><text x="107" y="74" font-size="12" fill="var(--ink-3)">可用现金变少</text><text x="350" y="53" font-size="17">旧债到期</text><text x="350" y="74" font-size="12" fill="var(--ink-3)">本息仍要按约支付</text><text x="593" y="53" font-size="17">现金缺口</text><text x="593" y="74" font-size="12" fill="var(--ink-3)">项目 / 工资款可能被拖</text></g>
-      <path d="M204 58H247M447 58H490" stroke="var(--accent)" stroke-width="3"/>
-      <path d="M590 101C590 160 110 160 110 101" fill="none" stroke="var(--ink-3)" stroke-width="2.5" stroke-dasharray="6 5"/><text x="350" y="151" text-anchor="middle" font-size="14" fill="var(--ink-3)">再借新钱填旧缺口：拖延眼前到期，但可能留下更重的未来偿还任务</text>
-      <path d="M111 103L103 91M111 103L123 101" stroke="var(--ink-3)" stroke-width="2"/>
-    </svg><figcaption>债务风险常常不是“账面数字突然出现”，而是到期日的现金流接不上。</figcaption></figure>
-  </section>
+  <h2 id="example">把主线落到一个人的账本：月薪 1 万元，工作一年</h2>
+  <p>先用房租看每月压力，再用整篮子生活消费计算长期购买力。示例假设税前月薪 10,000 元、到手 8,500 元，月租 3,000 元，其他支出 2,500 元。<button class="debt-q" data-topic="example" aria-label="查看年轻人收入和支出假设">?</button></p>
+  <div class="case-grid">
+    <article class="case-card">
+      <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 10h18M5 10v10m4-10v10m6-10v10m4-10v10M3 20h18M4 7l8-4 8 4v3H4z"/></svg>银行账户：每月留下 3,000 元</h3>
+      <table class="case-table"><thead><tr><th>一年里的变化</th><th>金额</th></tr></thead><tbody>
+        <tr><td>期初余额（假设）</td><td>20,000 元</td></tr>
+        <tr><td>工资到手：8,500 × 12</td><td>+102,000 元</td></tr>
+        <tr><td>房租：3,000 × 12</td><td>−36,000 元</td></tr>
+        <tr><td>其他支出：2,500 × 12</td><td>−30,000 元</td></tr>
+        <tr><td><b>期末余额，不计利息</b></td><td><b>56,000 元</b></td></tr>
+      </tbody></table>
+      <p class="case-math">算式：20,000 + (8,500 − 3,000 − 2,500) × 12 = 56,000 元。房租是这份假设预算里最大的单项支出。</p>
+    </article>
+    <article class="case-card">
+      <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 8h16l-1 12H5L4 8zM8 8a4 4 0 0 1 8 0M8 13h.01M12 13h.01M16 13h.01"/></svg>购买力：一篮子生活消费</h3>
+      <table class="case-table"><thead><tr><th>同样一篮子东西</th><th>需要的钱</th></tr></thead><tbody>
+        <tr><td>2014 年价格水平</td><td>100 元</td></tr>
+        <tr><td>2024 年价格水平</td><td>约 116.93 元</td></tr>
+        <tr><td>固定到手月薪 8,500 元</td><td>相当于约 7,270 元</td></tr>
+      </tbody></table>
+      <figure class="mini-chart"><svg viewBox="0 0 360 88" role="img" aria-label="同一消费篮子从2014年的100元涨到2024年的约116.93元">
+        <text x="4" y="25" fill="var(--ink-2)" font-size="12">2014</text><rect x="54" y="11" width="230" height="20" rx="6" fill="var(--line)"/><text x="294" y="26" fill="var(--ink-2)" font-size="12">¥100</text>
+        <text x="4" y="62" fill="var(--ink-2)" font-size="12">2024</text><rect x="54" y="48" width="269" height="20" rx="6" fill="var(--accent)"/><text x="330" y="63" fill="var(--accent)" font-size="11">¥117</text>
+        <text x="54" y="84" fill="var(--ink-3)" font-size="10">标尺：同一篮子居民消费品与服务</text>
+      </svg></figure>
+      <p class="case-math">国家统计局 CPI 推算：2015—2024 年累计约 +16.9%；同样的 8,500 元，购买力约少 14.5%。<button class="debt-q" data-topic="inflation" aria-label="展开CPI计算方法">?</button></p>
+    </article>
+  </div>
+  <p class="rent-note"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--accent)" stroke-width="1.8" aria-hidden="true" style="vertical-align:-4px"><path d="M3 11 12 4l9 7M5 10v10h14V10M9 20v-6h6v6"/></svg> 房租确实占预算大头，但不保证年年涨：全国 2024 年 12 月租赁房房租同比下降 0.3%；全国 2025 年全年 CPI 与上年持平。最近价格平稳或回落，不会把过去累积的涨幅自动还原。<button class="debt-q" data-topic="rent" aria-label="展开房租数据和局部涨跌说明">?</button></p>
+  <figure class="story-fig"><svg viewBox="0 0 680 128" role="img" aria-label="一千名月薪一万元的年轻人每人每月存三千元，一年可形成三千六百万元存款">
+    <g fill="var(--bg-2)" stroke="var(--line)"><rect x="12" y="24" width="176" height="78" rx="10"/><rect x="252" y="24" width="176" height="78" rx="10"/><rect x="492" y="24" width="176" height="78" rx="10"/></g>
+    <g text-anchor="middle" fill="var(--ink)"><text x="100" y="54" font-size="16">1,000 人</text><text x="100" y="78" fill="var(--ink-3)" font-size="12">每人每月存 3,000 元</text><text x="340" y="54" font-size="16">银行存款增加</text><text x="340" y="78" fill="var(--ink-3)" font-size="12">合计每月 300 万元</text><text x="580" y="54" fill="var(--accent)" font-size="20" font-weight="700">3,600 万元</text><text x="580" y="78" fill="var(--ink-3)" font-size="12">一年新增存款</text></g>
+    <path d="M194 63H244M434 63H484" stroke="var(--accent)" stroke-width="3"/><text x="340" y="120" text-anchor="middle" fill="var(--ink-3)" font-size="11">示例资金汇集 ≠ 银行把这 3,600 万逐笔贷给某一家企业</text>
+  </svg><figcaption>很多人的储蓄可以成为银行资金来源的一部分；企业能借多少，还取决于银行的资本、风险判断和借款需求。</figcaption></figure>
+  <div class="big-stat" aria-label="人民银行公布的2024年金融数据"><div><b>+14.26 万亿元</b><span>2024 年住户人民币存款增加</span></div><div><b>+18.09 万亿元</b><span>2024 年人民币贷款增加</span></div></div>
+  <p>这是一组宏观总量，不是同一批人的存款被逐笔交给某家企业；银行贷款也会在发放时创造新的存款。<button class="debt-q" data-topic="banking" aria-label="查看银行怎样汇集存款并发放贷款">?</button> 想看书的解释框架？<button class="debt-q" data-topic="books" aria-label="查看参考书目">?</button></p>
 
-  <section class="chapter" id="need">
-    <h2 data-rail="为什么需要化债">三、为什么需要化债：一个小学生也能懂的例子</h2>
-    <p>小明家借了 100 元买一台小推车，每周靠卖水果赚 20 元；本来可以慢慢还。后来生意变差，家里只赚 5 元，但邻居约好这周就要还 50 元，小明家手里的钱不够。</p>
-    <p>如果邻居愿意把 50 元改成分 10 周还、少收一点利息，小明家就不用为了这周还钱停掉生意；但欠款还在。如果小推车一直赚不到钱、全家收入都不够，即使一再延后，问题仍然存在，最后要想办法减少债务、卖掉资产，或者请债权人一起承担损失。</p>
-    <figure class="debt-figure"><svg viewBox="0 0 720 190" role="img" aria-label="小明家收入不足以偿还短期欠款，债务置换延长还款可救急但仍须修复收入和债务规模">
-      <rect x="22" y="26" width="204" height="105" rx="12" fill="var(--bg-2)" stroke="var(--line)"/><text x="124" y="57" text-anchor="middle" fill="var(--ink)" font-size="18" font-weight="600">每周赚 5 元</text><text x="124" y="84" text-anchor="middle" fill="var(--ink-3)" font-size="14">下周却要还 50 元</text><text x="124" y="110" text-anchor="middle" fill="var(--accent)" font-size="13">钱不够，生意也会停</text>
-      <path d="M246 80H466" stroke="var(--accent)" stroke-width="3"/><path d="M450 72L466 80L450 88" fill="none" stroke="var(--accent)" stroke-width="3"/><text x="356" y="63" text-anchor="middle" fill="var(--ink-3)" font-size="13">延长期限、降低利息</text>
-      <rect x="490" y="26" width="204" height="105" rx="12" fill="var(--bg-2)" stroke="var(--line)"/><text x="592" y="57" text-anchor="middle" fill="var(--ink)" font-size="18" font-weight="600">每周还 5 元</text><text x="592" y="84" text-anchor="middle" fill="var(--ink-3)" font-size="14">喘口气，继续做生意</text><text x="592" y="110" text-anchor="middle" fill="var(--accent)" font-size="13">欠款仍需还</text>
-      <text x="360" y="166" text-anchor="middle" fill="var(--ink-2)" font-size="14">若收入长期只有 5 元，光改还款日期不够：还得让生意恢复或减少欠款。</text>
-    </svg><figcaption>这就是为什么化债既要“救急”，也要处理债务最终靠什么偿还。</figcaption></figure>
-    <p>政府的“水果生意”可以理解为税收、土地收入、公共项目回款和地方国企经营收入。财政收入短期不足、但未来能覆盖债务时，延长时间、降低利率可能有用；未来收入也明显不够时，只换债券并没有根治。</p>
-    <p>不处理，可能出现拖欠工程款、供应商和员工拿不到钱、银行坏账增加、公共服务和投资被挤压，甚至局部金融风险互相传递。及时、透明地调整债务，是为了避免“大家都等着收钱，结果谁也收不到”。</p>
-    <figure class="debt-figure"><svg viewBox="0 0 720 170" role="img" aria-label="不化债会沿着政府欠款传到施工企业、员工、银行和公共服务">
-      <defs><marker id="d3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--neg)"/></marker></defs>
-      <g fill="var(--bg-2)" stroke="var(--line)"><rect x="10" y="44" width="150" height="72" rx="10"/><rect x="195" y="44" width="150" height="72" rx="10"/><rect x="380" y="44" width="150" height="72" rx="10"/><rect x="565" y="44" width="145" height="72" rx="10"/></g>
-      <g text-anchor="middle" fill="var(--ink)"><text x="85" y="75" font-size="16">地方欠款</text><text x="85" y="98" font-size="12" fill="var(--ink-3)">工程款晚到</text><text x="270" y="75" font-size="16">企业周转紧</text><text x="270" y="98" font-size="12" fill="var(--ink-3)">少买材料 / 招人</text><text x="455" y="75" font-size="16">员工收入受影响</text><text x="455" y="98" font-size="12" fill="var(--ink-3)">少消费、少招聘</text><text x="637" y="75" font-size="16">银行风险上升</text><text x="637" y="98" font-size="12" fill="var(--ink-3)">贷款更谨慎</text></g>
-      <g stroke="var(--neg)" stroke-width="2.5" marker-end="url(#d3)"><path d="M162 80H189"/><path d="M347 80H374"/><path d="M532 80H559"/></g>
-      <text x="360" y="148" text-anchor="middle" fill="var(--ink-3)" font-size="13">债务问题可能从一张资产负债表，传到许多企业和家庭的现金流。</text>
-    </svg><figcaption>这不是每个地方都会发生的必然结果，而是风险没有及时处理时可能出现的传导链。</figcaption></figure>
-  </section>
+  <h2>各地做法不完全一样</h2>
+  <p>相同点是重新安排债务的时间与成本；不同点是财政和货币制度。<button class="debt-q" data-topic="world" aria-label="展开中美日欧化债策略比较">?</button></p>
+  <div class="compare" aria-label="各地债务处理方式"><div><b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 10h18M5 10v10m4-10v10m6-10v10m4-10v10M3 20h18M4 7l8-4 8 4v3H4z"/></svg>中国</b>地方债置换、纳入预算</div><div><b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 6v12m4-8H9.5a2 2 0 0 0 0 4h5a2 2 0 0 1 0 4H8"/></svg>美国</b>滚动发国债、财政与央行分工</div><div><b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M15 8c-.6-.7-1.5-1-3-1-3.2 0-3.2 3 0 3s3.2 3 0 3c-1.4 0-2.4-.3-3-1M12 5v14"/></svg>日本</b>长期发债、央行买债调节</div><div><b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 5h16v14H4zM8 9h8M8 13h8M8 17h4"/><circle cx="18" cy="18" r="3" fill="var(--card)"/></svg>欧洲</b>央行工具、共同救助贷款</div></div>
 
-  <section class="chapter" id="roles">
-    <h2 data-rail="参与方有哪些">四、化债的参与方：谁欠、谁借、谁最终出钱</h2>
-    <p>地方政府是预算债务的借款人和政策责任方；地方融资平台是企业，拥有资产和经营性债务，但平台债务不应一概当作法定政府债。债务归属、政府是否承担偿还责任，要看法律关系、合同和实际安排。</p>
-    <p>债权人包括银行、债券投资者、信托等金融机构、工程承包商和供应商。中央政府、人大和财政部门负责规则、债务额度与转移支付；地方人大和政府编预算、安排偿还；银行与债券持有人参与续贷、置换和谈判。</p>
-    <figure class="debt-figure"><svg viewBox="0 0 720 220" role="img" aria-label="化债涉及地方政府和融资平台作为借款人、银行债券持有人和供应商作为债权人，以及中央地方财政监管机构">
-      <rect x="247" y="77" width="226" height="72" rx="14" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="360" y="106" text-anchor="middle" fill="var(--ink)" font-size="18" font-weight="600">债务人</text><text x="360" y="129" text-anchor="middle" fill="var(--ink-3)" font-size="13">地方政府 / 融资平台</text>
-      <g fill="var(--bg-2)" stroke="var(--line)"><rect x="16" y="22" width="170" height="62" rx="10"/><rect x="534" y="22" width="170" height="62" rx="10"/><rect x="16" y="151" width="170" height="62" rx="10"/><rect x="534" y="151" width="170" height="62" rx="10"/></g>
-      <g text-anchor="middle" fill="var(--ink)"><text x="101" y="49" font-size="15">银行</text><text x="101" y="69" font-size="12" fill="var(--ink-3)">贷款债权人</text><text x="619" y="49" font-size="15">债券投资者</text><text x="619" y="69" font-size="12" fill="var(--ink-3)">持有债券</text><text x="101" y="177" font-size="15">工程商 / 供应商</text><text x="101" y="197" font-size="12" fill="var(--ink-3)">可能有应收款</text><text x="619" y="177" font-size="15">中央 / 地方财政</text><text x="619" y="197" font-size="12" fill="var(--ink-3)">定规则、调预算</text></g>
-      <g stroke="var(--ink-3)" stroke-width="2"><path d="M190 72L247 91"/><path d="M530 72L473 91"/><path d="M190 162L247 135"/><path d="M530 162L473 135"/></g>
-    </svg><figcaption>债务谈判不是两个人之间的事：政府、金融机构、投资人、供应商和公众都可能承担不同影响。</figcaption></figure>
-    <p>普通人也在链条里：储户的钱通过银行体系成为贷款来源，养老基金和理财产品可能持有债券，纳税人支持预算收入，市民使用债务建成的交通和公共设施。谁最终承担成本，取决于债务如何重组、财政如何安排以及项目有没有创造价值。</p>
-  </section>
-
-  <section class="chapter" id="china">
-    <h2 data-rail="中国现在怎么做">五、中国现在怎么做：先把高息短债换成规范长债</h2>
-    <p>中国地方债的背景之一，是地方承担了很多建设和公共服务任务，而税收、土地出让收入和上级转移支付并不总在同一时间到位。为推进建设，一些地方也借助融资平台融资；平台债务如果依赖地方财政支持，就可能形成“账外但要设法偿还”的隐性债务。</p>
-    <p>财政部在 2024 年 11 月 8 日发布会上公布：2023 年底经甄别的地方隐性债务余额为 14.3 万亿元；新增 6 万亿元地方政府债务限额，2024—2026 年每年 2 万亿元，用于置换存量隐性债务。另从 2024 年起连续五年每年安排 8000 亿元新增专项债资源用于化债，合计 4 万亿元。</p>
-    <figure class="debt-figure"><svg viewBox="0 0 720 245" role="img" aria-label="2024年政策包含6万亿元三年置换额度、5年累计4万亿元专项债用于化债，以及棚改旧债2万亿元按原合同偿还">
-      <g fill="var(--bg-2)" stroke="var(--line)"><rect x="24" y="25" width="206" height="142" rx="13"/><rect x="257" y="25" width="206" height="142" rx="13"/><rect x="490" y="25" width="206" height="142" rx="13"/></g>
-      <g text-anchor="middle" fill="var(--ink)"><text x="127" y="64" font-size="28" font-weight="700" fill="var(--accent)">6 万亿元</text><text x="127" y="94" font-size="16" font-weight="600">新增债务限额</text><text x="127" y="123" font-size="13" fill="var(--ink-3)">2024—2026 年分三年安排</text><text x="360" y="64" font-size="28" font-weight="700" fill="var(--accent)">4 万亿元</text><text x="360" y="94" font-size="16" font-weight="600">新增专项债资源</text><text x="360" y="123" font-size="13" fill="var(--ink-3)">连续五年，每年 8000 亿元</text><text x="593" y="64" font-size="28" font-weight="700" fill="var(--accent)">2 万亿元</text><text x="593" y="94" font-size="16" font-weight="600">棚改旧债安排</text><text x="593" y="123" font-size="13" fill="var(--ink-3)">2029 年以后到期，按原合同还</text></g>
-      <text x="360" y="205" text-anchor="middle" fill="var(--ink)" font-size="16" font-weight="600">三类安排有不同口径，不要把它们理解成“政府直接发了 12 万亿现金”</text><text x="360" y="229" text-anchor="middle" fill="var(--ink-3)" font-size="13">债券额度 / 专项债资金 / 延后偿还安排，不等于一次性新增支出</text>
-    </svg><figcaption>6 万亿是债务限额置换；4 万亿是新增专项债中连续多年安排用于化债的资金；2 万亿是按原合同偿还的棚改隐性债务。不要把三项混成一个现金包。</figcaption></figure>
-    <p>财政部当时测算，2028 年前地方需要自行消化的隐性债务总额可从 14.3 万亿元降到 2.3 万亿元；发布会还估算置换后五年累计可节约利息支出约 6000 亿元。这是政策出台时的官方测算，不等于今天已全部完成，也不保证每个地区实际效果一样。</p>
-    <p><b>它在整个过程中的角色，是“给时间、降利息、把账摆到台面上”。</b>它让地方不必把太多当期现金拿去还急债，但地方仍需有可持续收入、停止新增不规范举债，并把腾出的预算空间用于有回报的建设和民生。</p>
-    <figure class="debt-figure"><svg viewBox="0 0 700 190" role="img" aria-label="债务置换让高息隐性债变为低息透明法定债，同时创造偿债缓冲期，但不能替代新增收入和项目治理">
-      <rect x="22" y="30" width="197" height="90" rx="12" fill="var(--bg-2)" stroke="var(--line)"/><text x="120" y="64" text-anchor="middle" fill="var(--ink)" font-size="17" font-weight="600">高息隐性债</text><text x="120" y="92" text-anchor="middle" fill="var(--ink-3)" font-size="13">急着还、账不够透明</text>
-      <path d="M238 75H455" stroke="var(--accent)" stroke-width="3"/><path d="M439 67L455 75L439 83" fill="none" stroke="var(--accent)" stroke-width="3"/><text x="348" y="57" text-anchor="middle" fill="var(--ink-3)" font-size="12">发行地方债置换</text>
-      <rect x="474" y="30" width="204" height="90" rx="12" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="576" y="64" text-anchor="middle" fill="var(--ink)" font-size="17" font-weight="600">低息显性债</text><text x="576" y="92" text-anchor="middle" fill="var(--ink-3)" font-size="13">期限更长、纳入预算</text>
-      <text x="350" y="153" text-anchor="middle" fill="var(--ink-2)" font-size="14">还要继续做：控制新债 · 提高收入质量 · 清理低效项目 · 保障基本公共服务</text>
-    </svg><figcaption>若只换债、不改善财政收入和项目回报，压力可能只是被推到更远的年份。</figcaption></figure>
-    <p>化债常见方式可以放在四个盒子里：<b>换</b>——债务置换、再融资；<b>缓</b>——展期、降息、调整还款节奏；<b>还</b>——用预算收入、项目回款或盘活资产偿债；<b>减</b>——在确实无力偿还时与债权人重组、减记，或依法破产。不同主体能用的工具不同，政府法定债和企业债不能混为一谈。</p>
-    <div class="flow" aria-label="化债方式"><div><b>换</b>高息短债 → 低息长债</div><div><b>缓</b>延长时间、降低当期还款</div><div><b>还</b>预算收入、资产和项目回款</div><div><b>减</b>协商重组、依法承担损失</div></div>
-  </section>
-
-  <section class="chapter" id="world">
-    <h2 data-rail="其他经济体怎么做">六、中国、美国、日本、欧洲：都在管债，但工具不一样</h2>
-    <p>国家之间不能只看债务数字：谁借的钱、借的是什么币种、谁持有、利率多少、政府能否征税、央行如何运作，都很重要。下面说的是常见政策路径，不是说中国应该照搬某个国家。</p>
-    <div class="debt-grid">
-      <article class="debt-card"><h3>中国：置换 + 预算约束</h3><p>把部分地方隐性债换成纳入预算的地方政府债券，延长期限、降低利息；同时要求识别存量、遏制新增隐性债，并配合财政转移和专项债安排。</p><svg viewBox="0 0 180 44" role="img" aria-label="旧债置换为低息长债"><path d="M8 22H68M112 22H172" stroke="var(--line)" stroke-width="5"/><rect x="8" y="10" width="58" height="24" rx="7" fill="var(--bg-2)" stroke="var(--ink-3)"/><rect x="114" y="10" width="58" height="24" rx="7" fill="var(--accent-soft)" stroke="var(--accent)"/><path d="M76 22H103M96 15L104 22L96 29" fill="none" stroke="var(--accent)" stroke-width="3"/></svg></article>
-      <article class="debt-card"><h3>美国：持续发国债 + 财政与央行分工</h3><p>联邦政府主要通过国债融资和滚动续发来管理到期债务；国会决定税收、支出和债务上限。美联储曾在危机时买入国债稳定市场，但它不是财政部的债务豁免工具。</p><svg viewBox="0 0 180 44" role="img" aria-label="美国财政部发债、投资人购买并在到期时续发"><path d="M20 22H160" stroke="var(--line)" stroke-width="4"/><g fill="var(--accent)"><circle cx="28" cy="22" r="8"/><circle cx="90" cy="22" r="8"/><circle cx="152" cy="22" r="8"/></g><text x="28" y="42" text-anchor="middle" fill="var(--ink-3)" font-size="9">发债</text><text x="90" y="42" text-anchor="middle" fill="var(--ink-3)" font-size="9">持有</text><text x="152" y="42" text-anchor="middle" fill="var(--ink-3)" font-size="9">到期续发</text></svg></article>
-      <article class="debt-card"><h3>日本：长期低利率 + 国内持有为主</h3><p>日本政府长期滚动发行国债，日本央行曾大规模买入国债、维持宽松金融环境。低利率和较长时间分摊利息压力，但人口老龄化、增长和财政收入仍是长期挑战。</p><svg viewBox="0 0 180 44" role="img" aria-label="日本央行持有国债以维持宽松金融环境"><rect x="10" y="9" width="58" height="26" rx="6" fill="var(--bg-2)" stroke="var(--line)"/><rect x="112" y="9" width="58" height="26" rx="6" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="39" y="26" text-anchor="middle" fill="var(--ink-3)" font-size="9">国债</text><text x="141" y="26" text-anchor="middle" fill="var(--ink-3)" font-size="9">央行</text><path d="M72 15H105M105 29H72" stroke="var(--accent)" stroke-width="2.5"/><path d="M98 10L106 15L98 20M79 24L71 29L79 34" fill="none" stroke="var(--accent)" stroke-width="2"/></svg></article>
-      <article class="debt-card"><h3>欧洲：央行防止市场失灵 + 救助贷款附条件</h3><p>欧元区国家不能各自印欧元。欧央行通过债券购买和市场工具维护货币政策传导；欧洲稳定机制可向成员国提供救助贷款，并附带政策条件。希腊债务危机还经历过债权人重组和债券减记。</p><svg viewBox="0 0 180 44" role="img" aria-label="欧洲央行市场工具和稳定机制贷款两条路径"><path d="M8 22H170" stroke="var(--line)" stroke-width="3"/><circle cx="40" cy="22" r="13" fill="var(--accent-soft)" stroke="var(--accent)"/><circle cx="90" cy="22" r="13" fill="var(--bg-2)" stroke="var(--ink-3)"/><circle cx="140" cy="22" r="13" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="40" y="26" text-anchor="middle" fill="var(--ink)" font-size="9">央行</text><text x="90" y="26" text-anchor="middle" fill="var(--ink)" font-size="9">救助</text><text x="140" y="26" text-anchor="middle" fill="var(--ink)" font-size="9">国家</text></svg></article>
-    </div>
-    <figure class="debt-figure"><svg viewBox="0 0 720 175" role="img" aria-label="不同经济体化债方式比较：置换、滚动发债、央行购买和共同救助机制">
-      <line x1="72" y1="88" x2="649" y2="88" stroke="var(--line)" stroke-width="4"/><g fill="var(--accent)"><circle cx="94" cy="88" r="10"/><circle cx="270" cy="88" r="10"/><circle cx="450" cy="88" r="10"/><circle cx="626" cy="88" r="10"/></g>
-      <g text-anchor="middle" fill="var(--ink)"><text x="94" y="44" font-size="17" font-weight="600">中国</text><text x="94" y="123" font-size="13">债务置换、纳入预算</text><text x="270" y="44" font-size="17" font-weight="600">美国</text><text x="270" y="123" font-size="13">滚动发债、财政央行分工</text><text x="450" y="44" font-size="17" font-weight="600">日本</text><text x="450" y="123" font-size="13">长期融资、央行买债</text><text x="626" y="44" font-size="17" font-weight="600">欧元区</text><text x="626" y="123" font-size="13">央行工具、共同救助</text></g>
-      <text x="360" y="158" text-anchor="middle" fill="var(--ink-3)" font-size="12">共同点：分配还款时间、降低风险扩散；不同点：财政制度和货币主权</text>
-    </svg><figcaption>“化债”不是一种全球统一方案，各经济体会按自己的财政制度处理。</figcaption></figure>
-    <p>美国的债务通常不会像企业那样按年清零，而是继续融资并支付利息；这不代表可以无限借，债务上限、利息负担和市场信心都会限制财政空间。美国地方政府若陷入严重困境，符合条件的市政主体可依《破产法》第九章重组。</p>
-    <p>日本例子说明，债务可以在较长时间内维持，但低利率与央行持债并没有让成本消失；欧元区例子则说明，没有独立货币发行权的成员国，碰到融资危机时需要央行市场工具、共同救助机制和债权人谈判共同发挥作用。</p>
-    <figure class="debt-figure"><svg viewBox="0 0 720 150" role="img" aria-label="稳定公共债务依赖经济增长、财政收入与融资成本之间的平衡">
-      <path d="M74 112L240 69L408 88L646 33" fill="none" stroke="var(--accent)" stroke-width="4"/><path d="M72 120H651" stroke="var(--line)" stroke-width="2"/><g fill="var(--accent)"><circle cx="74" cy="112" r="6"/><circle cx="240" cy="69" r="6"/><circle cx="408" cy="88" r="6"/><circle cx="646" cy="33" r="6"/></g><text x="360" y="143" text-anchor="middle" fill="var(--ink-3)" font-size="13">利息成本、经济增长和财政收入，决定债务能否长期承受</text>
-    </svg><figcaption>任何国家的债务政策都要面对同一笔长期算术：利息、收入和增长。</figcaption></figure>
-    <p class="note">这里的“央行买债”通常是二级市场操作或货币政策工具，不等于央行替政府免掉债务；债券仍然在央行资产负债表上，利率、通胀和财政可持续性仍需管理。</p>
-  </section>
-
-  <section class="chapter" id="people">
-    <h2 data-rail="普通人会有什么影响">七、普通人会有什么影响：通过工作、服务、房子和金融资产传来</h2>
-    <p>可能的正面影响是：地方少付一部分利息后，有更多预算空间付工程款、保障工资和公共服务，企业更容易拿到应收账款，银行的贷款风险也可能下降。债务安排更透明，还能让人更清楚政府到底欠了多少、由谁偿还。</p>
-    <p>也可能有成本：未来多年仍要用税收和其他公共收入偿债；如果压缩支出太快，公共项目、公共服务或企业订单会受到影响；若债权人承担损失，持有相关贷款或债券的金融机构和投资人也会受影响。</p>
-    <figure class="debt-figure"><svg viewBox="0 0 720 190" role="img" aria-label="化债对普通人的影响既可能通过工程款和公共服务改善，也可能通过预算约束和债券损失产生代价">
-      <rect x="253" y="24" width="214" height="54" rx="12" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="360" y="57" text-anchor="middle" fill="var(--ink)" font-size="19" font-weight="600">地方债务安排</text>
-      <path d="M306 82C250 112 180 110 140 137M360 82V137M414 82C470 112 540 110 580 137" fill="none" stroke="var(--line)" stroke-width="3"/>
-      <g fill="var(--bg-2)" stroke="var(--line)"><rect x="24" y="133" width="232" height="42" rx="9"/><rect x="244" y="133" width="232" height="42" rx="9"/><rect x="464" y="133" width="232" height="42" rx="9"/></g>
-      <g fill="var(--ink)" text-anchor="middle" font-size="14"><text x="140" y="160">工程与就业：订单 / 工资</text><text x="360" y="160">公共服务：预算空间</text><text x="580" y="160">储蓄与理财：金融资产</text></g>
-    </svg><figcaption>影响取决于地方把“省下来的利息”和现金流空间用在哪里，以及债务损失由谁承担。</figcaption></figure>
-    <p>现在有人觉得生活更拮据，这种感受可能和化债有关，但不能简单说“大家变难，是因为化债”。收入增长慢、就业不确定、房价和资产价格变化、消费信心、行业景气度、家庭负债和公共支出安排，都会影响家庭的可支配现金。</p>
-    <p>房地产与地方债确实连在一起：房企拿地影响地方土地收入，土地和房屋价格影响抵押品价值，建筑业影响就业和上下游订单；房价下行时，家庭财富感受和地方财政都可能承压。但房价变化也受人口、供需、收入预期和金融条件影响，债务置换本身不会直接决定你家的房价。</p>
-    <figure class="debt-figure"><svg viewBox="0 0 720 210" role="img" aria-label="房地产下行通过卖地收入、建设就业、抵押品价值三条路径影响地方财政和家庭经济">
-      <rect x="262" y="18" width="196" height="48" rx="11" fill="var(--bg-2)" stroke="var(--line)"/><text x="360" y="48" text-anchor="middle" fill="var(--ink)" font-size="17" font-weight="600">房地产调整</text>
-      <g fill="var(--bg-2)" stroke="var(--line)"><rect x="14" y="134" width="210" height="55" rx="10"/><rect x="255" y="134" width="210" height="55" rx="10"/><rect x="496" y="134" width="210" height="55" rx="10"/></g>
-      <g text-anchor="middle" fill="var(--ink)"><text x="119" y="158" font-size="14">土地出让收入</text><text x="119" y="178" font-size="12" fill="var(--ink-3)">地方财力变弱</text><text x="360" y="158" font-size="14">施工与上下游</text><text x="360" y="178" font-size="12" fill="var(--ink-3)">订单和就业变化</text><text x="601" y="158" font-size="14">房产抵押价值</text><text x="601" y="178" font-size="12" fill="var(--ink-3)">财富感受与融资变化</text></g>
-      <path d="M292 69L119 127M360 69V127M428 69L601 127" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
-      <text x="360" y="205" text-anchor="middle" fill="var(--ink-3)" font-size="12">这是相互影响的渠道图，不表示所有城市和家庭都会同样受影响。</text>
-    </svg><figcaption>房地产调整和地方债务会互相影响，但对家庭生活的作用仍要结合当地就业、收入和财政支出来看。</figcaption></figure>
-  </section>
-
-  <section class="chapter" id="view">
-    <h2 data-rail="我们该怎么看">八、我们该怎么看：盯住“债变轻了没有，收入跟上没有”</h2>
-    <p>不用把化债看成“欠债就是坏、还债就是好”，也别把“换成了政府债”误以为风险已经归零。更实用的判断是：利息有没有下降、到期时间是否更合理、欠款是否更透明、是否停止新增不规范债务、项目有没有真实回报、普通公共服务有没有被挤掉。</p>
-    <p>如果化债给地方争取到的时间，用来清理低效项目、补齐预算管理、改善营商和居民收入、把资金投向有用的服务，压力就有机会逐步下降。如果只是不断借新还旧、把成本推给未来，或者只靠卖资产填当期缺口，风险可能只是换了个日期。</p>
-    <figure class="debt-figure"><svg viewBox="0 0 720 200" role="img" aria-label="化债取得长期效果需要债务透明、项目有回报、控制新增债和保障收入与公共服务">
-      <g fill="var(--bg-2)" stroke="var(--line)"><rect x="22" y="28" width="150" height="77" rx="12"/><rect x="198" y="28" width="150" height="77" rx="12"/><rect x="374" y="28" width="150" height="77" rx="12"/><rect x="550" y="28" width="150" height="77" rx="12"/></g>
-      <g text-anchor="middle" fill="var(--ink)"><text x="97" y="61" font-size="16" font-weight="600">账目透明</text><text x="97" y="84" font-size="12" fill="var(--ink-3)">知道谁欠谁</text><text x="273" y="61" font-size="16" font-weight="600">新增受控</text><text x="273" y="84" font-size="12" fill="var(--ink-3)">不再滚出新洞</text><text x="449" y="61" font-size="16" font-weight="600">项目有用</text><text x="449" y="84" font-size="12" fill="var(--ink-3)">带来长期收益</text><text x="625" y="61" font-size="16" font-weight="600">收入可持续</text><text x="625" y="84" font-size="12" fill="var(--ink-3)">还得上也能发展</text></g>
-      <path d="M96 119C170 174 550 174 624 119" fill="none" stroke="var(--accent)" stroke-width="3"/><text x="360" y="162" text-anchor="middle" fill="var(--accent)" font-size="17" font-weight="600">债务压力才可能逐步下降</text>
-    </svg><figcaption>化债的成效要看几年后的财政收入、项目回报和新增债务，不只看今天换了多少债。</figcaption></figure>
-    <p>所以，对普通人最稳妥的结论是：化债是处理旧账、避免风险扩散的一项工具；它和房地产、就业、地方公共服务有联系，但不是解释生活压力的唯一原因。真正值得关注的，是债务风险有没有被如实确认、支出有没有变得更有效，以及居民收入和就业能不能恢复增长。</p>
-  </section>
-
-  <section class="chapter" id="sources">
-    <h2 data-rail="参考来源">参考来源与口径</h2>
-    <ol class="sources">
-      <li>中国财政部：《增加地方政府债务限额置换存量隐性债务有关政策情况全国人大常委会办公厅新闻发布会文字实录》，2024-11-09。<a href="https://www.mof.gov.cn/zhengwuxinxi/caizhengxinwen/202411/t20241109_3947230.htm" target="_blank" rel="noopener">查看财政部原文</a></li>
-      <li>美国财政部 Fiscal Data：美国国债说明与数据。<a href="https://fiscaldata.treasury.gov/americas-finance-guide/national-debt/" target="_blank" rel="noopener">查看</a></li>
-      <li>美国联邦储备委员会：公开市场操作与资产购买。<a href="https://www.federalreserve.gov/monetarypolicy/bst_openmarketops.htm" target="_blank" rel="noopener">查看</a></li>
-      <li>美国法院：第九章市政破产基础说明。<a href="https://www.uscourts.gov/court-programs/bankruptcy/bankruptcy-basics/chapter-9-bankruptcy-basics" target="_blank" rel="noopener">查看</a></li>
-      <li>日本财务省：日本国债政策与管理。<a href="https://www.mof.go.jp/english/policy/jgbs/" target="_blank" rel="noopener">查看</a></li>
-      <li>欧洲央行：疫情紧急购买计划（PEPP）说明。<a href="https://www.ecb.europa.eu/mopo/implement/pepp/html/index.en.html" target="_blank" rel="noopener">查看</a></li>
-      <li>欧洲稳定机制：希腊金融援助项目与偿还安排。<a href="https://www.esm.europa.eu/assistance/greece" target="_blank" rel="noopener">查看</a></li>
-    </ol>
-    <p class="note">截至财政部原文发布时的政策口径，不等同于 2026 年最新执行余额。文中的资金流向图是机制示意，不代表每个地方、平台或项目的实际资金账本。</p>
-  </section>
+  <div class="callout"><p><b>一句话：</b>化债是给旧债找一个可承受的还法，为解决问题争取时间；能不能真正好转，要看新增债务是否受控、收入和项目回报能否跟上。</p></div>
+  <p class="source">政策：财政部<a href="https://www.mof.gov.cn/zhengwuxinxi/caizhengxinwen/202411/t20241109_3947230.htm" target="_blank" rel="noopener">2024 年化债发布会文字实录</a>。购买力：国家统计局<a href="https://www.stats.gov.cn/" target="_blank" rel="noopener">居民消费价格指数（CPI）</a>历年年度涨幅连乘。房租：国家统计局<a href="https://www.stats.gov.cn/sj/zxfb/202501/t20250109_1958170.html" target="_blank" rel="noopener">2024 年 12 月 CPI 发布</a>。金融数据：人民银行<a href="https://www.pbc.gov.cn/" target="_blank" rel="noopener">金融统计数据</a>，2024 年报告。工资和租金金额是演示假设。核对日期：2026-09-30。本文解释公共财政，不构成投资建议。</p>
 </main>
+
+<dialog class="debt-dialog" id="debt-dialog" aria-labelledby="debt-dialog-title">
+  <div class="dialog-head"><h2 id="debt-dialog-title"></h2></div>
+  <p class="dialog-body" id="debt-dialog-body"></p>
+  <div class="dialog-actions"><button type="button" id="debt-dialog-ok">OK</button></div>
+</dialog>
+<script>
+const notes = {
+  borrow: ['谁在借，谁的钱？', '地方政府可以依法发行政府债券。地方融资平台是地方国有企业，也可能向银行或债券市场借钱。银行的钱来自存款等资金，债券的钱来自买入债券的投资者。储户、银行、平台、政府是不同角色，不能把所有平台债都直接算成政府法定债务。'],
+  platform: ['地方融资平台是什么？', '它是地方国有企业，过去常参与基础设施建设、融资和土地整理。有的平台经营收入足以还债，有的平台依赖地方支持。是否属于政府债务，要看合同和政府是否承担偿还责任，不能只看公司名字。'],
+  land: ['土地收入为什么和房价有关？', '地方把国有土地使用权出让给开发商，会取得土地出让收入。楼市活跃时，开发商更愿意买地，施工和相关就业也较多；楼市降温时，土地收入和相关活动可能走弱。房价不是地方财政的唯一来源，各地依赖程度也不同。'],
+  cashflow: ['现金流不够，为什么会借新还旧？', '债务有明确的到期日。收入没有按预期到账时，借新钱可以暂时还上旧债，避免立刻违约；但若项目不再产生收入、融资成本又高，只是把缺口推到未来，利息还会继续累积。'],
+  methods: ['化债通常有哪些办法？', '一是置换：用期限更长、利息更低的新债偿还旧债；二是展期或降息：重新商量还款时间和成本；三是用预算收入、项目回款或盘活资产偿债；四是企业确实无力偿还时，与债权人重组、减记，或依法破产。不同办法适用的债务主体不同。'],
+  china: ['2024 年方案里的数字怎么读？', '财政部发布会称：2023 年底经甄别的地方隐性债务余额为 14.3 万亿元；新增 6 万亿元地方政府债务限额，2024—2026 年每年 2 万亿元用于置换；另从 2024 年起连续五年每年安排 8000 亿元新增专项债资源用于化债，合计 4 万亿元。官方当时估算，2028 年前地方需自行消化的隐性债务降至 2.3 万亿元、五年节约利息约 6000 亿元。这些是发布时的计划与测算，不代表今天已全部完成。置换降低部分地方的短期偿还压力，但政府仍要偿还显性债务。'],
+  people: ['普通人、房地产和化债是什么关系？', '化债可能让地方更快支付工程款、减少拖欠，也可能让未来预算长期承担利息和本金。房地产会影响土地收入、建筑就业、抵押品价值和家庭财富感受，因此和地方债务相互影响。一个人觉得生活拮据，还可能来自就业、工资、家庭负债、物价和房价等多种因素；仅凭生活感受，不能判断化债是主要原因。'],
+  world: ['中、美、日、欧分别怎么处理？', '中国这次重点是地方债置换、纳入预算和控制新增隐性债。美国联邦政府主要滚动发行国债，财政部负责融资、国会决定预算和债务上限；美联储用买卖国债实施货币政策，不替财政部免债。日本长期滚动发债，日本央行曾大量买入国债来维持宽松金融环境。欧元区成员国不能单独发行欧元，欧洲央行维护市场和货币政策传导，欧洲稳定机制可向成员国提供附条件的救助贷款；希腊曾进行债务重组。制度不同，不能简单照搬。'],
+  example: ['这位年轻人的数字哪些是现实、哪些是设定？', '月薪税前 10,000 元来自题目给定的例子；到手 8,500 元、每月房租 3,000 元、其他支出 2,500 元、期初余额 20,000 元都是演示假设，不是官方平均值。真实到手工资取决于城市、社保公积金、个税专项扣除等。期末余额按每月存下 3,000 元计算，不计利息、奖金、失业或大额支出。'],
+  inflation: ['“货币贬值”在这里怎样量？', '这里指同样的人民币能买到的居民消费品和服务变少，不是人民币对美元等外币的汇率变化。国家统计局 CPI 衡量一篮子居民日常商品和服务的价格变化。按国家统计局 2015—2024 年年度 CPI 涨幅连乘：1.4%、2.0%、1.6%、2.1%、2.9%、2.5%、0.9%、2.0%、0.2%、0.2%，累计约上涨 16.9%。所以 2014 年需要 100 元的一篮子东西，2024 年约需 116.93 元；固定 8,500 元工资折回 2014 年购买力约为 7,270 元，下降约 14.5%。2025 年全年 CPI 与上年持平，表示那一年总体价格水平大致没变，不会自动回到十年前。CPI 是全国平均，个人花销和城市会不同。'],
+  rent: ['为什么还用房租？它不是全国一直涨吗？', '房租是许多年轻人每月最大的一笔支出，适合看“收入有多少被住房占走”；但它不能证明全国物价一直上涨。国家统计局数据显示，2024 年 12 月租赁房房租同比下降 0.3%，而 2025 年全年 CPI 与上年持平，说明近年部分成本确实平稳或回落。示例里 3,000 元月租占 8,500 元到手收入的 35.3%；若同类房源涨到 3,300 元且工资不变，占比会变成 38.8%——这是演示，不是全国租金涨幅。要看个人所在城市，比较同一区域、相近面积和条件、相同季节的实际合同租金，再除以当月到手工资。全国 CPI 累计上涨与本地房租短期下跌可以同时发生。'],
+  banking: ['普通人的存款怎样进入融资？', '示例里 1,000 人每人每月存 3,000 元，一年合计 3,600 万元，是一个清楚的“规模感”假设。银行把许多存款和其他资金纳入资产负债管理，再按资本、流动性、风险和借款需求决定贷款；并不存在把这 3,600 万原封不动交给某个企业的对应关系。人民银行公布的 2024 年总量是住户存款增加 14.26 万亿元、人民币贷款增加 18.09 万亿元；其中企事业单位贷款增加 14.33 万亿元、住户贷款增加 2.72 万亿元。贷款发放还会同时形成借款人存款，因此不能把存款增量与贷款增量一一配对。可参阅英格兰银行《现代经济中的货币创造》。'],
+  books: ['继续读：三本解释资金与债务的书', '兰小欢《置身事内：中国政府与经济发展》（上海人民出版社，2021）：从地方政府、土地和财政关系读懂中国建设融资。Richard C. Koo, The Holy Grail of Macroeconomics: Lessons from Japan’s Great Recession（Wiley, 2008）：理解资产价格下跌后，企业和家庭为何优先还债、经济为何变慢。Atif Mian 与 Amir Sufi, House of Debt（University of Chicago Press, 2014）：理解家庭负债如何影响消费、就业和经济。书中的解释框架不替代最新统计数据。']
+};
+const dialog = document.getElementById('debt-dialog');
+const title = document.getElementById('debt-dialog-title');
+const body = document.getElementById('debt-dialog-body');
+document.querySelectorAll('.debt-q').forEach((button) => button.addEventListener('click', () => {
+  const [heading, explanation] = notes[button.dataset.topic];
+  title.textContent = heading;
+  body.textContent = explanation;
+  dialog.showModal();
+}));
+document.getElementById('debt-dialog-ok').addEventListener('click', () => dialog.close());
+dialog.addEventListener('click', (event) => { if (event.target === dialog) dialog.close(); });
+</script>
 </body>
 </html>
