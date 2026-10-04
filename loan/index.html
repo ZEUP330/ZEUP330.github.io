@@ -6,6 +6,7 @@
 <title>房贷计算器：月供、总利息与剩余本金</title>
 <meta name="description" content="等额本息月供计算器：三个滑块看月供下限、总利息与剩余本金，另有年限×利率的 3D 曲面。">
 <link rel="stylesheet" href="/assets/theme.css">
+<link rel="stylesheet" href="/assets/illustrations.css">
 <style>
   :root { --ok: #12855c; --danger: #cf3520; }
   @media (prefers-color-scheme: dark) {
@@ -266,6 +267,8 @@
 
   <h3>为什么会有下限</h3>
   <p>等额本息月供公式 <code>M = P·i / (1 − (1+i)<sup>−n</sup>)</code>，i 是月利率，n 是总月数。n 越大，<code>(1+i)<sup>−n</sup></code> 越接近 0，分母越接近 1，于是 <code>M → P·i</code>。</p>
+<figure class="article-illustration"><img src="/assets/loan-illustrations/01-monthly-versus-total.png" alt="拉长期限可以降低月供，但通常会增加累计利息。" loading="lazy" decoding="async"><figcaption>拉长期限可以降低月供，但通常会增加累计利息。</figcaption></figure>
+
   <p>P·i 就是第一个月产生的利息。月供压到这个数，意味着每期还的钱刚好抵掉当期利息，本金余额永远不动 —— 这是一笔还不完的贷款。所以年限再长也突破不了它。</p>
   <p>曲线前 20 年陡降，30 年后基本贴地。每多贷 10 年，月供降幅大约砍半（几何衰减），总利息却接近线性增长。</p>
 

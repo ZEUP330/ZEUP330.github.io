@@ -6,6 +6,7 @@
 <title>从感知机到大模型：一条图文时间线</title>
 <meta name="description" content="把神经网络、大模型及其分支放回时间线上；每个时间点配一张结构示意图和简短说明。">
 <link rel="stylesheet" href="/assets/theme.css">
+<link rel="stylesheet" href="/assets/illustrations.css">
 <style>
   main { max-width: 820px; margin: 0 auto; }
   .back { margin-bottom: .8rem; }
@@ -82,16 +83,24 @@
   </ol>
 
   <p class="branch-note">一条时间线里有多条支线；有些方法今天仍在使用，有些组合出新模型。底下的补充说明和论文链接可按兴趣展开。</p>
+<figure class="article-illustration"><img src="/assets/ai-illustrations/01-research-bridge.png" alt="从人工神经元到大模型，网络结构、数据和算力多次接力。" loading="lazy" decoding="async"><figcaption>从人工神经元到大模型，网络结构、数据和算力多次接力。</figcaption></figure>
+
   <section class="analysis" aria-labelledby="analysis-title">
     <h2 id="analysis-title">把时间线串起来：今天的大模型是怎样被造出来的？</h2>
     <p class="branch-note">不是一个网络把前面的网络全部淘汰；研究者把结构、训练办法、数据、芯片和产品反馈不断组合。</p>
     <div class="analysis-grid">
-      <article class="time-card"><h3>网络结构：各自擅长不同输入</h3><p>CNN 擅长利用图像局部结构；RNN/LSTM 按顺序传递状态；Transformer 用注意力并行整合上下文；扩散模型逐步去噪生成内容；MoE 用路由激活部分专家。结构解决“信息怎样流动”，强化学习解决“怎样根据行动结果改进”，两者不是同一类东西。<button class="ai-q" data-topic="families" aria-label="比较主要网络结构和训练方法">?</button></p></article>
+      <article class="time-card"><h3>网络结构：各自擅长不同输入</h3><p>CNN 擅长利用图像局部结构；RNN/LSTM 按顺序传递状态；Transformer 用注意力并行整合上下文；扩散模型逐步去噪生成内容；MoE 用路由激活部分专家。结构解决“信息怎样流动”，强化学习解决“怎样根据行动结果改进”，两者不是同一类东西。<button class="ai-q" data-topic="families" aria-label="比较主要网络结构和训练方法">?</button></p>
+<figure class="article-illustration"><img src="/assets/ai-illustrations/02-parallel-network-tools.png" alt="CNN、RNN 与 Transformer 的信息流动方式不同，可以按任务组合使用。" loading="lazy" decoding="async"><figcaption>CNN、RNN 与 Transformer 的信息流动方式不同，可以按任务组合使用。</figcaption></figure>
+</article>
       <article class="time-card"><h3>参数：先定模型大小，再让训练学出权重</h3><p>建模前先选网络结构、层数、宽度和训练预算；训练时再由大量样本和优化算法逐步调整参数。研究者通常比较不同配置在验证数据上的效果、成本和可靠性，不会人工逐个筛选数十亿个参数。<button class="ai-q" data-topic="parameters" aria-label="解释参数规模与训练选择">?</button></p></article>
-      <article class="time-card"><h3>预训练：先学会语言和内容规律</h3><p>原始资料要经过授权与质量筛选、去重、格式处理和分词；模型再通过预测下一个 token 等训练目标学习。训练数据有偏差、重复、污染或缺少代表性，都会影响学到的能力。<button class="ai-q" data-topic="data" aria-label="解释预训练数据筛选及其影响">?</button></p></article>
+      <article class="time-card"><h3>预训练：先学会语言和内容规律</h3><p>原始资料要经过授权与质量筛选、去重、格式处理和分词；模型再通过预测下一个 token 等训练目标学习。训练数据有偏差、重复、污染或缺少代表性，都会影响学到的能力。<button class="ai-q" data-topic="data" aria-label="解释预训练数据筛选及其影响">?</button></p>
+<figure class="article-illustration"><img src="/assets/ai-illustrations/03-training-stages.png" alt="预训练学通用模式，示范与反馈让回答更符合任务要求。" loading="lazy" decoding="async"><figcaption>预训练学通用模式，示范与反馈让回答更符合任务要求。</figcaption></figure>
+</article>
       <article class="time-card"><h3>后训练：把“会续写”变成“会按要求帮忙”</h3><p>监督微调用高质量示例教模型回答格式和任务；偏好训练让答案更符合人类评审的选择；安全训练、工具调用和评测再补上产品需要。后训练通常在预训练模型基础上继续调整，不是重新读完所有互联网资料。<button class="ai-q" data-topic="training" aria-label="解释预训练与后训练的区别">?</button></p></article>
       <article class="time-card"><h3>上线：模型权重只是完整系统的一部分</h3><p>用户看到的系统还可能包括检索库、工具、提示词、审核、缓存、量化和监控。量化/剪枝是压缩或加速手段；RAG 是把外部资料送进上下文；工具调用让模型请求外部程序执行动作。三者都不等于基础模型参数自动变聪明。<button class="ai-q" data-topic="deployment" aria-label="解释模型上线后的系统组件">?</button></p></article>
-      <article class="time-card"><h3>离 AGI 还差什么？</h3><p>模型能写、能看、会用工具，不等于在陌生环境里始终正确、能长期规划、持续学习并对行动负责。AGI 没有统一的验收标准；“所有模型都是某个细分领域过拟合”是提醒能力有边界的比喻，不是严格结论。<button class="ai-q" data-topic="agi" aria-label="解释 AGI 能力缺口和过拟合的严格含义">?</button></p></article>
+      <article class="time-card"><h3>离 AGI 还差什么？</h3><p>模型能写、能看、会用工具，不等于在陌生环境里始终正确、能长期规划、持续学习并对行动负责。AGI 没有统一的验收标准；“所有模型都是某个细分领域过拟合”是提醒能力有边界的比喻，不是严格结论。<button class="ai-q" data-topic="agi" aria-label="解释 AGI 能力缺口和过拟合的严格含义">?</button></p>
+<figure class="article-illustration"><img src="/assets/ai-illustrations/04-generalization-gap.png" alt="熟悉任务表现好，不等于陌生环境里也可靠。" loading="lazy" decoding="async"><figcaption>熟悉任务表现好，不等于陌生环境里也可靠。</figcaption></figure>
+</article>
     </div>
     <figure class="time-fig"><svg viewBox="0 0 720 112" role="img" aria-label="大模型从数据筛选、预训练、能力评测、后训练，进入上线系统并持续监控">
       <g fill="var(--bg-2)" stroke="var(--line)"><rect x="6" y="27" width="112" height="49" rx="8"/><rect x="151" y="27" width="112" height="49" rx="8"/><rect x="296" y="27" width="112" height="49" rx="8"/><rect x="441" y="27" width="112" height="49" rx="8"/><rect x="586" y="27" width="126" height="49" rx="8" fill="var(--accent-soft)" stroke="var(--accent)"/></g>

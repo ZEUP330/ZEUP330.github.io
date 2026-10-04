@@ -6,6 +6,7 @@
 <title>美股期权 Wheel 筛选器：七姐妹 / 行业 ETF / 杠杆 ETF</title>
 <meta name="description" content="用 Cboe 延迟行情筛选适合 wheel 策略的现金担保看跌与备兑看涨候选，覆盖七姐妹、指数与行业 ETF、杠杆 ETF。">
 <link rel="stylesheet" href="/assets/theme.css">
+<link rel="stylesheet" href="/assets/illustrations.css">
 <style>
   :root { --call: #1baf7a; --put: #e34948; --warn: #eda100; --ok: #1baf7a; --danger: #e34948; }
   @media (prefers-color-scheme: dark) {
@@ -328,6 +329,8 @@
 
   <h2 id="close">收尾：这张表能替你做什么</h2>
   <p><b>能做的</b>：把「同样卖 0.25 Delta 的看跌，各标的分别给多少年化」这个横向比较自动化，并把流动性（未平仓、成交量、买卖价差）摆在同一行里，让不可成交的高年化露出原形。</p>
+<figure class="article-illustration"><img src="/assets/options-illustrations/01-wheel-risk.png" alt="权利金伴随持仓和下行风险；策略过程包含被指派的可能。" loading="lazy" decoding="async"><figcaption>权利金伴随持仓和下行风险；策略过程包含被指派的可能。</figcaption></figure>
+
   <p><b>不能做的</b>：替你判断愿不愿意接这只股票。Wheel 的前提是<b>跌下来你愿意持有</b>，这一条任何排序都算不出来。按年化排，榜首恒定是杠杆 ETF；换成「年化 ÷ IV30」，排在前面的通常换成七姐妹里的个股，杠杆 ETF 掉下去几位 —— 但掉不干净，波动最高的那只往往还留在前列。<span class="hl">高年化不是找到了便宜，是市场给这段波动开的价。</span></p>
   <h2 id="sec4">数据与口径</h2>
   <ul class="links">

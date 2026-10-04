@@ -6,6 +6,7 @@
 <title>区级房价与各省工资：能查到多细，就查到多细</title>
 <meta name="description" content="约 200 个城市、660 多个区县的挂牌均价，19 个省的城镇可支配收入，以及把两边相除得到的各省房价收入比。">
 <link rel="stylesheet" href="/assets/theme.css">
+<link rel="stylesheet" href="/assets/illustrations.css">
 <style>
   main { max-width: 880px; margin: 0 auto; }
   .chart { position: relative; height: 340px; }
@@ -98,6 +99,8 @@
 
   <h2 id="spread" data-rail="城市内部">二、一座城市内部，比城市之间还悬殊</h2>
   <p>每根横条是一座城市：左端是它最便宜的区，右端是最贵的区（都只在公布的 10 个区里比）。这张图想说的是 —— <b>“某某市房价”这个说法本身就很粗糙</b>。</p>
+<figure class="article-illustration"><img src="/assets/district-illustrations/01-internal-price-gap.png" alt="城市均价会遮住区与区之间的差别。" loading="lazy" decoding="async"><figcaption>城市均价会遮住区与区之间的差别。</figcaption></figure>
+
   <div class="legend" id="spread-legend"></div>
   <div class="chart xtall"><canvas id="spread-chart" role="img" aria-label="横向浮动条形图：各城市最便宜区与最贵区的挂牌均价区间。">城市内部价格区间。</canvas></div>
   <p class="hint" id="spread-note"></p>
@@ -122,6 +125,8 @@
 
   <h2 id="sqm" data-rail="能买几平米">六、一年家庭收入，在各省会能买几平米</h2>
   <p>同一件事换个说法，不用比值用面积 —— 这个更好想象：双职工一整年不吃不喝，买得下多大一块地板。</p>
+<figure class="article-illustration"><img src="/assets/district-illustrations/02-affordability-measure.png" alt="用同一收入和房价口径比较可负担面积，不把均价当成每个家庭的实际成交价。" loading="lazy" decoding="async"><figcaption>用同一收入和房价口径比较可负担面积，不把均价当成每个家庭的实际成交价。</figcaption></figure>
+
   <div class="legend" id="sqm-legend"></div>
   <div class="chart tall"><canvas id="sqm-chart" role="img" aria-label="横向条形图：各省双职工家庭一年收入在省会能购买的建筑面积。">一年收入能买的面积。</canvas></div>
   <p class="hint" id="sqm-note"></p>
