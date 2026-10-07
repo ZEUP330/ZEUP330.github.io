@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>财务自由：不是一个数字，而是现金流选择权</title>
+<meta name="description" content="从第一性原理拆解财务自由：先看支出缺口，再看资产现金流、复利、风险与选择权。">
+<link rel="stylesheet" href="/assets/theme.css">
+<link rel="stylesheet" href="/assets/illustrations.css">
+<style>
+  main { max-width: 800px; margin: 0 auto; }
+  .back { margin-bottom: 1.2rem; }
+  .lede { max-width: 730px; }
+  .thread { margin: 1.8rem 0; padding: 0; list-style: none; counter-reset: step; }
+  .thread li { counter-increment: step; position: relative; padding: 0 0 1.65rem 3rem; }
+  .thread li::before { content: counter(step); position: absolute; left: 0; top: .05rem; display: grid; place-items: center;
+    width: 1.8rem; height: 1.8rem; border-radius: 50%; color: var(--accent); background: var(--accent-soft);
+    font-size: .8rem; font-weight: 700; }
+  .thread h2 { margin: 0 0 .45rem; font-size: 1.12rem; }
+  .thread p { margin: 0; }
+  .formula { margin: .8rem 0 1rem; padding: 1rem; border-left: 3px solid var(--accent); border-radius: var(--r-sm); background: var(--bg-2); }
+  .formula b { display: block; font-size: 1.05rem; }
+  .formula small { display: block; margin-top: .4rem; color: var(--ink-3); line-height: 1.6; }
+  .logic-chain { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem; margin: .9rem 0 1.25rem; color: var(--ink-2); font-size: .8rem; }
+  .logic-chain span { padding: .28rem .55rem; border: 1px solid var(--line); border-radius: 999px; background: var(--card); }
+  .logic-chain b { color: var(--accent); font-weight: 600; }
+  .case-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; margin: .85rem 0 1rem; }
+  .case-card { padding: .85rem; border: 1px solid var(--line); border-radius: var(--r-sm); background: var(--card); }
+  .case-card h3 { margin: 0 0 .45rem; font-size: .96rem; }
+  .case-card p { margin: 0; font-size: .86rem; }
+  .case-table { width: 100%; border-collapse: collapse; font-size: .86rem; }
+  .case-table th,.case-table td { padding: .5rem .35rem; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .case-table th { color: var(--ink-3); font-weight: 500; }
+  .fine { color: var(--ink-3); font-size: .8rem; line-height: 1.6; }
+  .ff-q { display: inline-grid; place-items: center; width: 1.2rem; height: 1.2rem; margin-left: .22rem; padding: 0;
+    border: 1px solid var(--accent); border-radius: 50%; background: transparent; color: var(--accent); font: inherit;
+    font-size: .72rem; line-height: 1; vertical-align: .08rem; cursor: pointer; }
+  .ff-q:hover,.ff-q:focus-visible { background: var(--accent); color: var(--card); outline: 2px solid color-mix(in srgb,var(--accent) 25%,transparent); }
+  .callout { margin: 1rem 0; padding: .9rem 1rem; border-left: 3px solid var(--accent); border-radius: var(--r-sm); background: var(--bg-2); }
+  .callout p { margin: 0; }
+  .source { margin-top: 1.8rem; color: var(--ink-3); font-size: .78rem; line-height: 1.65; }
+  .source a { overflow-wrap: anywhere; }
+  dialog.ff-dialog { width: min(34rem,calc(100vw - 2rem)); max-width: none; padding: 1.2rem; border: 1px solid var(--line);
+    border-radius: var(--r); color: var(--ink); background: var(--card); box-shadow: var(--shadow-3); }
+  dialog.ff-dialog::backdrop { background: rgb(10 15 25 / .46); backdrop-filter: blur(2px); }
+  .dialog-head h2 { margin: 0; font-size: 1.08rem; }
+  .dialog-body { max-height: min(58vh,32rem); overflow: auto; margin: .8rem 0 1.2rem; color: var(--ink-2); line-height: 1.75; white-space: pre-line; }
+  .dialog-actions { display: flex; justify-content: flex-end; }
+  .dialog-actions button { min-width: 4rem; }
+  @media (max-width: 560px) { .thread li { padding-left: 2.45rem; } .case-grid { grid-template-columns: 1fr; } }
+</style>
+<link rel="stylesheet" href="/assets/statusbar.css">
+<link rel="stylesheet" href="/assets/rail.css">
+<script src="/assets/statusbar.js" defer></script>
+<script src="/assets/theme.js" defer></script>
+<script src="/assets/rail.js" defer></script>
+</head>
+<body>
+<main>
+  <p class="back"><a href="../">← 首页</a> · <a href="../story/">一套房的一生</a> · <a href="../debt/">化债</a></p>
+  <h1 id="top">财务自由：不是一个数字，而是现金流选择权</h1>
+  <p class="lede">第一性原理只有一句：<b>当你不必靠一份指定工作，仍能长期支付自己选择的生活，才有了选择权。</b>目标金额因人而异；真正要算的是支出、可靠净收入、资产回报和风险缓冲。</p>
+  <figure class="article-illustration"><img src="/assets/financial-freedom-illustrations/01-freedom-line.png" alt="小黑调节资产净流入与生活支出的阀门，流入覆盖支出后出现一扇选择之门" loading="lazy" decoding="async"><figcaption>财务自由看的是可持续的净资源能否覆盖计划支出，而不是账户里有没有一个人人通用的神奇数字。</figcaption></figure>
+
+  <div class="formula"><b>可持续净资源 ≥ 计划生活支出 + 风险缓冲</b><small>净资源可以来自租金、利息、股息、经营收入、养老金，也可以来自有计划地卖出一部分投资资产；关键是扣除税费与维护成本后还能持续。</small></div>
+  <p class="logic-chain" aria-label="财务自由的逻辑链"><b>逻辑链</b><span>财务自由</span>→<span>被动收入</span>→<span>构建资产</span>→<span>投入复利</span>→<span>生产性资产</span>→<span>看净现金流</span>→<span>选择权</span></p>
+
+  <ol class="thread">
+    <li>
+      <h2 data-rail="先算生活支出">第一步：先算你想过的生活，不先猜一个大数字</h2>
+      <p>先记一整年的真实支出，再分成“基本生活”和“可选择的生活”。住房、吃饭、医疗、照护、交通是底线；旅行、兴趣、给家人的支持是生活目标。两个人同样有 500 万资产，如果一个人每年花 15 万、另一个人花 50 万，离自由线的距离完全不同。<button class="ff-q" data-topic="spending" aria-label="怎样估算计划支出">?</button></p>
+    </li>
+    <li>
+      <h2 data-rail="被动收入是结果">被动收入是结果；资产、技能和储蓄是来源</h2>
+      <p>储蓄先提供本金，资产再把本金投入企业、债权、出租物业等可能产生收益的地方。工资通常依赖时间和劳动；资产收入可能更少依赖日常工时，但仍可能需要管理，也会遇到空置、违约、分红减少或市场下跌。<button class="ff-q" data-topic="passive" aria-label="被动收入是否真的不用工作">?</button></p>
+      <figure class="article-illustration"><img src="/assets/financial-freedom-illustrations/02-asset-use-value.png" alt="小黑在能带来净流入的工具与提供使用价值的消费物品之间比较用途" loading="lazy" decoding="async"><figcaption>先问一件东西能做什么：有的带来净现金流，有的提供生活使用价值，两者不必互相贬低。</figcaption></figure>
+      <p class="fine">所以“单纯存钱不够”不等于“存钱没有用”：储蓄能防止短期冲击，也提供未来投资本金；只靠存款利息，长期购买力还会受通胀影响。</p>
+    </li>
+    <li>
+      <h2 data-rail="投入生产资料">投入能创造未来收入的东西，并让收益有机会继续投入</h2>
+      <p>复利不是某种神奇产品，而是收益继续参与下一轮增长。可产生现金流的生产性资产包括企业股权、债权、出租物业和可授权的知识产权；技能属于人力资本，能提高劳动收入，但不是自动产生被动现金流的可交易资产。每一种都要看本金风险、现金流和投入的时间。<button class="ff-q" data-topic="compounding" aria-label="复利计算例子的假设">?</button></p>
+      <figure class="article-illustration"><img src="/assets/financial-freedom-illustrations/03-compound-reinvestment.png" alt="小黑把收获的一部分种子重新投入土地，更多幼苗长出的同时也遇到天气波动" loading="lazy" decoding="async"><figcaption>持续投入和再投入会放大时间的作用；实际回报不是直线上升，可能多年波动或亏损。</figcaption></figure>
+      <div class="callout"><p><b>一个只说明数学的假设：</b>每月月底投入 5,000 元，连续 20 年，假设年化收益恒为 5%、按月复利、不计税费和通胀，期末约 205.5 万元；自己投入本金是 120 万元。真实市场收益不会恒定为 5%，这不是收益预测。</p></div>
+    </li>
+    <li>
+      <h2 data-rail="资产与现金流">看现金流，也看使用价值；别把账面资产和收入混成一件事</h2>
+      <p>自住房能提供居住价值，在家庭资产负债表上也有房屋价值；但只要自己住着，它通常不会每月给你租金，反而有月供、维修、税费等支出。出租房则要从租金里扣掉空置、维修、物业、税费和融资成本，剩下的才是净现金流。<button class="ff-q" data-topic="asset" aria-label="资产与负债、现金流如何区分">?</button></p>
+      <figure class="article-illustration"><img src="/assets/financial-freedom-illustrations/04-home-and-rental-cashflow.png" alt="小黑比较自住房带来的使用价值与出租房扣除空置维修成本后的净现金流" loading="lazy" decoding="async"><figcaption>一套房可以是有价值的资产，同时也是每月现金流的支出项；要看清用途和净流入。</figcaption></figure>
+      <div class="case-grid">
+        <article class="case-card"><h3>记账资产，不等于每月进钱</h3><p>自住的房子、车、电脑可能有资产价值或使用价值，但未必产生可用于支付其他账单的收入。</p></article>
+        <article class="case-card"><h3>“负债”也要先说口径</h3><p>会计上的负债是偿还义务；日常理财里也常把持续消耗现金的东西叫“负担”。后者是现金流比喻，不是会计定义。</p></article>
+      </div>
+      <p class="fine">这也解释了为什么“房价涨了”不等于“现在有现金可花”：通常要卖出、出租或借款才能变现，每种做法都伴随成本、替代住房问题或新债务。</p>
+    </li>
+    <li>
+      <h2 data-rail="把自由线算出来">把自由线算出来：先算缺口，再选计算假设</h2>
+      <p>下面只是算式示范：假设一家人想花 18,000 元/月，年支出 216,000 元；已有稳定的税后非工资收入 5,000 元/月，年收入 60,000 元。每年还需要资产补上 156,000 元。<button class="ff-q" data-topic="example" aria-label="展开家庭算例假设和风险缓冲">?</button></p>
+      <div class="formula"><b>年度缺口 = 年支出 − 稳定净收入</b><small>216,000 − 60,000 = 156,000 元</small></div>
+      <figure class="article-illustration"><img src="/assets/financial-freedom-illustrations/05-gap-to-asset-target.png" alt="小黑用尺量计划支出和稳定收入之间的缺口，再根据假设回报估算资产规模" loading="lazy" decoding="async"><figcaption>缺口越小，达到同一现金流目标所需的资产规模越低；回报假设越高，算出的资产数越低，但不代表风险更低。</figcaption></figure>
+      <table class="case-table"><thead><tr><th>演示情形</th><th>年度缺口</th><th>净现金回报假设</th><th>算出的资产量</th></tr></thead><tbody>
+        <tr><td>月支出 18,000 元</td><td>156,000 元</td><td>3%（示意）</td><td>约 520 万元</td></tr>
+        <tr><td>月支出降到 15,000 元</td><td>120,000 元</td><td>3%（同一假设）</td><td>约 400 万元</td></tr>
+      </tbody></table>
+      <p class="fine">算式：年度缺口 ÷ 假设净现金回报率。3% 是为了演示计算关系，不代表市场可稳定提供 3% 收益；上表还没加入突发医疗、税费变化、通胀和空置等缓冲。</p>
+      <p>如果采用总回报提款，现金可能来自分红、利息和卖出少量资产；这不等于“被动收入”，本金也可能随市场下跌而缩小。两种口径要分开看。<button class="ff-q" data-topic="withdrawal" aria-label="被动现金收入与投资组合提款的区别">?</button></p>
+    </li>
+    <li>
+      <h2 data-rail="自由的最终内涵">最终目标不是躺平，而是有底气说“不”</h2>
+      <p>钱的意义是给你时间与选择：可以离开不合适的工作、照护家人、休息一段时间，也可以继续做自己认可的工作。财务自由不是停止承担责任，而是不必为了眼前账单接受每一个条件。<button class="ff-q" data-topic="choice" aria-label="财务自由是否等于不再工作">?</button></p>
+      <figure class="article-illustration"><img src="/assets/financial-freedom-illustrations/06-choice-not-idleness.png" alt="小黑有底气关上不合适的工作门，同时走向自己选择的工作台" loading="lazy" decoding="async"><figcaption>“能拒绝不想做的事”与“可以继续做喜欢的事”可以同时成立。</figcaption></figure>
+    </li>
+  </ol>
+
+  <h2 data-rail="从哪一步开始">从今天开始，只做四件能核对的事</h2>
+  <ol>
+    <li>汇总过去 12 个月的真实支出，分开基本生活和可选择支出。</li>
+    <li>把现金收入按“税后、扣成本、能否持续”重算，别把营业额、账面升值当净收入。</li>
+    <li>列出债务利息、到期日和每月还款；先看高息债务对现金流的挤压。</li>
+    <li>再决定资产组合与风险分散方式，每年复核支出、净流入和应急储备。</li>
+  </ol>
+  <div class="callout"><p><b>一句话带走：</b>存钱让你有本金，资产可能带来现金流，复利让时间参与增长；但财务自由的判据始终是“净资源是否能支持你选的生活”，而不是资产看上去涨了多少。</p></div>
+  <p class="source">口径：本文中的 3% 净现金回报、5% 名义复利均为演示假设，不是收益承诺或投资建议。提款率研究：William P. Bengen, “Determining Withdrawal Rates Using Historical Data,” Journal of Financial Planning (1994)，见 <a href="https://www.financialplanningassociation.org/sites/default/files/2021-04/MAR04%20Determining%20Withdrawal%20Rates%20Using%20Historical%20Data.pdf" target="_blank" rel="noopener">FPA Journal 重印版</a>；历史回测不能保证未来。延伸阅读：Robert Kiyosaki, <i>Rich Dad Poor Dad</i>（现金流口诀的流行来源）；Vicki Robin & Joe Dominguez, <i>Your Money or Your Life</i>；Morgan Housel, <i>The Psychology of Money</i>。本文为教育解释，不构成投资建议。核对日期：2026-10-07。</p>
+</main>
+
+<dialog class="ff-dialog" id="ff-dialog" aria-labelledby="ff-dialog-title">
+  <div class="dialog-head"><h2 id="ff-dialog-title"></h2></div>
+  <p class="dialog-body" id="ff-dialog-body"></p>
+  <div class="dialog-actions"><button type="button" id="ff-dialog-ok">OK</button></div>
+</dialog>
+<script>
+const notes = {
+  spending: ['为什么支出要先于资产数字？', '财务自由的目标由“想过什么生活”决定。至少分出基本生活、可选择生活和突发支出；如果只用某个月的低支出，会漏掉保险、医疗、维修、照护和旅行等不定期项目。把支出压到自己不能接受的水平，数字虽好看，也不是你想要的自由。'],
+  passive: ['“被动收入”真的不用工作吗？', '被动是相对概念。房租需要找租客、维修和承担空置；股息可能削减；债券有信用与再投资风险；经营资产可能依赖管理团队。净收入要扣掉成本、税和应留的维修/风险准备金。单看收入总额会把负担藏起来。'],
+  asset: ['资产、负债和现金流要分开吗？', '是。资产与负债是家庭资产负债表上的类别；月度进钱或出钱是现金流。自住房可以有资产价值并提供居住服务，却在月度现金流上产生月供、维护和税费；出租房只有在租金扣掉空置、维修、管理、税费与融资成本之后，剩下的才是净流入。“把钱装进/拿出你口袋”是常见的家庭现金流判断口诀，Kiyosaki《富爸爸，穷爸爸》让它广为传播，但它不是完整会计定义。'],
+  compounding: ['复利为什么不是稳定向上的曲线？', '复利的数学是收益留在本金里继续参与下一轮增长。现实收益会波动，也可能连续下跌；费用、税、通胀和投入时点会改变实际购买力。例子假设每月月末投入，年回报每月固定，正是为了说明公式，不是预测未来。'],
+  example: ['算例有哪些假设没算进去？', '18,000 元/月支出、5,000 元/月稳定收入和 3% 净现金回报都是教学假设。实际估算要明确税后净收入、投资成本、通胀、家庭成员变化、医疗与照护、应急储备、汇率和资产波动。3% 不是保证收益，也不是建议你去追求的收益率。'],
+  withdrawal: ['资产提款和被动现金收入有什么不同？', '现金收入路线只花资产产生的净租金、利息、股息等；总回报提款还可能定期卖出部分资产来支付支出。后者可以是退休规划的一种框架，但账户余额可能下降，市场下跌初期提款还会放大耗尽风险。Bengen 的历史研究基于美国过去的市场数据和特定组合、年限，后来通称“4% 法则”；它不是保本利率，也不能直接复制到任意国家、税制和退休年限。'],
+  choice: ['财务自由是不是不再工作？', '不是。工作可以是收入来源，也可以是能力、关系、意义和创造。财务自由的重点是降低“为了付下个月账单而不得不接受”的程度；有人继续全职，有人换低薪但热爱的工作，有人休息照护家人，选择因人而异。']
+};
+const dialog = document.getElementById('ff-dialog');
+document.querySelectorAll('.ff-q').forEach((button) => button.addEventListener('click', () => {
+  const [heading, explanation] = notes[button.dataset.topic];
+  document.getElementById('ff-dialog-title').textContent = heading;
+  document.getElementById('ff-dialog-body').textContent = explanation;
+  dialog.showModal();
+}));
+document.getElementById('ff-dialog-ok').addEventListener('click', () => dialog.close());
+dialog.addEventListener('click', (event) => { if (event.target === dialog) dialog.close(); });
+</script>
+</body>
+</html>
